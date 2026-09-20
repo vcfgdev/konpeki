@@ -8,7 +8,9 @@ description: Creates and revises editable Konpeki visuals from source material. 
 Deliver an editable composition and visually reviewed output. This skill needs
 the surrounding Konpeki runtime and resources; if they are unavailable, follow
 [SETUP.md](../../../SETUP.md) first. Paths here are relative to this file;
-run commands below from the Konpeki checkout.
+run commands below from the user's workspace with Konpeki installed locally.
+For repository development, substitute `pnpm konpeki` for
+`npm exec --no -- konpeki`. Keep authored documents outside `node_modules`.
 
 ## 1. Interpret the brief
 
@@ -46,8 +48,8 @@ in the canvas or become a second document source.
 ## 3. Validate, render and repair
 
 ```sh
-pnpm konpeki validate slides/<name>/composition.json
-pnpm konpeki preview slides/<name>/composition.json
+npm exec --no -- konpeki validate slides/<name>/composition.json
+npm exec --no -- konpeki preview slides/<name>/composition.json
 ```
 
 Reuse an active file-backed preview for the same document when available. Open
@@ -69,7 +71,7 @@ separately; browser images do not prove editable PDF/PPTX or font fidelity.
 Include any generator source while keeping composition JSON authoritative.
 
 Keep revision requests in agent chat by default. When explicitly waiting for a
-canvas request, run `pnpm konpeki wait <composition.json>` alongside the preview.
+canvas request, run `npm exec --no -- konpeki wait <composition.json>` alongside the preview.
 **Build it** submits a request; it does not launch an agent. On receiving it,
 reread the named file and compare its revision with the request. If it changed,
 reconcile against the latest document instead of applying a stale rewrite.

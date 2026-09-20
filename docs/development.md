@@ -1,7 +1,8 @@
 # Development
 
-Run commands from the repository root after the
-[quickstart installation](../README.md#start-in-your-coding-agent).
+Clone `https://github.com/vcfgdev/konpeki.git` with the required repository access,
+then run `pnpm install --frozen-lockfile` in the checkout (Node.js 24+ and pnpm).
+Run the commands below from that repository root.
 Development and regression checks require a repository checkout, not an npm
 tarball, which excludes tests and review scripts.
 
@@ -83,8 +84,8 @@ required resources, excluded development files and relative imports. For an
 installation smoke test, use `npm pack --pack-destination <temporary-dir>`, install
 the tarball in an empty project, then run its `konpeki validate` and `konpeki preview`
 commands against a composition outside the installed package. Do not publish
-until that isolated preview works. The package remains private; packing locally
-does not publish it or make `npx konpeki` available.
+until that isolated preview works. Publish the tested tarball rather than
+rebuilding during publication. Packing locally does not publish anything.
 
 ## Verification
 

@@ -12,28 +12,30 @@ editable JSON, or use **Present** for a chrome-free presentation.
 
 ## Start in your coding agent
 
-Requires **Node.js 24+**, **pnpm**, a coding agent that can edit files and run
-commands, and a browser. Konpeki is currently distributed as this repository,
-not a published npm package.
+Requires **Node.js 24+**, npm, a coding agent that can edit files and run commands,
+and a browser.
 
 For agent-led installation, give your agent [SETUP.md](SETUP.md) and your brief.
 For a manual quickstart:
 
 ```sh
-git clone https://github.com/vcfgdev/konpeki.git
-cd konpeki
-pnpm install --frozen-lockfile
-pnpm konpeki preview slides/introducing-konpeki/composition.json
+mkdir konpeki-workspace
+cd konpeki-workspace
+npm init -y
+npm install --save-dev konpeki@0.1.0
+cp node_modules/konpeki/slides/introducing-konpeki/composition.json introduction.json
+npm exec --no -- konpeki preview introduction.json
 ```
 
 Open the exact URL printed by `preview`. Browser edits save to the composition
 file; valid agent edits appear on the same canvas. In a remote environment, use
 its authenticated preview mechanism rather than sharing a local address.
 
-Open the repository in your coding agent and select the
-[`authoring-visuals` skill](.agents/skills/authoring-visuals/SKILL.md), if supported.
-Otherwise, ask the agent to read [AGENTS.md](AGENTS.md) and [AUTHORING.md](AUTHORING.md).
-Give your brief in the agent's prompt field:
+Open the workspace in your coding agent and ask it to read
+`node_modules/konpeki/SETUP.md`. The installed package includes the authoring skill,
+design guidance and examples; skills inside dependencies may need to be read
+explicitly. Keep your documents outside `node_modules`. Give your brief in the
+agent's prompt field:
 
 ```text
 Use Konpeki to turn these notes into a three-slide explanation for engineers.

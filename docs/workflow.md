@@ -29,12 +29,13 @@ Retained React/SVG examples are drawing references, not another deck runtime.
 
 ## File-backed editing with an agent
 
-The CLI interface is `konpeki <command>`. Until the package is published, use
-the repository shim `pnpm konpeki <command>`:
+The CLI interface is `konpeki <command>`. After local installation, use
+`npm exec --no -- konpeki <command>` from your workspace. In a repository checkout,
+use the development shim `pnpm konpeki <command>` instead:
 
 ```sh
-pnpm konpeki validate slides/my-visual/composition.json
-pnpm konpeki preview slides/my-visual/composition.json
+npm exec --no -- konpeki validate slides/my-visual/composition.json
+npm exec --no -- konpeki preview slides/my-visual/composition.json
 ```
 
 `preview` prints a capability-bearing local URL. Open that exact URL. Valid
@@ -45,7 +46,7 @@ file, the canvas loads the valid revision and keeps the previous document in Und
 An agent waiting for a person's revision request runs:
 
 ```sh
-pnpm konpeki wait slides/my-visual/composition.json
+npm exec --no -- konpeki wait slides/my-visual/composition.json
 ```
 
 In the file-backed canvas, **Build it** saves the composition and submits the

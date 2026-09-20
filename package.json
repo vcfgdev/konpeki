@@ -1,9 +1,18 @@
 {
   "name": "konpeki",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A shared editable canvas for agent-made visuals",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcfgdev/konpeki.git"
+  },
+  "homepage": "https://github.com/vcfgdev/konpeki#readme",
+  "bugs": "https://github.com/vcfgdev/konpeki/issues",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "bin": {
     "konpeki": "runtime/konpeki.mjs"

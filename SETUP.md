@@ -16,23 +16,28 @@ agent. An in-app browser is convenient but not required.
 
 ## 1. Prepare the environment
 
-- Check for Node.js 24+ (`node --version`), pnpm (`pnpm --version`), and a browser
+- Check for Node.js 24+ (`node --version`), npm (`npm --version`), and a browser
   the agent can use for visual inspection. Report missing prerequisites rather
   than claiming setup succeeded. Follow the host's rules for installing tools.
-- Reuse an existing Konpeki checkout when available. Otherwise clone into a new
-  directory; do not overwrite the user's project or replace its agent guidance.
-- Konpeki is not yet published to npm. Do not substitute `npx konpeki` or install
-  an unrelated package with the same name.
+- Reuse an existing workspace when requested, or create a new directory. Do not
+  overwrite the user's files or replace their agent guidance.
+- Install the pinned release locally so the agent can find its resources and
+  reuse the same CLI version. Do not edit files inside `node_modules`.
 
 ```sh
-git clone https://github.com/vcfgdev/konpeki.git
-cd konpeki
-pnpm install --frozen-lockfile
+npm install --save-dev konpeki@0.1.0
 ```
 
-Repository access is required. If cloning fails, report the access issue rather
-than looking for a different distribution. Run subsequent commands from the
-Konpeki checkout; copying the skill alone does not install the runtime.
+In a new empty directory, run `npm init -y` first. Run subsequent commands from
+the workspace where Konpeki was installed. Its resources are under
+`node_modules/konpeki/`: `AGENTS.md`, `AUTHORING.md`, `composition/`, `design/`,
+and `.agents/skills/authoring-visuals/SKILL.md`. If the package/version cannot be
+resolved, report the installation issue rather than substituting another package.
+Copying the skill alone does not install the runtime.
+
+For repository development instead, clone `https://github.com/vcfgdev/konpeki.git`
+with the required access, run `pnpm install --frozen-lockfile`, and use
+`pnpm konpeki` in place of `npm exec --no -- konpeki` below.
 
 ## 2. Read the authoring instructions
 
@@ -53,14 +58,14 @@ the CLI.
 For an installation check, validate the bundled introduction:
 
 ```sh
-pnpm konpeki validate slides/introducing-konpeki/composition.json
+npm exec --no -- konpeki validate node_modules/konpeki/slides/introducing-konpeki/composition.json
 ```
 
 After authoring the user's document:
 
 ```sh
-pnpm konpeki validate slides/<name>/composition.json
-pnpm konpeki preview slides/<name>/composition.json
+npm exec --no -- konpeki validate slides/<name>/composition.json
+npm exec --no -- konpeki preview slides/<name>/composition.json
 ```
 
 Keep the preview process running using the host's supported service mechanism.
