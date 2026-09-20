@@ -1,5 +1,3 @@
-# Konpeki
-
 ![Konpeki — A shared canvas for you and your agents](slides/github-cover/cover.png)
 
 **An editable canvas for agent-made visuals. Create a single explanation or a
@@ -44,12 +42,12 @@ For a manual start, install [Konpeki from npm](https://www.npmjs.com/package/kon
 in your workspace (run `npm init -y` first in a new, empty directory):
 
 ```sh
-npm install --save-dev konpeki@0.1.1
-cp node_modules/konpeki/slides/introducing-konpeki/composition.json introduction.json
+npm install --save-dev konpeki@latest
+curl -fL https://raw.githubusercontent.com/vcfgdev/konpeki/main/slides/introducing-konpeki/composition.json -o introduction.json
 npm exec --no -- konpeki preview introduction.json
 ```
 
-Open the exact URL printed by `preview`. Browser edits save to your copied file;
+Open the exact URL printed by `preview`. Browser edits save to your downloaded file;
 valid agent edits appear on the same canvas. In a remote environment, use its
 authenticated preview mechanism rather than sharing a local address.
 
