@@ -28,7 +28,8 @@ import {
 import { clearStoredDraft, loadDraft, persistDraft } from "../lib/storage.ts";
 import { diagramDefinition } from "../../composition/visualizations.ts";
 import { Canvas } from "../components/Canvas.tsx";
-import { LeftPanel } from "../components/LeftPanel.tsx";
+import { BuildOrb } from "../components/BuildOrb.tsx";
+import { LeftPanel, type LeftPanelView } from "../components/LeftPanel.tsx";
 import { Presentation } from "../components/Presentation.tsx";
 import {
   RightPanel,
@@ -39,6 +40,8 @@ import { exampleDraft } from "../lib/examples.ts";
 import { exportPagePNG } from "../lib/export-png.ts";
 import { fileSessionToken } from "../lib/file-session.ts";
 import { useFileSession } from "../lib/use-file-session.ts";
+import { RevisionNotes } from "../components/RevisionNotes.tsx";
+import type { ReviewTarget } from "../lib/review.ts";
 
 const sessionToken = fileSessionToken();
 
@@ -75,6 +78,7 @@ export function App() {
   }>();
   const [toastClosing, setToastClosing] = useState(false);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [leftView, setLeftView] = useState<LeftPanelView>("pages");
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [rightView, setRightView] = useState<RightPanelView>("settings");
   const [vectorEditRequest, setVectorEditRequest] = useState(0);
@@ -163,12 +167,13 @@ export function App() {
       const slideRename =
         target instanceof HTMLInputElement &&
         target.getAttribute("aria-label") === "Page name";
+      const noteEditing = target instanceof HTMLTextAreaElement && target.id === "revision-note";
       if (event.key === "Escape" && !editable && vectorSelection) {
         setVectorSelection(undefined);
         return;
       }
       if (modifier && !event.altKey && event.key.toLowerCase() === "z") {
-        if (slideRename) return;
+        if (slideRename || noteEditing) return;
         event.preventDefault();
         setHistory((current) =>
           event.shiftKey ? redoHistory(current) : undoHistory(current),
@@ -180,7 +185,7 @@ export function App() {
         !event.altKey &&
         event.key.toLowerCase() === "y"
       ) {
-        if (slideRename) return;
+        if (slideRename || noteEditing) return;
         event.preventDefault();
         setHistory(redoHistory);
         return;
@@ -414,12 +419,28 @@ export function App() {
     updateDraft(next, { selected: nextSelected });
     showNotice("Component deleted.");
   }
+  function selectNoteTarget(target: ReviewTarget & { id?: string }) {
+    const page = draft.slides.find(s => s.id === target.slideId);
+    if (!page) return;
+    selectSlide(page.id);
+    setLeftCollapsed(false);
+    setLeftView("notes");
+    const component = page.components.find(c => c.id === target.componentId);
+    if (component) {
+      selectComponent(component.id);
+      if (target.elementId && component.customVisual?.format === "vector" && component.customVisual.elements.some(e => e.id === target.elementId))
+        setVectorSelection({ componentId: component.id, elementId: target.elementId });
+    }
+    if (target.id) requestAnimationFrame(() => document.getElementById(`note-${target.id}`)?.scrollIntoView({ block: "nearest" }));
+  }
   async function requestBuild() {
     try {
-      const instruction = selected
+      const instruction = fileSession.review.notes.some(note => !note.resolved)
+        ? "Apply the attached revision notes to their named targets. Preserve unrelated human edits. Validate and inspect the result, then acknowledge this request with konpeki finish."
+        : selected
         ? "Review the selected component in context and build it from the current saved composition."
         : "Review the current slides and build them from the current saved composition.";
-      await fileSession.build(instruction, slide.id, selected);
+      await fileSession.build(instruction, slide.id, selected, vectorSelection?.componentId === selected ? vectorSelection?.elementId : undefined);
     } catch (requestError) {
       showNotice(requestError instanceof Error ? requestError.message : "Could not send the build request.");
     }
@@ -556,6 +577,17 @@ export function App() {
         <div className="editor-content" inert={fileSession.building} aria-busy={fileSession.building}>
         <LeftPanel
           draft={draft}
+          view={leftView}
+          onView={setLeftView}
+          revisionNotes={loaded.fileSession && <RevisionNotes
+            document={draft}
+            target={{ slideId: slide.id, ...(selected ? { componentId: selected } : {}), ...(vectorSelection?.componentId === selected && vectorSelection?.elementId ? { elementId: vectorSelection.elementId } : {}) }}
+            review={fileSession.review}
+            disabled={fileSession.building || fileSession.status !== "saved"}
+            onAdd={fileSession.addNote}
+            onRemove={fileSession.removeNote}
+            onSelect={selectNoteTarget}
+          />}
           activeSlideId={slide.id}
           collapsed={leftCollapsed}
           onSelectSlide={selectSlide}
@@ -564,6 +596,8 @@ export function App() {
         />
         <Canvas
           key={slide.id}
+          revisionNotes={fileSession.review.notes.filter(note => !note.resolved)}
+          onSelectNote={selectNoteTarget}
           draft={draft}
           activeSlideId={slide.id}
           selected={selected}
@@ -652,9 +686,22 @@ export function App() {
         {fileSession.building && (
           <div className="stage build-loading" role="status" aria-live="polite">
             <div className="build-loading-card">
-              <div className="build-loading-track" aria-hidden="true" />
-              <strong>Waiting for agent</strong>
-              <span>Your canvas will refresh when changes arrive.</span>
+              <div className="build-nebula"><BuildOrb active nebula /></div>
+              {fileSession.review.request?.status === "working" ? <>
+                <strong>Agent working</strong>
+                <span>Changes appear here; editing resumes when the agent finishes.</span>
+              </> : <>
+                <span>Ask your coding agent to apply the changes</span>
+                <button type="button" className="primary" onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText("Pick up my pending Konpeki request and apply the changes.");
+                    showNotice("Prompt copied");
+                  } catch {
+                    showNotice("Could not copy. Ask your coding agent to pick up your pending Konpeki request");
+                  }
+                }}>Copy prompt</button>
+              </>}
+              <button type="button" onClick={() => { void fileSession.cancel().catch(error => showNotice(error.message)); }}>Cancel</button>
             </div>
           </div>
         )}

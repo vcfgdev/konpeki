@@ -141,8 +141,9 @@
 
 .action-island button.icon-only {
   flex: none;
-  width: 34px;
-  padding: 0 8px;
+  width: 40px;
+  padding: 0;
+  justify-content: center;
 }
 
 .action-island button.primary {
@@ -163,46 +164,78 @@
   position: relative;
   overflow: hidden;
   justify-content: center;
-  flex: 1;
+  flex: none;
+  padding-inline: 9px;
   white-space: nowrap;
 }
 
+.build-button .build-label {
+  min-width: 9ch;
+  text-align: left;
+}
+
 .action-island button.build-button.building {
-  background: linear-gradient(110deg, #155e75, #2449aa, #7535a5, #a82d62, #155e75);
-  background-size: 300% 100%;
-  color: white;
+  background: white;
+  color: #2449aa;
   opacity: 1;
   cursor: wait;
-  animation: build-colors 4s linear infinite;
 }
 
-.build-button.building::after,
-.build-loading-track::after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, #ffffff50, transparent);
-  transform: translateX(-100%);
-  animation: build-sweep 1.8s ease-in-out infinite;
-  content: "";
+.build-button.building .build-label {
+  background: linear-gradient(110deg, #155e75 10%, #2449aa 30%, #a82d62 45%, #87bdeb 50%, #7535a5 55%, #155e75 80%);
+  background-size: 250% 100%;
+  background-clip: text;
+  color: transparent;
+  animation: build-colors 3s linear infinite;
 }
 
-.build-button.building::after {
-  top: auto;
-  height: 3px;
+.build-orb circle {
+  fill: currentColor;
+  stroke: none;
+  transform: translate(var(--x), var(--y));
+}
+.build-orb.active circle {
+  animation: orb-shape 8s ease-in-out infinite;
+}
+.build-orb.nebula {
+  width: 100%;
+  height: 100%;
+  color: #4265ad;
+  transform: rotate(-18deg);
+}
+.build-orb.nebula circle {
+  animation: orb-sphere 12s ease-in-out infinite;
+  animation-delay: var(--phase);
+}
+.build-orb.nebula circle:nth-child(3n) { fill: #9772bb; }
+.build-orb.nebula circle:nth-child(3n + 1) { fill: #198faa; }
+
+@keyframes orb-shape {
+  0%, 10%, 100% { transform: translate(var(--x), var(--y)); }
+  25%, 35% { transform: translate(var(--tx), var(--ty)); }
+  50%, 60% { transform: translate(var(--sx), var(--sy)); }
+  75%, 85% { transform: translate(var(--hx), var(--hy)); }
+}
+@keyframes orb-sphere {
+  0%, 100% { transform: translate(var(--radius), var(--y)); opacity: 0.5; }
+  25% { transform: translate(0, var(--y)); opacity: 1; }
+  50% { transform: translate(calc(-1 * var(--radius)), var(--y)); opacity: 0.5; }
+  75% { transform: translate(0, var(--y)); opacity: 0.15; }
+}
+@keyframes orb-turn {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes build-colors {
   to { background-position: 150% 0; }
 }
 
-@keyframes build-sweep {
-  to { transform: translateX(100%); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .action-island button.build-button.building,
-  .build-button.building::after,
-  .build-loading-track::after {
+  .build-button.building .build-label,
+  .build-orb.active circle,
+  .build-orb.nebula circle,
+  .build-orb.nebula,
+  .build-nebula::before {
     animation: none;
   }
 }
@@ -216,6 +249,11 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.7;
+}
+
+.action-island .build-button .build-orb {
+  width: 20px;
+  height: 20px;
 }
 
 .component-dock {

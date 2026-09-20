@@ -1,9 +1,11 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type {
   CompositionSlide,
   ThemeMode,
 } from "../../composition/types.ts";
 import type { Draft } from "../lib/model.ts";
+
+export type LeftPanelView = "pages" | "notes";
 
 function ThumbnailCanvas({
   slide,
@@ -50,6 +52,9 @@ export function LeftPanel({
   draft,
   activeSlideId,
   collapsed,
+  view,
+  onView,
+  revisionNotes,
   onSelectSlide,
   onAddSlide,
   onRemoveSlide,
@@ -57,6 +62,9 @@ export function LeftPanel({
   draft: Draft;
   activeSlideId: string;
   collapsed: boolean;
+  view: LeftPanelView;
+  onView: (view: LeftPanelView) => void;
+  revisionNotes?: ReactNode;
   onSelectSlide: (id: string) => void;
   onAddSlide: () => void;
   onRemoveSlide: (id: string) => void;
@@ -64,9 +72,13 @@ export function LeftPanel({
   return (
     <aside className={`left-panel${collapsed ? " collapsed" : ""}`} aria-label="Workspace panel" inert={collapsed}>
       <div className="panel-toolbar">
-        <span className="panel-heading">Pages</span>
+        {revisionNotes ? <div className="panel-tabs" aria-label="Left panel view">
+          {(["pages", "notes"] as const).map(tab => <button key={tab} type="button"
+            aria-pressed={view === tab} className={view === tab ? "active" : ""}
+            onClick={() => onView(tab)}>{tab === "pages" ? "Pages" : "Notes"}</button>)}
+        </div> : <span className="panel-heading">Pages</span>}
       </div>
-      <div className="slide-list">
+      <div className="slide-list" hidden={!!revisionNotes && view !== "pages"}>
         {draft.slides.map((item, index) => (
           <div key={item.id} className="slide-thumbnail-item">
             <button
@@ -102,6 +114,7 @@ export function LeftPanel({
           <span aria-hidden="true">+</span>
         </button>
       </div>
+      {revisionNotes && <div className="left-notes" hidden={view !== "notes"}>{revisionNotes}</div>}
     </aside>
   );
 }

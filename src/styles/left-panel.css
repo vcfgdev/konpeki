@@ -1,3 +1,37 @@
+.left-notes {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.revision-notes { padding: 18px 16px; }
+.revision-note-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.revision-note-count,
+.revision-note-scope {
+  color: var(--ui-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.revision-note-count { margin: 20px 0 8px; }
+.revision-notes label { font-size: 12px; }
+.revision-note-scope { margin: 6px 0; overflow-wrap: anywhere; }
+.revision-notes textarea { width: 100%; resize: vertical; min-height: 72px; font-size: 12px; line-height: 1.5; }
+.revision-notes textarea { border-color: transparent; border-radius: 6px; background: #f4f4f5; }
+.revision-notes textarea:hover { border-color: #d4d4d8; }
+.revision-note-submit { margin-top: 8px; justify-content: flex-end; }
+.revision-note-submit button { white-space: nowrap; font-size: 12px; }
+.revision-note-list { list-style: none; margin: 0; padding: 0; }
+.revision-note-list li { padding: 12px 0; border-top: 1px solid var(--ui-border); }
+.revision-note-target { display: flex; align-items: baseline; gap: 8px; padding: 0; border: 0; background: none; text-align: left; font-size: 11px; overflow-wrap: anywhere; }
+.revision-note-target > span { color: var(--ui-muted); }
+.revision-note-list p { font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.revision-note-remove { border: 0; padding: 0; background: none; color: var(--ui-muted); font-size: 11px; }
+.revision-note-error { color: #a02020; font-size: 12px; }
+
 .slide-list {
   flex: 1;
   min-height: 0;

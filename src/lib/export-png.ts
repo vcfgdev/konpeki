@@ -48,7 +48,7 @@ export async function exportPagePNG(
   });
   clone
     .querySelectorAll(
-      ".resize-handle, .guide, .vector-handles, .inline-intent-editor",
+      ".resize-handle, .guide, .vector-handles, .inline-intent-editor, .revision-pin",
     )
     .forEach((node) => node.remove());
   const rect = source.getBoundingClientRect();

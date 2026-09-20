@@ -2,6 +2,7 @@ import type { RefObject } from "react";
 import type { CompositionComponent } from "../../composition/types.ts";
 import { componentLabels } from "../lib/model.ts";
 import mark from "../assets/konpeki-mark.png";
+import { BuildOrb } from "./BuildOrb.tsx";
 
 const dockItems: {
   kind: CompositionComponent["kind"];
@@ -149,12 +150,11 @@ export function WorkspaceChrome({
             <path d="m7 14 3.5-4 3 3 2-2 2.5 3M12 16v5m-3-3 3 3 3-3" />
           </svg>
         </button>
-        <button type="button" onClick={onPresent} disabled={building}>
+        <button type="button" className="icon-only" aria-label="Present" title="Present" onClick={onPresent} disabled={building}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="4" width="18" height="12" rx="2" />
             <path d="M12 16v5m-4 0h8M10 7l5 3-5 3Z" />
           </svg>
-          Present
         </button>
         {onBuild && (
           <button
@@ -164,10 +164,8 @@ export function WorkspaceChrome({
             aria-busy={building}
             onClick={onBuild}
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m5 19 10-10 3 3L8 22Zm10-10 2-2 3 3-2 2M5 3v6M2 6h6m10-5v4m-2-2h4" />
-            </svg>
-            <span>{building ? "Building…" : "Build it"}</span>
+            <BuildOrb active={building} />
+            <span className="build-label">{building ? "Building…" : "Build it"}</span>
           </button>
         )}
       </div>

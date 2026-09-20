@@ -7,7 +7,7 @@ import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { createServer } from "vite";
 import { fileSessionPlugin } from "../bin/session-plugin.ts";
-import { requestFileFor } from "../bin/session-store.ts";
+import { readReview } from "../bin/review-store.ts";
 
 const exec = promisify(execFile);
 const scratch = await mkdtemp(join(tmpdir(), "konpeki-build-"));
@@ -20,11 +20,17 @@ let requests = 0;
 let rejectBuild = false;
 const server = await createServer({
   server: { host: "127.0.0.1", port: 0 },
-  plugins: [fileSessionPlugin({
+  plugins: [{ name: "reject-test-build", enforce: "pre", configureServer(server) {
+    server.middlewares.use((request, response, next) => {
+      if (rejectBuild && request.url === "/__konpeki/session/build") {
+        response.writeHead(500, { "content-type": "application/json" });
+        response.end(JSON.stringify({ error: "Build request rejected for test" }));
+      } else next();
+    });
+  } }, fileSessionPlugin({
     compositionPath,
     token: "disposable-build-test",
     onBuildRequest: () => {
-      if (rejectBuild) throw Error("Build request rejected for test");
       requests++;
     },
   })],
@@ -50,19 +56,42 @@ try {
   await browser("wait", "--fn", "!document.querySelector('.toast.visible')");
   await check("getComputedStyle(document.querySelector('.build-button')).backgroundColor === 'rgb(255, 255, 255)'", "Idle Build it background is not white");
   await capture("idle");
+  await browser("eval", "window.idleOrbBounds=document.querySelector('.build-button .build-orb').getBoundingClientRect().toJSON()");
   if (process.argv.includes("--record"))
     await browser("record", "start", join(artifacts, "build-cycle.mp4"), "--fps", "15");
   await browser("click", ".build-button");
   await browser("wait", "--fn", "!!document.querySelector('.build-loading')");
+  await check("(()=>{const r=document.querySelector('.build-button .build-orb').getBoundingClientRect();return r.x===window.idleOrbBounds.x && r.y===window.idleOrbBounds.y})()", "Orb shifted when button label changed");
   await browser("wait", "1500"); // The POST and at least one unchanged poll must not end loading.
   await check("!document.querySelector('.toast.visible')", "Build request showed a redundant toast");
   await check("document.querySelector('.build-button.building:disabled[aria-busy=true]') && document.querySelector('.editor-content').inert && document.querySelector('.build-loading[role=status]')", "Loading ended before the agent returned");
-  await check("getComputedStyle(document.querySelector('.build-button')).backgroundImage.includes('linear-gradient')", "Disabled styles hid the gradient");
+  await check("getComputedStyle(document.querySelector('.build-label')).backgroundImage.includes('linear-gradient') && getComputedStyle(document.querySelector('.build-label')).backgroundClip === 'text'", "Shimmer is not on the label");
+  await check("!document.querySelector('.build-loading-track') && getComputedStyle(document.querySelector('.build-button'),'::after').content === 'none'", "Old progress strip remains");
+  await browser("eval", "window.orbStart=getComputedStyle(document.querySelector('.build-button circle')).transform");
+  await browser("wait", "1700");
+  await check("getComputedStyle(document.querySelector('.build-button circle')).transform !== window.orbStart", "Button orb did not change shape");
   await browser("eval", "document.querySelector('.build-button').click()");
   assert.equal(requests, 1, "Duplicate build request");
   await capture("waiting");
+  await check("!document.querySelector('.build-loading-card strong') && document.querySelector('.build-loading-card').textContent.includes('Ask your coding agent to apply the changes')", "Handoff still implies automatic agent pickup");
+  await browser("eval", "Object.defineProperty(navigator.clipboard, 'writeText', {configurable:true,value:async text=>{window.copiedPrompt=text}})");
+  await browser("find", "role", "button", "click", "--name", "Copy prompt", "--exact");
+  await check("window.copiedPrompt === 'Pick up my pending Konpeki request and apply the changes.'", "Copied prompt is incorrect");
+  await browser("eval", "Object.defineProperty(navigator.clipboard, 'writeText', {configurable:true,value:async()=>{throw Error('Clipboard denied')}})");
+  await browser("find", "role", "button", "click", "--name", "Copy prompt", "--exact");
+  await browser("wait", "--text", "Could not copy. Ask your coding agent to pick up your pending Konpeki request");
+  await browser("wait", "--fn", "!document.querySelector('.toast.visible')");
+  const { stdout } = await exec(process.execPath, ["bin/konpeki.mjs", "wait", compositionPath]);
+  const request = JSON.parse(stdout);
+  assert.equal(request.status, "working");
+  await browser("wait", "--text", "Agent working");
+  await check("!document.querySelector('.build-loading-card').textContent.includes('Copy prompt')", "Working state still asks for handoff");
+  await capture("working");
   document.slides[0].name = "Agent result loaded";
   await writeFile(compositionPath, JSON.stringify(document));
+  await browser("wait", "--fn", "document.querySelector('.stage-meta').textContent.includes('Agent result loaded')");
+  await check("!!document.querySelector('.build-loading')", "An unrelated file change completed the request");
+  await exec(process.execPath, ["bin/konpeki.mjs", "finish", compositionPath, request.id]);
   await browser("wait", "--fn", "!document.querySelector('.build-loading') && document.querySelector('.stage-meta').textContent.includes('Agent result loaded')");
   await check("!document.querySelector('.build-button').disabled && !document.querySelector('.editor-content').inert", "Editor did not unlock after the result rendered");
   await check("!document.querySelector('.toast.visible')", "Agent result showed a redundant toast");
@@ -84,16 +113,21 @@ try {
   await browser("click", ".build-button");
   await browser("wait", "--fn", "!!document.querySelector('.build-loading')");
   await browser("wait", "1500");
-  await check("getComputedStyle(document.querySelector('.build-button')).animationName === 'none' && getComputedStyle(document.querySelector('.build-loading-track'), '::after').animationName === 'none'", "Reduced motion still animates");
+  await check("[...document.querySelectorAll('.build-orb, .build-orb circle, .build-label')].every(e=>getComputedStyle(e).animationName === 'none') && getComputedStyle(document.querySelector('.build-nebula'), '::before').animationName === 'none'", "Reduced motion still animates");
   await capture("waiting-reduced-motion");
   await writeFile(compositionPath, "invalid JSON");
   await browser("wait", "--text", "Could not load the agent result.");
-  await check("!document.querySelector('.build-loading') && !document.querySelector('.editor-content').inert", "Polling failure left the editor locked");
+  await check("!!document.querySelector('.build-loading') && document.querySelector('.editor-content').inert", "Polling failure unlocked an active request");
   await capture("connection-error");
-  console.log("Build lifecycle OK: pending after POST, duplicate blocked, result rendered, request/poll failures unlock, reduced motion respected.");
+  await writeFile(compositionPath, JSON.stringify(document));
+  await browser("wait", "1500");
+  await check("!!document.querySelector('.build-loading') && document.querySelector('.editor-content').inert", "Recovery unlocked an active request");
+  await browser("find", "role", "button", "click", "--name", "Cancel", "--exact");
+  await browser("wait", "--fn", "!document.querySelector('.build-loading')");
+  assert.equal((await readReview(compositionPath)).request.status, "failed");
+  console.log("Build lifecycle OK: persisted request, CLI claim, explicit completion, duplicate blocked, polling failure/recovery stays locked until cancel, reduced motion respected.");
 } finally {
   await browser("close").catch(() => {});
   await server.close();
-  await rm(requestFileFor(compositionPath), { force: true });
   await rm(scratch, { recursive: true, force: true });
 }
