@@ -72,7 +72,6 @@ export function App() {
   const [error, setError] = useState(loaded.error ?? "");
   const [notice, setNotice] = useState<{
     message: string;
-    undoableFor?: Draft;
   }>();
   const [toastClosing, setToastClosing] = useState(false);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
@@ -214,9 +213,9 @@ export function App() {
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
   }, [draft, presenting, selected, vectorSelection]);
-  function showNotice(message: string, undoableFor?: Draft) {
+  function showNotice(message: string) {
     setToastClosing(false);
-    setNotice({ message, undoableFor });
+    setNotice({ message: message.replace(/\.$/, "") });
   }
   function updateDraft(
     next: Draft,
@@ -283,14 +282,10 @@ export function App() {
       activeSlideId: nextActiveSlideId,
       selected: id === slide.id ? undefined : selected,
     });
-    showNotice("Page deleted.", next);
+    showNotice("Page deleted.");
   }
   function finishEdit() {
     setHistory(finishHistoryEdit);
-  }
-  function performUndo() {
-    focusAfterHistory.current = true;
-    setHistory(undoHistory);
   }
   function performRedo() {
     focusAfterHistory.current = true;
@@ -419,7 +414,7 @@ export function App() {
         : selected;
     focusAfterHistory.current = true;
     updateDraft(next, { selected: nextSelected });
-    showNotice("Component deleted.", next);
+    showNotice("Component deleted.");
   }
   async function requestBuild() {
     setBuildBusy(true);
@@ -454,7 +449,7 @@ export function App() {
       selected: undefined,
     });
     setTitleError(false);
-    showNotice("Editable composition opened. Undo restores the previous document.", parsed.document);
+    showNotice("Editable composition opened. Undo restores the previous document.");
   }
   function present() {
     const validation = validateComposition(draft);
@@ -668,26 +663,6 @@ export function App() {
         <span role="status" aria-live="polite">
           {notice?.message}
         </span>
-        {notice?.undoableFor === draft && (
-          <button
-            type="button"
-            onClick={() => {
-              performUndo();
-              showNotice("Change undone.");
-            }}
-          >
-            Undo
-          </button>
-        )}
-        {notice && (
-          <button
-            type="button"
-            aria-label="Dismiss notification"
-            onClick={() => setToastClosing(true)}
-          >
-            ×
-          </button>
-        )}
       </div>
     </>
   );
