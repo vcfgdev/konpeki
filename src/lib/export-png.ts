@@ -56,6 +56,9 @@ export async function exportPagePNG(
   clone.style.height = `${rect.height}px`;
   clone.style.margin = "0";
   clone.style.overflow = "hidden";
+  // Loading feedback belongs to the editor, never to the exported artwork.
+  clone.style.filter = "none";
+  clone.style.opacity = "1";
   const fontRules = Array.from(document.styleSheets).flatMap((sheet) =>
     Array.from(sheet.cssRules).filter(
       (rule): rule is CSSFontFaceRule => rule instanceof CSSFontFaceRule,
