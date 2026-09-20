@@ -101,6 +101,54 @@ commands against a composition outside the installed package. Do not publish
 until that isolated preview works. Publish the tested tarball rather than
 rebuilding during publication. Packing locally does not publish anything.
 
+## Tag releases
+
+`.github/workflows/publish.yml` stages releases on bare version tags such as `0.1.1`
+(no `v` prefix). The tag must equal `package.json`'s version.
+The workflow installs the mise toolchain and frozen dependencies, runs typecheck,
+tests, build and package checks, then installs a tarball in an isolated directory
+to validate a composition and build the packaged canvas. It stages that same
+tarball for maintainer approval; it does not publish directly. Browser review
+remains a pre-release responsibility.
+
+Before the first tag release, configure **Trusted publishing → GitHub Actions**
+in the `konpeki` package settings on npmjs.com:
+
+- Organization or user: `vcfgdev`
+- Repository: `konpeki`
+- Workflow filename: `publish.yml`
+- Environment name: leave empty
+- Leave **Allow npm publish** unchecked (staged publishing only)
+
+The workflow uses GitHub-hosted runners and OIDC (`id-token: write`); no npm
+token secret is needed. Staged publishing requires npm 11.15.0 or newer and
+Node 22.14.0 or newer; the pinned toolchain meets both requirements.
+npm generates provenance automatically for public repositories;
+private repositories do not receive provenance.
+
+After updating the package version, completing release checks and pushing the
+release commit, explicitly create and push its matching tag:
+
+```sh
+git tag 0.1.1
+git push origin 0.1.1
+```
+
+Replace `0.1.1` with the new version. `0.1.0` is already published and cannot be
+republished. Pushing a matching tag submits the tested package to npm's staging
+area. After the workflow succeeds, review the release in npmjs.com's **Staged
+Packages** tab and click **Approve**, completing 2FA to publish it. Alternatively,
+use an authenticated local CLI:
+
+```sh
+mise exec -- npm stage list konpeki
+mise exec -- npm stage view <stage-id>
+mise exec -- npm stage approve <stage-id>
+```
+
+Approval makes the version public. Reject an incorrect staged release instead
+of approving it (`npm stage reject <stage-id>`).
+
 ## Verification
 
 ```sh
