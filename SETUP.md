@@ -36,8 +36,9 @@ resolved, report the installation issue rather than substituting another package
 Copying the skill alone does not install the runtime.
 
 For repository development instead, clone `https://github.com/vcfgdev/konpeki.git`
-with the required access, run `pnpm install --frozen-lockfile`, and use
-`pnpm konpeki` in place of `npm exec --no -- konpeki` below.
+with the required access and follow the [mise setup](docs/development.md).
+Use `mise exec -- pnpm konpeki` in place of `npm exec --no -- konpeki` below.
+Mise is for contributors to this repository; npm package users do not need it.
 
 ## 2. Read the authoring instructions
 

@@ -15,6 +15,9 @@ presents that same document.
 
 ## Shared rules
 
+- For repository development, use the toolchain pinned in `mise.toml`. Run
+  commands through `mise exec --` unless the mise environment is already active.
+  Use pnpm and preserve the dependency lockfile; do not install tools globally.
 - Keep drafting, editing and presentation on the shared composition canvas.
   Retained React/SVG examples are drawing references, not a parallel deck runtime.
   Example geometry is not a design requirement.

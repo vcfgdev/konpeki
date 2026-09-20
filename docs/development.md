@@ -1,8 +1,22 @@
 # Development
 
-Clone `https://github.com/vcfgdev/konpeki.git` with the required repository access,
-then run `pnpm install --frozen-lockfile` in the checkout (Node.js 24+ and pnpm).
-Run the commands below from that repository root.
+Clone `https://github.com/vcfgdev/konpeki.git` with the required repository access.
+Use [mise](https://mise.jdx.dev/getting-started.html) to install the Node.js and
+pnpm versions pinned in `mise.toml`. On macOS, install mise with `brew install mise`.
+From the repository root:
+
+```sh
+mise trust
+mise install
+mise exec -- pnpm install --frozen-lockfile
+```
+
+Mise manages the toolchain; pnpm manages dependencies through `pnpm-lock.yaml`.
+Run the commands below from that repository root with an activated mise shell,
+or prefix them with `mise exec --` (for example, `mise exec -- pnpm test`).
+No global Node.js or pnpm installation is required. npm for packing and publishing
+comes with the pinned Node.js; use `mise exec -- npm pack` to select it explicitly.
+
 Development and regression checks require a repository checkout, not an npm
 tarball, which excludes tests and review scripts.
 
