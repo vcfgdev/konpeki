@@ -502,7 +502,6 @@ export function InspectorPanel({
       {component.customVisual && (
         <fieldset className="custom-visual-summary">
           <legend>Agent visual</legend>
-          <p>{component.customVisual.description}</p>
           <dl>
             <div>
               <dt>Source</dt>
@@ -523,11 +522,11 @@ export function InspectorPanel({
               <dd>{component.customVisual.fit ?? "contain"}</dd>
             </div>
           </dl>
-          <p className="field-help">
-            {component.customVisual.format === "vector"
-              ? "Select the visual and press Enter or choose Edit elements. Double-click an element to edit its text or attributes here. Only top-level line endpoints have drag handles; paths use attribute controls."
-              : "This legacy SVG is an opaque compatibility fallback. Ask an agent to convert it to editable vector elements."}
-          </p>
+          {component.customVisual.format !== "vector" && (
+            <p className="field-help">
+              This legacy SVG is an opaque compatibility fallback. Ask an agent to convert it to editable vector elements.
+            </p>
+          )}
           {vectorVisual && (
             <>
               <Field label="Vector element">
