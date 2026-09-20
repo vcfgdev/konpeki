@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 import { randomBytes } from "node:crypto";
-import { access, readFile, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { fileSessionPlugin } from "./session-plugin.ts";
 import {
   readCompositionFile,
-  requestFileFor,
 } from "./session-store.ts";
+import { claimBuildRequest, finishBuildRequest, readReview } from "./review-store.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -16,7 +15,9 @@ function usage() {
   console.error(`Usage:
   konpeki preview <composition.json> [--host <host>] [--port <port>]
   konpeki validate <composition.json>
-  konpeki wait <composition.json>`);
+  konpeki wait <composition.json>
+  konpeki request <composition.json>
+  konpeki finish <composition.json> <request-id> [--status done|needs-clarification|failed] [--message <text>]`);
 }
 
 function option(name, fallback) {
@@ -32,7 +33,6 @@ async function preview(input) {
   const port = Number(option("--port", "4318"));
   if (!Number.isInteger(port) || port < 1 || port > 65535)
     throw new Error("Port must be an integer from 1 to 65535.");
-  await rm(requestFileFor(compositionPath), { force: true });
   const server = await createServer({
     root,
     configFile: resolve(root, "vite.config.ts"),
@@ -41,6 +41,7 @@ async function preview(input) {
       compositionPath,
       token,
       onBuildRequest: ({ request }) => {
+        if (!request) return;
         console.log(`\nBuild requested for ${request.compositionPath}`);
         console.log(`Revision: ${request.revision}`);
         console.log(`Instruction: ${request.instruction}`);
@@ -63,18 +64,12 @@ async function validate(input) {
 }
 
 async function waitForRequest(input) {
-  const requestPath = requestFileFor(resolve(input));
-  console.log(`Waiting for a Build it request for ${resolve(input)}…`);
+  console.error(`Waiting for a Build it request for ${resolve(input)}…`);
   for (;;) {
-    try {
-      await access(requestPath);
-      const value = await readFile(requestPath, "utf8");
-      await rm(requestPath, { force: true });
-      process.stdout.write(value);
+    const request = await claimBuildRequest(resolve(input));
+    if (request) {
+      console.log(JSON.stringify(request, null, 2));
       return;
-    } catch (error) {
-      if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT")
-        throw error;
     }
     await new Promise((resolveWait) => setTimeout(resolveWait, 250));
   }
@@ -90,6 +85,12 @@ if (!command || !input) {
     if (command === "preview") await preview(input);
     else if (command === "validate") await validate(input);
     else if (command === "wait") await waitForRequest(input);
+    else if (command === "request") console.log(JSON.stringify((await readReview(input)).request ?? null, null, 2));
+    else if (command === "finish") {
+      if (!process.argv[4]) throw new Error("Provide the request ID returned by konpeki wait.");
+      const result = await finishBuildRequest(input, process.argv[4], option("--status", "done"), option("--message"));
+      console.log(JSON.stringify(result.request, null, 2));
+    }
     else {
       usage();
       process.exitCode = 1;

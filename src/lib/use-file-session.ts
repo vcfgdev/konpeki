@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { canonicalJSON } from "../../composition/compile.ts";
 import { validateComposition } from "../../composition/validate.ts";
 import type { Draft } from "./model.ts";
+import { activeRequest, emptyReview, type ReviewState, type ReviewTarget } from "./review.ts";
 import {
+  addNote,
+  removeNote,
+  cancelRequest,
   FileSessionError,
   fileSessionToken,
   loadFileSession,
@@ -27,6 +31,8 @@ export function useFileSession(
   const token = fileSessionToken();
   const [status, setStatus] = useState<FileStatus>(enabled ? "loading" : "saved");
   const [building, setBuilding] = useState(false);
+  const [review, setReview] = useState<ReviewState>(emptyReview);
+  const reviewRef = useRef(review);
   const buildPending = useRef(false);
   const submittingBuild = useRef(false);
   const callbacksRef = useRef(callbacks);
@@ -52,6 +58,7 @@ export function useFileSession(
         savedJSON: canonicalJSON(session.document),
       };
       setStatus("saved");
+      receiveReview(session.review);
       callbacksRef.current.onOpen(session.document, session.name);
     }).catch((error) => {
       if (cancelled) return;
@@ -78,9 +85,11 @@ export function useFileSession(
       if (!state.current.ready || state.current.drain || submittingBuild.current) return;
       const revision = state.current.revision;
       void loadFileSession(token).then((remote) => {
-        if (cancelled || state.current.drain || submittingBuild.current || revision !== state.current.revision || remote.revision === revision) return;
+        if (cancelled || state.current.drain || submittingBuild.current || revision !== state.current.revision) return;
+        receiveReview(remote.review);
+        setStatus(current => current === "error" ? "saved" : current);
+        if (remote.revision === revision) return;
         if (canonicalJSON(draftRef.current) !== state.current.savedJSON) {
-          finishBuild();
           setStatus("conflict");
           callbacksRef.current.onNotice(
             "The file changed elsewhere. Neither version was overwritten.",
@@ -94,12 +103,10 @@ export function useFileSession(
         };
         setStatus("saved");
         callbacksRef.current.onExternalChange(remote.document);
-        finishBuild();
       }).catch(() => {
         if (cancelled || submittingBuild.current || revision !== state.current.revision) return;
         setStatus("error");
         if (buildPending.current) {
-          finishBuild();
           callbacksRef.current.onNotice("Could not load the agent result. Check the local file service.");
         }
       });
@@ -115,8 +122,25 @@ export function useFileSession(
     setBuilding(false);
   }
 
+  function receiveReview(next: ReviewState) {
+    if (next.version < reviewRef.current.version) return;
+    reviewRef.current = next;
+    setReview(next);
+    buildPending.current = activeRequest(next.request);
+    setBuilding(buildPending.current);
+  }
+
+  async function noteAction(action: () => Promise<ReviewState>, saveFirst = false) {
+    if (submittingBuild.current) throw new Error("Wait for the current save before submitting.");
+    submittingBuild.current = true;
+    try {
+      if (saveFirst && !await save(draftRef.current)) throw new Error("Save the composition before adding a note.");
+      receiveReview(await action());
+    } finally { submittingBuild.current = false; }
+  }
+
   function save(next: Draft): Promise<string | undefined> {
-    if (!token || !state.current.ready) return Promise.resolve(undefined);
+    if (!token || !state.current.ready || activeRequest(reviewRef.current.request)) return Promise.resolve(undefined);
     const serialized = canonicalJSON(next);
     if (serialized === state.current.savedJSON && !state.current.drain)
       return Promise.resolve(state.current.revision);
@@ -161,8 +185,10 @@ export function useFileSession(
     instruction: string,
     slideId: string,
     componentId?: string,
+    elementId?: string,
   ) {
     if (!token || buildPending.current) return false;
+    if (submittingBuild.current) throw new Error("Wait for your note to finish saving before building.");
     buildPending.current = true;
     submittingBuild.current = true;
     setBuilding(true);
@@ -172,12 +198,13 @@ export function useFileSession(
         finishBuild();
         return false;
       }
-      await sendBuildRequest(token, {
+      receiveReview(await sendBuildRequest(token, {
         revision,
         instruction,
         slideId,
         ...(componentId ? { componentId } : {}),
-      });
+        ...(elementId ? { elementId } : {}),
+      }));
       return true;
     } catch (error) {
       finishBuild();
@@ -187,5 +214,10 @@ export function useFileSession(
     }
   }
 
-  return { status, build, building };
+  return {
+    status, build, building, review,
+    addNote: (target: ReviewTarget, text: string) => noteAction(() => addNote(token!, target, text), true),
+    removeNote: (id: string) => noteAction(() => removeNote(token!, id)),
+    cancel: () => noteAction(() => cancelRequest(token!, reviewRef.current.request!.id)),
+  };
 }

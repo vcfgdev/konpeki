@@ -72,12 +72,14 @@
     "@nivo/sankey": "0.99.0",
     "@xmldom/xmldom": "0.9.12",
     "ajv": "^8.20.0",
+    "proper-lockfile": "4.1.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "vite": "^8.3.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/proper-lockfile": "4.1.4",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "typescript": "^5.9.3"

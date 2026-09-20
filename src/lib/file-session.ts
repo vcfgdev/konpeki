@@ -1,9 +1,11 @@
 import type { CompositionDocument } from "../../composition/types.ts";
+import type { ReviewState, ReviewTarget } from "./review.ts";
 
 export type FileSessionDocument = {
   document: CompositionDocument;
   revision: string;
   name: string;
+  review: ReviewState;
 };
 
 export class FileSessionError extends Error {
@@ -65,10 +67,21 @@ export function sendBuildRequest(
     instruction: string;
     slideId: string;
     componentId?: string;
+    elementId?: string;
   },
 ) {
-  return request<{ ok: true }>(token, "/build", {
+  return request<ReviewState>(token, "/build", {
     method: "POST",
     body: JSON.stringify(requestBody),
   });
+}
+
+export function addNote(token: string, target: ReviewTarget, text: string) {
+  return request<ReviewState>(token, "/notes", { method: "POST", body: JSON.stringify({ ...target, text }) });
+}
+export function removeNote(token: string, id: string) {
+  return request<ReviewState>(token, "/notes", { method: "DELETE", body: JSON.stringify({ id }) });
+}
+export function cancelRequest(token: string, id: string) {
+  return request<ReviewState>(token, "/cancel", { method: "POST", body: JSON.stringify({ id }) });
 }

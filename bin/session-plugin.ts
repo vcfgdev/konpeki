@@ -1,8 +1,8 @@
 import {
   readCompositionFile,
   saveCompositionFile,
-  writeBuildRequest,
 } from "./session-store.ts";
+import { addRevisionNote, removeRevisionNote, readReview, writeBuildRequest, finishBuildRequest } from "./review-store.ts";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 
@@ -33,7 +33,7 @@ function errorResponse(error: unknown) {
   const code = error instanceof Error && "code" in error ? error.code : undefined;
   return {
     status: code === "REVISION_CONFLICT" ? 409
-      : code === "INVALID_COMPOSITION" ? 422
+      : code === "INVALID_COMPOSITION" || code === "INVALID_REVIEW" ? 422
       : code === "BODY_TOO_LARGE" ? 413
       : error instanceof SyntaxError ? 400 : 500,
     body: {
@@ -57,6 +57,14 @@ export function fileSessionPlugin({
   return {
     name: "konpeki-file-session",
     enforce: "pre",
+    config(config) {
+      return { server: { fs: { deny: [
+        // Preserve Vite's default sensitive-file exclusions as well as caller rules.
+        ".env", ".env.*", "*.{crt,pem,key,p12,pfx,cer,der}", ".npmrc", ".yarnrc.yml", "**/.git/**",
+        ...config.server?.fs?.deny ?? [],
+        "**/*.review.json", "**/*.review.json.*",
+      ] } } };
+    },
     configureServer(server) {
       server.middlewares.use(async (request, response, next) => {
         const url = new URL(request.url || "/", "http://localhost");
@@ -67,7 +75,10 @@ export function fileSessionPlugin({
         }
         try {
           if (url.pathname === route && request.method === "GET") {
-            sendJSON(response, 200, await readCompositionFile(compositionPath));
+            // Read acknowledgement first so a completed response includes at least
+            // the document version that was present when the agent finished.
+            const review = await readReview(compositionPath);
+            sendJSON(response, 200, { ...await readCompositionFile(compositionPath), review });
             return;
           }
           if (url.pathname === route && request.method === "PUT") {
@@ -87,7 +98,22 @@ export function fileSessionPlugin({
             }
             const result = await writeBuildRequest(compositionPath, body);
             onBuildRequest?.(result);
-            sendJSON(response, 201, { ok: true });
+            sendJSON(response, 201, result);
+            return;
+          }
+          if (url.pathname === `${route}/notes` && request.method === "POST") {
+            const body = await readJSON(request);
+            sendJSON(response, 201, await addRevisionNote(compositionPath, body, body.text));
+            return;
+          }
+          if (url.pathname === `${route}/notes` && request.method === "DELETE") {
+            const body = await readJSON(request);
+            sendJSON(response, 200, await removeRevisionNote(compositionPath, body.id));
+            return;
+          }
+          if (url.pathname === `${route}/cancel` && request.method === "POST") {
+            const body = await readJSON(request);
+            sendJSON(response, 200, await finishBuildRequest(compositionPath, body.id, "failed", "Cancelled by user. Stop the agent before starting another request."));
             return;
           }
           sendJSON(response, 404, { error: "Unknown file-session endpoint." });
