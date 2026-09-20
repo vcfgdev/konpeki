@@ -1,5 +1,7 @@
 # Konpeki
 
+![Konpeki — A shared canvas for you and your agents](slides/github-cover/cover.png)
+
 **An editable canvas for agent-made visuals. Create a single explanation or a
 whole presentation, then revise it together.**
 

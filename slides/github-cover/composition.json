@@ -1,0 +1,402 @@
+{
+  "authoringMode": "default",
+  "schema": "konpeki-composition/v18",
+  "slides": [
+    {
+      "audience": "Developers discovering Konpeki on GitHub",
+      "canvas": {
+        "height": 640,
+        "width": 1280
+      },
+      "components": [
+        {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "role": "title",
+            "rule": "none"
+          },
+          "content": "Konpeki",
+          "id": "brand",
+          "kind": "text-block",
+          "preferredRect": {
+            "height": 110,
+            "width": 480,
+            "x": 153.99999999999997,
+            "y": 121
+          },
+          "slotIds": [
+            "brand-content"
+          ],
+          "textStyle": {
+            "color": "ink",
+            "font": "heading",
+            "lineHeight": 1.18,
+            "size": 84,
+            "weight": 600
+          }
+        },
+        {
+          "customVisual": {
+            "description": "Konpeki blue brush mark",
+            "elements": [
+              {
+                "attributes": {
+                  "d": "M55 0h5v1H55ZM52 1h9v1H52ZM108 1h4v1H108ZM25 2h2v1H25ZM50 2h13v1H50ZM105 2h8v1H105ZM24 3h5v1H24ZM47 3h16v1H47ZM102 3h11v1H102ZM22 4h8v1H22ZM45 4h19v1H45ZM100 4h13v1H100ZM21 5h10v1H21ZM43 5h22v1H43ZM78 5h4v1H78ZM97 5h17v1H97ZM20 6h12v1H20ZM41 6h24v1H41ZM76 6h8v1H76ZM94 6h21v1H94ZM19 7h13v1H19ZM38 7h27v1H38ZM73 7h12v1H73ZM92 7h23v1H92ZM18 8h15v1H18ZM35 8h31v1H35ZM71 8h15v1H71ZM90 8h25v1H90ZM17 9h49v1H17ZM69 9h18v1H69ZM88 9h27v1H88ZM16 10h99v1H16ZM15 11h101v1H15ZM14 12h104v1H14ZM13 13h107v1H13ZM12 14h109v1H12ZM10 15h112v1H10ZM9 16h114v1H9ZM8 17h116v1H8ZM6 18h119v1H6ZM5 19h120v1H5ZM4 20h121v1H4ZM3 21h122v1H3ZM3 22h122v1H3ZM2 23h122v1H2ZM1 24h123v1H1ZM0 25h122v1H0ZM0 26h120v1H0ZM1 27h118v1H1ZM2 28h116v1H2ZM3 29h113v1H3ZM3 30h113v1H3ZM4 31h111v1H4ZM5 32h111v1H5ZM6 33h111v1H6ZM7 34h109v1H7ZM8 35h108v1H8ZM9 36h107v1H9ZM9 37h106v1H9ZM9 38h105v1H9ZM8 39h105v1H8ZM8 40h104v1H8ZM9 41h104v1H9ZM9 42h105v1H9ZM10 43h104v1H10ZM11 44h104v1H11ZM13 45h103v1H13ZM14 46h103v1H14ZM14 47h103v1H14ZM13 48h103v1H13ZM12 49h104v1H12ZM11 50h105v1H11ZM10 51h106v1H10ZM9 52h106v1H9ZM8 53h107v1H8ZM7 54h107v1H7ZM6 55h110v1H6ZM5 56h112v1H5ZM4 57h114v1H4ZM4 58h113v1H4ZM4 59h113v1H4ZM4 60h114v1H4ZM4 61h114v1H4ZM4 62h115v1H4ZM6 63h114v1H6ZM7 64h114v1H7ZM8 65h113v1H8ZM9 66h113v1H9ZM13 67h109v1H13ZM13 68h108v1H13ZM12 69h110v1H12ZM12 70h111v1H12ZM11 71h113v1H11ZM10 72h115v1H10ZM9 73h116v1H9ZM8 74h117v1H8ZM8 75h116v1H8ZM7 76h117v1H7ZM7 77h119v1H7ZM6 78h118v1H6ZM6 79h118v1H6ZM4 80h119v1H4ZM3 81h120v1H3ZM2 82h121v1H2ZM1 83h122v1H1ZM0 84h125v1H0ZM0 85h1v1H0ZM3 85h123v1H3ZM2 86h124v1H2ZM3 87h122v1H3ZM5 88h1v1H5ZM10 88h115v1H10ZM10 89h115v1H10ZM9 90h114v1H9ZM8 91h114v1H8ZM8 92h114v1H8ZM7 93h114v1H7ZM6 94h113v1H6ZM5 95h4v1H5ZM11 95h107v1H11ZM6 96h3v1H6ZM11 96h106v1H11ZM125 96h3v1H125ZM7 97h2v1H7ZM11 97h105v1H11ZM123 97h4v1H123ZM8 98h1v1H8ZM11 98h105v1H11ZM120 98h5v1H120ZM10 99h106v1H10ZM117 99h7v1H117ZM10 100h114v1H10ZM9 101h114v1H9ZM8 102h113v1H8ZM7 103h113v1H7ZM7 104h2v1H7ZM10 104h109v1H10ZM10 105h108v1H10ZM9 106h109v1H9ZM9 107h107v1H9ZM10 108h105v1H10ZM10 109h103v1H10ZM10 110h101v1H10ZM9 111h101v1H9ZM10 112h17v1H10ZM28 112h2v1H28ZM32 112h77v1H32ZM11 113h15v1H11ZM31 113h77v1H31ZM12 114h10v1H12ZM24 114h1v1H24ZM31 114h76v1H31ZM14 115h7v1H14ZM31 115h28v1H31ZM60 115h3v1H60ZM67 115h38v1H67ZM15 116h4v1H15ZM31 116h31v1H31ZM68 116h35v1H68ZM18 117h1v1H18ZM34 117h26v1H34ZM69 117h33v1H69ZM33 118h24v1H33ZM69 118h31v1H69ZM32 119h23v1H32ZM68 119h31v1H68ZM31 120h22v1H31ZM68 120h6v1H68ZM77 120h5v1H77ZM83 120h2v1H83ZM86 120h11v1H86ZM31 121h20v1H31ZM68 121h4v1H68ZM78 121h3v1H78ZM86 121h9v1H86ZM30 122h2v1H30ZM35 122h14v1H35ZM85 122h2v1H85ZM92 122h1v1H92ZM30 123h1v1H30ZM33 123h3v1H33ZM39 123h9v1H39ZM32 124h1v1H32ZM41 124h7v1H41ZM35 125h1v1H35ZM41 125h3v1H41ZM42 126h1v1H42ZM42 127h1v1H42Z",
+                  "fill": "#007fb5"
+                },
+                "id": "mark-silhouette",
+                "kind": "path"
+              }
+            ],
+            "format": "vector",
+            "viewBox": {
+              "height": 128,
+              "width": 128,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "brand-mark",
+          "kind": "image",
+          "preferredRect": {
+            "height": 66,
+            "width": 66,
+            "x": 64,
+            "y": 143
+          },
+          "slotIds": [
+            "brand-mark-content"
+          ]
+        },
+        {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "role": "body",
+            "rule": "none"
+          },
+          "content": "A shared canvas.",
+          "id": "promise",
+          "kind": "text-block",
+          "preferredRect": {
+            "height": 90,
+            "width": 680,
+            "x": 64,
+            "y": 302
+          },
+          "slotIds": [
+            "promise-content"
+          ],
+          "textStyle": {
+            "color": "ink",
+            "font": "heading",
+            "lineHeight": 1.18,
+            "size": 62,
+            "weight": 600
+          }
+        },
+        {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "role": "body",
+            "rule": "none"
+          },
+          "content": "For you and your agents.",
+          "id": "audience",
+          "kind": "text-block",
+          "preferredRect": {
+            "height": 76,
+            "width": 660,
+            "x": 64,
+            "y": 400
+          },
+          "slotIds": [
+            "audience-content"
+          ],
+          "textStyle": {
+            "color": "ink",
+            "font": "heading",
+            "lineHeight": 1.18,
+            "size": 44,
+            "weight": 400
+          }
+        },
+        {
+          "appearance": {
+            "border": "none",
+            "selection": "explicit",
+            "type": "flowchart"
+          },
+          "customVisual": {
+            "description": "Intent connects to Build, then Refine; selection handles on Refine express editable output.",
+            "elements": [
+              {
+                "attributes": {
+                  "d": "M202 74H261V178",
+                  "fill": "none",
+                  "stroke": "#007fb5",
+                  "stroke-width": 3
+                },
+                "id": "intent-build",
+                "kind": "path"
+              },
+              {
+                "attributes": {
+                  "d": "M316 215H376V325",
+                  "fill": "none",
+                  "stroke": "#007fb5",
+                  "stroke-width": 3
+                },
+                "id": "build-refine",
+                "kind": "path"
+              },
+              {
+                "attributes": {
+                  "fill": "#ffffff",
+                  "height": 72,
+                  "rx": 0,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5,
+                  "width": 190,
+                  "x": 12,
+                  "y": 38
+                },
+                "id": "intent-shape",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "#202630",
+                  "font-family": "theme:heading-font",
+                  "font-size": 28,
+                  "font-weight": 500,
+                  "text-anchor": "middle",
+                  "x": 107,
+                  "y": 84
+                },
+                "id": "intent-label",
+                "kind": "text",
+                "text": "Intent"
+              },
+              {
+                "attributes": {
+                  "fill": "#ffffff",
+                  "height": 72,
+                  "rx": 0,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5,
+                  "width": 184,
+                  "x": 132,
+                  "y": 179
+                },
+                "id": "build-shape",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "#202630",
+                  "font-family": "theme:heading-font",
+                  "font-size": 28,
+                  "font-weight": 500,
+                  "text-anchor": "middle",
+                  "x": 224,
+                  "y": 225
+                },
+                "id": "build-label",
+                "kind": "text",
+                "text": "Build"
+              },
+              {
+                "attributes": {
+                  "fill": "#eaf6fb",
+                  "height": 72,
+                  "rx": 0,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5,
+                  "width": 184,
+                  "x": 250,
+                  "y": 326
+                },
+                "id": "refine-shape",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "#202630",
+                  "font-family": "theme:heading-font",
+                  "font-size": 28,
+                  "font-weight": 500,
+                  "text-anchor": "middle",
+                  "x": 342,
+                  "y": 372
+                },
+                "id": "refine-label",
+                "kind": "text",
+                "text": "Refine"
+              },
+              {
+                "attributes": {
+                  "fill": "#ffffff",
+                  "height": 10,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2,
+                  "width": 10,
+                  "x": 245,
+                  "y": 321
+                },
+                "id": "edit-handle-0",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "#ffffff",
+                  "height": 10,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2,
+                  "width": 10,
+                  "x": 429,
+                  "y": 321
+                },
+                "id": "edit-handle-1",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "#ffffff",
+                  "height": 10,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2,
+                  "width": 10,
+                  "x": 245,
+                  "y": 393
+                },
+                "id": "edit-handle-2",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "#ffffff",
+                  "height": 10,
+                  "stroke": "#007fb5",
+                  "stroke-width": 2,
+                  "width": 10,
+                  "x": 429,
+                  "y": 393
+                },
+                "id": "edit-handle-3",
+                "kind": "rect"
+              }
+            ],
+            "format": "vector",
+            "viewBox": {
+              "height": 412,
+              "width": 444,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "workflow",
+          "kind": "diagram",
+          "preferredRect": {
+            "height": 412,
+            "width": 444,
+            "x": 772,
+            "y": 95.99999999999999
+          },
+          "slotIds": [
+            "workflow-content"
+          ]
+        }
+      ],
+      "contentSlots": [
+        {
+          "id": "brand-content",
+          "instruction": "Konpeki",
+          "label": "brand",
+          "required": true,
+          "role": "body"
+        },
+        {
+          "id": "brand-mark-content",
+          "instruction": "Konpeki blue brush mark",
+          "label": "brand-mark",
+          "required": true,
+          "role": "body"
+        },
+        {
+          "id": "promise-content",
+          "instruction": "A shared canvas.",
+          "label": "promise",
+          "required": true,
+          "role": "body"
+        },
+        {
+          "id": "audience-content",
+          "instruction": "For you and your agents.",
+          "label": "audience",
+          "required": true,
+          "role": "body"
+        },
+        {
+          "id": "workflow-content",
+          "instruction": "Intent connects to Build, then Refine; selection handles on Refine express editable output.",
+          "label": "workflow",
+          "required": true,
+          "role": "body"
+        }
+      ],
+      "groups": [],
+      "id": "github-cover",
+      "innerPadding": {
+        "bottom": 64,
+        "left": 64,
+        "right": 64,
+        "top": 64
+      },
+      "intendedViewingSize": "social",
+      "name": "GitHub repository cover",
+      "pageNumber": {
+        "color": "muted",
+        "style": "none"
+      },
+      "paintOrder": [
+        "brand",
+        "brand-mark",
+        "promise",
+        "audience",
+        "workflow"
+      ],
+      "question": "What is Konpeki?",
+      "readingOrder": [
+        {
+          "id": "brand",
+          "kind": "component"
+        },
+        {
+          "id": "brand-mark",
+          "kind": "component"
+        },
+        {
+          "id": "promise",
+          "kind": "component"
+        },
+        {
+          "id": "audience",
+          "kind": "component"
+        },
+        {
+          "id": "workflow",
+          "kind": "component"
+        }
+      ],
+      "relationships": []
+    }
+  ],
+  "theme": {
+    "id": "plex",
+    "mode": "paper"
+  },
+  "title": "Konpeki GitHub cover"
+}
