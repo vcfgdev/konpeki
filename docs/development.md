@@ -170,6 +170,10 @@ disposable file session. It checks pending requests, agent refresh, failure
 recovery and reduced motion, and captures the affected states. Add an output
 directory and `--record` to also record the animation.
 
+`node scripts/check-notes.mjs` checks page/vector note scopes, draft isolation,
+reload persistence, CLI claim/finish, clarification and cancellation in a disposable
+file-backed browser session. It accepts a screenshot directory as its first argument.
+
 These checks exercise all five component kinds, empty slides, JSON round trips,
 vector editing/history and fitted line dragging. They capture editor and
 presentation states at two sizes; inspect the images because assertions alone

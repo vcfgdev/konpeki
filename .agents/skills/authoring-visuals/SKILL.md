@@ -75,7 +75,18 @@ canvas request, run `npm exec --no -- konpeki wait <composition.json>` alongside
 **Build it** submits a request; it does not launch an agent. On receiving it,
 reread the named file and compare its revision with the request. If it changed,
 reconcile against the latest document instead of applying a stale rewrite.
-Respect the selected component/page scope and preserve unrelated edits.
+Apply every attached note to its named page, component or vector-element ID;
+without notes, respect the selected scope. Preserve unrelated edits and stable
+IDs. A request is already marked working when `wait` returns; it is not deleted.
+Validate, render, inspect and repair the result, then run
+`npm exec --no -- konpeki finish <composition.json> <request-id> --message "Updated and checked"`.
+File changes alone do not resolve notes. If blocked, finish with
+`--status needs-clarification --message "..."` or `--status failed --message "..."`;
+unresolved notes remain for retry. Never mark a partially handled batch done.
+Use `konpeki request <composition.json>` to recover an interrupted request and
+verify it is still active before further writes. Cancellation does not stop your
+process: stop work if the request is no longer active. Do not edit the feedback
+sidecar directly. Return to `wait` only when the person requested a continuing loop.
 
 See [canvas workflow](../../../docs/workflow.md) for the full handoff contract.
 Never bypass revision checks or mutate hidden browser storage to replace the
