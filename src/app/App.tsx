@@ -79,7 +79,6 @@ export function App() {
   const [rightView, setRightView] = useState<RightPanelView>("settings");
   const [vectorEditRequest, setVectorEditRequest] = useState(0);
   const [presenting, setPresenting] = useState(false);
-  const [buildBusy, setBuildBusy] = useState(false);
   const [exportBusy, setExportBusy] = useState(false);
   const [vectorSelection, setVectorSelection] = useState<{
     componentId: string;
@@ -104,7 +103,6 @@ export function App() {
         ) ? current.present.activeSlideId : document.slides[0].id,
         selected: undefined,
       }));
-      showNotice("Agent changes loaded. Undo restores the previous composition.");
     },
     onNotice: showNotice,
     onError: setError,
@@ -156,7 +154,7 @@ export function App() {
   }, [toastClosing]);
   useEffect(() => {
     function keydown(event: KeyboardEvent) {
-      if (presenting) return;
+      if (presenting || fileSession.building) return;
       const modifier = event.metaKey || event.ctrlKey;
       const target = event.target;
       const editable =
@@ -212,7 +210,7 @@ export function App() {
     }
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [draft, presenting, selected, vectorSelection]);
+  }, [draft, presenting, selected, vectorSelection, fileSession.building]);
   function showNotice(message: string) {
     setToastClosing(false);
     setNotice({ message: message.replace(/\.$/, "") });
@@ -417,17 +415,13 @@ export function App() {
     showNotice("Component deleted.");
   }
   async function requestBuild() {
-    setBuildBusy(true);
     try {
       const instruction = selected
         ? "Review the selected component in context and build it from the current saved composition."
         : "Review the current slides and build them from the current saved composition.";
-      if (!await fileSession.build(instruction, slide.id, selected)) return;
-      showNotice("Build request sent. The agent will reread this saved revision.");
+      await fileSession.build(instruction, slide.id, selected);
     } catch (requestError) {
       showNotice(requestError instanceof Error ? requestError.message : "Could not send the build request.");
-    } finally {
-      setBuildBusy(false);
     }
   }
   async function openComposition(file: File) {
@@ -519,7 +513,7 @@ export function App() {
         </div>
       )}
       <div
-        className={`workspace ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
+        className={`workspace ${fileSession.building ? "is-building" : ""} ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
         aria-hidden={presenting || undefined}
         inert={presenting || undefined}
         onDragOver={(event) => {
@@ -528,6 +522,10 @@ export function App() {
           event.dataTransfer.dropEffect = "copy";
         }}
         onDrop={(event) => {
+          if (fileSession.building) {
+            event.preventDefault();
+            return;
+          }
           const file = event.dataTransfer.files[0];
           if (!file) return;
           event.preventDefault();
@@ -550,11 +548,12 @@ export function App() {
           exporting={exportBusy}
           onPresent={present}
           fileStatus={loaded.fileSession ? fileSession.status : undefined}
-          building={buildBusy}
+          building={fileSession.building}
           onBuild={loaded.fileSession ? () => { void requestBuild(); } : undefined}
           onSelectTool={() => selectComponent()}
           onComponentTool={useComponentTool}
         />
+        <div className="editor-content" inert={fileSession.building} aria-busy={fileSession.building}>
         <LeftPanel
           draft={draft}
           activeSlideId={slide.id}
@@ -649,6 +648,16 @@ export function App() {
           }
           onEditEnd={finishEdit}
         />
+        </div>
+        {fileSession.building && (
+          <div className="stage build-loading" role="status" aria-live="polite">
+            <div className="build-loading-card">
+              <div className="build-loading-track" aria-hidden="true" />
+              <strong>Waiting for agent</strong>
+              <span>Your canvas will refresh when changes arrive.</span>
+            </div>
+          </div>
+        )}
       </div>
       {presenting && (
         <Presentation

@@ -165,6 +165,11 @@ node scripts/check-canvas.mjs http://localhost:4318 .amp/in/artifacts
 node scripts/check-pages.mjs http://localhost:4318 .amp/in/artifacts/pages
 ```
 
+For the Build it lifecycle, `node scripts/check-build.mjs` starts its own
+disposable file session. It checks pending requests, agent refresh, failure
+recovery and reduced motion, and captures the affected states. Add an output
+directory and `--record` to also record the animation.
+
 These checks exercise all five component kinds, empty slides, JSON round trips,
 vector editing/history and fitted line dragging. They capture editor and
 presentation states at two sizes; inspect the images because assertions alone

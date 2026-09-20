@@ -146,17 +146,65 @@
 }
 
 .action-island button.primary {
-  background: #202020;
-  color: white;
+  background: white;
+  color: var(--ui-text);
 }
 
 .action-island button.primary:hover:not(:disabled) {
-  background: #383838;
+  background: var(--ui-hover);
 }
 
 .action-island button.primary:disabled {
   background: var(--ui-hover);
   color: var(--ui-muted);
+}
+
+.action-island .build-button {
+  position: relative;
+  overflow: hidden;
+  justify-content: center;
+  flex: 1;
+  white-space: nowrap;
+}
+
+.action-island button.build-button.building {
+  background: linear-gradient(110deg, #155e75, #2449aa, #7535a5, #a82d62, #155e75);
+  background-size: 300% 100%;
+  color: white;
+  opacity: 1;
+  cursor: wait;
+  animation: build-colors 4s linear infinite;
+}
+
+.build-button.building::after,
+.build-loading-track::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, #ffffff50, transparent);
+  transform: translateX(-100%);
+  animation: build-sweep 1.8s ease-in-out infinite;
+  content: "";
+}
+
+.build-button.building::after {
+  top: auto;
+  height: 3px;
+}
+
+@keyframes build-colors {
+  to { background-position: 150% 0; }
+}
+
+@keyframes build-sweep {
+  to { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action-island button.build-button.building,
+  .build-button.building::after,
+  .build-loading-track::after {
+    animation: none;
+  }
 }
 
 .action-island button svg {

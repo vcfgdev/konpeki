@@ -100,6 +100,7 @@ export function WorkspaceChrome({
             aria-describedby={titleError ? "title-error" : undefined}
             name="composition-title"
             autoComplete="off"
+            disabled={building}
             value={title}
             onChange={(event) => onTitle(event.target.value, "title")}
             onBlur={onEditEnd}
@@ -140,7 +141,7 @@ export function WorkspaceChrome({
           className="icon-only"
           aria-label="Export PNG"
           title="Export active page as PNG"
-          disabled={exporting}
+          disabled={exporting || building}
           onClick={onExportPNG}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -148,7 +149,7 @@ export function WorkspaceChrome({
             <path d="m7 14 3.5-4 3 3 2-2 2.5 3M12 16v5m-3-3 3 3 3-3" />
           </svg>
         </button>
-        <button type="button" onClick={onPresent}>
+        <button type="button" onClick={onPresent} disabled={building}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="4" width="18" height="12" rx="2" />
             <path d="M12 16v5m-4 0h8M10 7l5 3-5 3Z" />
@@ -158,19 +159,20 @@ export function WorkspaceChrome({
         {onBuild && (
           <button
             type="button"
-            className="primary"
+            className={`primary build-button ${building ? "building" : ""}`}
             disabled={fileStatus !== "saved" || building}
+            aria-busy={building}
             onClick={onBuild}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="m5 19 10-10 3 3L8 22Zm10-10 2-2 3 3-2 2M5 3v6M2 6h6m10-5v4m-2-2h4" />
             </svg>
-            {building ? "Building…" : "Build it"}
+            <span>{building ? "Building…" : "Build it"}</span>
           </button>
         )}
       </div>
 
-      <nav className="component-dock" aria-label="Canvas tools">
+      <nav className="component-dock" aria-label="Canvas tools" inert={building}>
         <button
           type="button"
           className={!selectedKind ? "active" : ""}

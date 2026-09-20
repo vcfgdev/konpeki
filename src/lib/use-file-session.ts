@@ -26,6 +26,9 @@ export function useFileSession(
 ) {
   const token = fileSessionToken();
   const [status, setStatus] = useState<FileStatus>(enabled ? "loading" : "saved");
+  const [building, setBuilding] = useState(false);
+  const buildPending = useRef(false);
+  const submittingBuild = useRef(false);
   const callbacksRef = useRef(callbacks);
   callbacksRef.current = callbacks;
   const draftRef = useRef(draft);
@@ -72,10 +75,12 @@ export function useFileSession(
     if (!enabled || !token) return;
     let cancelled = false;
     const timer = window.setInterval(() => {
-      if (!state.current.ready || state.current.drain) return;
+      if (!state.current.ready || state.current.drain || submittingBuild.current) return;
+      const revision = state.current.revision;
       void loadFileSession(token).then((remote) => {
-        if (cancelled || remote.revision === state.current.revision) return;
+        if (cancelled || state.current.drain || submittingBuild.current || revision !== state.current.revision || remote.revision === revision) return;
         if (canonicalJSON(draftRef.current) !== state.current.savedJSON) {
+          finishBuild();
           setStatus("conflict");
           callbacksRef.current.onNotice(
             "The file changed elsewhere. Neither version was overwritten.",
@@ -89,8 +94,14 @@ export function useFileSession(
         };
         setStatus("saved");
         callbacksRef.current.onExternalChange(remote.document);
+        finishBuild();
       }).catch(() => {
-        if (!cancelled) setStatus("error");
+        if (cancelled || submittingBuild.current || revision !== state.current.revision) return;
+        setStatus("error");
+        if (buildPending.current) {
+          finishBuild();
+          callbacksRef.current.onNotice("Could not load the agent result. Check the local file service.");
+        }
       });
     }, 1000);
     return () => {
@@ -98,6 +109,11 @@ export function useFileSession(
       window.clearInterval(timer);
     };
   }, [enabled, token]);
+
+  function finishBuild() {
+    buildPending.current = false;
+    setBuilding(false);
+  }
 
   function save(next: Draft): Promise<string | undefined> {
     if (!token || !state.current.ready) return Promise.resolve(undefined);
@@ -146,17 +162,30 @@ export function useFileSession(
     slideId: string,
     componentId?: string,
   ) {
-    if (!token) return false;
-    const revision = await save(draftRef.current);
-    if (!revision) return false;
-    await sendBuildRequest(token, {
-      revision,
-      instruction,
-      slideId,
-      ...(componentId ? { componentId } : {}),
-    });
-    return true;
+    if (!token || buildPending.current) return false;
+    buildPending.current = true;
+    submittingBuild.current = true;
+    setBuilding(true);
+    try {
+      const revision = await save(draftRef.current);
+      if (!revision) {
+        finishBuild();
+        return false;
+      }
+      await sendBuildRequest(token, {
+        revision,
+        instruction,
+        slideId,
+        ...(componentId ? { componentId } : {}),
+      });
+      return true;
+    } catch (error) {
+      finishBuild();
+      throw error;
+    } finally {
+      submittingBuild.current = false;
+    }
   }
 
-  return { status, build };
+  return { status, build, building };
 }

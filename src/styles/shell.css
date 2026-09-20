@@ -208,6 +208,45 @@
 .workspace.right-collapsed .stage {
   padding-right: 96px;
 }
+.editor-content {
+  display: contents;
+}
+.is-building .canvas {
+  opacity: 0.25;
+  filter: blur(2px);
+}
+.build-loading {
+  z-index: 20;
+  pointer-events: none;
+}
+.build-loading-card {
+  display: grid;
+  gap: 10px;
+  width: min(320px, 100%);
+  padding: 24px;
+  border: 1px solid var(--ui-border);
+  border-radius: 14px;
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+  text-align: center;
+}
+.build-loading-card strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+.build-loading-card span {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ui-muted);
+}
+.build-loading-track {
+  position: relative;
+  overflow: hidden;
+  height: 3px;
+  margin-bottom: 8px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #155e75, #2449aa, #7535a5, #a82d62);
+}
 .slide-wrap {
   width: 100%;
   max-width: min(1200px, calc((100vh - 270px) * var(--page-ratio)));
