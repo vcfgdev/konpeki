@@ -1,6 +1,6 @@
 {
   "name": "konpeki",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A shared editable canvas for agent-made visuals",
   "license": "Apache-2.0",
   "repository": {

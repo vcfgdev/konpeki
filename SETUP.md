@@ -25,7 +25,7 @@ agent. An in-app browser is convenient but not required.
   reuse the same CLI version. Do not edit files inside `node_modules`.
 
 ```sh
-npm install --save-dev konpeki@0.1.0
+npm install --save-dev konpeki@0.1.1
 ```
 
 In a new empty directory, run `npm init -y` first. Run subsequent commands from

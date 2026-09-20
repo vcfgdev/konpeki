@@ -42,7 +42,7 @@ For a manual start, install [Konpeki from npm](https://www.npmjs.com/package/kon
 in your workspace (run `npm init -y` first in a new, empty directory):
 
 ```sh
-npm install --save-dev konpeki@0.1.0
+npm install --save-dev konpeki@0.1.1
 cp node_modules/konpeki/slides/introducing-konpeki/composition.json introduction.json
 npm exec --no -- konpeki preview introduction.json
 ```
