@@ -188,15 +188,16 @@ apply the [text review](design/review/text.md), including redundant hierarchy.
 Readable, in-bounds text can still repeat the headline unnecessarily. Record
 the page-level evidence and repair findings without waiting for user feedback.
 Repair consequential issues and inspect fresh renders
-before delivery. Use [README](README.md#verification) for relevant code checks
+before delivery. Use [development checks](docs/development.md#verification) for relevant code checks
 and [focused visual review](design/visual-review.md) for applicable review guidance.
 Specimen geometry assertions and aesthetic scores are not design requirements.
 Do not add an aesthetic linter.
 
 For each new example, save `slides/<name>/PROMPT.md` before authoring: the exact
 initial prompt, supplied source material or links, and explicit visual preferences
-(including none). Append follow-up prompts verbatim and record the agent/model,
-generation date, material assumptions and manual edits separately. Keep input
+(including none). Preserve creative follow-ups accurately and record material
+assumptions and manual edits separately. Exclude private coordination transcripts,
+agent/model identifiers, generation timestamps and environment metadata. Keep input
 facts and datasets in `SOURCE.md` when substantial. These records explain why
 the example looks and reads as it does, as well as supporting reproduction.
 Mark adaptation prompts and reconstructed history honestly; do not invent an

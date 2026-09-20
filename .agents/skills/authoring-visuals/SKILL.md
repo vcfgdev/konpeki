@@ -1,74 +1,80 @@
 ---
 name: authoring-visuals
-description: Creates and revises editable Konpeki visuals from source material. Use for social graphics, OG images, article headers, single-page explanations, presentations and visual briefings in this project.
+description: Creates and revises editable Konpeki visuals from source material. Use for social graphics, article headers, visual explanations and presentations, including revisions to an existing composition.
 ---
 
 # Authoring visuals with Konpeki
 
-Turn the user's material into finished visual pages, with editable source and inspected
-renders. This is a project-local skill; it requires the surrounding Konpeki kit.
-Paths below are relative to this file.
+Deliver an editable composition and visually reviewed output. This skill needs
+the surrounding Konpeki runtime and resources; if they are unavailable, follow
+[SETUP.md](../../../SETUP.md) first. Paths here are relative to this file;
+run commands below from the Konpeki checkout.
 
-1. Read [project guidance](../../../AGENTS.md),
-   [authoring policy](../../../AUTHORING.md) and the relevant contracts and
-   checks in [README](../../../README.md). Authoring policy owns design defaults;
-   the user's preferences override them, not factual fidelity or readability.
-2. Establish the audience, takeaway, sources and output. Resolve the
-   [authoring mode](../../../AUTHORING.md#authoring-mode): default or dynamic;
-   use default when omitted. Apply that mode's visual rules.
-   Choose explanation structure and depth from the brief, not extra parameters.
-   When the user is unsure, offer one candidate per mode on a representative page using the
-   [comparison workflow](../../../AUTHORING.md#explore-an-uncertain-direction).
-   Do not generate alternatives or require a selection round unless requested
-   or accepted.
-   Ask only when missing facts or conflicting instructions prevent faithful work.
-   Choose each page's dimensions for its destination; do not assume 16:9 or a
-   multi-page presentation. A single page is complete. Sketching is optional;
-   deliver finished output without an intermediate approval step unless requested.
-   Adapt to another aspect ratio by recomposing, not stretching or silently cropping.
-3. For a new visual document, create `slides/<name>/PROMPT.md` in the project before authoring.
-   Save the exact initial prompt and follow-ups, inputs, explicit preferences,
-   model/date, requested/resolved mode and separately labeled assumptions or
-   manual changes. Store larger fact packets in `SOURCE.md`. Do not record secrets
-   or mislabel an adaptation prompt as historical input.
-4. Author `slides/<name>/composition.json` using the current
-   [composition contract](../../../composition/README.md). Open it in the Konpeki
-   canvas to verify placement and keep it as the round-trip editable source.
-   Reuse [design resources](../../../design/README.md) and retained reference
-   examples when useful. Prefer the five semantic components. When they cannot
-   express a visual, attach editable vector elements to the owning component;
-   preserve component and vector element IDs plus human-edited geometry during
-   revisions. React may generate SVG through a trusted build step, but convert
-   supported primitives to the vector tree. Imported JSX must not execute in the
-   canvas or become a parallel deck source.
-5. Run the checks appropriate to the change. Render every affected page and
-   requested theme at presentation and smaller review sizes; wait for fonts,
-   inspect against the resolved brief/mode and repair consequential issues.
-   A fixture check alone is not visual review. Honor any requested outline/approval
-   checkpoint.
-6. Deliver the updated composition JSON, reviewed images, source attribution and
-   verification limits. If a custom renderer or SVG generator is used, deliver
-   that source too while keeping its editable vector result in the composition.
-   Verify requested exports separately; do not infer editable PPTX or PDF font
-   fidelity from browser images. Keep reviewed example images and their prompt
-   records with the deck. Do not publish without permission.
+## 1. Interpret the brief
 
-## Human revision loop
+Read [project rules](../../../AGENTS.md) and
+[authoring policy](../../../AUTHORING.md). Use the user's existing prompt as the
+brief; do not ask them to repeat it in the canvas. Establish the source facts,
+audience, takeaway and destination. Ask only when missing facts or conflicting
+requirements prevent a faithful result.
 
-When the user wants to edit before the next agent revision, use the file-backed
-canvas rather than browser-local storage:
+Use `default` authoring mode unless requested otherwise. Explicit visual
+preferences override taste defaults, not factual fidelity or readability. Use
+the policy's [comparison workflow](../../../AUTHORING.md#explore-an-uncertain-direction)
+only when requested or accepted. A single page is a complete creation; choose
+dimensions for its destination rather than assuming a slide deck.
 
-1. Start `konpeki preview <composition.json>` and give the user the exact local
-   or environment-approved portal URL printed by the command. In an unpublished
-   repository checkout, use `pnpm konpeki preview <composition.json>` as the
-   development shim.
-2. In a separate wait, run `konpeki wait <composition.json>` (or the equivalent
-   repository development shim).
-3. After **Build it** returns a request, reread the composition path. Verify its
-   bytes match the request revision before changing it.
-4. Treat all current text, geometry, ordering and vectors as deliberate human
-   state. If a component is selected, change only that component unless its slide
-   must change for correctness; otherwise review the current slides as a deck.
-5. Validate, render and inspect the revision through the active local service.
-   External valid writes appear in the canvas; never use browser automation to
-   mutate hidden localStorage or bypass conflict detection.
+## 2. Author or revise the composition
+
+Read the [composition contract](../../../composition/README.md). For a new visual,
+create `slides/<name>/composition.json` unless the user supplies another path.
+Save the creative brief in `PROMPT.md` and substantial facts, citations and asset
+provenance in `SOURCE.md`. Separate assumptions from supplied facts. Preserve
+creative requests accurately, but omit private coordination and environment or
+agent metadata; label excerpts and redactions rather than calling them verbatim.
+
+For revisions, reread the current file first. Preserve unrelated content,
+component/vector IDs and human-edited geometry. Honor explicit chart or diagram
+choices. Recompose for a new aspect ratio instead of stretching or cropping.
+
+Prefer native text and semantic components. When standard drafts cannot express
+the visual, use editable vectors inside their owning component. Reuse
+[design resources](../../../design/README.md) and reference examples as needed.
+Trusted React may generate SVG for conversion, but imported JSX must not execute
+in the canvas or become a second document source.
+
+## 3. Validate, render and repair
+
+```sh
+pnpm konpeki validate slides/<name>/composition.json
+pnpm konpeki preview slides/<name>/composition.json
+```
+
+Reuse an active file-backed preview for the same document when available. Open
+the exact session URL, or its host-approved remote preview equivalent. Inspect
+every affected page and requested theme at presentation and smaller review sizes
+after fonts load. Check factual fidelity, text bounds, contrast, reading order
+and relationships. Repair consequential issues and inspect fresh renders.
+
+Follow [verification guidance](../../../docs/development.md#verification) for
+code changes. Validation alone is not visual review. If a required check cannot
+run, state the limitation; do not claim it passed. Honor requested checkpoints;
+otherwise continue to finished output.
+
+## 4. Deliver and continue revisions
+
+Return the composition path, usable preview, reviewed images or requested
+exports, source attribution and verification limitations. Verify exports
+separately; browser images do not prove editable PDF/PPTX or font fidelity.
+Include any generator source while keeping composition JSON authoritative.
+
+Keep revision requests in agent chat by default. When explicitly waiting for a
+canvas request, run `pnpm konpeki wait <composition.json>` alongside the preview.
+**Build it** submits a request; it does not launch an agent. On receiving it,
+reread the named file and compare its revision with the request. If it changed,
+reconcile against the latest document instead of applying a stale rewrite.
+Respect the selected component/page scope and preserve unrelated edits.
+
+See [canvas workflow](../../../docs/workflow.md) for the full handoff contract.
+Never bypass revision checks or mutate hidden browser storage to replace the
+document. Do not publish without permission.
