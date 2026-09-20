@@ -1,5 +1,11 @@
 dist/
+runtime/
 node_modules/
 .amp/in/
 .amp/portals/
 .DS_Store
+*.tgz
+*.log
+.env
+.env.*
+!.env.example
