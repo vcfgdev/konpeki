@@ -141,7 +141,7 @@ export function App() {
   }, [draft, blocked, loaded.example, loaded.fileSession]);
   useEffect(() => {
     if (!notice) return;
-    const timer = window.setTimeout(() => setToastClosing(true), 5000);
+    const timer = window.setTimeout(() => setToastClosing(true), 3000);
     return () => window.clearTimeout(timer);
   }, [notice]);
   useEffect(() => {
