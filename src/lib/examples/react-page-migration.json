@@ -1,0 +1,1295 @@
+{
+  "schema": "konpeki-composition/v14",
+  "title": "Parcel Relay — migrated React deck",
+  "theme": {
+    "id": "plex",
+    "mode": "paper"
+  },
+  "slides": [
+    {
+      "id": "slide-1",
+      "name": "Migrated page 1",
+      "canvas": {
+        "width": 1920,
+        "height": 1080
+      },
+      "innerPadding": {
+        "top": 72,
+        "right": 112,
+        "bottom": 0,
+        "left": 112
+      },
+      "pageNumber": {
+        "style": "none",
+        "color": "muted"
+      },
+      "audience": "Reviewers of the migrated slide",
+      "question": "Does the former React page survive in the shared canvas?",
+      "intendedViewingSize": "presentation",
+      "contentSlots": [
+        {
+          "id": "migrated-page-1-content",
+          "label": "Migrated page",
+          "required": true,
+          "instruction": "Preserve the trusted React page as editable vector elements.",
+          "role": "entity"
+        }
+      ],
+      "components": [
+        {
+          "id": "migrated-page-1",
+          "kind": "diagram",
+          "preferredRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          },
+          "slotIds": [
+            "migrated-page-1-content"
+          ],
+          "intent": "A former React page converted to editable vector elements.",
+          "appearance": {
+            "type": "architecture",
+            "border": "none"
+          },
+          "customVisual": {
+            "format": "vector",
+            "elements": [
+              {
+                "id": "vector-root",
+                "kind": "g",
+                "attributes": {
+                  "width": "1920",
+                  "height": "1080",
+                  "font-family": "IBM Plex Sans, sans-serif"
+                }
+              },
+              {
+                "id": "vector-2",
+                "kind": "rect",
+                "parentId": "vector-root",
+                "attributes": {
+                  "width": "1920",
+                  "height": "1080",
+                  "fill": "#FFFFFF"
+                }
+              },
+              {
+                "id": "vector-3",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "150",
+                  "font-size": "64",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Parcel Relay accepts an event after commit"
+              },
+              {
+                "id": "vector-4",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "224",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "A fictional webhook service • the database holds both events and the job queue"
+              },
+              {
+                "id": "vector-5",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "160",
+                  "y": "365",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Producer"
+              },
+              {
+                "id": "vector-6",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "548",
+                  "y": "365",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "API"
+              },
+              {
+                "id": "vector-7",
+                "kind": "path",
+                "parentId": "vector-root",
+                "attributes": {
+                  "d": "M250 390 V635 M580 390 V635",
+                  "fill": "none",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-8",
+                "kind": "rect",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "965",
+                  "y": "294",
+                  "width": "835",
+                  "height": "280",
+                  "rx": "8",
+                  "fill": "#FFFFFF",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-9",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1005",
+                  "y": "355",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Database"
+              },
+              {
+                "id": "vector-10",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1005",
+                  "y": "423",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Event + delivery job"
+              },
+              {
+                "id": "vector-11",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1005",
+                  "y": "479",
+                  "font-size": "34",
+                  "font-weight": "500",
+                  "fill": "#006EAC"
+                },
+                "text": "Saved in one transaction"
+              },
+              {
+                "id": "vector-12",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1005",
+                  "y": "531",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "Commit is the acceptance boundary."
+              },
+              {
+                "id": "vector-13",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-14",
+                "kind": "path",
+                "parentId": "vector-13",
+                "attributes": {
+                  "d": "M250 415 H580"
+                }
+              },
+              {
+                "id": "vector-15",
+                "kind": "path",
+                "parentId": "vector-13",
+                "attributes": {
+                  "d": "M564 405 L580 415 L564 425"
+                }
+              },
+              {
+                "id": "vector-16",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "280",
+                  "y": "397",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Submit event ID"
+              },
+              {
+                "id": "vector-17",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-18",
+                "kind": "path",
+                "parentId": "vector-17",
+                "attributes": {
+                  "d": "M580 415 H965"
+                }
+              },
+              {
+                "id": "vector-19",
+                "kind": "path",
+                "parentId": "vector-17",
+                "attributes": {
+                  "d": "M949 405 L965 415 L949 425"
+                }
+              },
+              {
+                "id": "vector-20",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "690",
+                  "y": "391",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Save both"
+              },
+              {
+                "id": "vector-21",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-22",
+                "kind": "path",
+                "parentId": "vector-21",
+                "attributes": {
+                  "d": "M965 515 H580"
+                }
+              },
+              {
+                "id": "vector-23",
+                "kind": "path",
+                "parentId": "vector-21",
+                "attributes": {
+                  "d": "M596 505 L580 515 L596 525"
+                }
+              },
+              {
+                "id": "vector-24",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "680",
+                  "y": "563",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Commit succeeds"
+              },
+              {
+                "id": "vector-25",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-26",
+                "kind": "path",
+                "parentId": "vector-25",
+                "attributes": {
+                  "d": "M580 610 H250"
+                }
+              },
+              {
+                "id": "vector-27",
+                "kind": "path",
+                "parentId": "vector-25",
+                "attributes": {
+                  "d": "M266 600 L250 610 L266 620"
+                }
+              },
+              {
+                "id": "vector-28",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "236",
+                  "y": "660",
+                  "font-size": "34",
+                  "font-weight": "500",
+                  "fill": "#006EAC"
+                },
+                "text": "Return Accepted"
+              },
+              {
+                "id": "vector-29",
+                "kind": "path",
+                "parentId": "vector-root",
+                "attributes": {
+                  "d": "M1120 704 V574 M1110 590 L1120 574 L1130 590",
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-30",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1160",
+                  "y": "644",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Claim leased job"
+              },
+              {
+                "id": "vector-31",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "797",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "If commit fails"
+              },
+              {
+                "id": "vector-32",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "855",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "API returns an error."
+              },
+              {
+                "id": "vector-33",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "907",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "The event has not been accepted."
+              },
+              {
+                "id": "vector-34",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1020",
+                  "y": "738",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Worker"
+              },
+              {
+                "id": "vector-35",
+                "kind": "path",
+                "parentId": "vector-root",
+                "attributes": {
+                  "d": "M1120 756 V844",
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-36",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-37",
+                "kind": "path",
+                "parentId": "vector-36",
+                "attributes": {
+                  "d": "M1120 844 H1550"
+                }
+              },
+              {
+                "id": "vector-38",
+                "kind": "path",
+                "parentId": "vector-36",
+                "attributes": {
+                  "d": "M1534 834 L1550 844 L1534 854"
+                }
+              },
+              {
+                "id": "vector-39",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1160",
+                  "y": "891",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "POST + event ID"
+              },
+              {
+                "id": "vector-40",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1555",
+                  "y": "817",
+                  "font-size": "38",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Customer"
+              },
+              {
+                "id": "vector-41",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1555",
+                  "y": "869",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "endpoint"
+              },
+              {
+                "id": "vector-42",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1760",
+                  "y": "1018",
+                  "font-size": "26",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "1 / 3"
+              }
+            ],
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "description": "Migrated page 1 from Parcel Relay",
+            "fit": "stretch"
+          }
+        }
+      ],
+      "groups": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "migrated-page-1"
+        }
+      ],
+      "paintOrder": [
+        "migrated-page-1"
+      ],
+      "relationships": []
+    },
+    {
+      "id": "slide-2",
+      "name": "Migrated page 2",
+      "canvas": {
+        "width": 1920,
+        "height": 1080
+      },
+      "innerPadding": {
+        "top": 72,
+        "right": 112,
+        "bottom": 0,
+        "left": 112
+      },
+      "pageNumber": {
+        "style": "none",
+        "color": "muted"
+      },
+      "audience": "Reviewers of the migrated slide",
+      "question": "Does the former React page survive in the shared canvas?",
+      "intendedViewingSize": "presentation",
+      "contentSlots": [
+        {
+          "id": "migrated-page-2-content",
+          "label": "Migrated page",
+          "required": true,
+          "instruction": "Preserve the trusted React page as editable vector elements.",
+          "role": "entity"
+        }
+      ],
+      "components": [
+        {
+          "id": "migrated-page-2",
+          "kind": "diagram",
+          "preferredRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          },
+          "slotIds": [
+            "migrated-page-2-content"
+          ],
+          "intent": "A former React page converted to editable vector elements.",
+          "appearance": {
+            "type": "architecture",
+            "border": "none"
+          },
+          "customVisual": {
+            "format": "vector",
+            "elements": [
+              {
+                "id": "vector-root",
+                "kind": "g",
+                "attributes": {
+                  "width": "1920",
+                  "height": "1080",
+                  "font-family": "IBM Plex Sans, sans-serif"
+                }
+              },
+              {
+                "id": "vector-2",
+                "kind": "rect",
+                "parentId": "vector-root",
+                "attributes": {
+                  "width": "1920",
+                  "height": "1080",
+                  "fill": "#FFFFFF"
+                }
+              },
+              {
+                "id": "vector-3",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "150",
+                  "font-size": "64",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "The response decides the job’s next state"
+              },
+              {
+                "id": "vector-4",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "228",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "After each POST, the worker records the outcome in the database."
+              },
+              {
+                "id": "vector-5",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "346",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "OBSERVED RESULT"
+              },
+              {
+                "id": "vector-6",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "660",
+                  "y": "346",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "WHAT RELAY DOES"
+              },
+              {
+                "id": "vector-7",
+                "kind": "line",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x1": "112",
+                  "x2": "1808",
+                  "y1": "380",
+                  "y2": "380",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-8",
+                "kind": "line",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x1": "112",
+                  "x2": "1808",
+                  "y1": "490",
+                  "y2": "490",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-9",
+                "kind": "line",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x1": "112",
+                  "x2": "1808",
+                  "y1": "660",
+                  "y2": "660",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-10",
+                "kind": "line",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x1": "112",
+                  "x2": "1808",
+                  "y1": "780",
+                  "y2": "780",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-11",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "447",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "2xx"
+              },
+              {
+                "id": "vector-12",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "660",
+                  "y": "447",
+                  "font-size": "38",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Marks the job delivered."
+              },
+              {
+                "id": "vector-13",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "555",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Timeout or 5xx"
+              },
+              {
+                "id": "vector-14",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "660",
+                  "y": "552",
+                  "font-size": "38",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Schedules another attempt; three attempts total."
+              },
+              {
+                "id": "vector-15",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "660",
+                  "y": "609",
+                  "font-size": "32",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "Third unsuccessful attempt: failed, for human investigation."
+              },
+              {
+                "id": "vector-16",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "731",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "4xx"
+              },
+              {
+                "id": "vector-17",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "660",
+                  "y": "731",
+                  "font-size": "38",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Terminal in this example."
+              },
+              {
+                "id": "vector-18",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "865",
+                  "font-size": "38",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "A worker crash can also repeat a request"
+              },
+              {
+                "id": "vector-19",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "925",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "After lease expiry, another worker can claim the unfinished job,"
+              },
+              {
+                "id": "vector-20",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "975",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "even if the customer already received the earlier request."
+              },
+              {
+                "id": "vector-21",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1760",
+                  "y": "1018",
+                  "font-size": "26",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "2 / 3"
+              }
+            ],
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "description": "Migrated page 2 from Parcel Relay",
+            "fit": "stretch"
+          }
+        }
+      ],
+      "groups": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "migrated-page-2"
+        }
+      ],
+      "paintOrder": [
+        "migrated-page-2"
+      ],
+      "relationships": []
+    },
+    {
+      "id": "slide-3",
+      "name": "Migrated page 3",
+      "canvas": {
+        "width": 1920,
+        "height": 1080
+      },
+      "innerPadding": {
+        "top": 72,
+        "right": 112,
+        "bottom": 0,
+        "left": 112
+      },
+      "pageNumber": {
+        "style": "none",
+        "color": "muted"
+      },
+      "audience": "Reviewers of the migrated slide",
+      "question": "Does the former React page survive in the shared canvas?",
+      "intendedViewingSize": "presentation",
+      "contentSlots": [
+        {
+          "id": "migrated-page-3-content",
+          "label": "Migrated page",
+          "required": true,
+          "instruction": "Preserve the trusted React page as editable vector elements.",
+          "role": "entity"
+        }
+      ],
+      "components": [
+        {
+          "id": "migrated-page-3",
+          "kind": "diagram",
+          "preferredRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          },
+          "slotIds": [
+            "migrated-page-3-content"
+          ],
+          "intent": "A former React page converted to editable vector elements.",
+          "appearance": {
+            "type": "architecture",
+            "border": "none"
+          },
+          "customVisual": {
+            "format": "vector",
+            "elements": [
+              {
+                "id": "vector-root",
+                "kind": "g",
+                "attributes": {
+                  "width": "1920",
+                  "height": "1080",
+                  "font-family": "IBM Plex Sans, sans-serif"
+                }
+              },
+              {
+                "id": "vector-2",
+                "kind": "rect",
+                "parentId": "vector-root",
+                "attributes": {
+                  "width": "1920",
+                  "height": "1080",
+                  "fill": "#FFFFFF"
+                }
+              },
+              {
+                "id": "vector-3",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "150",
+                  "font-size": "64",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "A timeout can hide a completed update"
+              },
+              {
+                "id": "vector-4",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "224",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "The same event ID connects both requests: evt-204."
+              },
+              {
+                "id": "vector-5",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "260",
+                  "y": "334",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Relay worker"
+              },
+              {
+                "id": "vector-6",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1130",
+                  "y": "334",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Customer endpoint"
+              },
+              {
+                "id": "vector-7",
+                "kind": "line",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x1": "380",
+                  "x2": "380",
+                  "y1": "367",
+                  "y2": "785",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-8",
+                "kind": "line",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x1": "1260",
+                  "x2": "1260",
+                  "y1": "367",
+                  "y2": "785",
+                  "stroke": "#A7B2BC",
+                  "stroke-width": "2"
+                }
+              },
+              {
+                "id": "vector-9",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-10",
+                "kind": "path",
+                "parentId": "vector-9",
+                "attributes": {
+                  "d": "M380 432 H1260"
+                }
+              },
+              {
+                "id": "vector-11",
+                "kind": "path",
+                "parentId": "vector-9",
+                "attributes": {
+                  "d": "M1244 422 L1260 432 L1244 442"
+                }
+              },
+              {
+                "id": "vector-12",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "610",
+                  "y": "406",
+                  "font-size": "32",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "POST evt-204"
+              },
+              {
+                "id": "vector-13",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1310",
+                  "y": "445",
+                  "font-size": "34",
+                  "font-weight": "500",
+                  "fill": "#172633"
+                },
+                "text": "Applies update"
+              },
+              {
+                "id": "vector-14",
+                "kind": "path",
+                "parentId": "vector-root",
+                "attributes": {
+                  "d": "M1260 525 H760",
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3",
+                  "stroke-dasharray": "10 8"
+                }
+              },
+              {
+                "id": "vector-15",
+                "kind": "path",
+                "parentId": "vector-root",
+                "attributes": {
+                  "d": "M746 511 L774 539 M774 511 L746 539",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-16",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "835",
+                  "y": "504",
+                  "font-size": "32",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Response lost"
+              },
+              {
+                "id": "vector-17",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "561",
+                  "font-size": "32",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Times out"
+              },
+              {
+                "id": "vector-18",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "603",
+                  "font-size": "30",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "Outcome unknown"
+              },
+              {
+                "id": "vector-19",
+                "kind": "g",
+                "parentId": "vector-root",
+                "attributes": {
+                  "fill": "none",
+                  "stroke": "#006EAC",
+                  "stroke-width": "3"
+                }
+              },
+              {
+                "id": "vector-20",
+                "kind": "path",
+                "parentId": "vector-19",
+                "attributes": {
+                  "d": "M380 663 H1260"
+                }
+              },
+              {
+                "id": "vector-21",
+                "kind": "path",
+                "parentId": "vector-19",
+                "attributes": {
+                  "d": "M1244 653 L1260 663 L1244 673"
+                }
+              },
+              {
+                "id": "vector-22",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "610",
+                  "y": "637",
+                  "font-size": "32",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Retry POST evt-204"
+              },
+              {
+                "id": "vector-23",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1310",
+                  "y": "672",
+                  "font-size": "34",
+                  "font-weight": "500",
+                  "fill": "#172633"
+                },
+                "text": "Recognizes evt-204"
+              },
+              {
+                "id": "vector-24",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1310",
+                  "y": "720",
+                  "font-size": "34",
+                  "font-weight": "500",
+                  "fill": "#006EAC"
+                },
+                "text": "Skips repeated update"
+              },
+              {
+                "id": "vector-25",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "861",
+                  "font-size": "40",
+                  "font-weight": "600",
+                  "fill": "#172633"
+                },
+                "text": "Customers must handle repeated event IDs."
+              },
+              {
+                "id": "vector-26",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "924",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "The skip above depends on customer code; Relay does not enforce it."
+              },
+              {
+                "id": "vector-27",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "112",
+                  "y": "974",
+                  "font-size": "34",
+                  "font-weight": "400",
+                  "fill": "#172633"
+                },
+                "text": "Relay cannot make customer side effects atomic or guarantee exactly-once delivery."
+              },
+              {
+                "id": "vector-28",
+                "kind": "text",
+                "parentId": "vector-root",
+                "attributes": {
+                  "x": "1760",
+                  "y": "1018",
+                  "font-size": "26",
+                  "font-weight": "400",
+                  "fill": "#4D5D6B"
+                },
+                "text": "3 / 3"
+              }
+            ],
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            },
+            "description": "Migrated page 3 from Parcel Relay",
+            "fit": "stretch"
+          }
+        }
+      ],
+      "groups": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "migrated-page-3"
+        }
+      ],
+      "paintOrder": [
+        "migrated-page-3"
+      ],
+      "relationships": []
+    }
+  ]
+}

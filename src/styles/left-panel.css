@@ -1,0 +1,125 @@
+.slide-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 10px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 transparent;
+  scrollbar-gutter: stable;
+}
+
+.slide-thumbnail-item {
+  position: relative;
+}
+
+.slide-thumbnail {
+  display: grid;
+  width: 100%;
+  gap: 9px;
+  padding: 8px;
+  border-color: transparent;
+  font-size: 12px;
+  text-align: left;
+}
+
+.slide-thumbnail.selected,
+.slide-thumbnail.selected:hover {
+  border-color: #86868b;
+  background: #f4f4f5;
+}
+
+.slide-thumbnail:focus-visible {
+  outline-offset: -3px;
+}
+
+.slide-thumbnail:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.slide-thumbnail > span:last-child {
+  padding-right: 30px;
+}
+
+.remove-slide {
+  position: absolute;
+  right: 8px;
+  bottom: 7px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-color: transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ui-muted);
+}
+
+.remove-slide:hover:not(:disabled) {
+  border-color: transparent;
+  background: #ffe9e9;
+  color: #9d2020;
+}
+
+.add-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 38px;
+  margin-top: 8px;
+  border-style: dashed;
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+
+.add-slide > span {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.slide-thumbnail-canvas {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid #d7d7d7;
+  background: white;
+}
+
+.slide-thumbnail-canvas.night {
+  background: #202429;
+}
+
+.thumbnail-component {
+  position: absolute;
+  display: block;
+  background: #aeb4b8;
+  opacity: 0.8;
+}
+
+.thumbnail-component.kind-text-block.role-title,
+.thumbnail-component.kind-text-block.role-footnote {
+  border-top: 1px solid #8f969b;
+  background: transparent;
+}
+
+.thumbnail-component.kind-chart {
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+.thumbnail-component.kind-image,
+.thumbnail-component.kind-diagram,
+.thumbnail-component.kind-table {
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.thumbnail-page-number {
+  position: absolute;
+  right: 5.8%;
+  bottom: 3%;
+  color: #74797d;
+  font-size: 5px;
+  line-height: 1;
+}

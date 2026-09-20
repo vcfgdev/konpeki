@@ -1,0 +1,72 @@
+.presentation {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  overflow: hidden;
+  background: #111;
+  color: white;
+}
+
+.presentation-stage {
+  padding: 40px 48px 84px;
+}
+
+.presentation-stage .slide-wrap {
+  width: min(calc(100vw - 96px), calc((100vh - 124px) * var(--page-ratio)));
+  max-width: none;
+}
+
+.presentation-stage .canvas {
+  outline-color: #333;
+  box-shadow: 0 16px 60px #0009;
+}
+
+.presentation-controls {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  z-index: 82;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px;
+  border: 1px solid #ffffff24;
+  border-radius: 12px;
+  background: #222e;
+  box-shadow: 0 8px 28px #0008;
+  transform: translateX(-50%);
+}
+
+.presentation-controls button {
+  min-width: 42px;
+  height: 36px;
+  border-color: #ffffff26;
+  background: #333;
+  color: white;
+}
+
+.presentation-controls button:hover:not(:disabled) {
+  border-color: #ffffff55;
+  background: #444;
+}
+
+.presentation-controls button:disabled {
+  color: #777;
+}
+
+.presentation-controls span {
+  min-width: 58px;
+  color: #ddd;
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .presentation-stage {
+    padding-inline: 20px;
+  }
+  .presentation-stage .slide-wrap {
+    width: min(calc(100vw - 40px), calc((100vh - 124px) * var(--page-ratio)));
+  }
+}

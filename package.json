@@ -1,0 +1,45 @@
+{
+  "name": "konpeki",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A shared editable canvas for agent-made visuals",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "konpeki": "bin/konpeki.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 4318",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4318",
+    "check": "tsc --noEmit",
+    "test": "node --test lib/*.test.ts composition/*.test.ts src/lib/*.test.ts bin/*.test.ts",
+    "konpeki": "node bin/konpeki.mjs",
+    "composition:generate": "node composition/generate.ts",
+    "example:migrate-page": "node scripts/migrate-react-page.ts"
+  },
+  "dependencies": {
+    "@fontsource/hanken-grotesk": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "@fontsource/ibm-plex-serif": "5.3.0",
+    "@fontsource/newsreader": "5.3.0",
+    "@fontsource/noto-sans": "5.3.0",
+    "@nivo/bar": "0.99.0",
+    "@nivo/line": "0.99.0",
+    "@nivo/sankey": "0.99.0",
+    "@xmldom/xmldom": "0.9.12",
+    "ajv": "^8.20.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "typescript": "^5.9.3"
+  }
+}

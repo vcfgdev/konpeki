@@ -1,0 +1,105 @@
+:root {
+  font-family: "IBM Plex Sans", sans-serif;
+  color: #202020;
+  background: #f4f4f4;
+  font-synthesis: none;
+  --accent: #007bbb;
+  --muted: #626262;
+  --ui-bg: #f4f4f4;
+  --ui-surface: #fff;
+  --ui-subtle: #fafafa;
+  --ui-text: #202020;
+  --ui-muted: #626262;
+  --ui-border: #e5e5e5;
+  --ui-control: #d4d4d4;
+  --ui-hover: #f2f2f2;
+  --ui-selected: #edf6fa;
+  --ui-shadow: 0 8px 28px #00000014, 0 1px 3px #00000012;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  overflow: hidden;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button,
+select {
+  cursor: pointer;
+}
+button {
+  border: 1px solid var(--ui-control);
+  border-radius: 4px;
+  color: inherit;
+  background: #fff;
+  padding: 7px 10px;
+}
+button:hover:not(:disabled) {
+  background: #f1f1f1;
+  border-color: #aaa;
+}
+button:disabled {
+  cursor: default;
+  color: #767676;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ui-text);
+  padding: 7px 9px;
+}
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: #aaa;
+}
+textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.55;
+}
+h1,
+h2,
+p {
+  margin: 0;
+}
+h2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.primary {
+  background: #202020;
+  color: white;
+  border-color: #202020;
+  font-weight: 500;
+}
+.primary:hover:not(:disabled) {
+  background: #383838;
+  border-color: #383838;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

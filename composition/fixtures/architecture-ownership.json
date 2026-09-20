@@ -1,0 +1,360 @@
+{
+  "schema": "konpeki-composition/v18",
+  "slides": [
+    {
+      "audience": "Decision makers",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
+      "components": [
+        {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "bottom",
+            "titleStyle": "prominent",
+            "treatment": "plain"
+          },
+          "content": "Text",
+          "id": "text-block-1",
+          "intent": "State the decision or takeaway.",
+          "kind": "text-block",
+          "preferredRect": {
+            "height": 88,
+            "width": 1696,
+            "x": 112,
+            "y": 72
+          },
+          "slotIds": [
+            "text-block-1-content"
+          ],
+          "textStyle": {
+            "color": "ink",
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 36,
+            "weight": 400
+          }
+        },
+        {
+          "appearance": {
+            "border": "none",
+            "colorScheme": "monochrome",
+            "density": "sparse",
+            "emphasis": "none",
+            "selection": "auto",
+            "type": "architecture"
+          },
+          "id": "diagram-2",
+          "intent": "Keep entity owners, two failure modes and retry uncertainty. Browser polling must visibly pass through Gateway and Report API. Request missing source details rather than assigning invented owners.",
+          "kind": "diagram",
+          "preferredRect": {
+            "height": 530,
+            "width": 1080,
+            "x": 112,
+            "y": 280
+          },
+          "slotIds": [
+            "browser-entity",
+            "gateway-entity",
+            "api-entity",
+            "queue-entity",
+            "worker-entity",
+            "warehouse-entity",
+            "store-entity"
+          ],
+          "topology": {
+            "edges": [
+              {
+                "from": "browser",
+                "label": "initial request",
+                "to": "gateway"
+              },
+              {
+                "from": "gateway",
+                "label": "accepted request",
+                "to": "api"
+              },
+              {
+                "from": "api",
+                "label": "job write",
+                "to": "queue"
+              },
+              {
+                "from": "queue",
+                "label": "job read",
+                "to": "worker"
+              },
+              {
+                "from": "worker",
+                "label": "query",
+                "to": "warehouse"
+              },
+              {
+                "from": "worker",
+                "label": "generated report",
+                "to": "store"
+              },
+              {
+                "from": "worker",
+                "label": "completion",
+                "to": "api"
+              },
+              {
+                "from": "browser",
+                "label": "later poll",
+                "to": "gateway"
+              },
+              {
+                "from": "gateway",
+                "label": "later poll",
+                "to": "api"
+              }
+            ],
+            "kind": "explicit",
+            "nodes": [
+              {
+                "id": "browser",
+                "slotId": "browser-entity"
+              },
+              {
+                "id": "gateway",
+                "slotId": "gateway-entity"
+              },
+              {
+                "id": "api",
+                "slotId": "api-entity"
+              },
+              {
+                "id": "queue",
+                "slotId": "queue-entity"
+              },
+              {
+                "id": "worker",
+                "slotId": "worker-entity"
+              },
+              {
+                "id": "warehouse",
+                "slotId": "warehouse-entity"
+              },
+              {
+                "id": "store",
+                "slotId": "store-entity"
+              }
+            ]
+          }
+        },
+        {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "emphasis",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "strong"
+          },
+          "content": "Text",
+          "id": "text-block-3",
+          "intent": "Explain the implication or recommended action.",
+          "kind": "text-block",
+          "preferredRect": {
+            "height": 420,
+            "width": 560,
+            "x": 1248,
+            "y": 280
+          },
+          "slotIds": [
+            "text-block-3-content"
+          ],
+          "textStyle": {
+            "color": "ink",
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 36,
+            "weight": 400
+          }
+        },
+        {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "footnote",
+            "rule": "top",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Text",
+          "id": "text-block-4",
+          "intent": "Add the source, scope, and any important caveat.",
+          "kind": "text-block",
+          "preferredRect": {
+            "height": 88,
+            "width": 1696,
+            "x": 112,
+            "y": 992
+          },
+          "slotIds": [
+            "text-block-4-content"
+          ],
+          "textStyle": {
+            "color": "ink",
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 36,
+            "weight": 400
+          }
+        }
+      ],
+      "contentSlots": [
+        {
+          "id": "text-block-1-content",
+          "instruction": "State the decision or takeaway.",
+          "label": "Text block",
+          "required": true,
+          "role": "takeaway"
+        },
+        {
+          "id": "text-block-3-content",
+          "instruction": "Explain the implication or recommended action.",
+          "label": "Text block",
+          "required": true,
+          "role": "body"
+        },
+        {
+          "id": "text-block-4-content",
+          "instruction": "Add the source, scope, and any important caveat.",
+          "label": "Text block",
+          "required": true,
+          "role": "source",
+          "targets": [
+            "text-block-1",
+            "diagram-2",
+            "text-block-3"
+          ]
+        },
+        {
+          "id": "browser-entity",
+          "instruction": "Preserve the supplied role and ownership of browser.",
+          "label": "browser",
+          "required": true,
+          "role": "entity"
+        },
+        {
+          "id": "gateway-entity",
+          "instruction": "Preserve the supplied role and ownership of gateway.",
+          "label": "gateway",
+          "required": true,
+          "role": "entity"
+        },
+        {
+          "id": "api-entity",
+          "instruction": "Preserve the supplied role and ownership of api.",
+          "label": "api",
+          "required": true,
+          "role": "entity"
+        },
+        {
+          "id": "queue-entity",
+          "instruction": "Preserve the supplied role and ownership of queue.",
+          "label": "queue",
+          "required": true,
+          "role": "entity"
+        },
+        {
+          "id": "worker-entity",
+          "instruction": "Preserve the supplied role and ownership of worker.",
+          "label": "worker",
+          "required": true,
+          "role": "entity"
+        },
+        {
+          "id": "warehouse-entity",
+          "instruction": "Preserve the supplied role and ownership of warehouse.",
+          "label": "warehouse",
+          "required": true,
+          "role": "entity"
+        },
+        {
+          "id": "store-entity",
+          "instruction": "Preserve the supplied role and ownership of store.",
+          "label": "store",
+          "required": true,
+          "role": "entity"
+        }
+      ],
+      "groups": [],
+      "id": "slide-1",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "Slide 01",
+      "pageNumber": {
+        "color": "muted",
+        "style": "none"
+      },
+      "paintOrder": [
+        "text-block-1",
+        "diagram-2",
+        "text-block-3",
+        "text-block-4"
+      ],
+      "question": "What should the audience understand or decide?",
+      "readingOrder": [
+        {
+          "id": "text-block-1",
+          "kind": "component"
+        },
+        {
+          "id": "diagram-2",
+          "kind": "component"
+        },
+        {
+          "id": "text-block-3",
+          "kind": "component"
+        },
+        {
+          "id": "text-block-4",
+          "kind": "component"
+        }
+      ],
+      "relationships": [
+        {
+          "direction": "forward",
+          "from": {
+            "nodeId": "text-block-3"
+          },
+          "id": "qualification",
+          "kind": "qualifies",
+          "label": "Preserve retry uncertainty",
+          "to": {
+            "nodeId": "diagram-2",
+            "slotId": "queue-entity"
+          }
+        }
+      ]
+    }
+  ],
+  "theme": {
+    "id": "plex",
+    "mode": "paper"
+  },
+  "title": "Show ownership and the complete polling route"
+}

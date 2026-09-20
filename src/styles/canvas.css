@@ -1,0 +1,268 @@
+.canvas {
+  width: 100%;
+  aspect-ratio: var(--page-ratio);
+  background: var(--slide-bg);
+  position: relative;
+  outline: 1px solid #dedede;
+  box-shadow: 0 7px 26px #00000012;
+  container-type: inline-size;
+}
+.presentation-canvas .slide-component:hover {
+  outline: 0;
+}
+.presentation-canvas .component-surface {
+  cursor: default;
+  touch-action: auto;
+}
+.canvas .component-heading {
+  font-family: var(--vector-heading-font);
+}
+.canvas {
+  font-family: var(--vector-body-font);
+}
+.slide-component {
+  position: absolute;
+  background: var(--slide-bg);
+  color: var(--slide-ink);
+  border: 1px solid transparent;
+  --component-accent: var(--slide-accent);
+  --component-context: var(--slide-context);
+}
+.slide-component:hover {
+  outline: 1px solid #a9a9a9;
+}
+.slide-component.selected {
+  outline: 1px solid var(--accent);
+}
+.slide-component:has(.component-surface:focus-visible) {
+  outline: 2px solid var(--accent);
+}
+.component-surface {
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  padding: 1.4cqw;
+  text-align: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  cursor: move;
+  touch-action: none;
+}
+.component-surface:focus-visible {
+  outline: 0;
+}
+.component-surface:hover:not(:disabled) {
+  border-color: transparent;
+  background: transparent;
+}
+.custom-visual .component-surface {
+  padding: 0;
+}
+.custom-visual.border-none.rule-none {
+  border: 0;
+}
+.custom-visual-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+.custom-visual-art.fit-contain {
+  object-fit: contain;
+}
+.custom-visual-art.fit-cover {
+  object-fit: cover;
+}
+.custom-visual-art.fit-stretch {
+  object-fit: fill;
+}
+.custom-vector-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.custom-vector-art.editing .vector-element {
+  pointer-events: all;
+  cursor: pointer;
+}
+.custom-vector-art.editing .vector-element.selected {
+  outline: 2px solid #0974e9;
+  outline-offset: 3px;
+  filter: drop-shadow(0 0 5px #0974e980);
+}
+.vector-handles circle {
+  fill: #ffffff;
+  stroke: #0974e9;
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+  cursor: crosshair;
+}
+.component-heading {
+  font-size: max(1.7cqw, 11px);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.title-prominent .component-heading {
+  font-weight: 600;
+  font-size: 2.2cqw;
+}
+.component-intent {
+  display: block;
+  color: var(--slide-muted);
+  font-size: max(1.7cqw, 11px);
+  margin-top: 0.7cqw;
+  line-height: 1.5;
+  cursor: text;
+}
+.inline-intent-editor {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: max(100%, 8.5cqw);
+  min-height: calc(1.5em + 2.8cqw + 2px);
+  margin: 0;
+  padding: 1.4cqw;
+  box-sizing: border-box;
+  border: 1px solid var(--slide-accent);
+  border-radius: 2px;
+  outline: 0;
+  background: var(--slide-bg);
+  color: var(--slide-ink);
+  font: inherit;
+  line-height: 1.5;
+  resize: none;
+}
+.kind-text-block.role-title:not(.custom-visual) .component-surface {
+  justify-content: flex-end;
+  padding: 0.5cqw 0;
+}
+.kind-text-block.role-title .component-heading {
+  font-size: max(2.6cqw, 20px);
+  font-weight: 600;
+  line-height: 1.18;
+}
+.kind-text-block.role-title .component-intent {
+  font-size: max(1.7cqw, 11px);
+  margin-top: 0.4cqw;
+}
+.kind-text-block.role-footnote:not(.custom-visual) .component-surface {
+  padding: 1cqw 0;
+}
+.kind-text-block.role-footnote .component-heading {
+  display: none;
+}
+.kind-text-block.role-footnote .component-intent {
+  font-size: max(1.7cqw, 11px);
+  margin: 0;
+}
+.slide-page-number {
+  position: absolute;
+  z-index: var(--component-layers);
+  right: 5.833333%;
+  bottom: 2.2%;
+  font-size: max(1.5cqw, 11px);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.color-muted {
+  color: var(--slide-muted);
+}
+.color-accent {
+  color: var(--slide-accent);
+}
+.border-outline {
+  border: 1px solid var(--slide-context);
+}
+.border-filled {
+  background: color-mix(in srgb, var(--slide-context) 22%, var(--slide-bg));
+}
+.rule-top {
+  border-top: 1px solid var(--slide-context);
+}
+.rule-bottom {
+  border-bottom: 1px solid var(--slide-context);
+}
+.resize-handle {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  touch-action: none;
+  z-index: 2;
+}
+.resize-handle::after {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--accent);
+  background: white;
+  content: "";
+}
+.resize-handle:hover:not(:disabled) {
+  border-color: transparent;
+  background: transparent;
+}
+.resize-nw {
+  top: -12px;
+  left: -12px;
+  cursor: nwse-resize;
+}
+.resize-ne {
+  top: -12px;
+  right: -12px;
+  cursor: nesw-resize;
+}
+.resize-sw {
+  bottom: -12px;
+  left: -12px;
+  cursor: nesw-resize;
+}
+.resize-se {
+  right: -12px;
+  bottom: -12px;
+  cursor: nwse-resize;
+}
+.guide {
+  position: absolute;
+  pointer-events: none;
+  z-index: calc(var(--component-layers) + 1);
+}
+.guide-x {
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid var(--accent);
+}
+.guide-y {
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--accent);
+}
+
+.kind-text-block:not(.custom-visual) .component-surface {
+  padding: 0;
+  justify-content: flex-start;
+}
+.text-block-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  flex: none;
+  width: 100%;
+}
+.kind-text-block:not(.custom-visual) .inline-intent-editor {
+  padding: 0;
+  text-align: inherit;
+  min-height: 100%;
+  height: 100%;
+}
