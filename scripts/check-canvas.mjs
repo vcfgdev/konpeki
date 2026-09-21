@@ -62,6 +62,23 @@ try {
   browser("reload");
   browser("wait", "--text", "Page 01");
   browser("set", "viewport", "1440", "900", "2");
+  check(`[...document.querySelectorAll('button,input,textarea,select')].filter(element => element.checkVisibility()).every(element => {
+    const rect = element.getBoundingClientRect();
+    return rect.width >= 40 && rect.height >= 40;
+  })`, "visible controls must have at least 40 by 40 pixel targets");
+  browser("set", "viewport", "1000", "700", "2");
+  browser("wait", "--fn", "document.querySelector('.right-panel').classList.contains('collapsed')");
+  check("document.querySelector('.slide-wrap').getBoundingClientRect().width >= 600", "canvas became too small at 1000px");
+  browser("set", "viewport", "800", "700", "2");
+  browser("wait", "--fn", "document.querySelector('.left-panel').classList.contains('collapsed')");
+  check("document.querySelector('.slide-wrap').getBoundingClientRect().width >= 700", "canvas became too small at 800px");
+  browser("set", "viewport", "390", "700", "2");
+  check(`document.documentElement.scrollWidth === 390 && (() => {
+    const dock = document.querySelector('.component-dock').getBoundingClientRect();
+    return dock.left >= 0 && dock.right <= innerWidth;
+  })()`, "compact layout overflows horizontally");
+  browser("set", "viewport", "1440", "900", "2");
+  browser("wait", "--fn", "!document.querySelector('.left-panel').classList.contains('collapsed') && !document.querySelector('.right-panel').classList.contains('collapsed')");
   click("Add page");
   check('document.querySelectorAll("#canvas-stage [data-component]").length === 0', "new slide is not empty");
   capture("empty-slide");

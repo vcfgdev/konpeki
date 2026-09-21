@@ -192,8 +192,8 @@
 }
 .resize-handle {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -202,8 +202,8 @@
 }
 .resize-handle::after {
   position: absolute;
-  top: 9px;
-  left: 9px;
+  top: 17px;
+  left: 17px;
   width: 6px;
   height: 6px;
   border: 1px solid var(--accent);
@@ -215,23 +215,23 @@
   background: transparent;
 }
 .resize-nw {
-  top: -12px;
-  left: -12px;
+  top: -20px;
+  left: -20px;
   cursor: nwse-resize;
 }
 .resize-ne {
-  top: -12px;
-  right: -12px;
+  top: -20px;
+  right: -20px;
   cursor: nesw-resize;
 }
 .resize-sw {
-  bottom: -12px;
-  left: -12px;
+  bottom: -20px;
+  left: -20px;
   cursor: nesw-resize;
 }
 .resize-se {
-  right: -12px;
-  bottom: -12px;
+  right: -20px;
+  bottom: -20px;
   cursor: nwse-resize;
 }
 .guide {
@@ -270,14 +270,30 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 40px;
+  height: 40px;
   min-height: 0;
   padding: 0;
-  border: 1px solid var(--ui-surface);
+  border: 0;
   border-radius: 50%;
-  background: var(--accent);
+  background: radial-gradient(
+    circle,
+    var(--accent) 0 10px,
+    var(--ui-surface) 10.5px 11.5px,
+    transparent 12px
+  );
   color: white;
   font: 500 11px "IBM Plex Sans", sans-serif;
-  box-shadow: 0 1px 4px #0002;
+  box-shadow: none;
+  filter: drop-shadow(0 1px 2px #0003);
+}
+.revision-pin:hover:not(:disabled),
+.revision-pin:active:not(:disabled) {
+  border-color: transparent;
+  background: radial-gradient(
+    circle,
+    #006aa1 0 10px,
+    var(--ui-surface) 10.5px 11.5px,
+    transparent 12px
+  );
 }

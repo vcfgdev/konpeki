@@ -57,6 +57,29 @@ const optionLabels: Record<string, string> = {
   "full-grid": "Full grid",
 };
 
+function VectorActionIcon({ action }: { action: "backward" | "forward" | "delete" }) {
+  return (
+    <svg className="vector-action-icon" viewBox="0 0 20 20" aria-hidden="true">
+      {action === "delete" ? (
+        <>
+          <path d="M4 5h12M8 2.75h4M6 5l.65 11h6.7L14 5" />
+          <path d="M8.25 8v5M11.75 8v5" />
+        </>
+      ) : (
+        <>
+          <rect x="3" y="7" width="8" height="8" rx="1.5" />
+          <path d="M7 4h6a2 2 0 0 1 2 2v6" />
+          {action === "backward" ? (
+            <path d="m12.5 10 2.5 2.5 2.5-2.5" />
+          ) : (
+            <path d="m12.5 6.5 2.5-2.5 2.5 2.5" />
+          )}
+        </>
+      )}
+    </svg>
+  );
+}
+
 function previewCount(key: string, value: string) {
   if (key === "tableStyle") return 6;
   if (key !== "layout") return 4;
@@ -552,6 +575,8 @@ export function InspectorPanel({
                       <button
                         key={direction}
                         type="button"
+                        aria-label={direction === -1 ? "Send backward" : "Bring forward"}
+                        title={direction === -1 ? "Send backward" : "Bring forward"}
                         disabled={moveVectorElement(vectorVisual.elements, vectorElement.id, direction) === vectorVisual.elements}
                         onClick={() => onComponent({
                           ...component,
@@ -560,10 +585,16 @@ export function InspectorPanel({
                             elements: moveVectorElement(vectorVisual.elements, vectorElement.id, direction),
                           },
                         })}
-                      >{direction === -1 ? "Send backward" : "Bring forward"}</button>
+                      >
+                        <VectorActionIcon action={direction === -1 ? "backward" : "forward"} />
+                        {direction === -1 ? "Back" : "Forward"}
+                      </button>
                     ))}
                     <button
                       type="button"
+                      className="vector-delete-action"
+                      aria-label="Delete element"
+                      title="Delete element"
                       onClick={() => {
                         onComponent({
                           ...component,
@@ -574,7 +605,10 @@ export function InspectorPanel({
                         });
                         onSelectVectorElement(undefined);
                       }}
-                    >Delete element</button>
+                    >
+                      <VectorActionIcon action="delete" />
+                      Delete
+                    </button>
                   </div>
                   {(vectorElement.kind === "text" || vectorElement.kind === "tspan") && (
                     <Field label="Text">

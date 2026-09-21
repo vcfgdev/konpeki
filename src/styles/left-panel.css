@@ -18,18 +18,25 @@
 }
 .revision-note-count { margin: 20px 0 8px; }
 .revision-notes label { font-size: 12px; }
-.revision-note-scope { margin: 6px 0; overflow-wrap: anywhere; }
+.revision-note-scope {
+  margin: 6px 0 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--ui-selected);
+  color: #31596d;
+  overflow-wrap: anywhere;
+}
 .revision-notes textarea { width: 100%; resize: vertical; min-height: 72px; font-size: 12px; line-height: 1.5; }
 .revision-notes textarea { border-color: transparent; border-radius: 6px; background: #f4f4f5; }
 .revision-notes textarea:hover { border-color: #d4d4d8; }
 .revision-note-submit { margin-top: 8px; justify-content: flex-end; }
-.revision-note-submit button { white-space: nowrap; font-size: 12px; }
+.revision-note-submit button { min-height: 40px; white-space: nowrap; font-size: 12px; }
 .revision-note-list { list-style: none; margin: 0; padding: 0; }
 .revision-note-list li { padding: 12px 0; border-top: 1px solid var(--ui-border); }
-.revision-note-target { display: flex; align-items: baseline; gap: 8px; padding: 0; border: 0; background: none; text-align: left; font-size: 11px; overflow-wrap: anywhere; }
+.revision-note-target { display: flex; align-items: baseline; gap: 8px; width: 100%; min-height: 40px; padding: 6px 0; border: 0; background: none; text-align: left; font-size: 11px; overflow-wrap: anywhere; }
 .revision-note-target > span { color: var(--ui-muted); }
 .revision-note-list p { font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
-.revision-note-remove { border: 0; padding: 0; background: none; color: var(--ui-muted); font-size: 11px; }
+.revision-note-remove { display: inline-flex; align-items: center; min-height: 40px; border: 0; padding: 6px 0; background: none; color: var(--ui-muted); font-size: 11px; }
 .revision-note-error { color: #a02020; font-size: 12px; }
 
 .slide-list {
@@ -58,8 +65,8 @@
 
 .slide-thumbnail.selected,
 .slide-thumbnail.selected:hover {
-  border-color: #86868b;
-  background: #f4f4f5;
+  border-color: color-mix(in srgb, var(--accent) 45%, white);
+  background: var(--ui-selected);
 }
 
 .slide-thumbnail:focus-visible {
@@ -76,10 +83,10 @@
 
 .remove-slide {
   position: absolute;
-  right: 8px;
-  bottom: 7px;
-  width: 26px;
-  height: 26px;
+  right: 2px;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border-color: transparent;
   border-radius: 5px;
@@ -98,7 +105,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 38px;
+  min-height: 40px;
   margin-top: 8px;
   border-style: dashed;
   color: var(--ui-muted);

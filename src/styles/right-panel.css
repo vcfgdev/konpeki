@@ -67,13 +67,50 @@
 }
 
 .vector-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
 .vector-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 7px 6px;
+  border-color: transparent;
+  border-radius: 8px;
+  background: #f4f4f5;
   font-size: 11px;
+  white-space: nowrap;
+}
+
+.vector-actions button:hover:not(:disabled) {
+  border-color: transparent;
+  background: #e9e9eb;
+}
+
+.vector-action-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.vector-actions .vector-delete-action {
+  background: #fff1f1;
+  color: #9d2020;
+}
+
+.vector-actions .vector-delete-action:hover:not(:disabled) {
+  background: #ffe3e3;
+  color: #841919;
 }
 
 .vector-attributes {
@@ -106,7 +143,7 @@
 
 .segmented-options button {
   min-width: 0;
-  min-height: 30px;
+  min-height: 40px;
   padding: 5px 7px;
   border: 1px solid transparent;
   border-radius: 5px;
@@ -121,10 +158,10 @@
 }
 
 .segmented-options button.selected {
-  background: white;
-  border-color: #e5e5e7;
-  box-shadow: 0 1px 3px #00000012;
-  color: var(--ui-text);
+  background: var(--ui-selected);
+  border-color: color-mix(in srgb, var(--accent) 45%, white);
+  box-shadow: none;
+  color: #006aa1;
 }
 
 .inspector-content .slide-settings-heading {
@@ -153,9 +190,9 @@
 }
 
 .theme-options button.selected {
-  border-color: #86868b;
-  background: #f4f4f5;
-  box-shadow: inset 0 0 0 1px #86868b;
+  border-color: color-mix(in srgb, var(--accent) 45%, white);
+  background: var(--ui-selected);
+  box-shadow: none;
 }
 
 .theme-options button > span:first-child {
@@ -218,7 +255,7 @@
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr) auto;
   align-items: center;
-  min-height: 42px;
+  min-height: 48px;
   border: 1px solid transparent;
   border-radius: 6px;
   background: #fafafa;
@@ -267,7 +304,7 @@
 
 .layer-select span {
   color: var(--ui-muted);
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .layer-actions {
@@ -276,8 +313,8 @@
 }
 
 .layer-actions button {
-  width: 20px;
-  height: 26px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -299,6 +336,10 @@
 }
 
 .inspector-context button {
+  display: inline-flex;
+  align-items: center;
+  min-width: 40px;
+  min-height: 40px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -361,9 +402,9 @@
 }
 
 .appearance-options button.selected {
-  border-color: #86868b;
-  background: #f4f4f5;
-  box-shadow: inset 0 0 0 1px #86868b;
+  border-color: color-mix(in srgb, var(--accent) 45%, white);
+  background: var(--ui-selected);
+  box-shadow: none;
 }
 
 .appearance-options button:disabled {
@@ -1078,8 +1119,8 @@ legend {
 }
 
 .diagram-type-category button.selected {
-  border-color: #86868b;
-  background: #f4f4f5;
+  border-color: color-mix(in srgb, var(--accent) 45%, white);
+  background: var(--ui-selected);
 }
 
 .diagram-type-category button > span {
@@ -1130,6 +1171,7 @@ legend {
 }
 
 .right-panel :is(input, select, textarea) {
+  min-height: 40px;
   border-color: transparent;
   border-radius: 6px;
   background: #f4f4f5;
@@ -1146,7 +1188,7 @@ legend {
 }
 
 .parameter-input input {
-  min-height: 34px;
+  min-height: 40px;
   padding-right: 32px;
   appearance: textfield;
 }

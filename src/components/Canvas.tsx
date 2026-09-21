@@ -1152,7 +1152,7 @@ export function Canvas({
             const previous = revisionNotes.slice(0, index).filter(n => !n.resolved && n.slideId === note.slideId && n.componentId === note.componentId).length;
             return <button key={note.id} type="button" className="revision-pin"
               aria-label={`Revision note ${index + 1}: ${note.text}`} title={note.text}
-              style={{ left: rect ? `min(calc(100% - ${28 + previous * 26}px), calc(${(rect.x + rect.width) * 100 / slide.canvas.width}% - ${24 + previous * 26}px))` : `${12 + previous * 26}px`, top: rect ? `${rect.y * 100 / slide.canvas.height}%` : "12px", zIndex: slide.paintOrder.length + 4 }}
+              style={{ left: rect ? `clamp(0px, calc(${(rect.x + rect.width) * 100 / slide.canvas.width}% - ${64 + previous * 44}px), calc(100% - 40px))` : `${3 + previous * 44}px`, top: rect ? `max(0px, calc(${rect.y * 100 / slide.canvas.height}% - 32px))` : "3px", zIndex: slide.paintOrder.length + 4 }}
               onPointerDown={event => event.stopPropagation()}
               onClick={event => { event.stopPropagation(); onSelectNote?.(note); }}>{index + 1}</button>;
           })}

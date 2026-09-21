@@ -3,6 +3,8 @@
   color: #202020;
   background: #f4f4f4;
   font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   --accent: #007bbb;
   --muted: #626262;
   --ui-bg: #f4f4f4;
@@ -39,6 +41,8 @@ button {
   color: inherit;
   background: #fff;
   padding: 7px 10px;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out,
+    color 120ms ease-out, box-shadow 120ms ease-out, transform 120ms ease-out;
 }
 button:hover:not(:disabled) {
   background: #f1f1f1;
@@ -62,6 +66,8 @@ select {
   background: #fff;
   color: var(--ui-text);
   padding: 7px 9px;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out,
+    box-shadow 120ms ease-out;
 }
 input:hover,
 textarea:hover,
@@ -91,6 +97,16 @@ h2 {
 .primary:hover:not(:disabled) {
   background: #383838;
   border-color: #383838;
+}
+.panel-toggle:active:not(:disabled),
+.action-island button:active:not(:disabled),
+.component-dock button:active:not(:disabled),
+.segmented-options button:active:not(:disabled),
+.theme-options button:active:not(:disabled),
+.appearance-options button:active:not(:disabled),
+.revision-note-submit button:active:not(:disabled),
+.revision-note-remove:active:not(:disabled) {
+  transform: scale(0.96);
 }
 .sr-only {
   position: absolute;

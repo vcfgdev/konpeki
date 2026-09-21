@@ -157,6 +157,21 @@ export function App() {
     return () => window.clearTimeout(timer);
   }, [toastClosing]);
   useEffect(() => {
+    const narrow = window.matchMedia("(max-width: 1200px)");
+    const compact = window.matchMedia("(max-width: 900px)");
+    const adaptPanels = () => {
+      setRightCollapsed(narrow.matches);
+      setLeftCollapsed(compact.matches);
+    };
+    adaptPanels();
+    narrow.addEventListener("change", adaptPanels);
+    compact.addEventListener("change", adaptPanels);
+    return () => {
+      narrow.removeEventListener("change", adaptPanels);
+      compact.removeEventListener("change", adaptPanels);
+    };
+  }, []);
+  useEffect(() => {
     function keydown(event: KeyboardEvent) {
       if (presenting || fileSession.building) return;
       const modifier = event.metaKey || event.ctrlKey;
