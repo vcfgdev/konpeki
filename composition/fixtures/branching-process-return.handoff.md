@@ -51,7 +51,7 @@ Preserve the supplied slide order and slide names. Do not hide overflow, shrink 
 
 ```json
 {
-  "schema": "konpeki-composition/v18",
+  "schema": "konpeki-composition/v1",
   "slides": [
     {
       "audience": "Decision makers",

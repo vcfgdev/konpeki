@@ -309,7 +309,7 @@ const components = componentKinds.map((kind) => {
 });
 export const schema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
-  $id: "https://vcfgdev.github.io/konpeki/composition/v18/schema.json",
+  $id: "https://vcfgdev.github.io/konpeki/composition/v1/schema.json",
   title: compositionSchema,
   ...object(
     {

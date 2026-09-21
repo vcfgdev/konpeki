@@ -1,5 +1,5 @@
 {
-  "$id": "https://vcfgdev.github.io/konpeki/composition/v18/schema.json",
+  "$id": "https://vcfgdev.github.io/konpeki/composition/v1/schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -11,7 +11,7 @@
       "type": "string"
     },
     "schema": {
-      "const": "konpeki-composition/v18"
+      "const": "konpeki-composition/v1"
     },
     "slides": {
       "items": {
@@ -2987,6 +2987,6 @@
     "title",
     "slides"
   ],
-  "title": "konpeki-composition/v18",
+  "title": "konpeki-composition/v1",
   "type": "object"
 }

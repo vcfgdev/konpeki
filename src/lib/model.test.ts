@@ -571,75 +571,13 @@ test("composition JSON import/export is canonical and lossless", () => {
   assert.equal(parseCompositionJSON(canonicalJSON({ ...document, schema: "v2" })).ok, false);
 });
 
-test("legacy raw and v1 drafts migrate; v2 storage round trips", () => {
+test("v2 storage round trips and older storage is rejected", () => {
   const current = initialDraft();
-  const slide = firstSlide(current);
-  const legacy = {
-    title: current.title,
-    audience: slide.audience,
-    question: slide.question,
-    themeId: current.theme!.id,
-    themeMode: current.theme!.mode,
-    components: slide.components,
-    readingOrder: slide.components.map((component) => component.id),
-    paintOrder: slide.paintOrder,
-    relationships: slide.relationships,
-  };
-  const migrated = structuredClone(current);
-  for (const component of firstSlide(migrated).components) {
-    if (component.kind === "chart" || component.kind === "diagram") component.appearance.selection = "explicit";
-  }
-  assert.deepEqual(parseStoredDraft(JSON.stringify(legacy)), {
-    ok: true,
-    migrated: true,
-    draft: migrated,
-  });
-  assert.deepEqual(parseStoredDraft(JSON.stringify({ version: 1, draft: legacy })), {
-    ok: true,
-    migrated: true,
-    draft: migrated,
-  });
-  const oldHeadline = structuredClone(legacy) as unknown as Record<string, any>;
-  oldHeadline.components[0].kind = "headline";
-  delete oldHeadline.components[0].appearance.role;
-  const oldHeadlineResult = parseStoredDraft(
-    JSON.stringify({ version: 1, draft: oldHeadline }),
-  );
-  assert.equal(oldHeadlineResult.ok, true);
-  if (oldHeadlineResult.ok) {
-    const first = firstSlide(oldHeadlineResult.draft).components[0];
-    assert.equal(first.kind, "text-block");
-    if (first.kind === "text-block") assert.equal(first.appearance.role, "title");
-  }
-  const oldShape = structuredClone(legacy) as unknown as Record<string, any>;
-  oldShape.components.push({
-    id: "shape-5",
-    kind: "shape",
-    preferredRect: { x: 400, y: 800, width: 100, height: 100 },
-    slotIds: ["shape-5-content"],
-    appearance: { shape: "circle" },
-  });
-  oldShape.readingOrder.push("shape-5");
-  oldShape.paintOrder.push("shape-5");
-  const oldShapeResult = parseStoredDraft(
-    JSON.stringify({ version: 1, draft: oldShape }),
-  );
-  assert.equal(oldShapeResult.ok, true);
-  if (oldShapeResult.ok) {
-    const shape = firstSlide(oldShapeResult.draft).components.at(-1);
-    assert.equal(shape?.kind, "diagram");
-    if (shape?.kind === "diagram")
-      assert.deepEqual(shape.topology?.nodes[0].primitive, {
-        kind: "shape",
-        shape: "circle",
-      });
-  }
   assert.deepEqual(parseStoredDraft(serializeDraft(current)), {
     ok: true,
-    migrated: false,
     draft: current,
   });
-  for (const raw of ["{broken", "null", "[]", '{"version":3}'])
+  for (const raw of ["{broken", "null", "[]", '{"version":1}', '{"version":3}'])
     assert.deepEqual(parseStoredDraft(raw), { ok: false });
 });
 

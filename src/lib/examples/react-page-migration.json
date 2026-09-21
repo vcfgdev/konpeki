@@ -1,5 +1,5 @@
 {
-  "schema": "konpeki-composition/v14",
+  "schema": "konpeki-composition/v1",
   "title": "Parcel Relay — migrated React deck",
   "theme": {
     "id": "plex",

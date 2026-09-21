@@ -33,23 +33,7 @@ test('schema exposes only five top-level component kinds and text roles replace 
   assert.equal(validateSchema(doc), true);
   assert.equal(validateComposition(doc).ok, true);
 });
-test('v12 documents preserve content and mark existing visual forms explicit', () => {
-  const legacy = structuredClone(initialDraft()) as unknown as Record<string, any>;
-  legacy.schema = 'konpeki-composition/v12';
-  for (const component of legacy.slides[0].components) {
-    if (component.kind === 'chart' || component.kind === 'diagram') delete component.appearance.selection;
-  }
-  const result = validateComposition(legacy);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  assert.equal(result.document.schema, compositionSchema);
-  const expected = structuredClone(legacy.slides);
-  for (const component of expected[0].components) {
-    if (component.kind === 'chart' || component.kind === 'diagram') component.appearance.selection = 'explicit';
-  }
-  assert.deepEqual(result.document.slides, expected);
-});
-test('legacy custom SVG remains a safe compatibility fallback', () => {
+test('opaque custom SVG remains a safe fallback', () => {
   const draft = initialDraft();
   const component = firstSlide(draft).components[1];
   component.customVisual = {
@@ -61,7 +45,7 @@ test('legacy custom SVG remains a safe compatibility fallback', () => {
   };
   assert.equal(validateSchema(draft), true);
   assert.equal(validateComposition(draft).ok, true);
-  assert.match(compileHandoff(draft), /legacy self-contained SVG/);
+  assert.match(compileHandoff(draft), /opaque self-contained SVG/);
   assert.match(compileHandoff(draft), /preferred rectangle own slide placement/);
 
   for (const source of [
@@ -235,7 +219,7 @@ test('diagram handoff prioritizes intent and explicit notation over a preset wit
   assert.doesNotMatch(handoff, /Honor the selected semantic diagram grammar/);
   assert.equal(canonicalJSON(document), before);
 });
-test('explicit diagram forms are binding, and old documents migrate conservatively', () => {
+test('explicit diagram forms are binding and unknown schema versions are rejected', () => {
   const doc = structuredClone(fixtures['architecture-ownership']);
   const diagram = doc.slides[0].components.find(c => c.kind === 'diagram');
   assert.ok(diagram);
@@ -247,17 +231,7 @@ test('explicit diagram forms are binding, and old documents migrate conservative
   assert.match(compileHandoff(doc), /preserve its type and component kind, and do not reset it to auto/);
   delete diagram.appearance.selection;
   assert.match(compileHandoff(doc), /Required form: Architecture/);
-  const legacy = { ...doc, schema: 'konpeki-composition/v17' };
-  const migrated = validateComposition(legacy);
-  assert.ok(migrated.ok);
-  if (!migrated.ok) return;
-  const expected = structuredClone(doc);
-  const expectedDiagram = expected.slides[0].components.find(c => c.kind === 'diagram');
-  assert.ok(expectedDiagram);
-  expectedDiagram.appearance.selection = 'explicit';
-  assert.deepEqual(migrated.document, expected);
-  assert.equal(diagram.appearance.selection, undefined);
-  assert.equal(validateComposition({ ...doc, schema: 'konpeki-composition/v19' }).ok, false);
+  assert.equal(validateComposition({ ...doc, schema: 'konpeki-composition/v2' }).ok, false);
 });
 test('chart choices are auto by default and explicit templates require permission to switch', () => {
   const document = initialDraft();
@@ -297,211 +271,9 @@ test('visual selection import and JSON round trips preserve SVG, vectors, topolo
         assert.ok(result.ok);
         if (result.ok) assert.deepEqual(result.document, document);
       }
-      for (const version of [12, 13, 14, 15, 16, 17]) {
-        const legacy = { ...document, schema: `konpeki-composition/v${version}` };
-        const result = validateComposition(JSON.parse(JSON.stringify(legacy)));
-        assert.ok(result.ok);
-        const expected = structuredClone(document);
-        const visual = expected.slides[0].components[0];
-        assert.ok(visual.kind === 'diagram' || visual.kind === 'chart');
-        visual.appearance.selection = 'explicit';
-        if (result.ok) assert.deepEqual(result.document, expected);
-      }
-      assert.equal(component.appearance.selection, undefined, 'migration must not mutate source');
+      assert.equal(component.appearance.selection, undefined, 'round trip must not mutate source');
     }
   }
-});
-test('v1 through v4 single-slide documents migrate into one-slide decks', () => {
-  for (const schema of ['konpeki-composition/v1', 'konpeki-composition/v2', 'konpeki-composition/v3', 'konpeki-composition/v4']) {
-    const current = structuredClone(initialDraft());
-    const legacy = {
-      ...Object.fromEntries(Object.entries(current).filter(([key]) => key !== 'slides')),
-      schema,
-      slide: current.slides[0],
-      target: { id: 'legacy-kit', revision: 'private-revision' },
-    };
-    const result = validateComposition(legacy);
-    assert.equal(result.ok, true);
-    if (!result.ok) continue;
-    assert.equal(result.document.schema, compositionSchema);
-    assert.equal(result.document.slides.length, 1);
-    assert.equal(result.document.slides[0].name, 'Slide 01');
-    assert.equal('target' in result.document, false);
-    assert.doesNotMatch(compileHandoff(legacy), /private-revision|legacy-kit/);
-  }
-});
-test('v3 callout and comparison migrate to configured text blocks without changing structure', () => {
-  const current = structuredClone(initialDraft());
-  const legacy = {
-    ...Object.fromEntries(Object.entries(current).filter(([key]) => key !== 'slides')),
-    slide: current.slides[0],
-  } as Record<string, any>;
-  legacy.schema = 'konpeki-composition/v3';
-  const comparison = legacy.slide.components[1];
-  comparison.kind = 'comparison';
-  comparison.appearance = { template: 'before-after', border: 'outline', titleStyle: 'prominent' };
-  const callout = legacy.slide.components[2];
-  callout.kind = 'callout';
-  callout.appearance = { alignment: 'end', border: 'filled', titleStyle: 'prominent' };
-  legacy.slide.relationships = [{
-    id: 'legacy-link', kind: 'compares-with', direction: 'forward',
-    from: { nodeId: comparison.id, slotId: comparison.slotIds[0] },
-    to: { nodeId: callout.id, slotId: callout.slotIds[0] },
-  }];
-  const before = {
-    ids: legacy.slide.components.map((component: any) => component.id),
-    rects: legacy.slide.components.map((component: any) => component.preferredRect),
-    slots: legacy.slide.components.map((component: any) => component.slotIds),
-    reading: legacy.slide.readingOrder,
-    paint: legacy.slide.paintOrder,
-    relationships: legacy.slide.relationships,
-  };
-  const result = validateComposition(legacy);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  assert.deepEqual({
-    ids: result.document.slides[0].components.map(component => component.id),
-    rects: result.document.slides[0].components.map(component => component.preferredRect),
-    slots: result.document.slides[0].components.map(component => component.slotIds),
-    reading: result.document.slides[0].readingOrder,
-    paint: result.document.slides[0].paintOrder,
-    relationships: result.document.slides[0].relationships,
-  }, before);
-  const migrated = result.document.slides[0].components.filter(
-    component => component.kind === 'text-block' && ['comparison', 'emphasis'].includes(component.appearance.purpose ?? ''),
-  );
-  assert.deepEqual(migrated.map(component => component.kind === 'text-block' ? component.appearance.purpose : undefined), ['comparison', 'emphasis']);
-  assert.deepEqual(migrated.map(component => component.kind === 'text-block' ? component.appearance.layout : undefined), ['two-column', 'single']);
-  assert.deepEqual(migrated.map(component => component.kind === 'text-block' ? component.appearance.treatment : undefined), ['plain', 'strong']);
-});
-test('v5 primitives and page-number component migrate losslessly to v6 ownership', () => {
-  const current = addComponent(initialDraft(), 'diagram') as unknown as Record<string, any>;
-  current.schema = 'konpeki-composition/v5';
-  const slide = current.slides[0];
-  const visual = slide.components.find((component: any) => component.kind === 'chart');
-  visual.kind = 'evidence';
-  const diagram = slide.components.find((component: any) => component.kind === 'diagram');
-  diagram.kind = 'process';
-  delete diagram.appearance.type;
-  const pageNumber = {
-    id: 'page-number-6', kind: 'page-number',
-    preferredRect: { x: 1628, y: 1008, width: 180, height: 72 },
-    slotIds: ['page-number-6-content'], intent: 'Show the current page.',
-    appearance: { border: 'none', color: 'accent', style: '01/02' },
-  };
-  slide.components.push(pageNumber);
-  slide.contentSlots.push({
-    id: 'page-number-6-content', label: 'Page number', required: true,
-    instruction: 'Show the current page number.', role: 'page-number',
-  });
-  slide.readingOrder.splice(-1, 0, { kind: 'component', id: pageNumber.id });
-  slide.paintOrder.push(pageNumber.id);
-  slide.relationships.push({
-    id: 'legacy-page-link', kind: 'connects-to', direction: 'undirected',
-    from: { nodeId: pageNumber.id }, to: { nodeId: visual.id },
-  });
-  const retained = {
-    ids: slide.components.filter((component: any) => component.id !== pageNumber.id).map((component: any) => component.id),
-    rects: slide.components.filter((component: any) => component.id !== pageNumber.id).map((component: any) => component.preferredRect),
-    slotIds: slide.components.filter((component: any) => component.id !== pageNumber.id).map((component: any) => component.slotIds),
-  };
-  const result = validateComposition(current);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  const migrated = result.document.slides[0];
-  assert.equal(result.document.schema, compositionSchema);
-  assert.deepEqual(migrated.pageNumber, { style: '01/02', color: 'accent' });
-  assert.deepEqual(migrated.components.map(component => component.id), retained.ids);
-  assert.deepEqual(migrated.components.map(component => component.preferredRect), retained.rects);
-  assert.deepEqual(migrated.components.map(component => component.slotIds), retained.slotIds);
-  assert.deepEqual(migrated.components.map(component => component.kind), [
-    'text-block', 'chart', 'text-block', 'text-block', 'diagram',
-  ]);
-  assert.equal(migrated.readingOrder.some(entry => entry.id === pageNumber.id), false);
-  assert.equal(migrated.paintOrder.includes(pageNumber.id), false);
-  assert.equal(migrated.contentSlots.some(slot => slot.id === 'page-number-6-content'), false);
-  assert.equal(migrated.relationships.some(relationship => relationship.id === 'legacy-page-link'), false);
-});
-test('v6 documents migrate to the current five-component contract', () => {
-  const legacy = structuredClone(initialDraft()) as unknown as Record<string, any>;
-  legacy.schema = 'konpeki-composition/v6';
-  const result = validateComposition(legacy);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  assert.equal(result.document.schema, compositionSchema);
-  assert.deepEqual(
-    result.document.slides.flatMap(slide => slide.components.map(component => component.kind)),
-    ['text-block', 'chart', 'text-block', 'text-block'],
-  );
-});
-test('v11 geometric Diagram choices migrate to semantic grammars', () => {
-  const cases = [
-    ['process', 'linear', 'process'],
-    ['process', 'branching', 'flowchart'],
-    ['process', 'cyclical', 'loop-flywheel'],
-    ['system', 'layered', 'layer-stack'],
-    ['system', 'request-flow', 'sequence'],
-    ['system', 'hub-and-spoke', 'architecture'],
-  ] as const;
-  for (const [legacyType, layout, semanticType] of cases) {
-    const legacy = addComponent(initialDraft(), 'diagram') as unknown as Record<string, any>;
-    legacy.schema = 'konpeki-composition/v11';
-    const diagram = legacy.slides[0].components.at(-1);
-    diagram.appearance = { ...diagram.appearance, type: legacyType, layout };
-    const slot = legacy.slides[0].contentSlots.find((item: any) => item.id === diagram.slotIds[0]);
-    slot.role = legacyType === 'process' ? 'process-step' : 'entity';
-    const result = validateComposition(legacy);
-    assert.equal(result.ok, true, `${legacyType}/${layout}`);
-    if (!result.ok) continue;
-    const migrated = result.document.slides[0].components.at(-1);
-    assert.equal(migrated?.kind, 'diagram');
-    if (migrated?.kind === 'diagram') {
-      assert.equal(migrated.appearance.type, semanticType);
-      assert.equal('layout' in migrated.appearance, false);
-    }
-  }
-});
-test('v11 migration rejects unknown, missing, and incompatible Diagram choices', () => {
-  const invalidAppearances = [
-    undefined,
-    { type: 'process' },
-    { type: 'flowchart' },
-    { type: 'system', layout: 'bogus' },
-    { type: 'process', layout: 'layered' },
-    { type: 'bogus', layout: 'linear' },
-    { type: ['process'], layout: ['linear'] },
-  ];
-  for (const appearance of invalidAppearances) {
-    const legacy = addComponent(initialDraft(), 'diagram') as unknown as Record<string, any>;
-    legacy.schema = 'konpeki-composition/v11';
-    const diagram = legacy.slides[0].components.at(-1);
-    if (appearance === undefined) delete diagram.appearance;
-    else diagram.appearance = appearance;
-    assert.equal(validateComposition(legacy).ok, false, JSON.stringify(appearance));
-  }
-});
-test('interim v12 Sankey diagrams migrate to charts without losing topology', () => {
-  const interim = addComponent(initialDraft(), 'diagram') as unknown as Record<string, any>;
-  const diagram = interim.slides[0].components.at(-1);
-  diagram.appearance.type = 'sankey';
-  diagram.topology = {
-    kind: 'explicit',
-    nodes: [{ id: 'flow', slotId: diagram.slotIds[0] }],
-    edges: [],
-  };
-  const result = validateComposition(interim);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  const chart = result.document.slides[0].components.at(-1);
-  assert.equal(chart?.kind, 'chart');
-  if (chart?.kind !== 'chart') return;
-  assert.equal(chart.appearance.template, 'sankey');
-  assert.deepEqual(chart.topology, diagram.topology);
-
-  const invalidChart = structuredClone(result.document) as unknown as Record<string, any>;
-  invalidChart.slides[0].components.at(-1).appearance.template = 'line';
-  assert.equal(validateSchema(invalidChart), false);
-  assert.equal(validateComposition(invalidChart).ok, false);
 });
 test('public schema and runtime allow topology only for Sankey charts', () => {
   for (const template of chartTemplates) {
@@ -519,77 +291,6 @@ test('public schema and runtime allow topology only for Sankey charts', () => {
     assert.equal(validateSchema(draft), true, `${template} without topology`);
     assert.equal(validateComposition(draft).ok, true, `${template} without topology`);
   }
-});
-test('v10 documents migrate headline, footnote, visual, icon and shape without losing primitive intent', () => {
-  const legacy = structuredClone(initialDraft()) as unknown as Record<string, any>;
-  legacy.schema = 'konpeki-composition/v10';
-  legacy.slides[0].components[0].kind = 'headline';
-  delete legacy.slides[0].components[0].appearance.role;
-  legacy.slides[0].components[1].kind = 'visual';
-  legacy.slides[0].components[3].kind = 'footnote';
-  delete legacy.slides[0].components[3].appearance.role;
-  legacy.slides[0].components.push({
-    id: 'icon-5', kind: 'icon', preferredRect: { x: 100, y: 800, width: 100, height: 100 },
-    slotIds: ['icon-5-content', 'icon-5-alt'], intent: '', appearance: { border: 'none', style: 'filled', color: 'muted' },
-  });
-  legacy.slides[0].contentSlots.push({ id: 'icon-5-content', label: 'Icon', required: true, instruction: 'Milestone', role: 'icon' });
-  legacy.slides[0].contentSlots.push({ id: 'icon-5-alt', label: 'Icon label', required: true, instruction: 'Label the milestone.', role: 'icon' });
-  legacy.slides[0].readingOrder.push({ kind: 'component', id: 'icon-5' });
-  legacy.slides[0].paintOrder.push('icon-5');
-  legacy.slides[0].components.push({
-    id: 'shape-6', kind: 'shape', preferredRect: { x: 240, y: 800, width: 100, height: 100 },
-    slotIds: ['shape-6-content'], appearance: { border: 'none', shape: 'circle', fill: 'wash', color: 'ink' },
-  });
-  legacy.slides[0].contentSlots.push({ id: 'shape-6-content', label: 'Shape', required: true, instruction: 'Frame the result.', role: 'shape' });
-  legacy.slides[0].readingOrder.push({ kind: 'component', id: 'shape-6' });
-  legacy.slides[0].paintOrder.push('shape-6');
-  const result = validateComposition(legacy);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  assert.equal(result.document.schema, compositionSchema);
-  const components = result.document.slides[0].components;
-  assert.deepEqual(components.map(component => component.kind), ['text-block', 'chart', 'text-block', 'text-block', 'diagram', 'diagram']);
-  assert.deepEqual(components.filter(component => component.kind === 'text-block').map(component => component.appearance.role), ['title', 'body', 'footnote']);
-  const migratedIcon = components.at(-2);
-  assert.equal(migratedIcon?.kind, 'diagram');
-  if (migratedIcon?.kind === 'diagram') {
-    assert.deepEqual(migratedIcon.slotIds, ['icon-5-content', 'icon-5-alt']);
-    assert.deepEqual(migratedIcon.topology?.nodes[0].primitive, {
-      kind: 'icon', style: 'filled', color: 'muted',
-    });
-    assert.equal(migratedIcon.topology?.nodes[1].visible, false);
-  }
-  const migratedShape = components.at(-1);
-  assert.equal(migratedShape?.kind, 'diagram');
-  if (migratedShape?.kind === 'diagram')
-    assert.deepEqual(migratedShape.topology?.nodes[0].primitive, {
-      kind: 'shape', shape: 'circle', fill: 'wash', color: 'ink',
-    });
-  const minimalLegacyShape = structuredClone(legacy);
-  minimalLegacyShape.slides[0].components.at(-1).appearance = {};
-  const minimalResult = validateComposition(minimalLegacyShape);
-  assert.equal(minimalResult.ok, true);
-  if (minimalResult.ok) {
-    const shape = minimalResult.document.slides[0].components.at(-1);
-    assert.equal(shape?.kind, 'diagram');
-    if (shape?.kind === 'diagram')
-      assert.deepEqual(shape.topology?.nodes[0].primitive, {
-        kind: 'shape', shape: 'rectangle',
-      });
-  }
-});
-test('v7 image visuals migrate to standalone image components', () => {
-  const legacy = structuredClone(initialDraft()) as unknown as Record<string, any>;
-  legacy.schema = 'konpeki-composition/v7';
-  const visual = legacy.slides[0].components.find((component: any) => component.kind === 'chart');
-  visual.kind = 'visual';
-  visual.appearance.template = 'image';
-  const result = validateComposition(legacy);
-  assert.equal(result.ok, true);
-  if (!result.ok) return;
-  const image = result.document.slides[0].components.find(component => component.id === visual.id);
-  assert.equal(image?.kind, 'image');
-  assert.deepEqual(image?.appearance, { border: 'none', fit: 'contain' });
 });
 test('current documents reject image as a chart template', () => {
   const current = structuredClone(initialDraft()) as unknown as Record<string, any>;

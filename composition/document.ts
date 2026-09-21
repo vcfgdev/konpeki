@@ -8,29 +8,14 @@ import {
   type CompositionSlide,
   type ContentSlot,
   type Rect,
-  type SemanticRelationship,
-  type ThemeId,
-  type AuthoringMode,
 } from "./types.ts";
 import { validateComposition } from "./validate.ts";
 import { appearanceOptions } from "./schema.ts";
 import { diagramDefinition } from "./visualizations.ts";
 
 export type Draft = CompositionDocument;
-type LegacyDraft = {
-  title: string;
-  audience: string;
-  question: string;
-  themeId: ThemeId;
-  themeMode: "paper" | "night";
-  authoringMode?: AuthoringMode;
-  components: CompositionComponent[];
-  readingOrder: string[];
-  paintOrder: string[];
-  relationships: SemanticRelationship[];
-};
 export type StoredDraftResult =
-  { ok: true; draft: Draft; migrated: boolean } | { ok: false };
+  { ok: true; draft: Draft } | { ok: false };
 export type ParsedComposition =
   | { ok: true; document: CompositionDocument }
   | { ok: false; message: string };
@@ -574,78 +559,6 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
   };
   return validMutation(draft, next);
 }
-function legacyToComposition(draft: LegacyDraft): unknown {
-  const components = draft.components;
-  const rawComponents = components as unknown as Array<
-    {
-      id: string;
-      kind: string;
-      slotIds: string[];
-      appearance?: { role?: string };
-      intent?: string;
-    }
-  >;
-  const contentSlots = rawComponents.flatMap((component) =>
-    component.slotIds.map((id) => {
-      const kind = component.kind;
-      const source =
-        kind === "footnote" ||
-        (kind === "text-block" && component.appearance?.role === "footnote");
-      const role = source
-        ? "source"
-        : kind === "headline" ||
-            (kind === "text-block" && component.appearance?.role === "title")
-          ? "takeaway"
-          : ["visual", "evidence", "chart"].includes(kind)
-            ? "evidence"
-            : kind === "image"
-              ? "image"
-              : kind === "table"
-                ? "table"
-                : ["diagram", "process"].includes(kind)
-                  ? "process-step"
-                  : kind === "text-block"
-                    ? "body"
-                    : "entity";
-      const base = {
-        id,
-        label: componentLabels[component.kind as CompositionComponent["kind"]] ??
-          kind.replaceAll("-", " "),
-        required: true,
-        instruction: component.intent?.trim() || `Describe ${kind.replaceAll("-", " ")} content.`,
-      };
-      return role === "source"
-        ? {
-            ...base,
-            role,
-            targets: rawComponents
-              .filter((candidate) => candidate.id !== component.id)
-              .map((candidate) => candidate.id),
-          }
-        : { ...base, role };
-    }),
-  );
-  return {
-    schema: "konpeki-composition/v3",
-    title: draft.title,
-    ...(draft.authoringMode ? { authoringMode: draft.authoringMode } : {}),
-    theme: { id: draft.themeId, mode: draft.themeMode },
-    slide: {
-      id: "slide-1",
-      canvas: canvasSize,
-      innerPadding: canvasPadding,
-      audience: draft.audience,
-      question: draft.question,
-      intendedViewingSize: "presentation",
-      contentSlots,
-      components,
-      groups: [],
-      readingOrder: draft.readingOrder.map((id) => ({ kind: "component", id })),
-      paintOrder: draft.paintOrder,
-      relationships: draft.relationships,
-    },
-  };
-}
 export function serializeDraft(draft: Draft) {
   return JSON.stringify({ version: 2, document: draft });
 }
@@ -664,31 +577,9 @@ export function parseStoredDraft(raw: string): StoredDraftResult {
       return {
         ok: true,
         draft: { ...result.document, title: document.title },
-        migrated: result.document.schema !== document.schema,
       };
     }
-    const legacy = (parsed?.version === 1 ? parsed.draft : parsed) as LegacyDraft;
-    if (
-      !legacy ||
-      typeof legacy.title !== "string" ||
-      typeof legacy.audience !== "string" ||
-      typeof legacy.question !== "string" ||
-      !Array.isArray(legacy.readingOrder) ||
-      !legacy.readingOrder.every((id: unknown) => typeof id === "string")
-    )
-      return { ok: false };
-    const document = legacyToComposition(legacy) as { title: string };
-    const result = validateComposition({
-      ...document,
-      title: document.title.trim() || "Untitled composition",
-    });
-    if (!result.ok)
-      return { ok: false };
-    return {
-      ok: true,
-      draft: { ...result.document, title: document.title },
-      migrated: true,
-    };
+    return { ok: false };
   } catch {
     return { ok: false };
   }

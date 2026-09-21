@@ -317,19 +317,3 @@ export const diagramCategories = Array.from(
 export function diagramDefinition(type: DiagramType): DiagramDefinition {
   return diagramDefinitions[type];
 }
-
-export function migrateLegacyDiagramType(
-  type: unknown,
-  layout: unknown,
-): DiagramType | undefined {
-  if (typeof type !== "string" || typeof layout !== "string") return undefined;
-  const legacyTypes: Record<string, DiagramType> = {
-    "process/linear": "process",
-    "process/branching": "flowchart",
-    "process/cyclical": "loop-flywheel",
-    "system/layered": "layer-stack",
-    "system/request-flow": "sequence",
-    "system/hub-and-spoke": "architecture",
-  };
-  return legacyTypes[`${type}/${layout}`];
-}

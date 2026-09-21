@@ -59,15 +59,8 @@ test("page bounds govern moves, resizes, schema validation and handoff", () => {
   assert.equal(validateComposition(doc).ok, false);
 });
 
-test("v16 decks retain geometry and new pages remain independent and empty", () => {
+test("new pages remain independent and empty", () => {
   const doc = initialDraft();
-  const migrated = validateComposition({ ...doc, schema: "konpeki-composition/v16" });
-  assert.ok(migrated.ok);
-  const expected = structuredClone(doc.slides);
-  for (const component of expected[0].components) {
-    if (component.kind === "chart" || component.kind === "diagram") component.appearance.selection = "explicit";
-  }
-  if (migrated.ok) assert.deepEqual(migrated.document.slides, expected);
   const next = addSlide(doc).draft;
   assert.deepEqual(next.slides[1].components, []);
   next.slides[1] = resizePage(next.slides[1], { width: 1600, height: 600 });

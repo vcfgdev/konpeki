@@ -210,15 +210,14 @@ try {
   checkDoubleClickEditing(cases);
   openDocument(completed);
   console.log("PASS: double-click edits text content or component intent for all five draft and finished vector kinds without altering artwork.");
-  // Form requirements stay editable after generated artwork and after legacy import.
-  const legacyArtwork = structuredClone(saved);
-  legacyArtwork.schema = "konpeki-composition/v17";
-  for (const slide of legacyArtwork.slides) for (const component of slide.components) {
+  // Omitted selection remains an explicit form requirement for imported artwork.
+  const importedArtwork = structuredClone(saved);
+  for (const slide of importedArtwork.slides) for (const component of slide.components) {
     if (component.kind === "diagram" || component.kind === "chart") delete component.appearance.selection;
   }
-  const legacyFile = join(scratch, "legacy-artwork.json");
-  writeFileSync(legacyFile, JSON.stringify(legacyArtwork));
-  openDocument(legacyFile);
+  const importedFile = join(scratch, "imported-artwork.json");
+  writeFileSync(importedFile, JSON.stringify(importedArtwork));
+  openDocument(importedFile);
   for (const [pageIndex, kind, label, key, value] of [
     [2, "Diagram", "Flowchart", "type", "flowchart"],
     [3, "Chart", "Line", "template", "line"],
@@ -227,13 +226,13 @@ try {
     click(`Select ${kind}`);
     check(kind === "Diagram"
       ? 'document.querySelector(".diagram-type-options button.selected").textContent.trim() !== "YOLO"'
-      : 'document.querySelector(".chart-type-field > summary").textContent.startsWith("Required form:")', "legacy artwork choice must be explicit and visible");
+      : 'document.querySelector(".chart-type-field > summary").textContent.startsWith("Required form:")', "imported artwork choice must be explicit and visible");
     browser("click", ".diagram-type-field > summary");
     for (const selection of ["explicit", "auto", "explicit"]) {
       click(selection === "auto" ? "YOLO" : label);
       browser("wait", "--fn", `JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[${pageIndex}].components[0].appearance.selection === ${JSON.stringify(selection)} && JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[${pageIndex}].components[0].appearance[${JSON.stringify(key)}] === ${JSON.stringify(value)}`);
       const actual = JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document.slides[pageIndex].components[0];
-      const expected = structuredClone(legacyArtwork.slides[pageIndex].components[0]);
+      const expected = structuredClone(importedArtwork.slides[pageIndex].components[0]);
       expected.appearance[key] = value;
       expected.appearance.selection = selection;
       assert.deepEqual(actual, expected, `${kind} requirement change altered artwork, intent, topology or geometry`);
@@ -285,7 +284,7 @@ try {
     assert.notDeepEqual(chartPreviewColors(), before, "chart thumbnails did not respond to theme change");
     capture(`${finished ? "finished" : "draft"}-chart-themed`);
   }
-  console.log("PASS: finished diagram/chart form selection, Auto, legacy import, artwork preservation and persistence/reload; Sankey topology remains protected.");
+  console.log("PASS: finished diagram/chart form selection, Auto, imported artwork preservation and persistence/reload; Sankey topology remains protected.");
   console.log("PASS: bar, line and pie thumbnails retain palette colors for draft/finished charts and respond to theme changes.");
   openDocument(completed);
   for (const [index, [kind]] of cases.entries()) {

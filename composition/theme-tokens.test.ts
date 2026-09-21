@@ -35,13 +35,10 @@ test("bindings and fixed overrides survive validation and JSON round trips", () 
   assert.equal(validateComposition(draft).ok, false);
 });
 
-test("v14 literal artwork migrates without guessing theme roles", () => {
+test("literal artwork remains fixed without guessing theme roles", () => {
   const draft = initialDraft();
-  draft.slides[0].components[0].customVisual = { ...parseEditableSvg('<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>'), format: "vector", description: "Legacy fixed artwork" };
-  const result = validateComposition({ ...draft, schema: "konpeki-composition/v14" });
+  draft.slides[0].components[0].customVisual = { ...parseEditableSvg('<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>'), format: "vector", description: "Fixed artwork" };
+  const result = validateComposition(draft);
   assert.ok(result.ok);
-  for (const component of draft.slides[0].components) {
-    if (component.kind === "chart" || component.kind === "diagram") component.appearance.selection = "explicit";
-  }
   if (result.ok) assert.deepEqual(result.document.slides, draft.slides);
 });

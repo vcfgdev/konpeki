@@ -1,26 +1,7 @@
 import type { ChartTemplate, DiagramType } from "./visualizations.ts";
 export type { ChartTemplate, DiagramType } from "./visualizations.ts";
 
-export const compositionSchema = "konpeki-composition/v18" as const;
-export const legacyCompositionSchemas = [
-  "konpeki-composition/v1",
-  "konpeki-composition/v2",
-  "konpeki-composition/v3",
-  "konpeki-composition/v4",
-  "konpeki-composition/v5",
-  "konpeki-composition/v6",
-  "konpeki-composition/v7",
-  "konpeki-composition/v8",
-  "konpeki-composition/v9",
-  "konpeki-composition/v10",
-  "konpeki-composition/v11",
-  "konpeki-composition/v12",
-  "konpeki-composition/v13",
-  "konpeki-composition/v14",
-  "konpeki-composition/v15",
-  "konpeki-composition/v16",
-  "konpeki-composition/v17",
-] as const;
+export const compositionSchema = "konpeki-composition/v1" as const;
 export type CanvasSize = { width: number; height: number };
 export const canvasSize = { width: 1920, height: 1080 } as const;
 export const canvasPadding = {

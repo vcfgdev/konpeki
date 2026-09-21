@@ -117,7 +117,7 @@ function compileSlidePlan(slide: CompositionSlide, index: number) {
     const custom = component.customVisual
       ? component.customVisual.format === "vector"
         ? ` Custom visual — ${component.customVisual.elements.length} editable vector elements in a ${component.customVisual.viewBox.width}×${component.customVisual.viewBox.height} local viewport, ${component.customVisual.fit ?? "contain"} fit; preserve element IDs and edit individual geometry or styling while this component ID and preferred rectangle own slide placement.`
-        : ` Custom visual — legacy self-contained SVG, ${component.customVisual.viewBox.width}×${component.customVisual.viewBox.height} local viewport, ${component.customVisual.fit ?? "contain"} fit; convert its source to editable vector elements when revising while this component ID and preferred rectangle own slide placement.`
+        : ` Custom visual — opaque self-contained SVG, ${component.customVisual.viewBox.width}×${component.customVisual.viewBox.height} local viewport, ${component.customVisual.fit ?? "contain"} fit; convert its source to editable vector elements when revising while this component ID and preferred rectangle own slide placement.`
       : "";
     return `- ${componentLabel(component)}, ${placement(component, slide)}: ${component.intent?.trim() || "Use its content-slot instructions."} Appearance — ${appearance(component)}.${grammar}${custom} Required slots — ${slotLabels}.`;
   });

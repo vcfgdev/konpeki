@@ -547,7 +547,7 @@ export function InspectorPanel({
           </dl>
           {component.customVisual.format !== "vector" && (
             <p className="field-help">
-              This legacy SVG is an opaque compatibility fallback. Ask an agent to convert it to editable vector elements.
+              This SVG is opaque to the editor. Ask an agent to convert it to editable vector elements.
             </p>
           )}
           {vectorVisual && (

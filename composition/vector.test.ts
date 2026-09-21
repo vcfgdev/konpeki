@@ -47,7 +47,7 @@ test("vector edits, sibling subtree ordering and deletion survive history and bo
   edited.slides[0].components[0].customVisual = { ...visual, elements };
   history = commitHistory(history, edited);
   assert.equal(validateComposition(edited).ok, true);
-  assert.deepEqual(parseStoredDraft(serializeDraft(edited)), { ok: true, draft: edited, migrated: false });
+  assert.deepEqual(parseStoredDraft(serializeDraft(edited)), { ok: true, draft: edited });
   const imported = parseCompositionJSON(JSON.stringify(edited));
   assert.equal(imported.ok, true);
   if (imported.ok) assert.deepEqual(imported.document, edited);

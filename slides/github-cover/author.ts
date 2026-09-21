@@ -2,7 +2,7 @@ import {execFileSync} from 'node:child_process';
 import {writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {assertComposition} from '../../composition/validate.ts';
-import type {CompositionComponent, CompositionDocument, VectorElement} from '../../composition/types.ts';
+import {compositionSchema, type CompositionComponent, type CompositionDocument, type VectorElement} from '../../composition/types.ts';
 
 // Reproduce the existing mark's alpha silhouette as editable vector geometry.
 const mask=execFileSync('magick',[fileURLToPath(new URL('../../src/assets/konpeki-mark.png',import.meta.url)),'-alpha','extract','-threshold','50%','-depth','8','gray:-']);
@@ -35,7 +35,7 @@ const components:CompositionComponent[]=[
   text('audience','For you and your agents.',64,400,660,76,44,400),
   {id:'workflow',kind:'diagram',slotIds:['workflow-content'],preferredRect:{x:772,y:116,width:444,height:412},appearance:{type:'flowchart',selection:'explicit',border:'none'},customVisual:{format:'vector',viewBox:{x:0,y:0,width:444,height:412},description:'Intent connects to Build, then Refine; selection handles on Refine express editable output.',elements}},
 ];
-const document:CompositionDocument={schema:'konpeki-composition/v18',title:'Konpeki GitHub cover',authoringMode:'default',theme:{id:'plex',mode:'paper'},slides:[{
+const document:CompositionDocument={schema:compositionSchema,title:'Konpeki GitHub cover',authoringMode:'default',theme:{id:'plex',mode:'paper'},slides:[{
   id:'github-cover',name:'GitHub repository cover',canvas:{width:1280,height:640},innerPadding:{top:64,right:64,bottom:64,left:64},pageNumber:{style:'none',color:'muted'},
   audience:'Developers discovering Konpeki on GitHub',question:'What is Konpeki?',intendedViewingSize:'social',components,
   contentSlots:components.map(c=>({id:c.slotIds[0],label:c.id,role:'body',required:true,instruction:c.kind==='text-block'?c.content??'':c.customVisual?.description??''})),
