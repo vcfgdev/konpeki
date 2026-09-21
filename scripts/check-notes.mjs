@@ -63,9 +63,12 @@ try {
   await b("mouse", "down", "left");
   await b("mouse", "up", "left");
   await wait("document.querySelector('.revision-note-scope').textContent.includes('review-node')");
+  await check("(() => { const buttons = [...document.querySelectorAll('.vector-actions button')]; const boxes = buttons.map(button => button.getBoundingClientRect()); return buttons.length === 3 && boxes.every(box => box.width >= 40 && box.height >= 40) && boxes.every(box => Math.abs(box.y - boxes[0].y) < 1) && buttons.every(button => button.scrollWidth <= button.clientWidth); })()");
   await b("fill", "#revision-note", "Use square corners; keep size and position");
   await b("find", "role", "button", "click", "--name", "Add note", "--exact");
   await wait("document.querySelectorAll('.revision-note-list li').length===2");
+  await check("[...document.querySelectorAll('.revision-pin')].every(pin => [...document.querySelectorAll('.resize-handle')].every(handle => { const a = pin.getBoundingClientRect(); const b = handle.getBoundingClientRect(); return a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom; }))");
+  await check("[...document.querySelectorAll('.resize-handle')].every(handle => { const rect = handle.getBoundingClientRect(); return document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === handle; })");
   const notes = (await readReview(path)).notes;
   assert.deepEqual(notes.map(n => [n.slideId, n.componentId, n.elementId]), [["introduction", undefined, undefined], ["editing", "editable-diagram", "review-node"]]);
   await tab("Pages");
@@ -108,7 +111,7 @@ try {
   await capture("resolved");
   await b("click", ".build-button");
   await wait("!!document.querySelector('.build-loading')");
-  await b("find", "role", "button", "click", "--name", "Cancel", "--exact");
+  await b("find", "role", "button", "click", "--name", "Cancel request", "--exact");
   await wait("!document.querySelector('.build-loading')");
   assert.equal((await readReview(path)).request.status, "failed");
   await b("set", "viewport", "1024", "768", "2");

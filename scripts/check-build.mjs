@@ -18,11 +18,15 @@ await writeFile(compositionPath, JSON.stringify(document));
 await mkdir(artifacts, { recursive: true });
 let requests = 0;
 let rejectBuild = false;
+let rejectSave = false;
 const server = await createServer({
   server: { host: "127.0.0.1", port: 0 },
   plugins: [{ name: "reject-test-build", enforce: "pre", configureServer(server) {
     server.middlewares.use((request, response, next) => {
-      if (rejectBuild && request.url === "/__konpeki/session/build") {
+      if (rejectSave && request.method === "PUT" && request.url === "/__konpeki/session") {
+        response.writeHead(500, { "content-type": "application/json" });
+        response.end(JSON.stringify({ error: "Save rejected for test" }));
+      } else if (rejectBuild && request.url === "/__konpeki/session/build") {
         response.writeHead(500, { "content-type": "application/json" });
         response.end(JSON.stringify({ error: "Build request rejected for test" }));
       } else next();
@@ -54,6 +58,24 @@ try {
   await browser("wait", "--fn", "!!document.querySelector('.build-button:not(:disabled)')");
   await check("!document.querySelector('.toast button')", "Opening notification has an unexpected dismiss button");
   await browser("wait", "--fn", "!document.querySelector('.toast.visible')");
+  rejectSave = true;
+  await browser("eval", `new Promise(resolve => {
+    const input = document.querySelector('[name="composition-title"]');
+    const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+    setValue.call(input, 'Unsaved title');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    requestAnimationFrame(() => {
+      document.querySelector('.build-button').click();
+      resolve();
+    });
+  })`);
+  await browser("wait", "--text", "Save rejected for test");
+  await check("document.querySelector('.toast.error [role=alert]') && !document.querySelector('.build-loading')", "Failed pre-build save lost its error or left the editor locked");
+  assert.equal(requests, 0, "Build request was sent after its save failed");
+  rejectSave = false;
+  await browser("reload");
+  await browser("wait", "--fn", "!!document.querySelector('.build-button:not(:disabled)')");
+  await browser("wait", "--fn", "!document.querySelector('.toast.visible')");
   await check("getComputedStyle(document.querySelector('.build-button')).backgroundColor === 'rgb(255, 255, 255)'", "Idle Build it background is not white");
   await capture("idle");
   await browser("eval", "window.idleOrbBounds=document.querySelector('.build-button .build-orb').getBoundingClientRect().toJSON()");
@@ -73,7 +95,7 @@ try {
   await browser("eval", "document.querySelector('.build-button').click()");
   assert.equal(requests, 1, "Duplicate build request");
   await capture("waiting");
-  await check("!document.querySelector('.build-loading-card strong') && document.querySelector('.build-loading-card').textContent.includes('Ask your coding agent to apply the changes')", "Handoff still implies automatic agent pickup");
+  await check("document.querySelector('.build-loading-card strong').textContent === 'Request ready' && document.querySelector('.build-loading-card').textContent.includes('Copy the handoff prompt')", "Handoff state is unclear");
   await browser("eval", "Object.defineProperty(navigator.clipboard, 'writeText', {configurable:true,value:async text=>{window.copiedPrompt=text}})");
   await browser("find", "role", "button", "click", "--name", "Copy prompt", "--exact");
   await check("window.copiedPrompt === 'Pick up my pending Konpeki request and apply the changes.'", "Copied prompt is incorrect");
@@ -122,10 +144,10 @@ try {
   await writeFile(compositionPath, JSON.stringify(document));
   await browser("wait", "1500");
   await check("!!document.querySelector('.build-loading') && document.querySelector('.editor-content').inert", "Recovery unlocked an active request");
-  await browser("find", "role", "button", "click", "--name", "Cancel", "--exact");
+  await browser("find", "role", "button", "click", "--name", "Cancel request", "--exact");
   await browser("wait", "--fn", "!document.querySelector('.build-loading')");
   assert.equal((await readReview(compositionPath)).request.status, "failed");
-  console.log("Build lifecycle OK: persisted request, CLI claim, explicit completion, duplicate blocked, polling failure/recovery stays locked until cancel, reduced motion respected.");
+  console.log("Build lifecycle OK: failed pre-build save remains visible, persisted request, CLI claim, explicit completion, duplicate blocked, polling failure/recovery stays locked until cancel, reduced motion respected.");
 } finally {
   await browser("close").catch(() => {});
   await server.close();

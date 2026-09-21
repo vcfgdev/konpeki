@@ -75,6 +75,7 @@ export function App() {
   const [error, setError] = useState(loaded.error ?? "");
   const [notice, setNotice] = useState<{
     message: string;
+    tone: "neutral" | "error";
   }>();
   const [toastClosing, setToastClosing] = useState(false);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
@@ -231,9 +232,9 @@ export function App() {
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
   }, [draft, presenting, selected, vectorSelection, fileSession.building]);
-  function showNotice(message: string) {
+  function showNotice(message: string, tone: "neutral" | "error" = "neutral") {
     setToastClosing(false);
-    setNotice({ message: message.replace(/\.$/, "") });
+    setNotice({ message: message.replace(/\.$/, ""), tone });
   }
   function updateDraft(
     next: Draft,
@@ -273,7 +274,7 @@ export function App() {
   function addNewSlide() {
     const result = appendSlide(draft);
     if (!result.slideId) {
-      showNotice("Could not add a page until the composition is valid.");
+      showNotice("Could not add a page until the composition is valid.", "error");
       return;
     }
     focusAfterHistory.current = true;
@@ -285,7 +286,7 @@ export function App() {
   }
   function removeExistingSlide(id: string) {
     if (draft.slides.length === 1) {
-      showNotice("A document needs at least one page.");
+      showNotice("A document needs at least one page.", "error");
       return;
     }
     const index = draft.slides.findIndex((item) => item.id === id);
@@ -420,7 +421,7 @@ export function App() {
   function remove(id: string) {
     const issue = componentRemovalIssue(draft, id, slide.id);
     if (issue) {
-      showNotice(issue);
+      showNotice(issue, "error");
       return;
     }
     const index = slide.components.findIndex((component) => component.id === id);
@@ -455,9 +456,13 @@ export function App() {
         : selected
         ? "Review the selected component in context and build it from the current saved composition."
         : "Review the current slides and build them from the current saved composition.";
-      await fileSession.build(instruction, slide.id, selected, vectorSelection?.componentId === selected ? vectorSelection?.elementId : undefined);
+      const requested = await fileSession.build(instruction, slide.id, selected, vectorSelection?.componentId === selected ? vectorSelection?.elementId : undefined);
+      if (requested) {
+        setNotice(undefined);
+        setToastClosing(false);
+      }
     } catch (requestError) {
-      showNotice(requestError instanceof Error ? requestError.message : "Could not send the build request.");
+      showNotice(requestError instanceof Error ? requestError.message : "Could not send the build request.", "error");
     }
   }
   async function openComposition(file: File) {
@@ -465,12 +470,12 @@ export function App() {
     try {
       raw = await file.text();
     } catch {
-      showNotice("Could not read that composition file.");
+      showNotice("Could not read that composition file.", "error");
       return;
     }
     const parsed = parseCompositionJSON(raw);
     if (!parsed.ok) {
-      showNotice(`Could not open: ${parsed.message}`);
+      showNotice(`Could not open: ${parsed.message}`, "error");
       return;
     }
     focusAfterHistory.current = true;
@@ -487,6 +492,7 @@ export function App() {
       const issue = validation.issues[0];
       showNotice(
         `Cannot present: ${issue?.path || "document"} ${issue?.message || "is invalid"}.`,
+        "error",
       );
       return;
     }
@@ -512,6 +518,7 @@ export function App() {
     } catch (exportError) {
       showNotice(
         `Could not export PNG: ${exportError instanceof Error ? exportError.message : "Unknown error"}`,
+        "error",
       );
     } finally {
       setExportBusy(false);
@@ -532,6 +539,9 @@ export function App() {
     }
   }
   const selectedComponent = slide.components.find((c) => c.id === selected);
+  const buildState = fileSession.building
+    ? fileSession.review.request?.status === "working" ? "working" : "ready"
+    : undefined;
   function useComponentTool(kind: CompositionComponent["kind"]) {
     add(kind);
   }
@@ -585,6 +595,7 @@ export function App() {
           onPresent={present}
           fileStatus={loaded.fileSession ? fileSession.status : undefined}
           building={fileSession.building}
+          buildState={buildState}
           onBuild={loaded.fileSession ? () => { void requestBuild(); } : undefined}
           onSelectTool={() => selectComponent()}
           onComponentTool={useComponentTool}
@@ -702,21 +713,22 @@ export function App() {
           <div className="stage build-loading" role="status" aria-live="polite">
             <div className="build-loading-card">
               <div className="build-nebula"><BuildOrb active nebula /></div>
-              {fileSession.review.request?.status === "working" ? <>
+              {buildState === "working" ? <>
                 <strong>Agent working</strong>
-                <span>Changes appear here; editing resumes when the agent finishes.</span>
+                <span>Updating this composition. Editing resumes when the request finishes.</span>
               </> : <>
-                <span>Ask your coding agent to apply the changes</span>
+                <strong>Request ready</strong>
+                <span>Copy the handoff prompt to ask your coding agent to apply these changes.</span>
                 <button type="button" className="primary" onClick={async () => {
                   try {
                     await navigator.clipboard.writeText("Pick up my pending Konpeki request and apply the changes.");
                     showNotice("Prompt copied");
                   } catch {
-                    showNotice("Could not copy. Ask your coding agent to pick up your pending Konpeki request");
+                    showNotice("Could not copy. Ask your coding agent to pick up your pending Konpeki request", "error");
                   }
                 }}>Copy prompt</button>
               </>}
-              <button type="button" onClick={() => { void fileSession.cancel().catch(error => showNotice(error.message)); }}>Cancel</button>
+              <button type="button" onClick={() => { void fileSession.cancel().catch(error => showNotice(error.message, "error")); }}>Cancel request</button>
             </div>
           </div>
         )}
@@ -729,9 +741,9 @@ export function App() {
         />
       )}
       <div
-        className={`toast ${notice ? "visible" : ""} ${toastClosing ? "closing" : ""}`}
+        className={`toast ${notice ? "visible" : ""} ${notice?.tone === "error" ? "error" : ""} ${toastClosing ? "closing" : ""}`}
       >
-        <span role="status" aria-live="polite">
+        <span role={notice?.tone === "error" ? "alert" : "status"} aria-live={notice?.tone === "error" ? "assertive" : "polite"}>
           {notice?.message}
         </span>
       </div>

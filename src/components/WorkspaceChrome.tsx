@@ -66,6 +66,7 @@ export function WorkspaceChrome({
   onPresent,
   fileStatus,
   building,
+  buildState,
   onBuild,
   onSelectTool,
   onComponentTool,
@@ -85,6 +86,7 @@ export function WorkspaceChrome({
   onPresent: () => void;
   fileStatus?: "loading" | "saved" | "saving" | "conflict" | "error";
   building: boolean;
+  buildState?: "ready" | "working";
   onBuild?: () => void;
   onSelectTool: () => void;
   onComponentTool: (kind: CompositionComponent["kind"]) => void;
@@ -165,7 +167,7 @@ export function WorkspaceChrome({
             onClick={onBuild}
           >
             <BuildOrb active={building} />
-            <span className="build-label">{building ? "Building…" : "Build it"}</span>
+            <span className="build-label">{buildState === "ready" ? "Request ready" : buildState === "working" ? "Agent working" : "Build it"}</span>
           </button>
         )}
       </div>

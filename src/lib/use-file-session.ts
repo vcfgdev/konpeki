@@ -19,7 +19,7 @@ export type FileStatus = "loading" | "saved" | "saving" | "conflict" | "error";
 type Callbacks = {
   onOpen: (draft: Draft, name: string) => void;
   onExternalChange: (draft: Draft) => void;
-  onNotice: (message: string) => void;
+  onNotice: (message: string, tone?: "neutral" | "error") => void;
   onError: (message: string) => void;
 };
 
@@ -93,6 +93,7 @@ export function useFileSession(
           setStatus("conflict");
           callbacksRef.current.onNotice(
             "The file changed elsewhere. Neither version was overwritten.",
+            "error",
           );
           return;
         }
@@ -107,7 +108,7 @@ export function useFileSession(
         if (cancelled || submittingBuild.current || revision !== state.current.revision) return;
         setStatus("error");
         if (buildPending.current) {
-          callbacksRef.current.onNotice("Could not load the agent result. Check the local file service.");
+          callbacksRef.current.onNotice("Could not load the agent result. Check the local file service.", "error");
         }
       });
     }, 1000);
@@ -173,9 +174,12 @@ export function useFileSession(
         state.current.pending = undefined;
         const conflict = error instanceof FileSessionError && error.status === 409;
         setStatus(conflict ? "conflict" : "error");
-        callbacksRef.current.onNotice(conflict
-          ? "The composition changed outside this browser. Your edits were not overwritten."
-          : error instanceof Error ? error.message : "Could not save the composition file.");
+        callbacksRef.current.onNotice(
+          conflict
+            ? "The composition changed outside this browser. Your edits were not overwritten."
+            : error instanceof Error ? error.message : "Could not save the composition file.",
+          "error",
+        );
         return;
       }
     }
