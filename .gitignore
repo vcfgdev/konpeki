@@ -6,6 +6,7 @@ node_modules/
 .DS_Store
 *.tgz
 *.log
+*.review.json
 .env
 .env.*
 !.env.example

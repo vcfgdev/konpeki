@@ -1,407 +1,380 @@
 {
-  "schema": "konpeki-composition/v16",
-  "title": "Introducing Konpeki",
   "authoringMode": "default",
-  "theme": {
-    "id": "plex",
-    "mode": "paper"
-  },
+  "schema": "konpeki-composition/v18",
   "slides": [
     {
-      "id": "introduction",
-      "name": "Meet Konpeki",
-      "canvas": {
-        "width": 1920,
-        "height": 1080
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 112,
-        "bottom": 0,
-        "left": 112
-      },
-      "pageNumber": {
-        "style": "01/02",
-        "color": "muted"
-      },
       "audience": "People and coding-agent users discovering Konpeki",
-      "question": "What is Konpeki?",
-      "intendedViewingSize": "presentation",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Konpeki",
           "id": "brand",
+          "intent": "Konpeki",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 140,
+            "height": 177,
             "width": 820,
-            "height": 177
+            "x": 112,
+            "y": 140
           },
           "slotIds": [
             "brand-content"
           ],
-          "intent": "Konpeki",
-          "content": "Konpeki",
           "textStyle": {
-            "size": 112,
-            "weight": 600,
-            "lineHeight": 1.4,
             "color": "accent",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 112,
+            "weight": 600
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "A shared slide canvas\nfor people and coding agents.",
           "id": "promise",
+          "intent": "A shared slide canvas for people and coding agents.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 328,
+            "height": 177,
             "width": 960,
-            "height": 177
+            "x": 112,
+            "y": 328
           },
           "slotIds": [
             "promise-content"
           ],
-          "intent": "A shared slide canvas for people and coding agents.",
-          "content": "A shared slide canvas\nfor people and coding agents.",
           "textStyle": {
-            "size": 56,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 56,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Sketch the idea. Generate the detail.\nKeep revising the same document.",
           "id": "summary",
+          "intent": "Sketch the idea. Generate the detail. Keep revising the same document.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 548,
+            "height": 121,
             "width": 870,
-            "height": 121
+            "x": 112,
+            "y": 548
           },
           "slotIds": [
             "summary-content"
           ],
-          "intent": "Sketch the idea. Generate the detail. Keep revising the same document.",
-          "content": "Sketch the idea. Generate the detail.\nKeep revising the same document.",
           "textStyle": {
-            "size": 36,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 36,
+            "weight": 400
           }
         },
         {
-          "id": "shared-canvas",
-          "kind": "diagram",
-          "preferredRect": {
-            "x": 1090,
-            "y": 185,
-            "width": 700,
-            "height": 590
-          },
-          "slotIds": [
-            "shared-canvas-content"
-          ],
-          "intent": "A single editable composition contains a headline, diagram and supporting text; people and agents revise it.",
           "appearance": {
-            "type": "process",
             "border": "none",
             "colorScheme": "monochrome",
+            "density": "sparse",
             "emphasis": "none",
-            "density": "sparse"
+            "selection": "explicit",
+            "type": "process"
           },
           "customVisual": {
-            "format": "vector",
-            "viewBox": {
-              "x": 0,
-              "y": 0,
-              "width": 700,
-              "height": 590
-            },
-            "fit": "contain",
             "description": "A single editable composition contains a headline, diagram and supporting text; people and agents revise it.",
             "elements": [
               {
-                "id": "canvas-frame",
-                "kind": "rect",
                 "attributes": {
-                  "x": 8,
-                  "y": 25,
-                  "width": 670,
+                  "fill": "theme:background",
                   "height": 395,
                   "rx": 4,
-                  "fill": "theme:background",
                   "stroke": "theme:divider",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 670,
+                  "x": 8,
+                  "y": 25
+                },
+                "id": "canvas-frame",
+                "kind": "rect"
               },
               {
-                "id": "canvas-title",
-                "kind": "text",
-                "text": "An idea, made clear",
                 "attributes": {
-                  "x": 45,
-                  "y": 93,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 36,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 45,
+                  "y": 93
+                },
+                "id": "canvas-title",
+                "kind": "text",
+                "text": "An idea, made clear"
               },
               {
-                "id": "headline-rule",
-                "kind": "path",
                 "attributes": {
                   "d": "M45 120H640",
                   "fill": "none",
                   "stroke": "theme:divider",
-                  "stroke-width": 2,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 2
+                },
+                "id": "headline-rule",
+                "kind": "path"
               },
               {
-                "id": "source-node",
-                "kind": "rect",
                 "attributes": {
-                  "x": 50,
-                  "y": 183,
+                  "fill": "theme:background",
+                  "height": 90,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
                   "width": 160,
-                  "height": 90,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "x": 50,
+                  "y": 183
+                },
+                "id": "source-node",
+                "kind": "rect"
               },
               {
-                "id": "result-node",
-                "kind": "rect",
                 "attributes": {
-                  "x": 310,
-                  "y": 183,
-                  "width": 320,
+                  "fill": "theme:background",
                   "height": 90,
                   "rx": 4,
-                  "fill": "theme:background",
                   "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 320,
+                  "x": 310,
+                  "y": 183
+                },
+                "id": "result-node",
+                "kind": "rect"
               },
               {
+                "attributes": {
+                  "fill": "theme:ink",
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "x": 98,
+                  "y": 239
+                },
                 "id": "source-label",
                 "kind": "text",
-                "text": "Idea",
+                "text": "Idea"
+              },
+              {
                 "attributes": {
-                  "x": 98,
-                  "y": 239,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
-              },
-              {
+                  "x": 382,
+                  "y": 239
+                },
                 "id": "result-label",
                 "kind": "text",
-                "text": "Explanation",
-                "attributes": {
-                  "x": 382,
-                  "y": 239,
-                  "font-family": "theme:body-font",
-                  "font-size": 28,
-                  "font-weight": 400,
-                  "fill": "theme:ink"
-                }
+                "text": "Explanation"
               },
               {
-                "id": "connection",
-                "kind": "path",
                 "attributes": {
                   "d": "M228 228H292M278 216L292 228L278 240",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "connection",
+                "kind": "path"
               },
               {
-                "id": "body-lines",
-                "kind": "path",
                 "attributes": {
                   "d": "M50 323H395M50 351H525",
                   "fill": "none",
                   "stroke": "theme:divider",
-                  "stroke-width": 8,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 8
+                },
+                "id": "body-lines",
+                "kind": "path"
               },
               {
-                "id": "document-label",
-                "kind": "text",
-                "text": "composition.json",
                 "attributes": {
-                  "x": 178,
-                  "y": 484,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 32,
                   "font-weight": 500,
-                  "fill": "theme:accent"
-                }
+                  "x": 178,
+                  "y": 484
+                },
+                "id": "document-label",
+                "kind": "text",
+                "text": "composition.json"
               },
               {
-                "id": "participants",
-                "kind": "text",
-                "text": "Human edits + agent revisions",
                 "attributes": {
-                  "x": 116,
-                  "y": 548,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                  "x": 116,
+                  "y": 548
+                },
+                "id": "participants",
+                "kind": "text",
+                "text": "Human edits + agent revisions"
               }
-            ]
-          }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 590,
+              "width": 700,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "shared-canvas",
+          "intent": "A single editable composition contains a headline, diagram and supporting text; people and agents revise it.",
+          "kind": "diagram",
+          "preferredRect": {
+            "height": 590,
+            "width": 700,
+            "x": 1090,
+            "y": 185
+          },
+          "slotIds": [
+            "shared-canvas-content"
+          ]
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "For technical explanations, product stories and decision decks.",
           "id": "intro-note",
+          "intent": "For technical explanations, product stories and decision decks.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 870,
+            "height": 68,
             "width": 1696,
-            "height": 68
+            "x": 112,
+            "y": 870
           },
           "slotIds": [
             "intro-note-content"
           ],
-          "intent": "For technical explanations, product stories and decision decks.",
-          "content": "For technical explanations, product stories and decision decks.",
           "textStyle": {
-            "size": 34,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 400
           }
         }
       ],
       "contentSlots": [
         {
           "id": "brand-content",
+          "instruction": "Konpeki",
           "label": "brand",
-          "role": "body",
           "required": true,
-          "instruction": "Konpeki"
+          "role": "body"
         },
         {
           "id": "promise-content",
+          "instruction": "A shared slide canvas for people and coding agents.",
           "label": "promise",
-          "role": "body",
           "required": true,
-          "instruction": "A shared slide canvas for people and coding agents."
+          "role": "body"
         },
         {
           "id": "summary-content",
+          "instruction": "Sketch the idea. Generate the detail. Keep revising the same document.",
           "label": "summary",
-          "role": "body",
           "required": true,
-          "instruction": "Sketch the idea. Generate the detail. Keep revising the same document."
+          "role": "body"
         },
         {
           "id": "shared-canvas-content",
+          "instruction": "A single editable composition contains a headline, diagram and supporting text; people and agents revise it.",
           "label": "shared-canvas",
-          "role": "body",
           "required": true,
-          "instruction": "A single editable composition contains a headline, diagram and supporting text; people and agents revise it."
+          "role": "body"
         },
         {
           "id": "intro-note-content",
+          "instruction": "For technical explanations, product stories and decision decks.",
           "label": "intro-note",
-          "role": "body",
           "required": true,
-          "instruction": "For technical explanations, product stories and decision decks."
+          "role": "body"
         }
       ],
       "groups": [],
-      "readingOrder": [
-        {
-          "kind": "component",
-          "id": "brand"
-        },
-        {
-          "kind": "component",
-          "id": "promise"
-        },
-        {
-          "kind": "component",
-          "id": "summary"
-        },
-        {
-          "kind": "component",
-          "id": "shared-canvas"
-        },
-        {
-          "kind": "component",
-          "id": "intro-note"
-        }
-      ],
+      "id": "introduction",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "Meet Konpeki",
+      "pageNumber": {
+        "color": "muted",
+        "style": "01/02"
+      },
       "paintOrder": [
         "brand",
         "promise",
@@ -409,1356 +382,1347 @@
         "shared-canvas",
         "intro-note"
       ],
+      "question": "What is Konpeki?",
+      "readingOrder": [
+        {
+          "id": "brand",
+          "kind": "component"
+        },
+        {
+          "id": "promise",
+          "kind": "component"
+        },
+        {
+          "id": "summary",
+          "kind": "component"
+        },
+        {
+          "id": "shared-canvas",
+          "kind": "component"
+        },
+        {
+          "id": "intro-note",
+          "kind": "component"
+        }
+      ],
       "relationships": []
     },
     {
-      "id": "workflow",
-      "name": "A round-trip workflow",
-      "canvas": {
-        "width": 1920,
-        "height": 1080
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 112,
-        "bottom": 0,
-        "left": 112
-      },
-      "pageNumber": {
-        "style": "01/02",
-        "color": "muted"
-      },
       "audience": "People and coding-agent users discovering Konpeki",
-      "question": "How do a person and an agent work together?",
-      "intendedViewingSize": "presentation",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "A handoff that comes back to the canvas",
           "id": "workflow-title",
+          "intent": "A handoff that comes back to the canvas",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 88,
+            "height": 107,
             "width": 1696,
-            "height": 107
+            "x": 112,
+            "y": 88
           },
           "slotIds": [
             "workflow-title-content"
           ],
-          "intent": "A handoff that comes back to the canvas",
-          "content": "A handoff that comes back to the canvas",
           "textStyle": {
-            "size": 62,
-            "weight": 600,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 62,
+            "weight": 600
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "The agent works on the document you can keep editing.",
           "id": "workflow-subtitle",
+          "intent": "The agent works on the document you can keep editing.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 184,
+            "height": 65,
             "width": 1696,
-            "height": 65
+            "x": 112,
+            "y": 184
           },
           "slotIds": [
             "workflow-subtitle-content"
           ],
-          "intent": "The agent works on the document you can keep editing.",
-          "content": "The agent works on the document you can keep editing.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         },
         {
-          "id": "roundtrip",
-          "kind": "diagram",
-          "preferredRect": {
-            "x": 112,
-            "y": 342,
-            "width": 1696,
-            "height": 470
-          },
-          "slotIds": [
-            "roundtrip-content"
-          ],
-          "intent": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
           "appearance": {
-            "type": "process",
             "border": "none",
             "colorScheme": "monochrome",
+            "density": "sparse",
             "emphasis": "none",
-            "density": "sparse"
+            "selection": "explicit",
+            "type": "process"
           },
           "customVisual": {
-            "format": "vector",
-            "viewBox": {
-              "x": 0,
-              "y": 0,
-              "width": 1696,
-              "height": 470
-            },
-            "fit": "contain",
             "description": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
             "elements": [
               {
-                "id": "number-0",
-                "kind": "text",
-                "text": "01",
                 "attributes": {
-                  "x": 0,
-                  "y": 48,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 26,
                   "font-weight": 500,
-                  "fill": "theme:accent"
-                }
+                  "x": 0,
+                  "y": 48
+                },
+                "id": "number-0",
+                "kind": "text",
+                "text": "01"
               },
               {
-                "id": "step-0",
-                "kind": "text",
-                "text": "Draft",
                 "attributes": {
-                  "x": 0,
-                  "y": 122,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 42,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 0,
+                  "y": 122
+                },
+                "id": "step-0",
+                "kind": "text",
+                "text": "Draft"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 29,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 190
+                },
                 "id": "detail-a-0",
                 "kind": "text",
-                "text": "Place components.",
+                "text": "Place components."
+              },
+              {
                 "attributes": {
-                  "x": 0,
-                  "y": 190,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 29,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
+                  "x": 0,
+                  "y": 234
+                },
                 "id": "detail-b-0",
                 "kind": "text",
-                "text": "Describe the intent.",
-                "attributes": {
-                  "x": 0,
-                  "y": 234,
-                  "font-family": "theme:body-font",
-                  "font-size": 29,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "Describe the intent."
               },
               {
-                "id": "handoff-0",
-                "kind": "path",
                 "attributes": {
                   "d": "M338 109H398M384 97L398 109L384 121",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "handoff-0",
+                "kind": "path"
               },
               {
-                "id": "number-1",
-                "kind": "text",
-                "text": "02",
                 "attributes": {
-                  "x": 438,
-                  "y": 48,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 26,
                   "font-weight": 500,
-                  "fill": "theme:accent"
-                }
+                  "x": 438,
+                  "y": 48
+                },
+                "id": "number-1",
+                "kind": "text",
+                "text": "02"
               },
               {
-                "id": "step-1",
-                "kind": "text",
-                "text": "Download",
                 "attributes": {
-                  "x": 438,
-                  "y": 122,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 42,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 438,
+                  "y": 122
+                },
+                "id": "step-1",
+                "kind": "text",
+                "text": "Download"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 29,
+                  "font-weight": 400,
+                  "x": 438,
+                  "y": 190
+                },
                 "id": "detail-a-1",
                 "kind": "text",
-                "text": "Save the editable",
+                "text": "Save the editable"
+              },
+              {
                 "attributes": {
-                  "x": 438,
-                  "y": 190,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 29,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
+                  "x": 438,
+                  "y": 234
+                },
                 "id": "detail-b-1",
                 "kind": "text",
-                "text": "composition JSON.",
-                "attributes": {
-                  "x": 438,
-                  "y": 234,
-                  "font-family": "theme:body-font",
-                  "font-size": 29,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "composition JSON."
               },
               {
-                "id": "handoff-1",
-                "kind": "path",
                 "attributes": {
                   "d": "M776 109H836M822 97L836 109L822 121",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "handoff-1",
+                "kind": "path"
               },
               {
-                "id": "number-2",
-                "kind": "text",
-                "text": "03",
                 "attributes": {
-                  "x": 876,
-                  "y": 48,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 26,
                   "font-weight": 500,
-                  "fill": "theme:accent"
-                }
+                  "x": 876,
+                  "y": 48
+                },
+                "id": "number-2",
+                "kind": "text",
+                "text": "03"
               },
               {
-                "id": "step-2",
-                "kind": "text",
-                "text": "Agent revises",
                 "attributes": {
-                  "x": 876,
-                  "y": 122,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 42,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 876,
+                  "y": 122
+                },
+                "id": "step-2",
+                "kind": "text",
+                "text": "Agent revises"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 29,
+                  "font-weight": 400,
+                  "x": 876,
+                  "y": 190
+                },
                 "id": "detail-a-2",
                 "kind": "text",
-                "text": "Return a completed",
+                "text": "Return a completed"
+              },
+              {
                 "attributes": {
-                  "x": 876,
-                  "y": 190,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 29,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
+                  "x": 876,
+                  "y": 234
+                },
                 "id": "detail-b-2",
                 "kind": "text",
-                "text": "composition JSON.",
-                "attributes": {
-                  "x": 876,
-                  "y": 234,
-                  "font-family": "theme:body-font",
-                  "font-size": 29,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "composition JSON."
               },
               {
-                "id": "handoff-2",
-                "kind": "path",
                 "attributes": {
                   "d": "M1214 109H1274M1260 97L1274 109L1260 121",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "handoff-2",
+                "kind": "path"
               },
               {
-                "id": "number-3",
-                "kind": "text",
-                "text": "04",
                 "attributes": {
-                  "x": 1314,
-                  "y": 48,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 26,
                   "font-weight": 500,
-                  "fill": "theme:accent"
-                }
+                  "x": 1314,
+                  "y": 48
+                },
+                "id": "number-3",
+                "kind": "text",
+                "text": "04"
               },
               {
-                "id": "step-3",
-                "kind": "text",
-                "text": "Open + present",
                 "attributes": {
-                  "x": 1314,
-                  "y": 122,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 42,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 1314,
+                  "y": 122
+                },
+                "id": "step-3",
+                "kind": "text",
+                "text": "Open + present"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 29,
+                  "font-weight": 400,
+                  "x": 1314,
+                  "y": 190
+                },
                 "id": "detail-a-3",
                 "kind": "text",
-                "text": "Review the result.",
+                "text": "Review the result."
+              },
+              {
                 "attributes": {
-                  "x": 1314,
-                  "y": 190,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 29,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
+                  "x": 1314,
+                  "y": 234
+                },
                 "id": "detail-b-3",
                 "kind": "text",
-                "text": "Make the next edit.",
-                "attributes": {
-                  "x": 1314,
-                  "y": 234,
-                  "font-family": "theme:body-font",
-                  "font-size": 29,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "Make the next edit."
               },
               {
-                "id": "revision-loop",
-                "kind": "path",
                 "attributes": {
                   "d": "M1510 285V365H115V285M103 299L115 285L127 299",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "revision-loop",
+                "kind": "path"
               },
               {
-                "id": "loop-label",
-                "kind": "text",
-                "text": "Revisions stay in the same editable format",
                 "attributes": {
-                  "x": 490,
-                  "y": 431,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 32,
                   "font-weight": 400,
-                  "fill": "theme:accent"
-                }
+                  "x": 490,
+                  "y": 431
+                },
+                "id": "loop-label",
+                "kind": "text",
+                "text": "Revisions stay in the same editable format"
               }
-            ]
-          }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 470,
+              "width": 1696,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "roundtrip",
+          "intent": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
+          "kind": "diagram",
+          "preferredRect": {
+            "height": 470,
+            "width": 1696,
+            "x": 112,
+            "y": 342
+          },
+          "slotIds": [
+            "roundtrip-content"
+          ]
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
           "id": "workflow-note",
+          "intent": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 870,
+            "height": 68,
             "width": 1696,
-            "height": 68
+            "x": 112,
+            "y": 870
           },
           "slotIds": [
             "workflow-note-content"
           ],
-          "intent": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
-          "content": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
           "textStyle": {
-            "size": 34,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 400
           }
         }
       ],
       "contentSlots": [
         {
           "id": "workflow-title-content",
+          "instruction": "A handoff that comes back to the canvas",
           "label": "workflow-title",
-          "role": "body",
           "required": true,
-          "instruction": "A handoff that comes back to the canvas"
+          "role": "body"
         },
         {
           "id": "workflow-subtitle-content",
+          "instruction": "The agent works on the document you can keep editing.",
           "label": "workflow-subtitle",
-          "role": "body",
           "required": true,
-          "instruction": "The agent works on the document you can keep editing."
+          "role": "body"
         },
         {
           "id": "roundtrip-content",
+          "instruction": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
           "label": "roundtrip",
-          "role": "body",
           "required": true,
-          "instruction": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop."
+          "role": "body"
         },
         {
           "id": "workflow-note-content",
+          "instruction": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
           "label": "workflow-note",
-          "role": "body",
           "required": true,
-          "instruction": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas."
+          "role": "body"
         }
       ],
       "groups": [],
-      "readingOrder": [
-        {
-          "kind": "component",
-          "id": "workflow-title"
-        },
-        {
-          "kind": "component",
-          "id": "workflow-subtitle"
-        },
-        {
-          "kind": "component",
-          "id": "roundtrip"
-        },
-        {
-          "kind": "component",
-          "id": "workflow-note"
-        }
-      ],
+      "id": "workflow",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "A round-trip workflow",
+      "pageNumber": {
+        "color": "muted",
+        "style": "01/02"
+      },
       "paintOrder": [
         "workflow-title",
         "workflow-subtitle",
         "roundtrip",
         "workflow-note"
       ],
+      "question": "How do a person and an agent work together?",
+      "readingOrder": [
+        {
+          "id": "workflow-title",
+          "kind": "component"
+        },
+        {
+          "id": "workflow-subtitle",
+          "kind": "component"
+        },
+        {
+          "id": "roundtrip",
+          "kind": "component"
+        },
+        {
+          "id": "workflow-note",
+          "kind": "component"
+        }
+      ],
       "relationships": []
     },
     {
-      "id": "components",
-      "name": "Five semantic components",
-      "canvas": {
-        "width": 1920,
-        "height": 1080
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 112,
-        "bottom": 0,
-        "left": 112
-      },
-      "pageNumber": {
-        "style": "01/02",
-        "color": "muted"
-      },
       "audience": "People and coding-agent users discovering Konpeki",
-      "question": "What can a slide contain?",
-      "intendedViewingSize": "presentation",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Five components. One composition.",
           "id": "components-title",
+          "intent": "Five components. One composition.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 88,
+            "height": 107,
             "width": 1696,
-            "height": 107
+            "x": 112,
+            "y": 88
           },
           "slotIds": [
             "components-title-content"
           ],
-          "intent": "Five components. One composition.",
-          "content": "Five components. One composition.",
           "textStyle": {
-            "size": 62,
-            "weight": 600,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 62,
+            "weight": 600
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Each component keeps its meaning, outer geometry and editable interior.",
           "id": "components-subtitle",
+          "intent": "Each component keeps its meaning, outer geometry and editable interior.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 184,
+            "height": 65,
             "width": 1696,
-            "height": 65
+            "x": 112,
+            "y": 184
           },
           "slotIds": [
             "components-subtitle-content"
           ],
-          "intent": "Each component keeps its meaning, outer geometry and editable interior.",
-          "content": "Each component keeps its meaning, outer geometry and editable interior.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Text",
+          "customVisual": {
+            "description": "Text block: headlines, body text, captions and footnotes.",
+            "elements": [
+              {
+                "attributes": {
+                  "fill": "theme:ink",
+                  "font-family": "theme:body-font",
+                  "font-size": 38,
+                  "font-weight": 500,
+                  "x": 0,
+                  "y": 40
+                },
+                "id": "label",
+                "kind": "text",
+                "text": "Text block"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:accent",
+                  "font-family": "theme:heading-font",
+                  "font-size": 96,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 166
+                },
+                "id": "sample",
+                "kind": "text",
+                "text": "Aa"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 277
+                },
+                "id": "detail-1",
+                "kind": "text",
+                "text": "Headlines, body"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 317
+                },
+                "id": "detail-2",
+                "kind": "text",
+                "text": "and captions"
+              }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 360,
+              "width": 296,
+              "x": 0,
+              "y": 0
+            }
+          },
           "id": "text-specimen",
+          "intent": "Text block: headlines, body text, captions and footnotes.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 360,
+            "height": 360,
             "width": 296,
-            "height": 360
+            "x": 112,
+            "y": 360
           },
           "slotIds": [
             "text-specimen-content"
           ],
-          "intent": "Text block: headlines, body text, captions and footnotes.",
-          "content": "Text",
           "textStyle": {
-            "size": 36,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
-          },
-          "customVisual": {
-            "format": "vector",
-            "viewBox": {
-              "x": 0,
-              "y": 0,
-              "width": 296,
-              "height": 360
-            },
-            "fit": "contain",
-            "description": "Text block: headlines, body text, captions and footnotes.",
-            "elements": [
-              {
-                "id": "label",
-                "kind": "text",
-                "text": "Text block",
-                "attributes": {
-                  "x": 0,
-                  "y": 40,
-                  "font-family": "theme:body-font",
-                  "font-size": 38,
-                  "font-weight": 500,
-                  "fill": "theme:ink"
-                }
-              },
-              {
-                "id": "sample",
-                "kind": "text",
-                "text": "Aa",
-                "attributes": {
-                  "x": 0,
-                  "y": 166,
-                  "font-family": "theme:heading-font",
-                  "font-size": 96,
-                  "font-weight": 400,
-                  "fill": "theme:accent"
-                }
-              },
-              {
-                "id": "detail-1",
-                "kind": "text",
-                "text": "Headlines, body",
-                "attributes": {
-                  "x": 0,
-                  "y": 277,
-                  "font-family": "theme:body-font",
-                  "font-size": 28,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
-                "id": "detail-2",
-                "kind": "text",
-                "text": "and captions",
-                "attributes": {
-                  "x": 0,
-                  "y": 317,
-                  "font-family": "theme:body-font",
-                  "font-size": 28,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              }
-            ]
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 36,
+            "weight": 400
           }
         },
         {
-          "id": "diagram-specimen",
-          "kind": "diagram",
-          "preferredRect": {
-            "x": 462,
-            "y": 360,
-            "width": 296,
-            "height": 360
-          },
-          "slotIds": [
-            "diagram-specimen-content"
-          ],
-          "intent": "Diagram: entities and their relationships.",
           "appearance": {
-            "type": "process",
             "border": "none",
             "colorScheme": "monochrome",
+            "density": "sparse",
             "emphasis": "none",
-            "density": "sparse"
+            "selection": "explicit",
+            "type": "process"
           },
           "customVisual": {
-            "format": "vector",
-            "viewBox": {
-              "x": 0,
-              "y": 0,
-              "width": 296,
-              "height": 360
-            },
-            "fit": "contain",
             "description": "Diagram: entities and their relationships.",
             "elements": [
               {
-                "id": "label",
-                "kind": "text",
-                "text": "Diagram",
                 "attributes": {
-                  "x": 0,
-                  "y": 40,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 0,
+                  "y": 40
+                },
+                "id": "label",
+                "kind": "text",
+                "text": "Diagram"
               },
               {
-                "id": "node-1",
-                "kind": "rect",
                 "attributes": {
+                  "fill": "theme:background",
+                  "height": 78,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
+                  "width": 94,
                   "x": 4,
-                  "y": 112,
-                  "width": 94,
-                  "height": 78,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "y": 112
+                },
+                "id": "node-1",
+                "kind": "rect"
               },
               {
-                "id": "node-2",
-                "kind": "rect",
                 "attributes": {
-                  "x": 195,
-                  "y": 112,
-                  "width": 94,
+                  "fill": "theme:background",
                   "height": 78,
                   "rx": 4,
-                  "fill": "theme:background",
                   "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 94,
+                  "x": 195,
+                  "y": 112
+                },
+                "id": "node-2",
+                "kind": "rect"
               },
               {
-                "id": "edge",
-                "kind": "path",
                 "attributes": {
                   "d": "M112 151H181M167 139L181 151L167 163",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "edge",
+                "kind": "path"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 277
+                },
                 "id": "detail-1",
                 "kind": "text",
-                "text": "Entities and",
-                "attributes": {
-                  "x": 0,
-                  "y": 277,
-                  "font-family": "theme:body-font",
-                  "font-size": 28,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "Entities and"
               },
               {
-                "id": "detail-2",
-                "kind": "text",
-                "text": "relationships",
                 "attributes": {
-                  "x": 0,
-                  "y": 317,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                  "x": 0,
+                  "y": 317
+                },
+                "id": "detail-2",
+                "kind": "text",
+                "text": "relationships"
               }
-            ]
-          }
-        },
-        {
-          "id": "chart-specimen",
-          "kind": "chart",
-          "preferredRect": {
-            "x": 812,
-            "y": 360,
-            "width": 296,
-            "height": 400
-          },
-          "slotIds": [
-            "chart-specimen-content"
-          ],
-          "intent": "Chart specimen with illustrative values A 2 and B 3; not product measurements.",
-          "appearance": {
-            "template": "grouped-bar",
-            "border": "none",
-            "colorScheme": "accent-with-muted-context",
-            "orientation": "vertical",
-            "emphasis": "primary",
-            "density": "sparse",
-            "legend": "top"
-          },
-          "customVisual": {
+            ],
+            "fit": "contain",
             "format": "vector",
             "viewBox": {
-              "x": 0,
-              "y": 0,
+              "height": 360,
               "width": 296,
-              "height": 400
-            },
-            "fit": "contain",
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "diagram-specimen",
+          "intent": "Diagram: entities and their relationships.",
+          "kind": "diagram",
+          "preferredRect": {
+            "height": 360,
+            "width": 296,
+            "x": 462,
+            "y": 360
+          },
+          "slotIds": [
+            "diagram-specimen-content"
+          ]
+        },
+        {
+          "appearance": {
+            "border": "none",
+            "colorScheme": "accent-with-muted-context",
+            "density": "sparse",
+            "emphasis": "primary",
+            "legend": "top",
+            "orientation": "vertical",
+            "selection": "explicit",
+            "template": "grouped-bar"
+          },
+          "customVisual": {
             "description": "Chart specimen with illustrative values A 2 and B 3; not product measurements.",
             "elements": [
               {
-                "id": "label",
-                "kind": "text",
-                "text": "Chart",
                 "attributes": {
-                  "x": 0,
-                  "y": 40,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 0,
+                  "y": 40
+                },
+                "id": "label",
+                "kind": "text",
+                "text": "Chart"
               },
               {
-                "id": "axis",
-                "kind": "path",
                 "attributes": {
                   "d": "M5 84V209H285",
                   "fill": "none",
                   "stroke": "theme:divider",
-                  "stroke-width": 2,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 2
+                },
+                "id": "axis",
+                "kind": "path"
               },
               {
-                "id": "bar-a",
-                "kind": "rect",
                 "attributes": {
-                  "x": 54,
-                  "y": 129,
-                  "width": 66,
+                  "fill": "theme:accent",
                   "height": 80,
                   "rx": 4,
-                  "fill": "theme:accent",
                   "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 66,
+                  "x": 54,
+                  "y": 129
+                },
+                "id": "bar-a",
+                "kind": "rect"
               },
               {
-                "id": "bar-b",
-                "kind": "rect",
                 "attributes": {
-                  "x": 188,
-                  "y": 89,
-                  "width": 66,
+                  "fill": "theme:accent",
                   "height": 120,
                   "rx": 4,
-                  "fill": "theme:accent",
                   "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 66,
+                  "x": 188,
+                  "y": 89
+                },
+                "id": "bar-b",
+                "kind": "rect"
               },
               {
+                "attributes": {
+                  "fill": "theme:ink",
+                  "font-family": "theme:body-font",
+                  "font-size": 24,
+                  "font-weight": 400,
+                  "x": 77,
+                  "y": 117
+                },
                 "id": "value-a",
                 "kind": "text",
-                "text": "2",
+                "text": "2"
+              },
+              {
                 "attributes": {
-                  "x": 77,
-                  "y": 117,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 24,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
-              },
-              {
+                  "x": 209,
+                  "y": 77
+                },
                 "id": "value-b",
                 "kind": "text",
-                "text": "3",
-                "attributes": {
-                  "x": 209,
-                  "y": 77,
-                  "font-family": "theme:body-font",
-                  "font-size": 24,
-                  "font-weight": 400,
-                  "fill": "theme:ink"
-                }
+                "text": "3"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "x": 77,
+                  "y": 240
+                },
                 "id": "axis-a",
                 "kind": "text",
-                "text": "A",
+                "text": "A"
+              },
+              {
                 "attributes": {
-                  "x": 77,
-                  "y": 240,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 22,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
+                  "x": 209,
+                  "y": 240
+                },
                 "id": "axis-b",
                 "kind": "text",
-                "text": "B",
-                "attributes": {
-                  "x": 209,
-                  "y": 240,
-                  "font-family": "theme:body-font",
-                  "font-size": 22,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "B"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 297
+                },
                 "id": "detail-1",
                 "kind": "text",
-                "text": "Quantitative",
+                "text": "Quantitative"
+              },
+              {
                 "attributes": {
-                  "x": 0,
-                  "y": 297,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
+                  "x": 0,
+                  "y": 337
+                },
                 "id": "detail-2",
                 "kind": "text",
-                "text": "comparisons",
-                "attributes": {
-                  "x": 0,
-                  "y": 337,
-                  "font-family": "theme:body-font",
-                  "font-size": 28,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "comparisons"
               },
               {
-                "id": "caveat",
-                "kind": "text",
-                "text": "Illustrative values",
                 "attributes": {
-                  "x": 0,
-                  "y": 388,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 26,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
+                  "x": 0,
+                  "y": 388
+                },
+                "id": "caveat",
+                "kind": "text",
+                "text": "Illustrative values"
               }
-            ]
-          }
-        },
-        {
-          "id": "image-specimen",
-          "kind": "image",
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 400,
+              "width": 296,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "chart-specimen",
+          "intent": "Chart specimen with illustrative values A 2 and B 3; not product measurements.",
+          "kind": "chart",
           "preferredRect": {
-            "x": 1162,
-            "y": 360,
+            "height": 400,
             "width": 296,
-            "height": 360
+            "x": 812,
+            "y": 360
           },
           "slotIds": [
-            "image-specimen-content"
-          ],
-          "intent": "Image: a visual asset or illustration, represented here by original vector artwork.",
+            "chart-specimen-content"
+          ]
+        },
+        {
           "appearance": {
             "border": "none",
             "fit": "cover"
           },
           "customVisual": {
-            "format": "vector",
-            "viewBox": {
-              "x": 0,
-              "y": 0,
-              "width": 296,
-              "height": 360
-            },
-            "fit": "contain",
             "description": "Image: a visual asset or illustration, represented here by original vector artwork.",
             "elements": [
               {
-                "id": "label",
-                "kind": "text",
-                "text": "Image",
                 "attributes": {
-                  "x": 0,
-                  "y": 40,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 0,
+                  "y": 40
+                },
+                "id": "label",
+                "kind": "text",
+                "text": "Image"
               },
               {
-                "id": "frame",
-                "kind": "rect",
                 "attributes": {
-                  "x": 4,
-                  "y": 91,
-                  "width": 278,
+                  "fill": "theme:background",
                   "height": 135,
                   "rx": 4,
-                  "fill": "theme:background",
                   "stroke": "theme:divider",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 278,
+                  "x": 4,
+                  "y": 91
+                },
+                "id": "frame",
+                "kind": "rect"
               },
               {
-                "id": "sun",
-                "kind": "circle",
                 "attributes": {
                   "cx": 227,
                   "cy": 126,
-                  "r": 17,
-                  "fill": "theme:accent"
-                }
+                  "fill": "theme:accent",
+                  "r": 17
+                },
+                "id": "sun",
+                "kind": "circle"
               },
               {
-                "id": "landscape",
-                "kind": "path",
                 "attributes": {
                   "d": "M24 205L88 135L151 194L193 159L264 205",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 4,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 4
+                },
+                "id": "landscape",
+                "kind": "path"
               },
               {
+                "attributes": {
+                  "fill": "theme:muted",
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 277
+                },
                 "id": "detail-1",
                 "kind": "text",
-                "text": "Visual assets",
-                "attributes": {
-                  "x": 0,
-                  "y": 277,
-                  "font-family": "theme:body-font",
-                  "font-size": 28,
-                  "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                "text": "Visual assets"
               },
               {
-                "id": "detail-2",
-                "kind": "text",
-                "text": "and illustrations",
                 "attributes": {
-                  "x": 0,
-                  "y": 317,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                  "x": 0,
+                  "y": 317
+                },
+                "id": "detail-2",
+                "kind": "text",
+                "text": "and illustrations"
               }
-            ]
-          }
-        },
-        {
-          "id": "table-specimen",
-          "kind": "table",
-          "preferredRect": {
-            "x": 1512,
-            "y": 360,
-            "width": 296,
-            "height": 360
-          },
-          "slotIds": [
-            "table-specimen-content"
-          ],
-          "intent": "Table: structured comparisons with clear row and column associations.",
-          "appearance": {
-            "header": "row",
-            "grid": "none",
-            "border": "none",
-            "density": "sparse"
-          },
-          "customVisual": {
+            ],
+            "fit": "contain",
             "format": "vector",
             "viewBox": {
-              "x": 0,
-              "y": 0,
+              "height": 360,
               "width": 296,
-              "height": 360
-            },
-            "fit": "contain",
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "image-specimen",
+          "intent": "Image: a visual asset or illustration, represented here by original vector artwork.",
+          "kind": "image",
+          "preferredRect": {
+            "height": 360,
+            "width": 296,
+            "x": 1162,
+            "y": 360
+          },
+          "slotIds": [
+            "image-specimen-content"
+          ]
+        },
+        {
+          "appearance": {
+            "border": "none",
+            "density": "sparse",
+            "grid": "none",
+            "header": "row"
+          },
+          "customVisual": {
             "description": "Table: structured comparisons with clear row and column associations.",
             "elements": [
               {
-                "id": "label",
-                "kind": "text",
-                "text": "Table",
                 "attributes": {
-                  "x": 0,
-                  "y": 40,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                  "x": 0,
+                  "y": 40
+                },
+                "id": "label",
+                "kind": "text",
+                "text": "Table"
               },
               {
+                "attributes": {
+                  "fill": "theme:ink",
+                  "font-family": "theme:body-font",
+                  "font-size": 26,
+                  "font-weight": 500,
+                  "x": 0,
+                  "y": 120
+                },
                 "id": "col-a",
                 "kind": "text",
-                "text": "Stage",
+                "text": "Stage"
+              },
+              {
                 "attributes": {
-                  "x": 0,
-                  "y": 120,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 26,
                   "font-weight": 500,
-                  "fill": "theme:ink"
-                }
-              },
-              {
+                  "x": 157,
+                  "y": 120
+                },
                 "id": "col-b",
                 "kind": "text",
-                "text": "Owner",
-                "attributes": {
-                  "x": 157,
-                  "y": 120,
-                  "font-family": "theme:body-font",
-                  "font-size": 26,
-                  "font-weight": 500,
-                  "fill": "theme:ink"
-                }
+                "text": "Owner"
               },
               {
-                "id": "rules",
-                "kind": "path",
                 "attributes": {
                   "d": "M0 136H285M0 190H285M0 244H285",
                   "fill": "none",
                   "stroke": "theme:divider",
-                  "stroke-width": 2,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 2
+                },
+                "id": "rules",
+                "kind": "path"
               },
               {
+                "attributes": {
+                  "fill": "theme:ink",
+                  "font-family": "theme:body-font",
+                  "font-size": 25,
+                  "font-weight": 400,
+                  "x": 0,
+                  "y": 174
+                },
                 "id": "row-a",
                 "kind": "text",
-                "text": "Draft",
+                "text": "Draft"
+              },
+              {
                 "attributes": {
-                  "x": 0,
-                  "y": 174,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 25,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
-              },
-              {
+                  "x": 157,
+                  "y": 174
+                },
                 "id": "row-a-owner",
                 "kind": "text",
-                "text": "Human",
+                "text": "Human"
+              },
+              {
                 "attributes": {
-                  "x": 157,
-                  "y": 174,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 25,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
-              },
-              {
+                  "x": 0,
+                  "y": 228
+                },
                 "id": "row-b",
                 "kind": "text",
-                "text": "Revise",
+                "text": "Revise"
+              },
+              {
                 "attributes": {
-                  "x": 0,
-                  "y": 228,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 25,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
-              },
-              {
+                  "x": 157,
+                  "y": 228
+                },
                 "id": "row-b-owner",
                 "kind": "text",
-                "text": "Agent",
-                "attributes": {
-                  "x": 157,
-                  "y": 228,
-                  "font-family": "theme:body-font",
-                  "font-size": 25,
-                  "font-weight": 400,
-                  "fill": "theme:ink"
-                }
+                "text": "Agent"
               },
               {
-                "id": "detail",
-                "kind": "text",
-                "text": "Structured detail",
                 "attributes": {
-                  "x": 0,
-                  "y": 317,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
+                  "x": 0,
+                  "y": 317
+                },
+                "id": "detail",
+                "kind": "text",
+                "text": "Structured detail"
               }
-            ]
-          }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 360,
+              "width": 296,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "table-specimen",
+          "intent": "Table: structured comparisons with clear row and column associations.",
+          "kind": "table",
+          "preferredRect": {
+            "height": 360,
+            "width": 296,
+            "x": 1512,
+            "y": 360
+          },
+          "slotIds": [
+            "table-specimen-content"
+          ]
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Draft previews express intent. Agents return completed artwork as editable vectors.",
           "id": "component-note",
+          "intent": "Draft previews express intent. Agents return completed artwork as editable vectors.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 876,
+            "height": 68,
             "width": 1696,
-            "height": 68
+            "x": 112,
+            "y": 876
           },
           "slotIds": [
             "component-note-content"
           ],
-          "intent": "Draft previews express intent. Agents return completed artwork as editable vectors.",
-          "content": "Draft previews express intent. Agents return completed artwork as editable vectors.",
           "textStyle": {
-            "size": 34,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 400
           }
         }
       ],
       "contentSlots": [
         {
           "id": "components-title-content",
+          "instruction": "Five components. One composition.",
           "label": "components-title",
-          "role": "body",
           "required": true,
-          "instruction": "Five components. One composition."
+          "role": "body"
         },
         {
           "id": "components-subtitle-content",
+          "instruction": "Each component keeps its meaning, outer geometry and editable interior.",
           "label": "components-subtitle",
-          "role": "body",
           "required": true,
-          "instruction": "Each component keeps its meaning, outer geometry and editable interior."
+          "role": "body"
         },
         {
           "id": "text-specimen-content",
+          "instruction": "Text block: headlines, body text, captions and footnotes.",
           "label": "text-specimen",
-          "role": "body",
           "required": true,
-          "instruction": "Text block: headlines, body text, captions and footnotes."
+          "role": "body"
         },
         {
           "id": "diagram-specimen-content",
+          "instruction": "Diagram: entities and their relationships.",
           "label": "diagram-specimen",
-          "role": "body",
           "required": true,
-          "instruction": "Diagram: entities and their relationships."
+          "role": "body"
         },
         {
           "id": "chart-specimen-content",
+          "instruction": "Chart specimen with illustrative values A 2 and B 3; not product measurements.",
           "label": "chart-specimen",
-          "role": "body",
           "required": true,
-          "instruction": "Chart specimen with illustrative values A 2 and B 3; not product measurements."
+          "role": "body"
         },
         {
           "id": "image-specimen-content",
+          "instruction": "Image: a visual asset or illustration, represented here by original vector artwork.",
           "label": "image-specimen",
-          "role": "body",
           "required": true,
-          "instruction": "Image: a visual asset or illustration, represented here by original vector artwork."
+          "role": "body"
         },
         {
           "id": "table-specimen-content",
+          "instruction": "Table: structured comparisons with clear row and column associations.",
           "label": "table-specimen",
-          "role": "body",
           "required": true,
-          "instruction": "Table: structured comparisons with clear row and column associations."
+          "role": "body"
         },
         {
           "id": "component-note-content",
+          "instruction": "Draft previews express intent. Agents return completed artwork as editable vectors.",
           "label": "component-note",
-          "role": "body",
           "required": true,
-          "instruction": "Draft previews express intent. Agents return completed artwork as editable vectors."
+          "role": "body"
         }
       ],
       "groups": [],
-      "readingOrder": [
-        {
-          "kind": "component",
-          "id": "components-title"
-        },
-        {
-          "kind": "component",
-          "id": "components-subtitle"
-        },
-        {
-          "kind": "component",
-          "id": "text-specimen"
-        },
-        {
-          "kind": "component",
-          "id": "diagram-specimen"
-        },
-        {
-          "kind": "component",
-          "id": "chart-specimen"
-        },
-        {
-          "kind": "component",
-          "id": "image-specimen"
-        },
-        {
-          "kind": "component",
-          "id": "table-specimen"
-        },
-        {
-          "kind": "component",
-          "id": "component-note"
-        }
-      ],
+      "id": "components",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "Five semantic components",
+      "pageNumber": {
+        "color": "muted",
+        "style": "01/02"
+      },
       "paintOrder": [
         "components-title",
         "components-subtitle",
@@ -1769,506 +1733,515 @@
         "table-specimen",
         "component-note"
       ],
+      "question": "What can a slide contain?",
+      "readingOrder": [
+        {
+          "id": "components-title",
+          "kind": "component"
+        },
+        {
+          "id": "components-subtitle",
+          "kind": "component"
+        },
+        {
+          "id": "text-specimen",
+          "kind": "component"
+        },
+        {
+          "id": "diagram-specimen",
+          "kind": "component"
+        },
+        {
+          "id": "chart-specimen",
+          "kind": "component"
+        },
+        {
+          "id": "image-specimen",
+          "kind": "component"
+        },
+        {
+          "id": "table-specimen",
+          "kind": "component"
+        },
+        {
+          "id": "component-note",
+          "kind": "component"
+        }
+      ],
       "relationships": []
     },
     {
-      "id": "editing",
-      "name": "Keep the detail editable",
-      "canvas": {
-        "width": 1920,
-        "height": 1080
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 112,
-        "bottom": 0,
-        "left": 112
-      },
-      "pageNumber": {
-        "style": "01/02",
-        "color": "muted"
-      },
       "audience": "People and coding-agent users discovering Konpeki",
-      "question": "What remains editable after an agent finishes?",
-      "intendedViewingSize": "presentation",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "The detail stays editable",
           "id": "editing-title",
+          "intent": "The detail stays editable",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 88,
+            "height": 107,
             "width": 1696,
-            "height": 107
+            "x": 112,
+            "y": 88
           },
           "slotIds": [
             "editing-title-content"
           ],
-          "intent": "The detail stays editable",
-          "content": "The detail stays editable",
           "textStyle": {
-            "size": 62,
-            "weight": 600,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 62,
+            "weight": 600
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Revise a label, a path or a group without replacing the whole slide.",
           "id": "editing-subtitle",
+          "intent": "Revise a label, a path or a group without replacing the whole slide.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 184,
+            "height": 65,
             "width": 1696,
-            "height": 65
+            "x": 112,
+            "y": 184
           },
           "slotIds": [
             "editing-subtitle-content"
           ],
-          "intent": "Revise a label, a path or a group without replacing the whole slide.",
-          "content": "Revise a label, a path or a group without replacing the whole slide.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         },
         {
-          "id": "editable-diagram",
-          "kind": "diagram",
-          "preferredRect": {
-            "x": 112,
-            "y": 340,
-            "width": 980,
-            "height": 475
-          },
-          "slotIds": [
-            "editable-diagram-content"
-          ],
-          "intent": "Explanatory illustration: a selected Review node inside its owning Diagram component. The shape keeps stable ID review-node.",
           "appearance": {
-            "type": "process",
             "border": "none",
             "colorScheme": "monochrome",
+            "density": "sparse",
             "emphasis": "none",
-            "density": "sparse"
+            "selection": "explicit",
+            "type": "process"
           },
           "customVisual": {
-            "format": "vector",
-            "viewBox": {
-              "x": 0,
-              "y": 0,
-              "width": 980,
-              "height": 475
-            },
-            "fit": "contain",
             "description": "Explanatory illustration: a selected Review node inside its owning Diagram component. The shape keeps stable ID review-node.",
             "elements": [
               {
-                "id": "owner",
-                "kind": "rect",
                 "attributes": {
-                  "x": 5,
-                  "y": 5,
-                  "width": 965,
+                  "fill": "theme:background",
                   "height": 390,
                   "rx": 4,
-                  "fill": "theme:background",
                   "stroke": "theme:divider",
-                  "stroke-width": 2
-                }
+                  "stroke-width": 2,
+                  "width": 965,
+                  "x": 5,
+                  "y": 5
+                },
+                "id": "owner",
+                "kind": "rect"
               },
               {
-                "id": "owner-label",
-                "kind": "text",
-                "text": "Diagram · review-flow",
                 "attributes": {
-                  "x": 35,
-                  "y": 53,
+                  "fill": "theme:muted",
                   "font-family": "theme:body-font",
                   "font-size": 27,
                   "font-weight": 400,
-                  "fill": "theme:muted"
-                }
-              },
-              {
-                "id": "draft",
-                "kind": "rect",
-                "attributes": {
-                  "x": 55,
-                  "y": 158,
-                  "width": 220,
-                  "height": 120,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:divider",
-                  "stroke-width": 2
-                }
-              },
-              {
-                "id": "review-node",
-                "kind": "rect",
-                "attributes": {
-                  "x": 385,
-                  "y": 158,
-                  "width": 220,
-                  "height": 120,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
-              },
-              {
-                "id": "present",
-                "kind": "rect",
-                "attributes": {
-                  "x": 715,
-                  "y": 158,
-                  "width": 220,
-                  "height": 120,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:divider",
-                  "stroke-width": 2
-                }
-              },
-              {
-                "id": "draft-label",
+                  "x": 35,
+                  "y": 53
+                },
+                "id": "owner-label",
                 "kind": "text",
-                "text": "Draft",
+                "text": "Diagram · review-flow"
+              },
+              {
                 "attributes": {
-                  "x": 113,
-                  "y": 232,
+                  "fill": "theme:background",
+                  "height": 120,
+                  "rx": 4,
+                  "stroke": "theme:divider",
+                  "stroke-width": 2,
+                  "width": 220,
+                  "x": 55,
+                  "y": 158
+                },
+                "id": "draft",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:background",
+                  "height": 120,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
+                  "width": 220,
+                  "x": 385,
+                  "y": 158
+                },
+                "id": "review-node",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:background",
+                  "height": 120,
+                  "rx": 4,
+                  "stroke": "theme:divider",
+                  "stroke-width": 2,
+                  "width": 220,
+                  "x": 715,
+                  "y": 158
+                },
+                "id": "present",
+                "kind": "rect"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
+                  "x": 113,
+                  "y": 232
+                },
+                "id": "draft-label",
+                "kind": "text",
+                "text": "Draft"
               },
               {
-                "id": "review-label",
-                "kind": "text",
-                "text": "Review",
                 "attributes": {
-                  "x": 433,
-                  "y": 232,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 500,
-                  "fill": "theme:accent"
-                }
+                  "x": 433,
+                  "y": 232
+                },
+                "id": "review-label",
+                "kind": "text",
+                "text": "Review"
               },
               {
-                "id": "present-label",
-                "kind": "text",
-                "text": "Present",
                 "attributes": {
-                  "x": 753,
-                  "y": 232,
+                  "fill": "theme:ink",
                   "font-family": "theme:body-font",
                   "font-size": 38,
                   "font-weight": 400,
-                  "fill": "theme:ink"
-                }
+                  "x": 753,
+                  "y": 232
+                },
+                "id": "present-label",
+                "kind": "text",
+                "text": "Present"
               },
               {
-                "id": "draft-review",
-                "kind": "path",
                 "attributes": {
                   "d": "M293 218H367M353 206L367 218L353 230",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "draft-review",
+                "kind": "path"
               },
               {
-                "id": "review-present",
-                "kind": "path",
                 "attributes": {
                   "d": "M623 218H697M683 206L697 218L683 230",
                   "fill": "none",
                   "stroke": "theme:accent",
-                  "stroke-width": 3,
                   "stroke-linecap": "round",
-                  "stroke-linejoin": "round"
-                }
+                  "stroke-linejoin": "round",
+                  "stroke-width": 3
+                },
+                "id": "review-present",
+                "kind": "path"
               },
               {
+                "attributes": {
+                  "fill": "theme:background",
+                  "height": 10,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
+                  "width": 10,
+                  "x": 380,
+                  "y": 153
+                },
                 "id": "handle-0",
-                "kind": "rect",
-                "attributes": {
-                  "x": 380,
-                  "y": 153,
-                  "width": 10,
-                  "height": 10,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                "kind": "rect"
               },
               {
+                "attributes": {
+                  "fill": "theme:background",
+                  "height": 10,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
+                  "width": 10,
+                  "x": 600,
+                  "y": 153
+                },
                 "id": "handle-1",
-                "kind": "rect",
-                "attributes": {
-                  "x": 600,
-                  "y": 153,
-                  "width": 10,
-                  "height": 10,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                "kind": "rect"
               },
               {
-                "id": "handle-2",
-                "kind": "rect",
                 "attributes": {
+                  "fill": "theme:background",
+                  "height": 10,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
+                  "width": 10,
                   "x": 380,
-                  "y": 273,
-                  "width": 10,
-                  "height": 10,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "y": 273
+                },
+                "id": "handle-2",
+                "kind": "rect"
               },
               {
-                "id": "handle-3",
-                "kind": "rect",
                 "attributes": {
+                  "fill": "theme:background",
+                  "height": 10,
+                  "rx": 4,
+                  "stroke": "theme:accent",
+                  "stroke-width": 2,
+                  "width": 10,
                   "x": 600,
-                  "y": 273,
-                  "width": 10,
-                  "height": 10,
-                  "rx": 4,
-                  "fill": "theme:background",
-                  "stroke": "theme:accent",
-                  "stroke-width": 2
-                }
+                  "y": 273
+                },
+                "id": "handle-3",
+                "kind": "rect"
               },
               {
-                "id": "stable-id",
-                "kind": "text",
-                "text": "Selected element: review-node",
                 "attributes": {
-                  "x": 36,
-                  "y": 450,
+                  "fill": "theme:accent",
                   "font-family": "theme:body-font",
                   "font-size": 32,
                   "font-weight": 400,
-                  "fill": "theme:accent"
-                }
+                  "x": 36,
+                  "y": 450
+                },
+                "id": "stable-id",
+                "kind": "text",
+                "text": "Selected element: review-node"
               }
-            ]
-          }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 475,
+              "width": 980,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "editable-diagram",
+          "intent": "Explanatory illustration: a selected Review node inside its owning Diagram component. The shape keeps stable ID review-node.",
+          "kind": "diagram",
+          "preferredRect": {
+            "height": 475,
+            "width": 980,
+            "x": 112,
+            "y": 340
+          },
+          "slotIds": [
+            "editable-diagram-content"
+          ]
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Change the part that matters",
           "id": "editing-actions-title",
+          "intent": "Change the part that matters",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1210,
-            "y": 343,
+            "height": 69,
             "width": 580,
-            "height": 69
+            "x": 1210,
+            "y": 343
           },
           "slotIds": [
             "editing-actions-title-content"
           ],
-          "intent": "Change the part that matters",
-          "content": "Change the part that matters",
           "textStyle": {
-            "size": 35,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 35,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Edit text and attributes.\nReorder sibling elements.\nDelete a shape or a group.\nUndo and redo your changes.",
           "id": "editing-actions",
+          "intent": "Edit text and attributes. Reorder sibling elements. Delete a shape or a group. Undo and redo your changes.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1210,
-            "y": 440,
+            "height": 194,
             "width": 580,
-            "height": 194
+            "x": 1210,
+            "y": 440
           },
           "slotIds": [
             "editing-actions-content"
           ],
-          "intent": "Edit text and attributes. Reorder sibling elements. Delete a shape or a group. Undo and redo your changes.",
-          "content": "Edit text and attributes.\nReorder sibling elements.\nDelete a shape or a group.\nUndo and redo your changes.",
           "textStyle": {
-            "size": 31,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 31,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
           "id": "editing-note",
+          "intent": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 885,
+            "height": 68,
             "width": 1696,
-            "height": 68
+            "x": 112,
+            "y": 885
           },
           "slotIds": [
             "editing-note-content"
           ],
-          "intent": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
-          "content": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
           "textStyle": {
-            "size": 34,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 400
           }
         }
       ],
       "contentSlots": [
         {
           "id": "editing-title-content",
+          "instruction": "The detail stays editable",
           "label": "editing-title",
-          "role": "body",
           "required": true,
-          "instruction": "The detail stays editable"
+          "role": "body"
         },
         {
           "id": "editing-subtitle-content",
+          "instruction": "Revise a label, a path or a group without replacing the whole slide.",
           "label": "editing-subtitle",
-          "role": "body",
           "required": true,
-          "instruction": "Revise a label, a path or a group without replacing the whole slide."
+          "role": "body"
         },
         {
           "id": "editable-diagram-content",
+          "instruction": "Explanatory illustration: a selected Review node inside its owning Diagram component. The shape keeps stable ID review-node.",
           "label": "editable-diagram",
-          "role": "body",
           "required": true,
-          "instruction": "Explanatory illustration: a selected Review node inside its owning Diagram component. The shape keeps stable ID review-node."
+          "role": "body"
         },
         {
           "id": "editing-actions-title-content",
+          "instruction": "Change the part that matters",
           "label": "editing-actions-title",
-          "role": "body",
           "required": true,
-          "instruction": "Change the part that matters"
+          "role": "body"
         },
         {
           "id": "editing-actions-content",
+          "instruction": "Edit text and attributes. Reorder sibling elements. Delete a shape or a group. Undo and redo your changes.",
           "label": "editing-actions",
-          "role": "body",
           "required": true,
-          "instruction": "Edit text and attributes. Reorder sibling elements. Delete a shape or a group. Undo and redo your changes."
+          "role": "body"
         },
         {
           "id": "editing-note-content",
+          "instruction": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
           "label": "editing-note",
-          "role": "body",
           "required": true,
-          "instruction": "Composition JSON owns the structure. Imported JSX never executes in the canvas."
+          "role": "body"
         }
       ],
       "groups": [],
-      "readingOrder": [
-        {
-          "kind": "component",
-          "id": "editing-title"
-        },
-        {
-          "kind": "component",
-          "id": "editing-subtitle"
-        },
-        {
-          "kind": "component",
-          "id": "editable-diagram"
-        },
-        {
-          "kind": "component",
-          "id": "editing-actions-title"
-        },
-        {
-          "kind": "component",
-          "id": "editing-actions"
-        },
-        {
-          "kind": "component",
-          "id": "editing-note"
-        }
-      ],
+      "id": "editing",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "Keep the detail editable",
+      "pageNumber": {
+        "color": "muted",
+        "style": "01/02"
+      },
       "paintOrder": [
         "editing-title",
         "editing-subtitle",
@@ -2277,485 +2250,469 @@
         "editing-actions",
         "editing-note"
       ],
+      "question": "What remains editable after an agent finishes?",
+      "readingOrder": [
+        {
+          "id": "editing-title",
+          "kind": "component"
+        },
+        {
+          "id": "editing-subtitle",
+          "kind": "component"
+        },
+        {
+          "id": "editable-diagram",
+          "kind": "component"
+        },
+        {
+          "id": "editing-actions-title",
+          "kind": "component"
+        },
+        {
+          "id": "editing-actions",
+          "kind": "component"
+        },
+        {
+          "id": "editing-note",
+          "kind": "component"
+        }
+      ],
       "relationships": []
     },
     {
-      "id": "today",
-      "name": "What works today",
-      "canvas": {
-        "width": 1920,
-        "height": 1080
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 112,
-        "bottom": 0,
-        "left": 112
-      },
-      "pageNumber": {
-        "style": "01/02",
-        "color": "muted"
-      },
       "audience": "People and coding-agent users discovering Konpeki",
-      "question": "What should a first-time user expect?",
-      "intendedViewingSize": "presentation",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "An editable workflow, with clear boundaries",
           "id": "today-title",
+          "intent": "An editable workflow, with clear boundaries",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 88,
+            "height": 107,
             "width": 1696,
-            "height": 107
+            "x": 112,
+            "y": 88
           },
           "slotIds": [
             "today-title-content"
           ],
-          "intent": "An editable workflow, with clear boundaries",
-          "content": "An editable workflow, with clear boundaries",
           "textStyle": {
-            "size": 62,
-            "weight": 600,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 62,
+            "weight": 600
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Use the canvas for drafting, revision and presentation today.",
           "id": "today-subtitle",
+          "intent": "Use the canvas for drafting, revision and presentation today.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 184,
+            "height": 65,
             "width": 1696,
-            "height": 65
+            "x": 112,
+            "y": 184
           },
           "slotIds": [
             "today-subtitle-content"
           ],
-          "intent": "Use the canvas for drafting, revision and presentation today.",
-          "content": "Use the canvas for drafting, revision and presentation today.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Available now",
           "id": "available-heading",
+          "intent": "Available now",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 350,
+            "height": 79,
             "width": 790,
-            "height": 79
+            "x": 112,
+            "y": 350
           },
           "slotIds": [
             "available-heading-content"
           ],
-          "intent": "Available now",
-          "content": "Available now",
           "textStyle": {
-            "size": 42,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "accent",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 42,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Arrange slides and semantic components.\nOpen and download composition JSON.",
           "id": "available-1",
+          "intent": "Arrange slides and semantic components. Open and download composition JSON.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 451,
+            "height": 113,
             "width": 790,
-            "height": 113
+            "x": 112,
+            "y": 451
           },
           "slotIds": [
             "available-1-content"
           ],
-          "intent": "Arrange slides and semantic components. Open and download composition JSON.",
-          "content": "Arrange slides and semantic components.\nOpen and download composition JSON.",
           "textStyle": {
-            "size": 33,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 33,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Revise vector text, shapes and paths.\nPresent with the same canvas renderer.",
           "id": "available-2",
+          "intent": "Revise vector text, shapes and paths. Present with the same canvas renderer.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 605,
+            "height": 113,
             "width": 790,
-            "height": 113
+            "x": 112,
+            "y": 605
           },
           "slotIds": [
             "available-2-content"
           ],
-          "intent": "Revise vector text, shapes and paths. Present with the same canvas renderer.",
-          "content": "Revise vector text, shapes and paths.\nPresent with the same canvas renderer.",
           "textStyle": {
-            "size": 33,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 33,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Browser-local drafts.\nNo Konpeki account or backend required.",
           "id": "available-3",
+          "intent": "Browser-local drafts. No Konpeki account or backend required.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 790,
+            "height": 110,
             "width": 790,
-            "height": 110
+            "x": 112,
+            "y": 790
           },
           "slotIds": [
             "available-3-content"
           ],
-          "intent": "Browser-local drafts. No Konpeki account or backend required.",
-          "content": "Browser-local drafts.\nNo Konpeki account or backend required.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Know the boundaries",
           "id": "limits-heading",
+          "intent": "Know the boundaries",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 350,
+            "height": 79,
             "width": 788,
-            "height": 79
+            "x": 1020,
+            "y": 350
           },
           "slotIds": [
             "limits-heading-content"
           ],
-          "intent": "Know the boundaries",
-          "content": "Know the boundaries",
           "textStyle": {
-            "size": 42,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 42,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Standard previews are placeholders.\nThey do not load data or image files.",
           "id": "limits-1",
+          "intent": "Standard previews are placeholders. They do not load data or image files.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 451,
+            "height": 113,
             "width": 788,
-            "height": 113
+            "x": 1020,
+            "y": 451
           },
           "slotIds": [
             "limits-1-content"
           ],
-          "intent": "Standard previews are placeholders. They do not load data or image files.",
-          "content": "Standard previews are placeholders.\nThey do not load data or image files.",
           "textStyle": {
-            "size": 33,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 33,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Your coding agent supplies the output.\nReview its facts, layout and caveats.",
           "id": "limits-2",
+          "intent": "Your coding agent supplies the output. Review its facts, layout and caveats.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 605,
+            "height": 113,
             "width": 788,
-            "height": 113
+            "x": 1020,
+            "y": 605
           },
           "slotIds": [
             "limits-2-content"
           ],
-          "intent": "Your coding agent supplies the output. Review its facts, layout and caveats.",
-          "content": "Your coding agent supplies the output.\nReview its facts, layout and caveats.",
           "textStyle": {
-            "size": 33,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 33,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Desktop-first editing; storage is local.\nNo PDF/PPTX fidelity claim.",
           "id": "limits-3",
+          "intent": "Desktop-first editing; storage is local. No PDF/PPTX fidelity claim.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 790,
+            "height": 110,
             "width": 788,
-            "height": 110
+            "x": 1020,
+            "y": 790
           },
           "slotIds": [
             "limits-3-content"
           ],
-          "intent": "Desktop-first editing; storage is local. No PDF/PPTX fidelity claim.",
-          "content": "Desktop-first editing; storage is local.\nNo PDF/PPTX fidelity claim.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         }
       ],
       "contentSlots": [
         {
           "id": "today-title-content",
+          "instruction": "An editable workflow, with clear boundaries",
           "label": "today-title",
-          "role": "body",
           "required": true,
-          "instruction": "An editable workflow, with clear boundaries"
+          "role": "body"
         },
         {
           "id": "today-subtitle-content",
+          "instruction": "Use the canvas for drafting, revision and presentation today.",
           "label": "today-subtitle",
-          "role": "body",
           "required": true,
-          "instruction": "Use the canvas for drafting, revision and presentation today."
+          "role": "body"
         },
         {
           "id": "available-heading-content",
+          "instruction": "Available now",
           "label": "available-heading",
-          "role": "body",
           "required": true,
-          "instruction": "Available now"
+          "role": "body"
         },
         {
           "id": "available-1-content",
+          "instruction": "Arrange slides and semantic components. Open and download composition JSON.",
           "label": "available-1",
-          "role": "body",
           "required": true,
-          "instruction": "Arrange slides and semantic components. Open and download composition JSON."
+          "role": "body"
         },
         {
           "id": "available-2-content",
+          "instruction": "Revise vector text, shapes and paths. Present with the same canvas renderer.",
           "label": "available-2",
-          "role": "body",
           "required": true,
-          "instruction": "Revise vector text, shapes and paths. Present with the same canvas renderer."
+          "role": "body"
         },
         {
           "id": "available-3-content",
+          "instruction": "Browser-local drafts. No Konpeki account or backend required.",
           "label": "available-3",
-          "role": "body",
           "required": true,
-          "instruction": "Browser-local drafts. No Konpeki account or backend required."
+          "role": "body"
         },
         {
           "id": "limits-heading-content",
+          "instruction": "Know the boundaries",
           "label": "limits-heading",
-          "role": "body",
           "required": true,
-          "instruction": "Know the boundaries"
+          "role": "body"
         },
         {
           "id": "limits-1-content",
+          "instruction": "Standard previews are placeholders. They do not load data or image files.",
           "label": "limits-1",
-          "role": "body",
           "required": true,
-          "instruction": "Standard previews are placeholders. They do not load data or image files."
+          "role": "body"
         },
         {
           "id": "limits-2-content",
+          "instruction": "Your coding agent supplies the output. Review its facts, layout and caveats.",
           "label": "limits-2",
-          "role": "body",
           "required": true,
-          "instruction": "Your coding agent supplies the output. Review its facts, layout and caveats."
+          "role": "body"
         },
         {
           "id": "limits-3-content",
+          "instruction": "Desktop-first editing; storage is local. No PDF/PPTX fidelity claim.",
           "label": "limits-3",
-          "role": "body",
           "required": true,
-          "instruction": "Desktop-first editing; storage is local. No PDF/PPTX fidelity claim."
+          "role": "body"
         }
       ],
       "groups": [],
-      "readingOrder": [
-        {
-          "kind": "component",
-          "id": "today-title"
-        },
-        {
-          "kind": "component",
-          "id": "today-subtitle"
-        },
-        {
-          "kind": "component",
-          "id": "available-heading"
-        },
-        {
-          "kind": "component",
-          "id": "available-1"
-        },
-        {
-          "kind": "component",
-          "id": "available-2"
-        },
-        {
-          "kind": "component",
-          "id": "available-3"
-        },
-        {
-          "kind": "component",
-          "id": "limits-heading"
-        },
-        {
-          "kind": "component",
-          "id": "limits-1"
-        },
-        {
-          "kind": "component",
-          "id": "limits-2"
-        },
-        {
-          "kind": "component",
-          "id": "limits-3"
-        }
-      ],
+      "id": "today",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "What works today",
+      "pageNumber": {
+        "color": "muted",
+        "style": "01/02"
+      },
       "paintOrder": [
         "today-title",
         "today-subtitle",
@@ -2768,485 +2725,485 @@
         "limits-2",
         "limits-3"
       ],
+      "question": "What should a first-time user expect?",
+      "readingOrder": [
+        {
+          "id": "today-title",
+          "kind": "component"
+        },
+        {
+          "id": "today-subtitle",
+          "kind": "component"
+        },
+        {
+          "id": "available-heading",
+          "kind": "component"
+        },
+        {
+          "id": "available-1",
+          "kind": "component"
+        },
+        {
+          "id": "available-2",
+          "kind": "component"
+        },
+        {
+          "id": "available-3",
+          "kind": "component"
+        },
+        {
+          "id": "limits-heading",
+          "kind": "component"
+        },
+        {
+          "id": "limits-1",
+          "kind": "component"
+        },
+        {
+          "id": "limits-2",
+          "kind": "component"
+        },
+        {
+          "id": "limits-3",
+          "kind": "component"
+        }
+      ],
       "relationships": []
     },
     {
-      "id": "start",
-      "name": "Try a real brief",
-      "canvas": {
-        "width": 1920,
-        "height": 1080
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 112,
-        "bottom": 0,
-        "left": 112
-      },
-      "pageNumber": {
-        "style": "01/02",
-        "color": "muted"
-      },
       "audience": "People and coding-agent users discovering Konpeki",
-      "question": "How do I start?",
-      "intendedViewingSize": "presentation",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "title",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Bring a brief. Build an editable deck.",
           "id": "start-title",
+          "intent": "Bring a brief. Build an editable deck.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 88,
+            "height": 107,
             "width": 1696,
-            "height": 107
+            "x": 112,
+            "y": 88
           },
           "slotIds": [
             "start-title-content"
           ],
-          "intent": "Bring a brief. Build an editable deck.",
-          "content": "Bring a brief. Build an editable deck.",
           "textStyle": {
-            "size": 62,
-            "weight": 600,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "heading"
-          },
-          "appearance": {
-            "role": "title",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "heading",
+            "lineHeight": 1.4,
+            "size": 62,
+            "weight": 600
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Start with one real explanation you need to give.",
           "id": "start-subtitle",
+          "intent": "Start with one real explanation you need to give.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 184,
+            "height": 65,
             "width": 1696,
-            "height": 65
+            "x": 112,
+            "y": 184
           },
           "slotIds": [
             "start-subtitle-content"
           ],
-          "intent": "Start with one real explanation you need to give.",
-          "content": "Start with one real explanation you need to give.",
           "textStyle": {
-            "size": 32,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 32,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Open the project",
           "id": "setup-heading",
+          "intent": "Open the project",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 350,
+            "height": 76,
             "width": 710,
-            "height": 76
+            "x": 112,
+            "y": 350
           },
           "slotIds": [
             "setup-heading-content"
           ],
-          "intent": "Open the project",
-          "content": "Open the project",
           "textStyle": {
-            "size": 40,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 40,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "github.com/vcfgdev/konpeki",
           "id": "repository",
+          "intent": "github.com/vcfgdev/konpeki",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 435,
+            "height": 74,
             "width": 850,
-            "height": 74
+            "x": 112,
+            "y": 435
           },
           "slotIds": [
             "repository-content"
           ],
-          "intent": "github.com/vcfgdev/konpeki",
-          "content": "github.com/vcfgdev/konpeki",
           "textStyle": {
-            "size": 38,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "accent",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 38,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "pnpm install --frozen-lockfile\npnpm dev",
           "id": "commands",
+          "intent": "pnpm install --frozen-lockfile pnpm dev",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 543,
+            "height": 116,
             "width": 840,
-            "height": 116
+            "x": 112,
+            "y": 543
           },
           "slotIds": [
             "commands-content"
           ],
-          "intent": "pnpm install --frozen-lockfile pnpm dev",
-          "content": "pnpm install --frozen-lockfile\npnpm dev",
           "textStyle": {
-            "size": 34,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Node.js 24+ · pnpm\nA coding agent · a browser",
           "id": "requirements",
+          "intent": "Node.js 24+ · pnpm A coding agent · a browser",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 696,
+            "height": 116,
             "width": 780,
-            "height": 116
+            "x": 112,
+            "y": 696
           },
           "slotIds": [
             "requirements-content"
           ],
-          "intent": "Node.js 24+ · pnpm A coding agent · a browser",
-          "content": "Node.js 24+ · pnpm\nA coding agent · a browser",
           "textStyle": {
-            "size": 34,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Give your agent a concrete brief",
           "id": "brief-heading",
+          "intent": "Give your agent a concrete brief",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 350,
+            "height": 76,
             "width": 788,
-            "height": 76
+            "x": 1020,
+            "y": 350
           },
           "slotIds": [
             "brief-heading-content"
           ],
-          "intent": "Give your agent a concrete brief",
-          "content": "Give your agent a concrete brief",
           "textStyle": {
-            "size": 40,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 40,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "“Explain this system to a new engineer.\nShow the request flow and failure path.\nPreserve the source facts and caveats.\nReturn an editable composition JSON.”",
           "id": "brief",
+          "intent": "“Explain this system to a new engineer. Show the request flow and failure path. Preserve the source facts and caveats. Return an editable composition JSON.”",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 450,
+            "height": 194,
             "width": 788,
-            "height": 194
+            "x": 1020,
+            "y": 450
           },
           "slotIds": [
             "brief-content"
           ],
-          "intent": "“Explain this system to a new engineer. Show the request flow and failure path. Preserve the source facts and caveats. Return an editable composition JSON.”",
-          "content": "“Explain this system to a new engineer.\nShow the request flow and failure path.\nPreserve the source facts and caveats.\nReturn an editable composition JSON.”",
           "textStyle": {
-            "size": 31,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "ink",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 31,
+            "weight": 400
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "Open the result. Make one revision.\nThen present it.",
           "id": "next-step",
+          "intent": "Open the result. Make one revision. Then present it.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 1020,
-            "y": 708,
+            "height": 116,
             "width": 788,
-            "height": 116
+            "x": 1020,
+            "y": 708
           },
           "slotIds": [
             "next-step-content"
           ],
-          "intent": "Open the result. Make one revision. Then present it.",
-          "content": "Open the result. Make one revision.\nThen present it.",
           "textStyle": {
-            "size": 34,
-            "weight": 500,
-            "lineHeight": 1.4,
             "color": "accent",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 34,
+            "weight": 500
           }
         },
         {
+          "appearance": {
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "logicalOrder": "none",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "role": "body",
+            "rule": "none",
+            "titleStyle": "plain",
+            "treatment": "plain"
+          },
+          "content": "This presentation is itself an editable Konpeki composition.",
           "id": "closing",
+          "intent": "This presentation is itself an editable Konpeki composition.",
           "kind": "text-block",
           "preferredRect": {
-            "x": 112,
-            "y": 906,
+            "height": 62,
             "width": 1696,
-            "height": 62
+            "x": 112,
+            "y": 906
           },
           "slotIds": [
             "closing-content"
           ],
-          "intent": "This presentation is itself an editable Konpeki composition.",
-          "content": "This presentation is itself an editable Konpeki composition.",
           "textStyle": {
-            "size": 30,
-            "weight": 400,
-            "lineHeight": 1.4,
             "color": "muted",
-            "font": "body"
-          },
-          "appearance": {
-            "role": "body",
-            "alignment": "start",
-            "border": "none",
-            "layout": "single",
-            "orientation": "horizontal",
-            "purpose": "narrative",
-            "treatment": "plain",
-            "logicalOrder": "none",
-            "titleStyle": "plain",
-            "rule": "none"
+            "font": "body",
+            "lineHeight": 1.4,
+            "size": 30,
+            "weight": 400
           }
         }
       ],
       "contentSlots": [
         {
           "id": "start-title-content",
+          "instruction": "Bring a brief. Build an editable deck.",
           "label": "start-title",
-          "role": "body",
           "required": true,
-          "instruction": "Bring a brief. Build an editable deck."
+          "role": "body"
         },
         {
           "id": "start-subtitle-content",
+          "instruction": "Start with one real explanation you need to give.",
           "label": "start-subtitle",
-          "role": "body",
           "required": true,
-          "instruction": "Start with one real explanation you need to give."
+          "role": "body"
         },
         {
           "id": "setup-heading-content",
+          "instruction": "Open the project",
           "label": "setup-heading",
-          "role": "body",
           "required": true,
-          "instruction": "Open the project"
+          "role": "body"
         },
         {
           "id": "repository-content",
+          "instruction": "github.com/vcfgdev/konpeki",
           "label": "repository",
-          "role": "body",
           "required": true,
-          "instruction": "github.com/vcfgdev/konpeki"
+          "role": "body"
         },
         {
           "id": "commands-content",
+          "instruction": "pnpm install --frozen-lockfile pnpm dev",
           "label": "commands",
-          "role": "body",
           "required": true,
-          "instruction": "pnpm install --frozen-lockfile pnpm dev"
+          "role": "body"
         },
         {
           "id": "requirements-content",
+          "instruction": "Node.js 24+ · pnpm A coding agent · a browser",
           "label": "requirements",
-          "role": "body",
           "required": true,
-          "instruction": "Node.js 24+ · pnpm A coding agent · a browser"
+          "role": "body"
         },
         {
           "id": "brief-heading-content",
+          "instruction": "Give your agent a concrete brief",
           "label": "brief-heading",
-          "role": "body",
           "required": true,
-          "instruction": "Give your agent a concrete brief"
+          "role": "body"
         },
         {
           "id": "brief-content",
+          "instruction": "“Explain this system to a new engineer. Show the request flow and failure path. Preserve the source facts and caveats. Return an editable composition JSON.”",
           "label": "brief",
-          "role": "body",
           "required": true,
-          "instruction": "“Explain this system to a new engineer. Show the request flow and failure path. Preserve the source facts and caveats. Return an editable composition JSON.”"
+          "role": "body"
         },
         {
           "id": "next-step-content",
+          "instruction": "Open the result. Make one revision. Then present it.",
           "label": "next-step",
-          "role": "body",
           "required": true,
-          "instruction": "Open the result. Make one revision. Then present it."
+          "role": "body"
         },
         {
           "id": "closing-content",
+          "instruction": "This presentation is itself an editable Konpeki composition.",
           "label": "closing",
-          "role": "body",
           "required": true,
-          "instruction": "This presentation is itself an editable Konpeki composition."
+          "role": "body"
         }
       ],
       "groups": [],
-      "readingOrder": [
-        {
-          "kind": "component",
-          "id": "start-title"
-        },
-        {
-          "kind": "component",
-          "id": "start-subtitle"
-        },
-        {
-          "kind": "component",
-          "id": "setup-heading"
-        },
-        {
-          "kind": "component",
-          "id": "repository"
-        },
-        {
-          "kind": "component",
-          "id": "commands"
-        },
-        {
-          "kind": "component",
-          "id": "requirements"
-        },
-        {
-          "kind": "component",
-          "id": "brief-heading"
-        },
-        {
-          "kind": "component",
-          "id": "brief"
-        },
-        {
-          "kind": "component",
-          "id": "next-step"
-        },
-        {
-          "kind": "component",
-          "id": "closing"
-        }
-      ],
+      "id": "start",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
+      "intendedViewingSize": "presentation",
+      "name": "Try a real brief",
+      "pageNumber": {
+        "color": "muted",
+        "style": "01/02"
+      },
       "paintOrder": [
         "start-title",
         "start-subtitle",
@@ -3259,7 +3216,55 @@
         "next-step",
         "closing"
       ],
+      "question": "How do I start?",
+      "readingOrder": [
+        {
+          "id": "start-title",
+          "kind": "component"
+        },
+        {
+          "id": "start-subtitle",
+          "kind": "component"
+        },
+        {
+          "id": "setup-heading",
+          "kind": "component"
+        },
+        {
+          "id": "repository",
+          "kind": "component"
+        },
+        {
+          "id": "commands",
+          "kind": "component"
+        },
+        {
+          "id": "requirements",
+          "kind": "component"
+        },
+        {
+          "id": "brief-heading",
+          "kind": "component"
+        },
+        {
+          "id": "brief",
+          "kind": "component"
+        },
+        {
+          "id": "next-step",
+          "kind": "component"
+        },
+        {
+          "id": "closing",
+          "kind": "component"
+        }
+      ],
       "relationships": []
     }
-  ]
+  ],
+  "theme": {
+    "id": "plex",
+    "mode": "paper"
+  },
+  "title": "Introducing Konpeki"
 }
