@@ -121,11 +121,6 @@
   visibility: hidden;
 }
 
-.is-building .action-island {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .action-island button {
   display: inline-flex;
   align-items: center;

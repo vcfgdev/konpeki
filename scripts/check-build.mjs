@@ -87,6 +87,7 @@ try {
   await browser("wait", "1500"); // The POST and at least one unchanged poll must not end loading.
   await check("!document.querySelector('.toast.visible')", "Build request showed a redundant toast");
   await check("document.querySelector('.build-button.building:disabled[aria-busy=true]') && document.querySelector('.editor-content').inert && document.querySelector('.build-loading[role=status]')", "Loading ended before the agent returned");
+  await check("document.querySelector('.action-island').checkVisibility() && document.querySelector('.build-label').textContent === 'Request ready'", "Document actions disappeared while the request waited for handoff");
   await check("getComputedStyle(document.querySelector('.build-label')).backgroundImage.includes('linear-gradient') && getComputedStyle(document.querySelector('.build-label')).backgroundClip === 'text'", "Shimmer is not on the label");
   await check("!document.querySelector('.build-loading-track') && getComputedStyle(document.querySelector('.build-button'),'::after').content === 'none'", "Old progress strip remains");
   await browser("eval", "window.orbStart=getComputedStyle(document.querySelector('.build-button circle')).transform");
@@ -107,6 +108,7 @@ try {
   const request = JSON.parse(stdout);
   assert.equal(request.status, "working");
   await browser("wait", "--text", "Agent working");
+  await check("document.querySelector('.action-island').checkVisibility() && document.querySelector('.build-label').textContent === 'Agent working'", "Document actions disappeared while the agent worked");
   await check("!document.querySelector('.build-loading-card').textContent.includes('Copy prompt')", "Working state still asks for handoff");
   await capture("working");
   document.slides[0].name = "Agent result loaded";
