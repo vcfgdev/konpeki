@@ -666,8 +666,7 @@ export function App() {
           }}
           onSelectTool={() => selectComponent()}
           onComponentTool={useComponentTool}
-        />
-        <div className="editor-content" inert={fileSession.building} aria-busy={fileSession.building}>
+        >
         <LeftPanel
           draft={draft}
           view={leftView}
@@ -687,6 +686,8 @@ export function App() {
           onAddSlide={addNewSlide}
           onRemoveSlide={removeExistingSlide}
         />
+        </WorkspaceChrome>
+        <div className="editor-content" inert={fileSession.building} aria-busy={fileSession.building}>
         <Canvas
           key={slide.id}
           revisionNotes={fileSession.review.notes.filter(note => !note.resolved)}

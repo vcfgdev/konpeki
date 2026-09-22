@@ -68,9 +68,11 @@ try {
   })`, "visible controls must have at least 40 by 40 pixel targets");
   browser("set", "viewport", "1000", "700", "2");
   browser("wait", "--fn", "document.querySelector('.right-panel').classList.contains('collapsed')");
+  evaluate("Promise.all(document.querySelector('.stage').getAnimations().map(animation => animation.finished))");
   check("document.querySelector('.slide-wrap').getBoundingClientRect().width >= 600", "canvas became too small at 1000px");
   browser("set", "viewport", "800", "700", "2");
   browser("wait", "--fn", "document.querySelector('.left-panel').classList.contains('collapsed')");
+  evaluate("Promise.all(document.querySelector('.stage').getAnimations().map(animation => animation.finished))");
   check("document.querySelector('.slide-wrap').getBoundingClientRect().width >= 700", "canvas became too small at 800px");
   browser("set", "viewport", "390", "700", "2");
   check(`document.documentElement.scrollWidth === 390 && (() => {
@@ -79,7 +81,9 @@ try {
   })()`, "compact layout overflows horizontally");
   browser("set", "viewport", "1440", "900", "2");
   browser("wait", "--fn", "!document.querySelector('.left-panel').classList.contains('collapsed') && !document.querySelector('.right-panel').classList.contains('collapsed')");
+  evaluate("Promise.all(document.querySelector('.left-sidebar').getAnimations().map(animation => animation.finished))");
   click("Add page");
+  check('document.querySelectorAll(".slide-thumbnail").length === 2', "Add page must create the second page");
   check('document.querySelectorAll("#canvas-stage [data-component]").length === 0', "new slide is not empty");
   capture("empty-slide");
   const cases = [

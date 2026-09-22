@@ -86,7 +86,7 @@ try {
   await check("(()=>{const r=document.querySelector('.build-button .build-orb').getBoundingClientRect();return r.x===window.idleOrbBounds.x && r.y===window.idleOrbBounds.y})()", "Orb shifted when button label changed");
   await browser("wait", "1500"); // The POST and at least one unchanged poll must not end loading.
   await check("!document.querySelector('.toast.visible')", "Build request showed a redundant toast");
-  await check("document.querySelector('.build-button.building:disabled[aria-busy=true]') && document.querySelector('.editor-content').inert && document.querySelector('.build-loading[role=status]')", "Loading ended before the agent returned");
+  await check("document.querySelector('.build-button.building:disabled[aria-busy=true]') && [...document.querySelectorAll('.editor-content')].every(element => element.inert) && document.querySelector('.build-loading[role=status]')", "Loading ended before the agent returned");
   await check("document.querySelector('.action-island').checkVisibility() && document.querySelector('.build-label').textContent === 'Request ready'", "Document actions disappeared while the request waited for handoff");
   await check("getComputedStyle(document.querySelector('.build-label')).backgroundImage.includes('linear-gradient') && getComputedStyle(document.querySelector('.build-label')).backgroundClip === 'text'", "Shimmer is not on the label");
   await check("!document.querySelector('.build-loading-track') && getComputedStyle(document.querySelector('.build-button'),'::after').content === 'none'", "Old progress strip remains");
@@ -117,7 +117,7 @@ try {
   await check("!!document.querySelector('.build-loading')", "An unrelated file change completed the request");
   await exec(process.execPath, ["bin/konpeki.mjs", "finish", compositionPath, request.id]);
   await browser("wait", "--fn", "!document.querySelector('.build-loading') && document.querySelector('.stage-meta').textContent.includes('Agent result loaded')");
-  await check("!document.querySelector('.build-button').disabled && !document.querySelector('.editor-content').inert", "Editor did not unlock after the result rendered");
+  await check("!document.querySelector('.build-button').disabled && [...document.querySelectorAll('.editor-content')].every(element => !element.inert)", "Editor did not unlock after the result rendered");
   await check("!document.querySelector('.toast.visible')", "Agent result showed a redundant toast");
   await capture("completed");
   if (process.argv.includes("--record")) {
@@ -141,11 +141,11 @@ try {
   await capture("waiting-reduced-motion");
   await writeFile(compositionPath, "invalid JSON");
   await browser("wait", "--text", "Could not load the agent result.");
-  await check("!!document.querySelector('.build-loading') && document.querySelector('.editor-content').inert", "Polling failure unlocked an active request");
+  await check("!!document.querySelector('.build-loading') && [...document.querySelectorAll('.editor-content')].every(element => element.inert)", "Polling failure unlocked an active request");
   await capture("connection-error");
   await writeFile(compositionPath, JSON.stringify(document));
   await browser("wait", "1500");
-  await check("!!document.querySelector('.build-loading') && document.querySelector('.editor-content').inert", "Recovery unlocked an active request");
+  await check("!!document.querySelector('.build-loading') && [...document.querySelectorAll('.editor-content')].every(element => element.inert)", "Recovery unlocked an active request");
   await browser("find", "role", "button", "click", "--name", "Cancel request", "--exact");
   await browser("wait", "--fn", "!document.querySelector('.build-loading')");
   assert.equal((await readReview(compositionPath)).request.status, "failed");

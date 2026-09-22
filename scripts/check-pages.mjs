@@ -12,14 +12,110 @@ mkdirSync(output, { recursive: true });
 const browser = (...args) => execFileSync("agent-browser", ["--session", "page-check", ...args], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 }).trim();
 const evaluate = (code) => browser("eval", code);
 const click = (name) => browser("find", "role", "button", "click", "--name", name, "--exact");
-const capture = (name) => browser("screenshot", join(output, name));
+const settlePanels = () => evaluate("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))).then(() => Promise.all([...document.querySelectorAll('.left-sidebar,.left-panel,.action-island,.right-panel,.right-panel-body,.right-panel>.panel-toolbar,.stage')].flatMap(element => element.getAnimations().map(animation => animation.finished))))");
+const capture = (name) => { settlePanels(); browser("screenshot", join(output, name)); };
 try {
   browser("open", base);
   browser("set", "viewport", "1280", "900", "2");
-  evaluate("{const buttons=[...document.querySelectorAll('button')];if(!document.querySelector('button[aria-label=\"Export PNG\"] svg'))throw Error('PNG action or icon missing');if(!buttons.find(button=>button.textContent.trim()==='Present')?.querySelector('svg'))throw Error('Present icon missing');if(buttons.some(button=>['Download','Undo'].includes(button.textContent.trim())))throw Error('Removed document action returned')}");
-  click("Collapse left panel");
+  evaluate("document.fonts.ready");
+  settlePanels();
+  evaluate("{const buttons=[...document.querySelectorAll('button')];if(!document.querySelector('button[aria-label=\"Export PNG\"] svg'))throw Error('PNG action or icon missing');if(!document.querySelector('button[aria-label=\"Present\"] svg'))throw Error('Present icon missing');if(buttons.some(button=>['Download','Undo'].includes(button.textContent.trim())))throw Error('Removed document action returned')}");
+  evaluate(`(async () => {
+    const shell = document.querySelector('.left-sidebar');
+    const header = document.querySelector('.document-island');
+    const panel = document.querySelector('.left-panel');
+    const actions = document.querySelector('.action-island');
+    const stage = document.querySelector('.stage');
+    const toggle = header.querySelector('button');
+    const title = header.querySelector('input');
+    const originalTitle = title.value;
+    const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
+    const samples = [];
+    toggle.focus();
+    toggle.click();
+    await frame();
+    if (!title.closest('[inert]') || !panel.inert || !document.querySelector('.action-island').inert)
+      throw Error('Hidden controls must become inert at the start of collapse');
+    title.focus();
+    if (document.activeElement !== toggle) throw Error('Hidden title took focus');
+    const start = performance.now();
+    do {
+      const s = shell.getBoundingClientRect(), h = header.getBoundingClientRect(), b = panel.getBoundingClientRect(), a = actions.getBoundingClientRect();
+      if (!shell.contains(panel) || !shell.contains(actions) || Math.abs(h.width - s.width + 2) > 0.5 || Math.abs(h.bottom - b.top) > 0.5 || Math.abs(b.bottom - a.top) > 0.5 ||
+        [header, panel, actions].some(el => getComputedStyle(el).transform !== 'none'))
+        throw Error('Left header, body and footer separated during collapse');
+      samples.push({ width: s.width, height: s.height, padding: parseFloat(getComputedStyle(stage).paddingLeft) });
+      await frame();
+    } while (performance.now() - start < 300);
+    const moving = samples.filter(s => s.width > 107.5 && s.width < 251.5);
+    if (!moving.length || moving.some(s => Math.abs((s.width - 107) / 145 - (s.height - 60) / (innerHeight - 172)) > 0.02 || Math.abs((s.width - 107) / 145 - (s.padding - 96) / 196) > 0.02))
+      throw Error('Left card and canvas must contract together');
+    if (Math.abs(shell.getBoundingClientRect().width - 107) > 0.5 || shell.getBoundingClientRect().height !== 60 || toggle.getAttribute('aria-expanded') !== 'false')
+      throw Error('Wrong collapsed header or toggle state');
+    if (getComputedStyle(title).visibility !== 'hidden' || title.value !== originalTitle)
+      throw Error('Collapse must hide, not discard, the title');
+    if (getComputedStyle(toggle.querySelector('svg')).transform !== 'none')
+      throw Error('Toggle must point horizontally');
+    // Reversing mid-expansion must settle without a stale timeout hiding the panel.
+    toggle.click(); await frame(); await frame();
+    toggle.click(); await frame(); await frame();
+    toggle.click(); await frame();
+    await Promise.all([shell, panel, actions, stage].flatMap(el => el.getAnimations().map(a => a.finished)));
+    if (Math.abs(shell.getBoundingClientRect().width - 252) > 0.5 || shell.getBoundingClientRect().height !== innerHeight - 112 || panel.inert || getComputedStyle(panel).visibility !== 'visible')
+      throw Error('Rapid reversal left the panel collapsed');
+  })()`);
+  browser("press", "Enter");
+  settlePanels();
   evaluate("{const actions=document.querySelector('.action-island');if(!document.querySelector('.workspace').classList.contains('left-collapsed')||getComputedStyle(actions).visibility!=='hidden')throw Error('Collapsed actions remain visible')}");
-  click("Expand left panel");
+  capture("panel-collapsed.png");
+  browser("press", "Enter");
+  settlePanels();
+  evaluate("if(document.querySelector('.document-title').inert || document.querySelector('.document-island button').getAttribute('aria-expanded') !== 'true')throw Error('Keyboard expansion failed')");
+  browser("click", ".browser-menu > summary");
+  click("Collapse left panel"); settlePanels();
+  evaluate("if(document.querySelector('.browser-menu').open)throw Error('Browser menu must close with its panel')");
+  click("Expand left panel"); settlePanels();
+  click("Layers");
+  evaluate(`(async () => {
+    const panel = document.querySelector('.right-panel');
+    const body = panel.querySelector('.right-panel-body');
+    const tabs = panel.querySelector('.panel-tabs');
+    const stage = document.querySelector('.stage');
+    const toggle = panel.querySelector('.panel-toggle');
+    const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
+    const samples = [];
+    toggle.focus(); toggle.click(); await frame();
+    if (!body.inert || !tabs.inert) throw Error('Right controls must become inert immediately');
+    tabs.querySelector('button').focus();
+    if (document.activeElement !== toggle) throw Error('Hidden right tab took focus');
+    const start = performance.now();
+    do {
+      const p = panel.getBoundingClientRect(), h = tabs.parentElement.getBoundingClientRect(), b = body.getBoundingClientRect();
+      if (Math.abs(h.width - p.width + 2) > 0.5 || Math.abs(h.bottom - b.top) > 0.5 || Math.abs(b.right - p.right + 1) > 0.5 || getComputedStyle(body).transform !== 'none')
+        throw Error('Right header and body separated during collapse');
+      samples.push({ width: p.width, height: p.height, padding: parseFloat(getComputedStyle(stage).paddingRight) });
+      await frame();
+    } while (performance.now() - start < 300);
+    const moving = samples.filter(s => s.width > 50.5 && s.width < 327.5);
+    if (!moving.length || moving.some(s => Math.abs((s.width - 50) / 278 - (s.height - 56) / (innerHeight - 168)) > 0.02 || Math.abs((s.width - 50) / 278 - (s.padding - 96) / 280) > 0.02))
+      throw Error('Right card and canvas must contract together');
+    const bounds = panel.getBoundingClientRect(), button = toggle.getBoundingClientRect();
+    if (bounds.width !== 50 || bounds.height !== 56 || Math.abs(button.left - bounds.left - 5) > 0.5 || Math.abs(bounds.right - button.right - 5) > 0.5)
+      throw Error('Collapsed right toggle lost its centered target');
+    if (getComputedStyle(body).visibility !== 'hidden' || getComputedStyle(tabs).visibility !== 'hidden' || toggle.getAttribute('aria-expanded') !== 'false')
+      throw Error('Right panel did not finish collapsing');
+    toggle.click(); await frame(); await frame();
+    toggle.click(); await frame(); await frame();
+    toggle.click(); await frame();
+    await Promise.all([panel, body, tabs.parentElement, stage].flatMap(el => el.getAnimations().map(a => a.finished)));
+    if (panel.getBoundingClientRect().width !== 328 || panel.getBoundingClientRect().height !== innerHeight - 112 || body.inert || getComputedStyle(body).visibility !== 'visible')
+      throw Error('Right panel rapid reversal failed');
+  })()`);
+  browser("press", "Enter"); settlePanels();
+  capture("right-panel-collapsed.png");
+  browser("press", "Enter"); settlePanels();
+  evaluate("if(document.querySelector('.right-panel-body').inert || !document.querySelector('.layers-panel') || document.querySelector('.right-panel button[aria-pressed=true]').textContent !== 'Layers')throw Error('Keyboard expansion lost the active inspector tab')");
+  click("Settings");
   for (const [name, width, height] of [["square", 1080, 1080], ["header", 1600, 600], ["portrait", 1080, 1350], ["presentation", 1920, 1080]]) {
     let doc = initialDraft(true);
     doc.title = "Visual page verification";
@@ -91,5 +187,21 @@ try {
   browser("set", "viewport", "1024", "768", "2");
   evaluate("new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))");
   capture("resize-unavailable-small.png");
-  console.log("PASS: PNG action and collapse behavior, four ratios, native font and vector PNG content, exact PNG dimensions, editing, resize undo, presentation fitting, empty page, preset, reload and overflow refusal");
+  browser("set", "viewport", "390", "700", "2");
+  settlePanels();
+  evaluate("if(document.documentElement.scrollWidth !== 390 || document.querySelector('.left-sidebar').getBoundingClientRect().width !== 107)throw Error('Narrow collapsed layout overflows')");
+  capture("panel-collapsed-narrow.png");
+  click("Expand right panel"); settlePanels();
+  evaluate("{const r=document.querySelector('.right-panel-body').getBoundingClientRect();if(r.left < 0 || r.right > innerWidth || r.bottom > innerHeight)throw Error('Narrow inspector exceeds viewport')}");
+  capture("right-panel-expanded-narrow.png");
+  click("Collapse right panel"); settlePanels();
+  browser("set", "media", "light", "reduced-motion");
+  click("Expand left panel");
+  click("Expand right panel");
+  evaluate("if([...document.querySelectorAll('.left-sidebar,.left-panel,.action-island,.right-panel,.right-panel-body,.right-panel>.panel-toolbar,.stage')].some(element => getComputedStyle(element).transitionDuration.split(',').some(duration => parseFloat(duration) !== 0) || element.getAnimations().length))throw Error('Panel motion ignores reduced-motion preference')");
+  click("Collapse left panel");
+  click("Collapse right panel");
+  evaluate("if(getComputedStyle(document.querySelector('.right-panel-body')).visibility !== 'hidden' || document.querySelector('.right-panel').getBoundingClientRect().width !== 50)throw Error('Reduced-motion right collapse did not settle immediately')");
+  evaluate("if(getComputedStyle(document.querySelector('.left-panel')).visibility !== 'hidden' || document.querySelector('.left-sidebar').getBoundingClientRect().width !== 107)throw Error('Reduced-motion collapse did not settle immediately')");
+  console.log("PASS: both panels contract as continuous cards in sync with the canvas, joined headers/bodies/footer at every frame, rapid reversal, inert controls, centered right toggle, keyboard toggle/tab retention, narrow layout and reduced motion; PNG actions, four ratios, native/vector exports, editing, resize undo, presentation, reload and overflow refusal");
 } finally { browser("close"); }

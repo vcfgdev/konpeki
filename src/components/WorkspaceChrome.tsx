@@ -1,4 +1,4 @@
-import { useRef, type RefObject } from "react";
+import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import type { CompositionComponent } from "../../composition/types.ts";
 import { componentLabels } from "../lib/model.ts";
 import mark from "../assets/konpeki-mark.png";
@@ -73,7 +73,9 @@ export function WorkspaceChrome({
   onComponentTool,
   leftCollapsed,
   onToggleLeftPanel,
+  children,
 }: {
+  children: ReactNode;
   leftCollapsed: boolean;
   onToggleLeftPanel: () => void;
   title: string;
@@ -105,11 +107,15 @@ export function WorkspaceChrome({
   function closeBrowserMenu() {
     if (browserMenu.current) browserMenu.current.open = false;
   }
+  useEffect(() => {
+    if (leftCollapsed) closeBrowserMenu();
+  }, [leftCollapsed]);
   return (
     <>
+      <div className={`left-sidebar${leftCollapsed ? " collapsed" : ""}`}>
       <header className="document-island" aria-label="Document controls">
         <img src={mark} alt="Konpeki" />
-        <label className="document-title">
+        <label className="document-title" inert={leftCollapsed}>
           <span className="sr-only">Composition title</span>
           <input
             ref={titleRef}
@@ -130,7 +136,7 @@ export function WorkspaceChrome({
         )}
         {fileStatus && fileStatus !== "saved" && (
           <span
-            className={`file-status ${fileStatus}`}
+            className={`file-status ${fileStatus}${leftCollapsed ? " sr-only" : ""}`}
             role="status"
             aria-live="polite"
             title={fileStatus === "conflict"
@@ -144,6 +150,7 @@ export function WorkspaceChrome({
         )}
         <button type="button" className="panel-toggle"
           aria-label={leftCollapsed ? "Expand left panel" : "Collapse left panel"}
+          aria-expanded={!leftCollapsed}
           onClick={onToggleLeftPanel}>
           <svg className="panel-collapse-icon" viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -151,6 +158,10 @@ export function WorkspaceChrome({
           </svg>
         </button>
       </header>
+
+      <div className="editor-content" inert={building} aria-busy={building}>
+        {children}
+      </div>
 
       <div className="action-island" aria-label="Document actions" inert={leftCollapsed}>
         <button
@@ -245,6 +256,7 @@ export function WorkspaceChrome({
             <span className="build-label">{buildState === "ready" ? "Request ready" : buildState === "working" ? "Agent working" : "Build it"}</span>
           </button>
         )}
+      </div>
       </div>
 
       <nav className="component-dock" aria-label="Canvas tools" inert={building}>
