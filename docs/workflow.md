@@ -1,9 +1,16 @@
 # Canvas workflow
 
-Start with the [quickstart](../README.md#start-in-your-coding-agent) and give your
-coding agent a brief in its prompt field. Keep the skill with the project:
-copying `SKILL.md` alone does not install Konpeki. Skill discovery varies by
-agent; there is no universal `/konpeki` command.
+Start with [Use with your agent](../README.md#use-with-your-agent) and give your
+coding agent a brief in its prompt field. Install the complete skill directory;
+its bootstrap script finds or installs the runtime separately. Skill discovery
+varies by agent: Codex CLI/IDE uses `$konpeki`, while the standalone Claude Code
+skill uses `/konpeki`. Other clients may use skill selection or natural language.
+`init` opens a blank or existing file-backed editor without generating; `generate`
+creates or revises a visual, opens its preview and inspects it, with setup implicit.
+A creation brief without a mode selects generate. Follow-up reviews continue the
+same document without repeating a command. These are skill modes, not terminal
+subcommands. **Build it** is an optional revision handoff, not a required first-run
+step; opening the editor does not start a review listener.
 
 ## Documents and exports
 

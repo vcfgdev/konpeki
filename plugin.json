@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "konpeki",
+  "version": "0.2.0",
+  "description": "Create editable visuals with your coding agent.",
+  "repository": "https://github.com/vcfgdev/konpeki",
+  "license": "Apache-2.0",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Konpeki",
+        "shortDescription": "Create editable visuals with your coding agent",
+        "category": "Productivity",
+        "defaultPrompt": [
+          "Use Konpeki to turn these launch notes into a product announcement.",
+          "Use Konpeki to create a cover for this article.",
+          "Use Konpeki to turn this data into a chart for a presentation."
+        ]
+      }
+    }
+  }
+}

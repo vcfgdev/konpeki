@@ -1,0 +1,23 @@
+{
+  "schema": "konpeki-composition/v1",
+  "title": "Untitled composition",
+  "theme": { "id": "plex", "mode": "paper" },
+  "slides": [
+    {
+      "id": "slide-1",
+      "name": "Page 01",
+      "canvas": { "width": 1920, "height": 1080 },
+      "innerPadding": { "top": 72, "right": 112, "bottom": 0, "left": 112 },
+      "pageNumber": { "style": "none", "color": "muted" },
+      "audience": "Decision makers",
+      "question": "What should the audience understand or decide?",
+      "intendedViewingSize": "presentation",
+      "contentSlots": [],
+      "components": [],
+      "groups": [],
+      "readingOrder": [],
+      "paintOrder": [],
+      "relationships": []
+    }
+  ]
+}

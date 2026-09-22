@@ -7,7 +7,7 @@ presents that same document.
 ## Choose the relevant guide
 
 - First-time setup: [SETUP.md](SETUP.md).
-- Creating or revising visuals: [authoring-visuals](.agents/skills/authoring-visuals/SKILL.md)
+- Opening the editor, creating or revising visuals: [Konpeki skill](skills/konpeki/SKILL.md)
   and [AUTHORING.md](AUTHORING.md), which owns design and factual-fidelity rules.
 - Changing the application: [development guidance](docs/development.md) and
   the [composition contract](composition/README.md).

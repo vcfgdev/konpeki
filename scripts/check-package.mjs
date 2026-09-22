@@ -14,7 +14,9 @@ const paths = new Set(pack.files.map(({ path }) => path));
 for (const required of [
   "LICENSE", "README.md", "AGENTS.md", "AUTHORING.md", "SETUP.md",
   "docs/workflow.md", "docs/development.md",
-  ".agents/skills/authoring-visuals/SKILL.md",
+  "plugin.json", "skills/konpeki/SKILL.md",
+  "skills/konpeki/scripts/ensure-runtime.mjs",
+  "skills/konpeki/scripts/prepare-document.mjs", "skills/konpeki/assets/blank.json",
   "runtime/konpeki.mjs",
   "index.html", "vite.config.ts", "src/main.tsx", "src/assets/konpeki-mark.png",
   "composition/schema.json", "composition/README.md",

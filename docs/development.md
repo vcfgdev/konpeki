@@ -37,6 +37,29 @@ AI service. No deployment is automatic. In a remote environment, expose the
 server through its authenticated preview mechanism; a local address is not a
 shareable URL.
 
+## Skill and plugin packaging
+
+`skills/konpeki/` is the canonical portable skill. The repo's
+`.agents/skills/konpeki` symlink enables local discovery without a second
+copy. The root Agent Plugins `plugin.json` and repo marketplace expose the same
+skill to compatible Codex clients; no MCP, hook or hosted AI is involved. Review
+native-client installation separately from the npm smoke test.
+
+The skill dispatches `init` (open only) and `generate` (create/revise, including
+implicit setup). These are agent modes, not CLI subcommands. Its portable
+`scripts/prepare-document.mjs` validates through the resolved CLI and exclusively
+creates a blank file, or validates an existing file without rewriting it. The
+bundled `assets/blank.json` matches `initialDraft(true)` in
+`composition/document.ts`; onboarding tests enforce that contract. Keep scripts
+and assets when copying the skill. No TypeScript import from `node_modules` is
+needed, so a copied skill also supports the existing published runtime.
+
+Its `scripts/ensure-runtime.mjs` pins the existing published release. It performs
+no installation without `--install`, and never updates project dependencies.
+When preparing a new release, deliberately update its pin and the plugin version
+together with the package version after testing the target runtime. The current
+pin remains 0.2.0; local CLI/playground changes do not republish that npm version.
+
 ## Implementation reference
 
 - `src/` contains the shared canvas application for editing and presentation.

@@ -1,79 +1,133 @@
 # Set up Konpeki for your coding agent
 
-Give your agent this document and your brief in the same conversation:
+Install the `konpeki` skill once, then give your agent a creation brief:
 
 ```text
-Read Konpeki's SETUP.md and set it up in this workspace.
-Use it to explain [source] to [audience], with the takeaway [idea].
-Create [one visual / a short presentation]. Open the editable preview,
-then render, inspect and fix the result.
+Use Konpeki to turn these launch notes into a product announcement.
 ```
 
-Konpeki is a shared visual canvas, not an AI service. The coding agent creates
-and revises composition files; the browser lets the person edit, review, present
-and export them. Keep the initial brief and revision conversation in the coding
-agent. An in-app browser is convenient but not required.
+Opening and inspecting the editable preview is part of the skill, not an extra
+instruction the person has to remember. Covers, social graphics, charts,
+diagrams and presentations use the same workflow. Keep the brief and revisions
+in agent chat; the browser edits, reviews, presents and exports the document.
+Konpeki supplies no hosted AI service or additional model subscription.
 
-## 1. Prepare the environment
+## 1. Install the skill or plugin
 
-- Check for Node.js 24+ (`node --version`), npm (`npm --version`), and a browser
-  the agent can use for visual inspection. Report missing prerequisites rather
-  than claiming setup succeeded. Follow the host's rules for installing tools.
-- Reuse an existing workspace when requested, or create a new directory. Do not
-  overwrite the user's files or replace their agent guidance.
-- Install the pinned release locally so the agent can find its resources and
-  reuse the same CLI version. Do not edit files inside `node_modules`.
+Use the host's skill installer to install the complete
+[`skills/konpeki`](skills/konpeki/) directory from
+`vcfgdev/konpeki`. Keep its `scripts/` and `assets/` directories. In Codex, ask the skill installer:
 
-```sh
-npm install --save-dev konpeki@0.2.0
+```text
+Install the konpeki skill from vcfgdev/konpeki, at skills/konpeki.
 ```
 
-In a new empty directory, run `npm init -y` first. Run subsequent commands from
-the workspace where Konpeki was installed. Its resources are under
-`node_modules/konpeki/`: `AGENTS.md`, `AUTHORING.md`, `composition/`, `design/`,
-and `.agents/skills/authoring-visuals/SKILL.md`. If the package/version cannot be
-resolved, report the installation issue rather than substituting another package.
-Copying the skill alone does not install the runtime.
+Other agents may use another installer or skill location. Follow their documented
+mechanism; there is no universal slash command. If a host does not discover skills,
+read the installed `SKILL.md` directly. Do not overwrite existing agent guidance.
 
-For repository development instead, clone `https://github.com/vcfgdev/konpeki.git`
-with the required access and follow the [mise setup](docs/development.md).
-Use `mise exec -- pnpm konpeki` in place of `npm exec --no -- konpeki` below.
-Mise is for contributors to this repository; npm package users do not need it.
+If you previously installed `authoring-visuals`, replace that installed skill
+with `konpeki` rather than keeping both copies. The runtime package is unchanged.
 
-## 2. Read the authoring instructions
+### Choose init or generate
 
-Read [AGENTS.md](AGENTS.md), then use the
-[authoring-visuals skill](.agents/skills/authoring-visuals/SKILL.md). If the agent
-does not discover project skills, read that file directly. It links to the design
-policy and composition contract; no special slash command is required.
+| Mode | Codex CLI / IDE | Claude Code standalone skill |
+| --- | --- | --- |
+| Open the editor without generating | `$konpeki init [composition.json]` | `/konpeki init [composition.json]` |
+| Create or revise from your materials | `$konpeki generate [brief]` | `/konpeki generate [brief]` |
 
-Use the brief already supplied. Ask only for missing information that prevents
-a faithful result. Do not ask the person to re-enter their intent in the canvas.
-Create a new document without overwriting an example or existing work. By default,
-save it as `slides/<name>/composition.json` with its brief and source notes beside
-it. If the user specifies another destination, pass that file's absolute path to
-the CLI.
+`generate` automatically prepares the runtime when needed. It uses materials
+already supplied in chat, referenced files and the current canvas; it does not
+require `init` first or a repeated brief. Natural-language “Use Konpeki to…”
+creation requests also select generate. Follow-up feedback continues the same
+document without another command. Other GUIs may use skill selection, and plugin
+installations may namespace the skill. These modes are not terminal subcommands.
 
-## 3. Validate and open the result
-
-For an installation check, validate the bundled introduction:
+For `init`, choose the supplied path or the document already active in the
+conversation; otherwise use `slides/untitled/composition.json`. After resolving
+the runtime below, run:
 
 ```sh
-npm exec --no -- konpeki validate node_modules/konpeki/slides/introducing-konpeki/composition.json
+node "<installed-skill>/scripts/prepare-document.mjs" "<cli>" "<composition.json>"
+node "<cli>" preview "<composition.json>"
+```
+
+The helper validates existing files without rewriting them. For a missing file,
+it validates and writes the bundled blank document without overwriting a file
+created concurrently. Invalid data is preserved, not replaced with a sample.
+Reuse an already running preview for the same file. Open and verify its exact
+session URL as described below, then stop: init does not generate or start a
+review listener. The starter works with the pinned published runtime; it does
+not import TypeScript from `node_modules` or require an unreleased `init` CLI.
+
+### Optional Codex plugin packaging
+
+The root `plugin.json` packages that same skill, without MCP servers, hooks or
+credentials. `.agents/plugins/marketplace.json` exposes it as a repo marketplace.
+On a compatible Codex client, add the repository marketplace with:
+
+```sh
+codex plugin marketplace add vcfgdev/konpeki
+```
+
+Then install Konpeki from that source in the desktop plugin directory and test it
+in a new conversation. Install either the standalone skill or the plugin, not
+both. This is repository distribution, not a listing in OpenAI's public directory.
+It becomes available from the remote repository after these files are published.
+Native Codex GUI installation needs a separate client smoke test; package checks
+alone do not establish host compatibility.
+
+## 2. Let the skill prepare the runtime
+
+Check Node.js 24+, npm, command/file access and the host's browser capabilities.
+Follow host approval and toolchain rules if prerequisites are missing.
+
+From the user's document workspace, run:
+
+```sh
+node "<installed-skill>/scripts/ensure-runtime.mjs"
+```
+
+The script reuses a compatible workspace installation, surrounding Konpeki
+checkout, or cached runtime. If none exists, obtain any required host approval
+and rerun with `--install`. It installs the pinned `konpeki@0.2.0` release in a
+user cache, without adding project dependencies or changing project guidance.
+Missing/incompatible runtimes are never reported ready. The script prints JSON
+with `root`, `cli` and `version`; installation diagnostics go to stderr.
+
+Use the returned absolute `root` for resources and `cli` for commands. Do not rely
+on repo-relative paths from a copied skill. Keep documents outside the runtime.
+For manual project-local npm installation, see [Manual npm start](README.md#manual-npm-start).
+Repository contributors instead use the [mise setup](docs/development.md); users
+of the published package do not need mise.
+
+## 3. Generate, validate and open the visual
+
+Follow the installed skill and the runtime's `AUTHORING.md`, composition contract
+and design resources. Use the brief already supplied; ask only for information
+needed for faithful work. Do not ask the person to repeat their prompt in the
+canvas. Continue the current document when revising or following init. Save new
+work to an unused `slides/<name>/composition.json`, with brief/source notes,
+unless the person chooses another destination. Preserve existing documents.
+
+For an installation check, validate the bundled example:
+
+```sh
+node "<cli>" validate "<root>/slides/introducing-konpeki/composition.json"
 ```
 
 After authoring the user's document:
 
 ```sh
-npm exec --no -- konpeki validate slides/<name>/composition.json
-npm exec --no -- konpeki preview slides/<name>/composition.json
+node "<cli>" validate "slides/<name>/composition.json"
+node "<cli>" preview "slides/<name>/composition.json"
 ```
 
-Keep the preview process running using the host's supported service mechanism.
-Open the exact printed session URL; do not drop its query string or expose its
-token in public logs. For remote workspaces, use the host's authenticated preview
-or port-forwarding mechanism, preserving the session query. Do not present a
-remote machine's loopback address as a user-accessible link.
+Reuse an existing preview for that file when available. Keep the process running
+using the host's supported service mechanism. Open the exact printed session URL
+in the in-app browser when supported, otherwise the regular browser. Preserve its
+query string and never publish its capability token. In remote workspaces, use
+authenticated preview/port forwarding, not a remote loopback address.
 
 Verify that the browser loads the intended document, then render, inspect and
 repair the result as directed by the skill. The file-backed canvas saves browser
@@ -82,5 +136,12 @@ validation succeeds and the intended composition opens—not merely when a serve
 process starts. If browser inspection is unavailable, report that limitation.
 
 Return the document path, usable preview link and verification outcome. Continue
-revisions in agent chat. The optional **Build it** / `wait` handoff is described in
-[Canvas workflow](docs/workflow.md); the button cannot wake an agent by itself.
+revisions in agent chat. For submitted canvas reviews, generate checks `request`,
+claims a `submitted` request with `wait`, applies the notes against the latest
+document, and acknowledges it with `finish` only after validation and inspection.
+Coordinate ownership before resuming an already `working` request.
+
+An ongoing listener runs only when explicitly requested and supported by the host.
+Otherwise, use **Copy prompt** after **Build it**, or resume generate in agent chat.
+The [canvas workflow](docs/workflow.md) describes this handoff; the button cannot
+wake an idle agent, and an open preview is not a live agent connection.
