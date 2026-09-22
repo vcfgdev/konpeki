@@ -13,6 +13,7 @@
 .workspace {
   --panel-duration: 200ms;
   --panel-easing: cubic-bezier(0.2, 0, 0, 1);
+  --panel-header-height: 58px;
   position: relative;
   height: 100dvh;
   min-height: 100dvh;
@@ -44,7 +45,7 @@
 }
 .left-sidebar.collapsed {
   width: 107px;
-  height: 60px;
+  height: calc(var(--panel-header-height) + 2px);
 }
 .left-sidebar:not(.collapsed):has(.browser-menu[open]) {
   overflow: visible;
@@ -55,7 +56,7 @@
 }
 .right-panel.collapsed {
   width: 50px;
-  height: 56px;
+  height: calc(var(--panel-header-height) + 2px);
 }
 .right-panel.collapsed > .panel-toolbar {
   gap: 0;
@@ -110,7 +111,7 @@
   flex: none;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 40px;
-  height: 54px;
+  height: var(--panel-header-height);
   padding: 0 8px 0 12px;
   overflow: hidden;
   transition: padding var(--panel-duration) var(--panel-easing),

@@ -19,6 +19,14 @@ try {
   browser("set", "viewport", "1280", "900", "2");
   evaluate("document.fonts.ready");
   settlePanels();
+  evaluate(`{
+    const left = document.querySelector('.document-island');
+    const right = document.querySelector('.right-panel > .panel-toolbar');
+    const a = left.getBoundingClientRect(), b = right.getBoundingClientRect();
+    if (a.height !== 58 || b.height !== 58 || a.bottom !== b.bottom ||
+      [left, right].some(header => getComputedStyle(header).borderBottomWidth !== '1px' || getComputedStyle(header).borderBottomColor !== 'rgb(229, 229, 229)'))
+      throw Error('Expanded panel headers must have aligned, matching dividers');
+  }`);
   evaluate("{const buttons=[...document.querySelectorAll('button')];if(!document.querySelector('button[aria-label=\"Export PNG\"] svg'))throw Error('PNG action or icon missing');if(!document.querySelector('button[aria-label=\"Present\"] svg'))throw Error('Present icon missing');if(buttons.some(button=>['Download','Undo'].includes(button.textContent.trim())))throw Error('Removed document action returned')}");
   evaluate(`(async () => {
     const shell = document.querySelector('.left-sidebar');
@@ -49,9 +57,11 @@ try {
     } while (performance.now() - start < 300);
     const moving = samples.filter(s => s.width > 107.5 && s.width < 251.5);
     if (!moving.length || moving.some(s => Math.abs((s.width - 107) / 145 - (s.height - 60) / (innerHeight - 172)) > 0.02 || Math.abs((s.width - 107) / 145 - (s.padding - 96) / 196) > 0.02))
-      throw Error('Left card and canvas must contract together');
+      throw Error('Left card and canvas must contract together: ' + JSON.stringify(samples));
     if (Math.abs(shell.getBoundingClientRect().width - 107) > 0.5 || shell.getBoundingClientRect().height !== 60 || toggle.getAttribute('aria-expanded') !== 'false')
       throw Error('Wrong collapsed header or toggle state');
+    if (getComputedStyle(header).borderBottomColor !== 'rgba(0, 0, 0, 0)')
+      throw Error('Collapsed left header must hide its divider');
     if (getComputedStyle(title).visibility !== 'hidden' || title.value !== originalTitle)
       throw Error('Collapse must hide, not discard, the title');
     if (getComputedStyle(toggle.querySelector('svg')).transform !== 'none')
@@ -97,11 +107,13 @@ try {
       await frame();
     } while (performance.now() - start < 300);
     const moving = samples.filter(s => s.width > 50.5 && s.width < 327.5);
-    if (!moving.length || moving.some(s => Math.abs((s.width - 50) / 278 - (s.height - 56) / (innerHeight - 168)) > 0.02 || Math.abs((s.width - 50) / 278 - (s.padding - 96) / 280) > 0.02))
-      throw Error('Right card and canvas must contract together');
+    if (!moving.length || moving.some(s => Math.abs((s.width - 50) / 278 - (s.height - 60) / (innerHeight - 172)) > 0.02 || Math.abs((s.width - 50) / 278 - (s.padding - 96) / 280) > 0.02))
+      throw Error('Right card and canvas must contract together: ' + JSON.stringify(samples));
     const bounds = panel.getBoundingClientRect(), button = toggle.getBoundingClientRect();
-    if (bounds.width !== 50 || bounds.height !== 56 || Math.abs(button.left - bounds.left - 5) > 0.5 || Math.abs(bounds.right - button.right - 5) > 0.5)
+    if (bounds.width !== 50 || bounds.height !== 60 || Math.abs(button.left - bounds.left - 5) > 0.5 || Math.abs(bounds.right - button.right - 5) > 0.5)
       throw Error('Collapsed right toggle lost its centered target');
+    if (getComputedStyle(tabs.parentElement).borderBottomColor !== 'rgba(0, 0, 0, 0)')
+      throw Error('Collapsed right header must hide its divider');
     if (getComputedStyle(body).visibility !== 'hidden' || getComputedStyle(tabs).visibility !== 'hidden' || toggle.getAttribute('aria-expanded') !== 'false')
       throw Error('Right panel did not finish collapsing');
     toggle.click(); await frame(); await frame();
