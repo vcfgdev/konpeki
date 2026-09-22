@@ -38,7 +38,16 @@ async function preview(input) {
     root,
     configFile: resolve(root, "vite.config.ts"),
     logLevel: json ? "silent" : "info",
-    server: { host, port, strictPort: process.argv.includes("--port") },
+    server: {
+      host, port, strictPort: process.argv.includes("--port"),
+      fs: { allow: [
+        root,
+        // npm hoists fonts outside this package. Allow their assets, not the
+        // surrounding user's workspace; session-plugin retains fs.deny rules.
+        ...["ibm-plex-sans", "ibm-plex-serif", "noto-sans", "hanken-grotesk"]
+          .map(font => dirname(fileURLToPath(import.meta.resolve(`@fontsource/${font}/package.json`)))),
+      ] },
+    },
     plugins: [fileSessionPlugin({
       compositionPath,
       token,

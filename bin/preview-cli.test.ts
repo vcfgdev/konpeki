@@ -1,16 +1,17 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test, { type TestContext } from "node:test";
 import { fileURLToPath } from "node:url";
+import { build } from "vite";
 
 const cli = fileURLToPath(new URL("./konpeki.mjs", import.meta.url));
-async function launch(t: TestContext, path: string, args: string[] = []) {
-  const child = spawn(process.execPath, [cli, "preview", path, "--json", ...args]);
+async function launch(t: TestContext, path: string, args: string[] = [], executable = cli) {
+  const child = spawn(process.execPath, [executable, "preview", path, "--json", ...args]);
   const exited = once(child, "exit");
   t.after(async () => { if (child.exitCode === null) child.kill(); await exited; });
   let stdout = "";
@@ -72,4 +73,40 @@ test("an explicitly occupied port fails cleanly rather than reporting a false re
   await assert.rejects(process.ready, /already in use/);
   assert.equal((await process.exited)[0], 1);
   assert.equal(process.output(), "");
+});
+
+test("installed preview serves hoisted fonts without exposing neighboring files", async t => {
+  const root = await mkdtemp(join(tmpdir(), "konpeki-installed-preview-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const packageRoot = join(root, "konpeki");
+  await mkdir(packageRoot);
+  await symlink(fileURLToPath(new URL("../node_modules", import.meta.url)), join(root, "node_modules"), "dir");
+  for (const file of ["package.json", "vite.config.ts"])
+    await copyFile(new URL(`../${file}`, import.meta.url), join(packageRoot, file));
+  await build({
+    root: fileURLToPath(new URL("../", import.meta.url)),
+    configFile: false,
+    logLevel: "silent",
+    build: {
+      ssr: cli, outDir: join(packageRoot, "runtime"), emptyOutDir: true,
+      rolldownOptions: { output: { entryFileNames: "konpeki.mjs" } },
+    },
+  });
+  const compositionPath = join(root, "composition.json");
+  await copyFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), compositionPath);
+  await writeFile(join(root, "private.txt"), "private neighboring file");
+  await writeFile(join(packageRoot, ".env"), "PRIVATE=test-fixture");
+  await writeFile(join(packageRoot, "composition.json.review.json"), "private review fixture");
+  const preview = await launch(t, compositionPath, ["--port", "0"], join(packageRoot, "runtime/konpeki.mjs"));
+  const { url } = await preview.ready;
+  for (const font of ["ibm-plex-sans", "ibm-plex-serif", "noto-sans", "hanken-grotesk"]) {
+    for (const weight of [400, 500, 600]) {
+      const path = fileURLToPath(import.meta.resolve(`@fontsource/${font}/files/${font}-latin-${weight}-normal.woff2`));
+      const response = await fetch(new URL(`/@fs${path}`, url));
+      assert.equal(response.status, 200, `${font} ${weight} must load outside the installed package root`);
+      assert.deepEqual(Buffer.from(await response.arrayBuffer()), await readFile(path), "serve actual font bytes, not HTML fallback");
+    }
+  }
+  for (const path of [join(root, "private.txt"), join(packageRoot, ".env"), join(packageRoot, "composition.json.review.json")])
+    assert.equal((await fetch(new URL(`/@fs${path}`, url))).status, 403, "font access must not expose neighboring or denied files");
 });
