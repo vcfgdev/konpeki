@@ -49,6 +49,29 @@ record with `type`, `compositionPath` and the exact session-bearing `url` after
 listening. Treat that URL as a capability, not public logging data. This is a
 startup signal, not proof that the browser loaded the right composition.
 
+### GitHub Pages
+
+The public playground is hosted at
+[vcfgdev.github.io/konpeki](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
+The example query opens the introduction; the root URL opens the ordinary local
+draft. Each visitor's edits stay in their own browser, not in the deployed site.
+
+`.github/workflows/pages.yml` deploys only when explicitly dispatched on `main`:
+
+```sh
+gh workflow run pages.yml --repo vcfgdev/konpeki --ref main
+```
+
+The workflow uses the pinned mise/pnpm toolchain, runs typecheck and tests, builds
+with the Pages base path, and uploads only `dist`. The deployment job publishes
+that artifact to the `github-pages` environment. Repository **Settings → Pages →
+Source** must be **GitHub Actions**. Ordinary pushes run CI but do not redeploy;
+package releases remain separate. Inspect the public example after deployment,
+including reload, fonts, editing, JSON download and Present.
+
+Existing example working copies survive deployments. Download any edits before
+choosing **Browser → Reset example** to load a newly published example.
+
 ## Skill and plugin packaging
 
 `skills/konpeki/` is the canonical portable skill. The repo's

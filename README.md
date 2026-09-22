@@ -60,15 +60,16 @@ connect or wake an agent. The skill modes are not terminal CLI subcommands.
 
 ## Try the editor in your browser
 
+[Open the editable Konpeki example](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
+
 The browser-only playground lets you edit an example or start blank, keep a local
 working copy, import/download editable JSON, export PNG and present. It requires
 no account or AI service. Browser-local data is not cloud backup; download JSON
 to keep or move your work. Continue with your coding agent using that file.
 
-The static build is ready for [demo hosting](docs/development.md#development-server-and-demo-hosting);
-an official hosted URL is not published yet. It does not connect to an agent or
-expose **Build it**. The agent-led workflow above is the route from a prompt to a
-finished visual.
+The [GitHub Pages playground](docs/development.md#github-pages) does not connect
+to an agent or expose **Build it**. The agent-led workflow above is the route
+from a prompt to a finished visual.
 
 ## Manual npm start
 
