@@ -89,11 +89,11 @@ bundled `assets/blank.json` matches `initialDraft(true)` in
 and assets when copying the skill. No TypeScript import from `node_modules` is
 needed, so a copied skill also supports the existing published runtime.
 
-Its `scripts/ensure-runtime.mjs` pins the existing published release. It performs
+Its `scripts/ensure-runtime.mjs` pins the release runtime. It performs
 no installation without `--install`, and never updates project dependencies.
 When preparing a new release, deliberately update its pin and the plugin version
 together with the package version after testing the target runtime. The current
-pin remains 0.2.0; local CLI/playground changes do not republish that npm version.
+pin is 0.3.0; local CLI/playground changes do not republish that npm version.
 
 ## Implementation reference
 

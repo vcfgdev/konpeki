@@ -6,7 +6,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // A copied skill must resolve a known runtime, not follow repo-relative links.
-const version = "0.2.0";
+const version = "0.3.0";
 const probeDocument = fileURLToPath(new URL("../assets/blank.json", import.meta.url));
 function runtime(root) {
   try {
