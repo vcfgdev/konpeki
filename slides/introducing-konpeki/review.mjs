@@ -2,11 +2,13 @@
 import { execFileSync } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { getTheme } from "../../design/themes/index.ts";
 
 const base = process.argv[2] ?? "http://localhost:4318";
 const output = resolve(process.argv[3] ?? ".amp/in/artifacts/konpeki-intro");
 const theme = process.argv[4] ?? "Plex";
 const mode = process.argv[5] ?? "paper";
+const typography = process.argv[6] ?? getTheme(theme, mode).typographyId;
 mkdirSync(output, { recursive: true });
 function browser(...args) {
   return execFileSync("agent-browser", ["--session", "intro-review", ...args], { encoding: "utf8" }).trim();
@@ -45,6 +47,7 @@ try {
   browser("set", "viewport", "1556", "1030", "2");
   browser("find", "role", "button", "click", "--name", theme, "--exact");
   browser("find", "role", "button", "click", "--name", mode === "paper" ? "Paper" : "Night", "--exact");
+  browser("select", '[name="Font"]', typography);
   browser("eval", `(() => {
     if (document.querySelector('select[name="Authoring mode"]')) throw Error('Authoring mode remains in appearance');
     const canvas = document.querySelector('#canvas-stage .canvas');

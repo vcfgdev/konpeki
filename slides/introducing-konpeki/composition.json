@@ -56,9 +56,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "A shared slide canvas\nfor people and coding agents.",
+          "content": "Create clear visuals\nwith your coding agent.",
           "id": "promise",
-          "intent": "A shared slide canvas for people and coding agents.",
+          "intent": "Create clear visuals with your coding agent.",
           "kind": "text-block",
           "preferredRect": {
             "height": 177,
@@ -90,9 +90,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Sketch the idea. Generate the detail.\nKeep revising the same document.",
+          "content": "Bring a brief. Get an editable result.\nKeep revising the same document.",
           "id": "summary",
-          "intent": "Sketch the idea. Generate the detail. Keep revising the same document.",
+          "intent": "Bring a brief. Get an editable result. Keep revising the same document.",
           "kind": "text-block",
           "preferredRect": {
             "height": 121,
@@ -148,7 +148,7 @@
                 },
                 "id": "canvas-title",
                 "kind": "text",
-                "text": "An idea, made clear"
+                "text": "From brief to visual"
               },
               {
                 "attributes": {
@@ -201,7 +201,7 @@
                 },
                 "id": "source-label",
                 "kind": "text",
-                "text": "Idea"
+                "text": "Brief"
               },
               {
                 "attributes": {
@@ -209,12 +209,12 @@
                   "font-family": "theme:body-font",
                   "font-size": 28,
                   "font-weight": 400,
-                  "x": 382,
+                  "x": 374,
                   "y": 239
                 },
                 "id": "result-label",
                 "kind": "text",
-                "text": "Explanation"
+                "text": "Editable visual"
               },
               {
                 "attributes": {
@@ -302,9 +302,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "For technical explanations, product stories and decision decks.",
+          "content": "Covers, social graphics, charts, diagrams and presentations.",
           "id": "intro-note",
-          "intent": "For technical explanations, product stories and decision decks.",
+          "intent": "Covers, social graphics, charts, diagrams and presentations.",
           "kind": "text-block",
           "preferredRect": {
             "height": 68,
@@ -334,14 +334,14 @@
         },
         {
           "id": "promise-content",
-          "instruction": "A shared slide canvas for people and coding agents.",
+          "instruction": "Create clear visuals with your coding agent.",
           "label": "promise",
           "required": true,
           "role": "body"
         },
         {
           "id": "summary-content",
-          "instruction": "Sketch the idea. Generate the detail. Keep revising the same document.",
+          "instruction": "Bring a brief. Get an editable result. Keep revising the same document.",
           "label": "summary",
           "required": true,
           "role": "body"
@@ -355,7 +355,7 @@
         },
         {
           "id": "intro-note-content",
-          "instruction": "For technical explanations, product stories and decision decks.",
+          "instruction": "Covers, social graphics, charts, diagrams and presentations.",
           "label": "intro-note",
           "required": true,
           "role": "body"
@@ -427,9 +427,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "A handoff that comes back to the canvas",
+          "content": "Start with a brief. Keep editing the result.",
           "id": "workflow-title",
-          "intent": "A handoff that comes back to the canvas",
+          "intent": "Start with a brief. Keep editing the result.",
           "kind": "text-block",
           "preferredRect": {
             "height": 107,
@@ -461,9 +461,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "The agent works on the document you can keep editing.",
+          "content": "In the agent-opened editor, you and your agent edit the same file.",
           "id": "workflow-subtitle",
-          "intent": "The agent works on the document you can keep editing.",
+          "intent": "In the agent-opened editor, you and your agent edit the same file.",
           "kind": "text-block",
           "preferredRect": {
             "height": 65,
@@ -492,7 +492,7 @@
             "type": "process"
           },
           "customVisual": {
-            "description": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
+            "description": "Share a brief and materials. The agent creates a visual and opens its file-backed preview. Edit that canvas, then ask for revisions in the same conversation. The agent updates the same file; the loop returns to editing, not a new brief.",
             "elements": [
               {
                 "attributes": {
@@ -518,7 +518,7 @@
                 },
                 "id": "step-0",
                 "kind": "text",
-                "text": "Draft"
+                "text": "Brief"
               },
               {
                 "attributes": {
@@ -531,7 +531,7 @@
                 },
                 "id": "detail-a-0",
                 "kind": "text",
-                "text": "Place components."
+                "text": "Share your materials."
               },
               {
                 "attributes": {
@@ -544,7 +544,7 @@
                 },
                 "id": "detail-b-0",
                 "kind": "text",
-                "text": "Describe the intent."
+                "text": "Describe the result."
               },
               {
                 "attributes": {
@@ -582,7 +582,7 @@
                 },
                 "id": "step-1",
                 "kind": "text",
-                "text": "Download"
+                "text": "Generate"
               },
               {
                 "attributes": {
@@ -595,7 +595,7 @@
                 },
                 "id": "detail-a-1",
                 "kind": "text",
-                "text": "Save the editable"
+                "text": "Agent creates a visual."
               },
               {
                 "attributes": {
@@ -608,7 +608,7 @@
                 },
                 "id": "detail-b-1",
                 "kind": "text",
-                "text": "composition JSON."
+                "text": "Opens its file preview."
               },
               {
                 "attributes": {
@@ -646,7 +646,7 @@
                 },
                 "id": "step-2",
                 "kind": "text",
-                "text": "Agent revises"
+                "text": "Edit"
               },
               {
                 "attributes": {
@@ -659,7 +659,7 @@
                 },
                 "id": "detail-a-2",
                 "kind": "text",
-                "text": "Return a completed"
+                "text": "Edit the open canvas."
               },
               {
                 "attributes": {
@@ -672,7 +672,7 @@
                 },
                 "id": "detail-b-2",
                 "kind": "text",
-                "text": "composition JSON."
+                "text": "Review the details."
               },
               {
                 "attributes": {
@@ -710,7 +710,7 @@
                 },
                 "id": "step-3",
                 "kind": "text",
-                "text": "Open + present"
+                "text": "Revise"
               },
               {
                 "attributes": {
@@ -723,7 +723,7 @@
                 },
                 "id": "detail-a-3",
                 "kind": "text",
-                "text": "Review the result."
+                "text": "Ask in the same chat."
               },
               {
                 "attributes": {
@@ -736,11 +736,11 @@
                 },
                 "id": "detail-b-3",
                 "kind": "text",
-                "text": "Make the next edit."
+                "text": "Agent updates that file."
               },
               {
                 "attributes": {
-                  "d": "M1510 285V365H115V285M103 299L115 285L127 299",
+                  "d": "M1510 285V365H991V285M979 299L991 285L1003 299",
                   "fill": "none",
                   "stroke": "theme:accent",
                   "stroke-linecap": "round",
@@ -761,7 +761,7 @@
                 },
                 "id": "loop-label",
                 "kind": "text",
-                "text": "Revisions stay in the same editable format"
+                "text": "Both edit the same composition.json"
               }
             ],
             "fit": "contain",
@@ -774,7 +774,7 @@
             }
           },
           "id": "roundtrip",
-          "intent": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
+          "intent": "Share a brief and materials. The agent creates a visual and opens its file-backed preview. Edit that canvas, then ask for revisions in the same conversation. The agent updates the same file; the loop returns to editing, not a new brief.",
           "kind": "diagram",
           "preferredRect": {
             "height": 470,
@@ -799,9 +799,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
+          "content": "Prefer to sketch first? Add a component, describe its intent, then choose Build it.",
           "id": "workflow-note",
-          "intent": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
+          "intent": "Prefer to sketch first? Add a component, describe its intent, then choose Build it.",
           "kind": "text-block",
           "preferredRect": {
             "height": 68,
@@ -824,28 +824,28 @@
       "contentSlots": [
         {
           "id": "workflow-title-content",
-          "instruction": "A handoff that comes back to the canvas",
+          "instruction": "Start with a brief. Keep editing the result.",
           "label": "workflow-title",
           "required": true,
           "role": "body"
         },
         {
           "id": "workflow-subtitle-content",
-          "instruction": "The agent works on the document you can keep editing.",
+          "instruction": "In the agent-opened editor, you and your agent edit the same file.",
           "label": "workflow-subtitle",
           "required": true,
           "role": "body"
         },
         {
           "id": "roundtrip-content",
-          "instruction": "Draft on the canvas, download composition JSON, ask a coding agent to revise it, then open the returned JSON and present. Further edits repeat this loop.",
+          "instruction": "Share a brief and materials. The agent creates a visual and opens its file-backed preview. Edit that canvas, then ask for revisions in the same conversation. The agent updates the same file; the loop returns to editing, not a new brief.",
           "label": "roundtrip",
           "required": true,
           "role": "body"
         },
         {
           "id": "workflow-note-content",
-          "instruction": "Use your coding agent alongside Konpeki; bring its returned JSON back to the canvas.",
+          "instruction": "Prefer to sketch first? Add a component, describe its intent, then choose Build it.",
           "label": "workflow-note",
           "required": true,
           "role": "body"
@@ -860,7 +860,7 @@
         "top": 72
       },
       "intendedViewingSize": "presentation",
-      "name": "A round-trip workflow",
+      "name": "Create and revise together",
       "pageNumber": {
         "color": "muted",
         "style": "01/02"
@@ -1539,7 +1539,7 @@
                 },
                 "id": "row-a",
                 "kind": "text",
-                "text": "Draft"
+                "text": "Create"
               },
               {
                 "attributes": {
@@ -1552,7 +1552,7 @@
                 },
                 "id": "row-a-owner",
                 "kind": "text",
-                "text": "Human"
+                "text": "Agent"
               },
               {
                 "attributes": {
@@ -1565,7 +1565,7 @@
                 },
                 "id": "row-b",
                 "kind": "text",
-                "text": "Revise"
+                "text": "Review"
               },
               {
                 "attributes": {
@@ -1578,7 +1578,7 @@
                 },
                 "id": "row-b-owner",
                 "kind": "text",
-                "text": "Agent"
+                "text": "You"
               },
               {
                 "attributes": {
@@ -1629,15 +1629,15 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Draft previews express intent. Agents return completed artwork as editable vectors.",
+          "content": "Diagram, Chart and Table previews are structural drafts.\nGive the agent real data and sources for finished artwork.",
           "id": "component-note",
-          "intent": "Draft previews express intent. Agents return completed artwork as editable vectors.",
+          "intent": "Diagram, Chart and Table previews are structural drafts. Give the agent real data and sources for finished artwork.",
           "kind": "text-block",
           "preferredRect": {
-            "height": 68,
+            "height": 110,
             "width": 1696,
             "x": 112,
-            "y": 876
+            "y": 848
           },
           "slotIds": [
             "component-note-content"
@@ -1646,7 +1646,7 @@
             "color": "ink",
             "font": "body",
             "lineHeight": 1.4,
-            "size": 34,
+            "size": 32,
             "weight": 400
           }
         }
@@ -1703,7 +1703,7 @@
         },
         {
           "id": "component-note-content",
-          "instruction": "Draft previews express intent. Agents return completed artwork as editable vectors.",
+          "instruction": "Diagram, Chart and Table previews are structural drafts. Give the agent real data and sources for finished artwork.",
           "label": "component-note",
           "required": true,
           "role": "body"
@@ -1733,7 +1733,7 @@
         "table-specimen",
         "component-note"
       ],
-      "question": "What can a slide contain?",
+      "question": "What can a page contain?",
       "readingOrder": [
         {
           "id": "components-title",
@@ -1790,9 +1790,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "The detail stays editable",
+          "content": "Keep editing—or ask your agent",
           "id": "editing-title",
-          "intent": "The detail stays editable",
+          "intent": "Keep editing—or ask your agent",
           "kind": "text-block",
           "preferredRect": {
             "height": 107,
@@ -1824,9 +1824,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Revise a label, a path or a group without replacing the whole slide.",
+          "content": "Change text, shapes and layout directly. Undo and redo stay available.",
           "id": "editing-subtitle",
-          "intent": "Revise a label, a path or a group without replacing the whole slide.",
+          "intent": "Change text, shapes and layout directly. Undo and redo stay available.",
           "kind": "text-block",
           "preferredRect": {
             "height": 65,
@@ -2094,9 +2094,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Change the part that matters",
+          "content": "Ask for a targeted revision",
           "id": "editing-actions-title",
-          "intent": "Change the part that matters",
+          "intent": "Ask for a targeted revision",
           "kind": "text-block",
           "preferredRect": {
             "height": 69,
@@ -2128,9 +2128,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Edit text and attributes.\nReorder sibling elements.\nDelete a shape or a group.\nUndo and redo your changes.",
+          "content": "Select a component or element.\nAdd a Revision note in Notes.\nChoose Build it to submit.\nAgent revises the same file.",
           "id": "editing-actions",
-          "intent": "Edit text and attributes. Reorder sibling elements. Delete a shape or a group. Undo and redo your changes.",
+          "intent": "Select a component or element. Add a Revision note in Notes. Choose Build it to submit. Agent revises the same file.",
           "kind": "text-block",
           "preferredRect": {
             "height": 194,
@@ -2162,15 +2162,15 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
+          "content": "Notes and Build it are available in the agent-opened editor, not the browser playground.\nBuild it cannot wake an idle agent. Use Copy prompt to resume it.",
           "id": "editing-note",
-          "intent": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
+          "intent": "Notes and Build it are available in the agent-opened editor, not the browser playground. Build it cannot wake an idle agent. Use Copy prompt to resume it.",
           "kind": "text-block",
           "preferredRect": {
-            "height": 68,
+            "height": 110,
             "width": 1696,
             "x": 112,
-            "y": 885
+            "y": 852
           },
           "slotIds": [
             "editing-note-content"
@@ -2179,7 +2179,7 @@
             "color": "ink",
             "font": "body",
             "lineHeight": 1.4,
-            "size": 34,
+            "size": 32,
             "weight": 400
           }
         }
@@ -2187,14 +2187,14 @@
       "contentSlots": [
         {
           "id": "editing-title-content",
-          "instruction": "The detail stays editable",
+          "instruction": "Keep editing—or ask your agent",
           "label": "editing-title",
           "required": true,
           "role": "body"
         },
         {
           "id": "editing-subtitle-content",
-          "instruction": "Revise a label, a path or a group without replacing the whole slide.",
+          "instruction": "Change text, shapes and layout directly. Undo and redo stay available.",
           "label": "editing-subtitle",
           "required": true,
           "role": "body"
@@ -2208,21 +2208,21 @@
         },
         {
           "id": "editing-actions-title-content",
-          "instruction": "Change the part that matters",
+          "instruction": "Ask for a targeted revision",
           "label": "editing-actions-title",
           "required": true,
           "role": "body"
         },
         {
           "id": "editing-actions-content",
-          "instruction": "Edit text and attributes. Reorder sibling elements. Delete a shape or a group. Undo and redo your changes.",
+          "instruction": "Select a component or element. Add a Revision note in Notes. Choose Build it to submit. Agent revises the same file.",
           "label": "editing-actions",
           "required": true,
           "role": "body"
         },
         {
           "id": "editing-note-content",
-          "instruction": "Composition JSON owns the structure. Imported JSX never executes in the canvas.",
+          "instruction": "Notes and Build it are available in the agent-opened editor, not the browser playground. Build it cannot wake an idle agent. Use Copy prompt to resume it.",
           "label": "editing-note",
           "required": true,
           "role": "body"
@@ -2299,9 +2299,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "An editable workflow, with clear boundaries",
+          "content": "Try the browser. Continue with your agent.",
           "id": "today-title",
-          "intent": "An editable workflow, with clear boundaries",
+          "intent": "Try the browser. Continue with your agent.",
           "kind": "text-block",
           "preferredRect": {
             "height": 107,
@@ -2333,9 +2333,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Use the canvas for drafting, revision and presentation today.",
+          "content": "The same editable format, with different saving and generation paths.",
           "id": "today-subtitle",
-          "intent": "Use the canvas for drafting, revision and presentation today.",
+          "intent": "The same editable format, with different saving and generation paths.",
           "kind": "text-block",
           "preferredRect": {
             "height": 65,
@@ -2367,9 +2367,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Available now",
+          "content": "Browser playground",
           "id": "available-heading",
-          "intent": "Available now",
+          "intent": "Browser playground",
           "kind": "text-block",
           "preferredRect": {
             "height": 79,
@@ -2401,9 +2401,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Arrange slides and semantic components.\nOpen and download composition JSON.",
+          "content": "Edit an example or start blank.\nImport editable composition JSON.",
           "id": "available-1",
-          "intent": "Arrange slides and semantic components. Open and download composition JSON.",
+          "intent": "Edit an example or start blank. Import editable composition JSON.",
           "kind": "text-block",
           "preferredRect": {
             "height": 113,
@@ -2435,9 +2435,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Revise vector text, shapes and paths.\nPresent with the same canvas renderer.",
+          "content": "Saved only in this browser.\nNo connected agent or cloud sync.",
           "id": "available-2",
-          "intent": "Revise vector text, shapes and paths. Present with the same canvas renderer.",
+          "intent": "Saved only in this browser. No connected agent or cloud sync.",
           "kind": "text-block",
           "preferredRect": {
             "height": 113,
@@ -2469,9 +2469,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Browser-local drafts.\nNo Konpeki account or backend required.",
+          "content": "Download JSON to keep your work.\nExport PNG or use Present.",
           "id": "available-3",
-          "intent": "Browser-local drafts. No Konpeki account or backend required.",
+          "intent": "Download JSON to keep your work. Export PNG or use Present.",
           "kind": "text-block",
           "preferredRect": {
             "height": 110,
@@ -2503,9 +2503,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Know the boundaries",
+          "content": "With your coding agent",
           "id": "limits-heading",
-          "intent": "Know the boundaries",
+          "intent": "With your coding agent",
           "kind": "text-block",
           "preferredRect": {
             "height": 79,
@@ -2537,9 +2537,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Standard previews are placeholders.\nThey do not load data or image files.",
+          "content": "The agent creates and revises visuals.\nIts preview saves to a local JSON file.",
           "id": "limits-1",
-          "intent": "Standard previews are placeholders. They do not load data or image files.",
+          "intent": "The agent creates and revises visuals. Its preview saves to a local JSON file.",
           "kind": "text-block",
           "preferredRect": {
             "height": 113,
@@ -2571,9 +2571,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Your coding agent supplies the output.\nReview its facts, layout and caveats.",
+          "content": "Bring downloaded JSON to your agent.\nContinue in its file-backed editor.",
           "id": "limits-2",
-          "intent": "Your coding agent supplies the output. Review its facts, layout and caveats.",
+          "intent": "Bring downloaded JSON to your agent. Continue in its file-backed editor.",
           "kind": "text-block",
           "preferredRect": {
             "height": 113,
@@ -2605,9 +2605,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Desktop-first editing; storage is local.\nNo PDF/PPTX fidelity claim.",
+          "content": "Playground and file copies do not sync.\nReview generated facts and visuals.",
           "id": "limits-3",
-          "intent": "Desktop-first editing; storage is local. No PDF/PPTX fidelity claim.",
+          "intent": "Playground and file copies do not sync. Review generated facts and visuals.",
           "kind": "text-block",
           "preferredRect": {
             "height": 110,
@@ -2630,70 +2630,70 @@
       "contentSlots": [
         {
           "id": "today-title-content",
-          "instruction": "An editable workflow, with clear boundaries",
+          "instruction": "Try the browser. Continue with your agent.",
           "label": "today-title",
           "required": true,
           "role": "body"
         },
         {
           "id": "today-subtitle-content",
-          "instruction": "Use the canvas for drafting, revision and presentation today.",
+          "instruction": "The same editable format, with different saving and generation paths.",
           "label": "today-subtitle",
           "required": true,
           "role": "body"
         },
         {
           "id": "available-heading-content",
-          "instruction": "Available now",
+          "instruction": "Browser playground",
           "label": "available-heading",
           "required": true,
           "role": "body"
         },
         {
           "id": "available-1-content",
-          "instruction": "Arrange slides and semantic components. Open and download composition JSON.",
+          "instruction": "Edit an example or start blank. Import editable composition JSON.",
           "label": "available-1",
           "required": true,
           "role": "body"
         },
         {
           "id": "available-2-content",
-          "instruction": "Revise vector text, shapes and paths. Present with the same canvas renderer.",
+          "instruction": "Saved only in this browser. No connected agent or cloud sync.",
           "label": "available-2",
           "required": true,
           "role": "body"
         },
         {
           "id": "available-3-content",
-          "instruction": "Browser-local drafts. No Konpeki account or backend required.",
+          "instruction": "Download JSON to keep your work. Export PNG or use Present.",
           "label": "available-3",
           "required": true,
           "role": "body"
         },
         {
           "id": "limits-heading-content",
-          "instruction": "Know the boundaries",
+          "instruction": "With your coding agent",
           "label": "limits-heading",
           "required": true,
           "role": "body"
         },
         {
           "id": "limits-1-content",
-          "instruction": "Standard previews are placeholders. They do not load data or image files.",
+          "instruction": "The agent creates and revises visuals. Its preview saves to a local JSON file.",
           "label": "limits-1",
           "required": true,
           "role": "body"
         },
         {
           "id": "limits-2-content",
-          "instruction": "Your coding agent supplies the output. Review its facts, layout and caveats.",
+          "instruction": "Bring downloaded JSON to your agent. Continue in its file-backed editor.",
           "label": "limits-2",
           "required": true,
           "role": "body"
         },
         {
           "id": "limits-3-content",
-          "instruction": "Desktop-first editing; storage is local. No PDF/PPTX fidelity claim.",
+          "instruction": "Playground and file copies do not sync. Review generated facts and visuals.",
           "label": "limits-3",
           "required": true,
           "role": "body"
@@ -2708,7 +2708,7 @@
         "top": 72
       },
       "intendedViewingSize": "presentation",
-      "name": "What works today",
+      "name": "Browser or agent editor",
       "pageNumber": {
         "color": "muted",
         "style": "01/02"
@@ -2725,7 +2725,7 @@
         "limits-2",
         "limits-3"
       ],
-      "question": "What should a first-time user expect?",
+      "question": "What can I do here, and what needs a coding agent?",
       "readingOrder": [
         {
           "id": "today-title",
@@ -2790,9 +2790,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Bring a brief. Build an editable deck.",
+          "content": "Install the skill. Bring a real brief.",
           "id": "start-title",
-          "intent": "Bring a brief. Build an editable deck.",
+          "intent": "Install the skill. Bring a real brief.",
           "kind": "text-block",
           "preferredRect": {
             "height": 107,
@@ -2824,9 +2824,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Start with one real explanation you need to give.",
+          "content": "Ask for a cover, social graphic, chart, diagram or presentation.",
           "id": "start-subtitle",
-          "intent": "Start with one real explanation you need to give.",
+          "intent": "Ask for a cover, social graphic, chart, diagram or presentation.",
           "kind": "text-block",
           "preferredRect": {
             "height": 65,
@@ -2858,9 +2858,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Open the project",
+          "content": "Install the Konpeki skill",
           "id": "setup-heading",
-          "intent": "Open the project",
+          "intent": "Install the Konpeki skill",
           "kind": "text-block",
           "preferredRect": {
             "height": 76,
@@ -2926,9 +2926,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "pnpm install --frozen-lockfile\npnpm dev",
+          "content": "Use your agent’s skill installer.\nChoose skills/konpeki in the repo.",
           "id": "commands",
-          "intent": "pnpm install --frozen-lockfile pnpm dev",
+          "intent": "Use your agent’s skill installer. Choose skills/konpeki in the repo.",
           "kind": "text-block",
           "preferredRect": {
             "height": 116,
@@ -2960,12 +2960,12 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Node.js 24+ · pnpm\nA coding agent · a browser",
+          "content": "Node.js 24+ · npm\nAn agent with file + command access\nA browser for the editable preview",
           "id": "requirements",
-          "intent": "Node.js 24+ · pnpm A coding agent · a browser",
+          "intent": "Node.js 24+ · npm An agent with file + command access A browser for the editable preview",
           "kind": "text-block",
           "preferredRect": {
-            "height": 116,
+            "height": 155,
             "width": 780,
             "x": 112,
             "y": 696
@@ -2977,7 +2977,7 @@
             "color": "ink",
             "font": "body",
             "lineHeight": 1.4,
-            "size": 34,
+            "size": 32,
             "weight": 400
           }
         },
@@ -2994,9 +2994,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Give your agent a concrete brief",
+          "content": "Then give it one sentence",
           "id": "brief-heading",
-          "intent": "Give your agent a concrete brief",
+          "intent": "Then give it one sentence",
           "kind": "text-block",
           "preferredRect": {
             "height": 76,
@@ -3028,12 +3028,12 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "“Explain this system to a new engineer.\nShow the request flow and failure path.\nPreserve the source facts and caveats.\nReturn an editable composition JSON.”",
+          "content": "“Use Konpeki to turn these launch\nnotes into a product announcement.”",
           "id": "brief",
-          "intent": "“Explain this system to a new engineer. Show the request flow and failure path. Preserve the source facts and caveats. Return an editable composition JSON.”",
+          "intent": "“Use Konpeki to turn these launch notes into a product announcement.”",
           "kind": "text-block",
           "preferredRect": {
-            "height": 194,
+            "height": 118,
             "width": 788,
             "x": 1020,
             "y": 450
@@ -3045,7 +3045,7 @@
             "color": "ink",
             "font": "body",
             "lineHeight": 1.4,
-            "size": 31,
+            "size": 35,
             "weight": 400
           }
         },
@@ -3062,15 +3062,15 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "Open the result. Make one revision.\nThen present it.",
+          "content": "Need an empty canvas? Ask for init.\nA creation brief selects generate.",
           "id": "next-step",
-          "intent": "Open the result. Make one revision. Then present it.",
+          "intent": "Need an empty canvas? Ask for init. A creation brief selects generate.",
           "kind": "text-block",
           "preferredRect": {
-            "height": 116,
+            "height": 110,
             "width": 788,
             "x": 1020,
-            "y": 708
+            "y": 696
           },
           "slotIds": [
             "next-step-content"
@@ -3079,7 +3079,7 @@
             "color": "accent",
             "font": "body",
             "lineHeight": 1.4,
-            "size": 34,
+            "size": 32,
             "weight": 500
           }
         },
@@ -3096,9 +3096,9 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "content": "This presentation is itself an editable Konpeki composition.",
+          "content": "Attach your materials; the agent opens and checks the editable result. No separate init needed.",
           "id": "closing",
-          "intent": "This presentation is itself an editable Konpeki composition.",
+          "intent": "Attach your materials; the agent opens and checks the editable result. No separate init needed.",
           "kind": "text-block",
           "preferredRect": {
             "height": 62,
@@ -3121,21 +3121,21 @@
       "contentSlots": [
         {
           "id": "start-title-content",
-          "instruction": "Bring a brief. Build an editable deck.",
+          "instruction": "Install the skill. Bring a real brief.",
           "label": "start-title",
           "required": true,
           "role": "body"
         },
         {
           "id": "start-subtitle-content",
-          "instruction": "Start with one real explanation you need to give.",
+          "instruction": "Ask for a cover, social graphic, chart, diagram or presentation.",
           "label": "start-subtitle",
           "required": true,
           "role": "body"
         },
         {
           "id": "setup-heading-content",
-          "instruction": "Open the project",
+          "instruction": "Install the Konpeki skill",
           "label": "setup-heading",
           "required": true,
           "role": "body"
@@ -3149,42 +3149,42 @@
         },
         {
           "id": "commands-content",
-          "instruction": "pnpm install --frozen-lockfile pnpm dev",
+          "instruction": "Use your agent’s skill installer. Choose skills/konpeki in the repo.",
           "label": "commands",
           "required": true,
           "role": "body"
         },
         {
           "id": "requirements-content",
-          "instruction": "Node.js 24+ · pnpm A coding agent · a browser",
+          "instruction": "Node.js 24+ · npm An agent with file + command access A browser for the editable preview",
           "label": "requirements",
           "required": true,
           "role": "body"
         },
         {
           "id": "brief-heading-content",
-          "instruction": "Give your agent a concrete brief",
+          "instruction": "Then give it one sentence",
           "label": "brief-heading",
           "required": true,
           "role": "body"
         },
         {
           "id": "brief-content",
-          "instruction": "“Explain this system to a new engineer. Show the request flow and failure path. Preserve the source facts and caveats. Return an editable composition JSON.”",
+          "instruction": "“Use Konpeki to turn these launch notes into a product announcement.”",
           "label": "brief",
           "required": true,
           "role": "body"
         },
         {
           "id": "next-step-content",
-          "instruction": "Open the result. Make one revision. Then present it.",
+          "instruction": "Need an empty canvas? Ask for init. A creation brief selects generate.",
           "label": "next-step",
           "required": true,
           "role": "body"
         },
         {
           "id": "closing-content",
-          "instruction": "This presentation is itself an editable Konpeki composition.",
+          "instruction": "Attach your materials; the agent opens and checks the editable result. No separate init needed.",
           "label": "closing",
           "required": true,
           "role": "body"
