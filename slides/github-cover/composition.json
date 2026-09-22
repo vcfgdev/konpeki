@@ -1,350 +1,595 @@
 {
-  "authoringMode": "default",
   "schema": "konpeki-composition/v1",
+  "title": "Konpeki GitHub cover",
+  "authoringMode": "default",
+  "theme": {
+    "id": "plex",
+    "mode": "paper"
+  },
   "slides": [
     {
-      "audience": "Developers discovering Konpeki on GitHub",
+      "id": "github-cover",
+      "name": "GitHub repository cover",
       "canvas": {
-        "height": 640,
-        "width": 1280
+        "width": 1280,
+        "height": 640
       },
+      "innerPadding": {
+        "top": 64,
+        "right": 64,
+        "bottom": 64,
+        "left": 64
+      },
+      "pageNumber": {
+        "style": "none",
+        "color": "muted"
+      },
+      "audience": "Developers discovering Konpeki on GitHub",
+      "question": "What can I create with Konpeki and my coding agent?",
+      "intendedViewingSize": "social",
       "components": [
         {
-          "appearance": {
-            "alignment": "start",
-            "border": "none",
-            "role": "title",
-            "rule": "none"
-          },
-          "content": "Konpeki",
           "id": "brand",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 110,
-            "width": 480,
-            "x": 153.99999999999997,
-            "y": 121
-          },
+          "content": "Konpeki",
           "slotIds": [
             "brand-content"
           ],
+          "preferredRect": {
+            "x": 150,
+            "y": 120,
+            "width": 480,
+            "height": 110
+          },
           "textStyle": {
-            "color": "ink",
-            "font": "heading",
-            "lineHeight": 1.18,
             "size": 84,
-            "weight": 600
+            "weight": 600,
+            "lineHeight": 1.18,
+            "color": "ink",
+            "font": "heading"
+          },
+          "appearance": {
+            "role": "title",
+            "alignment": "start",
+            "border": "none",
+            "rule": "none"
           }
         },
         {
+          "id": "brand-mark",
+          "kind": "image",
+          "slotIds": [
+            "brand-mark-content"
+          ],
+          "preferredRect": {
+            "x": 64,
+            "y": 143,
+            "width": 66,
+            "height": 66
+          },
           "customVisual": {
+            "format": "vector",
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 128,
+              "height": 128
+            },
             "description": "Konpeki blue brush mark",
             "elements": [
               {
+                "id": "mark-silhouette",
+                "kind": "path",
                 "attributes": {
                   "d": "M55 0h5v1H55ZM52 1h9v1H52ZM108 1h4v1H108ZM25 2h2v1H25ZM50 2h13v1H50ZM105 2h8v1H105ZM24 3h5v1H24ZM47 3h16v1H47ZM102 3h11v1H102ZM22 4h8v1H22ZM45 4h19v1H45ZM100 4h13v1H100ZM21 5h10v1H21ZM43 5h22v1H43ZM78 5h4v1H78ZM97 5h17v1H97ZM20 6h12v1H20ZM41 6h24v1H41ZM76 6h8v1H76ZM94 6h21v1H94ZM19 7h13v1H19ZM38 7h27v1H38ZM73 7h12v1H73ZM92 7h23v1H92ZM18 8h15v1H18ZM35 8h31v1H35ZM71 8h15v1H71ZM90 8h25v1H90ZM17 9h49v1H17ZM69 9h18v1H69ZM88 9h27v1H88ZM16 10h99v1H16ZM15 11h101v1H15ZM14 12h104v1H14ZM13 13h107v1H13ZM12 14h109v1H12ZM10 15h112v1H10ZM9 16h114v1H9ZM8 17h116v1H8ZM6 18h119v1H6ZM5 19h120v1H5ZM4 20h121v1H4ZM3 21h122v1H3ZM3 22h122v1H3ZM2 23h122v1H2ZM1 24h123v1H1ZM0 25h122v1H0ZM0 26h120v1H0ZM1 27h118v1H1ZM2 28h116v1H2ZM3 29h113v1H3ZM3 30h113v1H3ZM4 31h111v1H4ZM5 32h111v1H5ZM6 33h111v1H6ZM7 34h109v1H7ZM8 35h108v1H8ZM9 36h107v1H9ZM9 37h106v1H9ZM9 38h105v1H9ZM8 39h105v1H8ZM8 40h104v1H8ZM9 41h104v1H9ZM9 42h105v1H9ZM10 43h104v1H10ZM11 44h104v1H11ZM13 45h103v1H13ZM14 46h103v1H14ZM14 47h103v1H14ZM13 48h103v1H13ZM12 49h104v1H12ZM11 50h105v1H11ZM10 51h106v1H10ZM9 52h106v1H9ZM8 53h107v1H8ZM7 54h107v1H7ZM6 55h110v1H6ZM5 56h112v1H5ZM4 57h114v1H4ZM4 58h113v1H4ZM4 59h113v1H4ZM4 60h114v1H4ZM4 61h114v1H4ZM4 62h115v1H4ZM6 63h114v1H6ZM7 64h114v1H7ZM8 65h113v1H8ZM9 66h113v1H9ZM13 67h109v1H13ZM13 68h108v1H13ZM12 69h110v1H12ZM12 70h111v1H12ZM11 71h113v1H11ZM10 72h115v1H10ZM9 73h116v1H9ZM8 74h117v1H8ZM8 75h116v1H8ZM7 76h117v1H7ZM7 77h119v1H7ZM6 78h118v1H6ZM6 79h118v1H6ZM4 80h119v1H4ZM3 81h120v1H3ZM2 82h121v1H2ZM1 83h122v1H1ZM0 84h125v1H0ZM0 85h1v1H0ZM3 85h123v1H3ZM2 86h124v1H2ZM3 87h122v1H3ZM5 88h1v1H5ZM10 88h115v1H10ZM10 89h115v1H10ZM9 90h114v1H9ZM8 91h114v1H8ZM8 92h114v1H8ZM7 93h114v1H7ZM6 94h113v1H6ZM5 95h4v1H5ZM11 95h107v1H11ZM6 96h3v1H6ZM11 96h106v1H11ZM125 96h3v1H125ZM7 97h2v1H7ZM11 97h105v1H11ZM123 97h4v1H123ZM8 98h1v1H8ZM11 98h105v1H11ZM120 98h5v1H120ZM10 99h106v1H10ZM117 99h7v1H117ZM10 100h114v1H10ZM9 101h114v1H9ZM8 102h113v1H8ZM7 103h113v1H7ZM7 104h2v1H7ZM10 104h109v1H10ZM10 105h108v1H10ZM9 106h109v1H9ZM9 107h107v1H9ZM10 108h105v1H10ZM10 109h103v1H10ZM10 110h101v1H10ZM9 111h101v1H9ZM10 112h17v1H10ZM28 112h2v1H28ZM32 112h77v1H32ZM11 113h15v1H11ZM31 113h77v1H31ZM12 114h10v1H12ZM24 114h1v1H24ZM31 114h76v1H31ZM14 115h7v1H14ZM31 115h28v1H31ZM60 115h3v1H60ZM67 115h38v1H67ZM15 116h4v1H15ZM31 116h31v1H31ZM68 116h35v1H68ZM18 117h1v1H18ZM34 117h26v1H34ZM69 117h33v1H69ZM33 118h24v1H33ZM69 118h31v1H69ZM32 119h23v1H32ZM68 119h31v1H68ZM31 120h22v1H31ZM68 120h6v1H68ZM77 120h5v1H77ZM83 120h2v1H83ZM86 120h11v1H86ZM31 121h20v1H31ZM68 121h4v1H68ZM78 121h3v1H78ZM86 121h9v1H86ZM30 122h2v1H30ZM35 122h14v1H35ZM85 122h2v1H85ZM92 122h1v1H92ZM30 123h1v1H30ZM33 123h3v1H33ZM39 123h9v1H39ZM32 124h1v1H32ZM41 124h7v1H41ZM35 125h1v1H35ZM41 125h3v1H41ZM42 126h1v1H42ZM42 127h1v1H42Z",
                   "fill": "#007fb5"
-                },
-                "id": "mark-silhouette",
-                "kind": "path"
+                }
               }
-            ],
-            "format": "vector",
-            "viewBox": {
-              "height": 128,
-              "width": 128,
-              "x": 0,
-              "y": 0
-            }
-          },
-          "id": "brand-mark",
-          "kind": "image",
-          "preferredRect": {
-            "height": 66,
-            "width": 66,
-            "x": 64,
-            "y": 143
-          },
-          "slotIds": [
-            "brand-mark-content"
-          ]
+            ]
+          }
         },
         {
-          "appearance": {
-            "alignment": "start",
-            "border": "none",
-            "role": "body",
-            "rule": "none"
-          },
-          "content": "A shared canvas.",
           "id": "promise",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 680,
-            "x": 64,
-            "y": 302
-          },
+          "content": "Create clear visuals",
           "slotIds": [
             "promise-content"
           ],
+          "preferredRect": {
+            "x": 64,
+            "y": 302,
+            "width": 680,
+            "height": 90
+          },
           "textStyle": {
-            "color": "ink",
-            "font": "heading",
-            "lineHeight": 1.18,
             "size": 62,
-            "weight": 600
+            "weight": 600,
+            "lineHeight": 1.18,
+            "color": "ink",
+            "font": "heading"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "rule": "none"
           }
         },
         {
-          "appearance": {
-            "alignment": "start",
-            "border": "none",
-            "role": "body",
-            "rule": "none"
-          },
-          "content": "For you and your agents.",
           "id": "audience",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 76,
-            "width": 660,
-            "x": 64,
-            "y": 400
-          },
+          "content": "with your coding agent.",
           "slotIds": [
             "audience-content"
           ],
+          "preferredRect": {
+            "x": 64,
+            "y": 400,
+            "width": 660,
+            "height": 76
+          },
           "textStyle": {
-            "color": "ink",
-            "font": "heading",
-            "lineHeight": 1.18,
             "size": 44,
-            "weight": 400
+            "weight": 400,
+            "lineHeight": 1.18,
+            "color": "ink",
+            "font": "heading"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "rule": "none"
           }
         },
         {
-          "appearance": {
-            "border": "none",
-            "selection": "explicit",
-            "type": "flowchart"
+          "id": "visual-family",
+          "kind": "image",
+          "slotIds": [
+            "visual-family-content"
+          ],
+          "preferredRect": {
+            "x": 772,
+            "y": 106,
+            "width": 444,
+            "height": 412
           },
           "customVisual": {
-            "description": "Intent connects to Build, then Refine; the highlighted final step expresses editable output.",
-            "elements": [
-              {
-                "attributes": {
-                  "d": "M202 74H261V178",
-                  "fill": "none",
-                  "stroke": "#007fb5",
-                  "stroke-width": 3
-                },
-                "id": "intent-build",
-                "kind": "path"
-              },
-              {
-                "attributes": {
-                  "d": "M316 215H376V325",
-                  "fill": "none",
-                  "stroke": "#007fb5",
-                  "stroke-width": 3
-                },
-                "id": "build-refine",
-                "kind": "path"
-              },
-              {
-                "attributes": {
-                  "fill": "#ffffff",
-                  "height": 72,
-                  "rx": 0,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2.5,
-                  "width": 190,
-                  "x": 12,
-                  "y": 38
-                },
-                "id": "intent-shape",
-                "kind": "rect"
-              },
-              {
-                "attributes": {
-                  "fill": "#202630",
-                  "font-family": "theme:heading-font",
-                  "font-size": 28,
-                  "font-weight": 500,
-                  "text-anchor": "middle",
-                  "x": 107,
-                  "y": 84
-                },
-                "id": "intent-label",
-                "kind": "text",
-                "text": "Intent"
-              },
-              {
-                "attributes": {
-                  "fill": "#ffffff",
-                  "height": 72,
-                  "rx": 0,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2.5,
-                  "width": 184,
-                  "x": 132,
-                  "y": 179
-                },
-                "id": "build-shape",
-                "kind": "rect"
-              },
-              {
-                "attributes": {
-                  "fill": "#202630",
-                  "font-family": "theme:heading-font",
-                  "font-size": 28,
-                  "font-weight": 500,
-                  "text-anchor": "middle",
-                  "x": 224,
-                  "y": 225
-                },
-                "id": "build-label",
-                "kind": "text",
-                "text": "Build"
-              },
-              {
-                "attributes": {
-                  "fill": "#eaf6fb",
-                  "height": 72,
-                  "rx": 0,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2.5,
-                  "width": 184,
-                  "x": 250,
-                  "y": 326
-                },
-                "id": "refine-shape",
-                "kind": "rect"
-              },
-              {
-                "attributes": {
-                  "fill": "#202630",
-                  "font-family": "theme:heading-font",
-                  "font-size": 28,
-                  "font-weight": 500,
-                  "text-anchor": "middle",
-                  "x": 342,
-                  "y": 372
-                },
-                "id": "refine-label",
-                "kind": "text",
-                "text": "Refine"
-              }
-            ],
             "format": "vector",
             "viewBox": {
-              "height": 412,
-              "width": 444,
               "x": 0,
-              "y": 0
-            }
-          },
-          "id": "workflow",
-          "kind": "diagram",
-          "preferredRect": {
-            "height": 412,
-            "width": 444,
-            "x": 772,
-            "y": 95.99999999999999
-          },
-          "slotIds": [
-            "workflow-content"
-          ]
+              "y": 0,
+              "width": 444,
+              "height": 412
+            },
+            "description": "Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components.",
+            "elements": [
+              {
+                "id": "cover-frame",
+                "kind": "rect",
+                "attributes": {
+                  "x": 10,
+                  "y": 8,
+                  "width": 260,
+                  "height": 140,
+                  "rx": 8,
+                  "fill": "#ffffff",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5
+                }
+              },
+              {
+                "id": "cover-mark",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 28,
+                  "width": 42,
+                  "height": 42,
+                  "rx": 4,
+                  "fill": "#007fb5"
+                }
+              },
+              {
+                "id": "cover-title",
+                "kind": "rect",
+                "attributes": {
+                  "x": 86,
+                  "y": 29,
+                  "width": 144,
+                  "height": 13,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "cover-copy-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 86,
+                  "y": 53,
+                  "width": 112,
+                  "height": 7,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "cover-copy-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 102,
+                  "width": 164,
+                  "height": 7,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "cover-accent",
+                "kind": "rect",
+                "attributes": {
+                  "x": 211,
+                  "y": 96,
+                  "width": 39,
+                  "height": 28,
+                  "rx": 4,
+                  "fill": "#eaf6fb"
+                }
+              },
+              {
+                "id": "square-frame",
+                "kind": "rect",
+                "attributes": {
+                  "x": 292,
+                  "y": 8,
+                  "width": 140,
+                  "height": 140,
+                  "rx": 8,
+                  "fill": "#ffffff",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5
+                }
+              },
+              {
+                "id": "square-title",
+                "kind": "rect",
+                "attributes": {
+                  "x": 311,
+                  "y": 28,
+                  "width": 82,
+                  "height": 10,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "square-bar-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 314,
+                  "y": 93,
+                  "width": 18,
+                  "height": 31,
+                  "rx": 3,
+                  "fill": "#007fb5"
+                }
+              },
+              {
+                "id": "square-bar-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 342,
+                  "y": 72,
+                  "width": 18,
+                  "height": 52,
+                  "rx": 3,
+                  "fill": "#5cb9df"
+                }
+              },
+              {
+                "id": "square-bar-3",
+                "kind": "rect",
+                "attributes": {
+                  "x": 370,
+                  "y": 52,
+                  "width": 18,
+                  "height": 72,
+                  "rx": 3,
+                  "fill": "#9adbed"
+                }
+              },
+              {
+                "id": "square-baseline",
+                "kind": "path",
+                "attributes": {
+                  "d": "M307 126H410",
+                  "fill": "none",
+                  "stroke": "#b2bdc2",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "portrait-frame",
+                "kind": "rect",
+                "attributes": {
+                  "x": 10,
+                  "y": 172,
+                  "width": 145,
+                  "height": 230,
+                  "rx": 8,
+                  "fill": "#ffffff",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5
+                }
+              },
+              {
+                "id": "portrait-title",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 193,
+                  "width": 94,
+                  "height": 11,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "portrait-visual",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 224,
+                  "width": 109,
+                  "height": 81,
+                  "rx": 5,
+                  "fill": "#eaf6fb"
+                }
+              },
+              {
+                "id": "portrait-rule",
+                "kind": "path",
+                "attributes": {
+                  "d": "M45 285L76 247 96 270 122 236",
+                  "fill": "none",
+                  "stroke": "#007fb5",
+                  "stroke-width": 4
+                }
+              },
+              {
+                "id": "portrait-copy-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 326,
+                  "width": 92,
+                  "height": 7,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "portrait-copy-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 344,
+                  "width": 108,
+                  "height": 7,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "portrait-copy-3",
+                "kind": "rect",
+                "attributes": {
+                  "x": 28,
+                  "y": 362,
+                  "width": 74,
+                  "height": 7,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "slide-frame",
+                "kind": "rect",
+                "attributes": {
+                  "x": 180,
+                  "y": 172,
+                  "width": 252,
+                  "height": 144,
+                  "rx": 8,
+                  "fill": "#ffffff",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5
+                }
+              },
+              {
+                "id": "slide-title",
+                "kind": "rect",
+                "attributes": {
+                  "x": 199,
+                  "y": 190,
+                  "width": 115,
+                  "height": 11,
+                  "rx": 3,
+                  "fill": "#b2bdc2"
+                }
+              },
+              {
+                "id": "diagram-path",
+                "kind": "path",
+                "attributes": {
+                  "d": "M305 251V270H231V278M305 270H379V278",
+                  "fill": "none",
+                  "stroke": "#b2bdc2",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "diagram-parent",
+                "kind": "rect",
+                "attributes": {
+                  "x": 284,
+                  "y": 215,
+                  "width": 42,
+                  "height": 36,
+                  "rx": 7,
+                  "fill": "#007fb5"
+                }
+              },
+              {
+                "id": "diagram-child-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 210,
+                  "y": 278,
+                  "width": 42,
+                  "height": 25,
+                  "rx": 6,
+                  "fill": "#eaf6fb",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "diagram-child-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 358,
+                  "y": 278,
+                  "width": 42,
+                  "height": 25,
+                  "rx": 6,
+                  "fill": "#eaf6fb",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "table-frame",
+                "kind": "rect",
+                "attributes": {
+                  "x": 180,
+                  "y": 338,
+                  "width": 252,
+                  "height": 64,
+                  "rx": 8,
+                  "fill": "#ffffff",
+                  "stroke": "#007fb5",
+                  "stroke-width": 2.5
+                }
+              },
+              {
+                "id": "table-header",
+                "kind": "rect",
+                "attributes": {
+                  "x": 181,
+                  "y": 339,
+                  "width": 250,
+                  "height": 20,
+                  "rx": 7,
+                  "fill": "#eaf6fb"
+                }
+              },
+              {
+                "id": "table-grid",
+                "kind": "path",
+                "attributes": {
+                  "d": "M250 339V401M330 339V401M181 359H431M181 380H431",
+                  "fill": "none",
+                  "stroke": "#b2bdc2",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "table-emphasis",
+                "kind": "rect",
+                "attributes": {
+                  "x": 196,
+                  "y": 365,
+                  "width": 38,
+                  "height": 8,
+                  "rx": 3,
+                  "fill": "#007fb5"
+                }
+              }
+            ]
+          }
         }
       ],
       "contentSlots": [
         {
           "id": "brand-content",
-          "instruction": "Konpeki",
           "label": "brand",
+          "role": "body",
           "required": true,
-          "role": "body"
+          "instruction": "Konpeki"
         },
         {
           "id": "brand-mark-content",
-          "instruction": "Konpeki blue brush mark",
           "label": "brand-mark",
+          "role": "body",
           "required": true,
-          "role": "body"
+          "instruction": "Konpeki blue brush mark"
         },
         {
           "id": "promise-content",
-          "instruction": "A shared canvas.",
           "label": "promise",
+          "role": "body",
           "required": true,
-          "role": "body"
+          "instruction": "Create clear visuals"
         },
         {
           "id": "audience-content",
-          "instruction": "For you and your agents.",
           "label": "audience",
+          "role": "body",
           "required": true,
-          "role": "body"
+          "instruction": "with your coding agent."
         },
         {
-          "id": "workflow-content",
-          "instruction": "Intent connects to Build, then Refine; the highlighted final step expresses editable output.",
-          "label": "workflow",
+          "id": "visual-family-content",
+          "label": "visual-family",
+          "role": "body",
           "required": true,
-          "role": "body"
+          "instruction": "Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components."
         }
       ],
       "groups": [],
-      "id": "github-cover",
-      "innerPadding": {
-        "bottom": 64,
-        "left": 64,
-        "right": 64,
-        "top": 64
-      },
-      "intendedViewingSize": "social",
-      "name": "GitHub repository cover",
-      "pageNumber": {
-        "color": "muted",
-        "style": "none"
-      },
+      "relationships": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "brand"
+        },
+        {
+          "kind": "component",
+          "id": "brand-mark"
+        },
+        {
+          "kind": "component",
+          "id": "promise"
+        },
+        {
+          "kind": "component",
+          "id": "audience"
+        },
+        {
+          "kind": "component",
+          "id": "visual-family"
+        }
+      ],
       "paintOrder": [
         "brand",
         "brand-mark",
         "promise",
         "audience",
-        "workflow"
-      ],
-      "question": "What is Konpeki?",
-      "readingOrder": [
-        {
-          "id": "brand",
-          "kind": "component"
-        },
-        {
-          "id": "brand-mark",
-          "kind": "component"
-        },
-        {
-          "id": "promise",
-          "kind": "component"
-        },
-        {
-          "id": "audience",
-          "kind": "component"
-        },
-        {
-          "id": "workflow",
-          "kind": "component"
-        }
-      ],
-      "relationships": []
+        "visual-family"
+      ]
     }
-  ],
-  "theme": {
-    "id": "plex",
-    "mode": "paper"
-  },
-  "title": "Konpeki GitHub cover"
+  ]
 }

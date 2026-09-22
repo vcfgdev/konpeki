@@ -1,11 +1,11 @@
-![Konpeki — A shared canvas for you and your agents](slides/github-cover/cover.png)
+![Konpeki — Create clear visuals with your coding agent](slides/github-cover/cover.png)
 
-**An editable canvas for agent-made visuals. Create a single explanation or a
-whole presentation, then revise it together.**
+**Create clear visuals with your coding agent.** Konpeki is an opinionated design
+framework for covers, social graphics, visual explanations and presentations.
 
 Give your coding agent notes, source material and a brief. Konpeki provides the
-shared canvas, design guidance, typography and semantic components for social
-graphics, article headers, visual explanations and presentations.
+canvas, design guidance, typography and semantic components for the intended
+format and dimensions.
 
 People and agents edit the same composition. Export a page as PNG, download its
 editable JSON, or use **Present** for a chrome-free presentation.
