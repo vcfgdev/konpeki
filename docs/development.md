@@ -37,6 +37,13 @@ AI service. No deployment is automatic. In a remote environment, expose the
 server through its authenticated preview mechanism; a local address is not a
 shareable URL.
 
+The source CLI's `preview` chooses the next available port if its default is
+occupied. An explicit `--port <number>` fails rather than silently changing the
+requested port; `--port 0` asks the OS for a free port. `--json` prints one readiness
+record with `type`, `compositionPath` and the exact session-bearing `url` after
+listening. Treat that URL as a capability, not public logging data. This is a
+startup signal, not proof that the browser loaded the right composition.
+
 ## Skill and plugin packaging
 
 `skills/konpeki/` is the canonical portable skill. The repo's

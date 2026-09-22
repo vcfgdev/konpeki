@@ -13,7 +13,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function usage() {
   console.error(`Usage:
-  konpeki preview <composition.json> [--host <host>] [--port <port>]
+  konpeki preview <composition.json> [--host <host>] [--port <port>] [--json]
   konpeki validate <composition.json>
   konpeki wait <composition.json>
   konpeki request <composition.json>
@@ -31,31 +31,42 @@ async function preview(input) {
   const token = randomBytes(24).toString("base64url");
   const host = option("--host", "127.0.0.1");
   const port = Number(option("--port", "4318"));
-  if (!Number.isInteger(port) || port < 1 || port > 65535)
-    throw new Error("Port must be an integer from 1 to 65535.");
+  const json = process.argv.includes("--json");
+  if (!Number.isInteger(port) || port < 0 || port > 65535)
+    throw new Error("Port must be an integer from 0 to 65535 (0 chooses a free port).");
   const server = await createServer({
     root,
     configFile: resolve(root, "vite.config.ts"),
-    server: { host, port, strictPort: true },
+    logLevel: json ? "silent" : "info",
+    server: { host, port, strictPort: process.argv.includes("--port") },
     plugins: [fileSessionPlugin({
       compositionPath,
       token,
       onBuildRequest: ({ request }) => {
         if (!request) return;
-        console.log(`\nBuild requested for ${request.compositionPath}`);
-        console.log(`Revision: ${request.revision}`);
-        console.log(`Instruction: ${request.instruction}`);
-        console.log(`Run: konpeki wait ${JSON.stringify(request.compositionPath)}\n`);
+        console.error(`\nBuild requested for ${request.compositionPath}`);
+        console.error(`Revision: ${request.revision}`);
+        console.error(`Instruction: ${request.instruction}`);
+        console.error(`Run: konpeki wait ${JSON.stringify(request.compositionPath)}\n`);
       },
     })],
   });
-  await server.listen();
+  try {
+    await server.listen();
+  } catch (error) {
+    await server.close();
+    throw error;
+  }
   const address = server.httpServer?.address();
   const actualPort = address && typeof address === "object" ? address.port : port;
   const displayHost = host === "0.0.0.0" || host === "::" ? "localhost" : host;
-  console.log(`Konpeki is editing ${compositionPath}`);
-  console.log(`http://${displayHost}:${actualPort}/?session=${encodeURIComponent(token)}`);
-  console.log(`Waiting for edits and Build it requests. Press Ctrl+C to stop.`);
+  const url = `http://${displayHost.includes(":") ? `[${displayHost}]` : displayHost}:${actualPort}/?session=${encodeURIComponent(token)}`;
+  if (json) console.log(JSON.stringify({ type: "ready", compositionPath, url }));
+  else {
+    console.log(`Konpeki is editing ${compositionPath}`);
+    console.log(url);
+    console.log(`Waiting for edits and Build it requests. Press Ctrl+C to stop.`);
+  }
 }
 
 async function validate(input) {
