@@ -20,6 +20,8 @@
   "files": [
     "AGENTS.md",
     "AUTHORING.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
     "SETUP.md",
     "docs/workflow.md",
     "docs/development.md",

@@ -60,6 +60,7 @@ authenticated preview mechanism rather than sharing a local address.
 - [Canvas workflow](docs/workflow.md): page sizes, export and agent handoff.
 - [Development](docs/development.md): architecture, demo hosting, packaging and checks.
 - [Composition contract](composition/README.md) and [design resources](design/README.md).
+- [Contributing](CONTRIBUTING.md) and [security policy](SECURITY.md).
 
 Konpeki requires no account or hosted AI service. Your coding agent's pricing
 and data handling still apply. Supply facts and approved assets; examples and

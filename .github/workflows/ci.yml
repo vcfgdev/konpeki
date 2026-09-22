@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: jdx/mise-action@v4
+        with:
+          cache: false
+
+      - run: mise exec -- pnpm install --frozen-lockfile
+      - run: mise exec -- pnpm check
+      - run: mise exec -- pnpm test
+      - run: mise exec -- pnpm build
+      - run: mise exec -- pnpm check:package

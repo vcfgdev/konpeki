@@ -103,7 +103,7 @@ rebuilding during publication. Packing locally does not publish anything.
 
 ## Tag releases
 
-`.github/workflows/publish.yml` stages releases on bare version tags such as `0.1.1`
+`.github/workflows/publish.yml` stages releases on bare version tags such as `0.2.1`
 (no `v` prefix). The tag must equal `package.json`'s version.
 The workflow installs the mise toolchain and frozen dependencies, runs typecheck,
 tests, build and package checks, then installs a tarball in an isolated directory
@@ -130,11 +130,12 @@ After updating the package version, completing release checks and pushing the
 release commit, explicitly create and push its matching tag:
 
 ```sh
-git tag 0.1.1
-git push origin 0.1.1
+VERSION=0.2.1
+git tag "$VERSION"
+git push origin "$VERSION"
 ```
 
-Replace `0.1.1` with the new version. `0.1.0` is already published and cannot be
+Replace `0.2.1` with the version in `package.json`. Published versions cannot be
 republished. Pushing a matching tag submits the tested package to npm's staging
 area. After the workflow succeeds, review the release in npmjs.com's **Staged
 Packages** tab and click **Approve**, completing 2FA to publish it. Alternatively,
