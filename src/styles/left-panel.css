@@ -53,6 +53,10 @@
   position: relative;
 }
 
+.slide-thumbnail-item + .slide-thumbnail-item {
+  margin-top: 8px;
+}
+
 .slide-thumbnail {
   display: grid;
   width: 100%;
@@ -78,15 +82,19 @@
 }
 
 .slide-thumbnail > span:last-child {
-  padding-right: 30px;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding-right: 36px;
+  overflow-wrap: anywhere;
 }
 
 .remove-slide {
   position: absolute;
-  right: 2px;
-  bottom: 0;
-  width: 40px;
-  height: 40px;
+  right: 9px;
+  bottom: 9px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border-color: transparent;
   border-radius: 5px;
