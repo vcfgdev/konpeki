@@ -7,8 +7,8 @@
 - Destination assumed: GitHub repository social preview, 1280 × 640.
 - Authoring mode: unspecified; resolved to default.
 - Reuse the existing blue mark, white canvas and IBM Plex Sans identity.
-- Lead with the product name and shared-canvas promise. A small editable
-  Intent → Build → Refine illustration represents the authoring workflow.
+- Lead with the product name and shared-canvas promise. A small
+  Intent → Build → Refine illustration represents the editable authoring workflow.
 - A generated layout concept informed placement only; the deliverable is
   authored as Konpeki text and editable vectors, not a flattened concept image.
 

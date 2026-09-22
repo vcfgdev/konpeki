@@ -10,8 +10,7 @@ Open for editing:
 mise exec -- pnpm konpeki preview slides/github-cover/composition.json
 ```
 
-Use **Export PNG** after editing. The selection handles around Refine are part
-of the authored illustration, not editor overlays.
+Use **Export PNG** after editing.
 
 `PROMPT.md` records the brief, assumptions and asset sources. `author.ts`
 reconstructs the initial composition with Node.js and ImageMagick; running it
@@ -20,5 +19,7 @@ overwrites the JSON, so do not run it over subsequent human edits.
 Verified: composition validation, TypeScript check and application build;
 the real canvas loaded all five components and IBM Plex Sans. Inspected the
 1280 × 640 PNG and a 640 × 320 review copy for alignment, clipping and legibility.
-Corrected the logo's vertical alignment after the first export. No GitHub
-repository settings have been changed.
+Corrected the logo's vertical alignment after the first export and removed
+authored selection handles that read as editor artifacts at social-card size.
+Uploading the PNG as the repository social preview remains a separate GitHub
+setting.

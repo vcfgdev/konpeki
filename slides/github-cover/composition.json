@@ -130,7 +130,7 @@
             "type": "flowchart"
           },
           "customVisual": {
-            "description": "Intent connects to Build, then Refine; selection handles on Refine express editable output.",
+            "description": "Intent connects to Build, then Refine; the highlighted final step expresses editable output.",
             "elements": [
               {
                 "attributes": {
@@ -235,58 +235,6 @@
                 "id": "refine-label",
                 "kind": "text",
                 "text": "Refine"
-              },
-              {
-                "attributes": {
-                  "fill": "#ffffff",
-                  "height": 10,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2,
-                  "width": 10,
-                  "x": 245,
-                  "y": 321
-                },
-                "id": "edit-handle-0",
-                "kind": "rect"
-              },
-              {
-                "attributes": {
-                  "fill": "#ffffff",
-                  "height": 10,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2,
-                  "width": 10,
-                  "x": 429,
-                  "y": 321
-                },
-                "id": "edit-handle-1",
-                "kind": "rect"
-              },
-              {
-                "attributes": {
-                  "fill": "#ffffff",
-                  "height": 10,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2,
-                  "width": 10,
-                  "x": 245,
-                  "y": 393
-                },
-                "id": "edit-handle-2",
-                "kind": "rect"
-              },
-              {
-                "attributes": {
-                  "fill": "#ffffff",
-                  "height": 10,
-                  "stroke": "#007fb5",
-                  "stroke-width": 2,
-                  "width": 10,
-                  "x": 429,
-                  "y": 393
-                },
-                "id": "edit-handle-3",
-                "kind": "rect"
               }
             ],
             "format": "vector",
@@ -341,7 +289,7 @@
         },
         {
           "id": "workflow-content",
-          "instruction": "Intent connects to Build, then Refine; selection handles on Refine express editable output.",
+          "instruction": "Intent connects to Build, then Refine; the highlighted final step expresses editable output.",
           "label": "workflow",
           "required": true,
           "role": "body"
