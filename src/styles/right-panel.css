@@ -800,6 +800,13 @@
   display: block;
 }
 
+.appearance-preview[data-property="template"] svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .appearance-preview[data-property="template"] i {
   position: absolute;
   z-index: 1;
@@ -880,24 +887,6 @@
 .appearance-preview[data-property="template"][data-value="treemap"] i:nth-child(2) { right: 3px; top: 3px; width: 10px; height: 8px; }
 .appearance-preview[data-property="template"][data-value="treemap"] i:nth-child(3) { right: 8px; bottom: 3px; width: 5px; height: 7px; }
 .appearance-preview[data-property="template"][data-value="treemap"] i:nth-child(4) { right: 3px; bottom: 3px; width: 3px; height: 7px; background: var(--preview-secondary); }
-
-.appearance-preview[data-property="template"][data-value="scatter"] i:nth-child(1) { left: 5px; bottom: 5px; }
-.appearance-preview[data-property="template"][data-value="scatter"] i:nth-child(2) { left: 13px; bottom: 9px; }
-.appearance-preview[data-property="template"][data-value="scatter"] i:nth-child(3) { left: 22px; bottom: 12px; }
-.appearance-preview[data-property="template"][data-value="scatter"] i:nth-child(4) { right: 5px; top: 4px; width: 7px; height: 7px; background: var(--preview-accent); }
-
-.appearance-preview[data-property="template"][data-value="sankey"]::before,
-.appearance-preview[data-property="template"][data-value="sankey"]::after {
-  position: absolute;
-  left: 4px;
-  width: 29px;
-  border-top: 5px solid var(--preview-accent);
-  border-radius: 50%;
-  content: "";
-}
-.appearance-preview[data-property="template"][data-value="sankey"]::before { top: 7px; transform: rotate(8deg); }
-.appearance-preview[data-property="template"][data-value="sankey"]::after { bottom: 6px; border-color: var(--preview-muted); transform: rotate(-9deg); }
-.appearance-preview[data-property="template"][data-value="sankey"] i { display: none; }
 
 .appearance-preview[data-property="template"][data-value="linear"]::before,
 .appearance-preview[data-property="template"][data-value="request-flow"]::before {
@@ -1115,8 +1104,12 @@ legend {
   place-items: center;
 }
 
-.diagram-type-category button:hover {
+.diagram-type-category button:hover:not(:disabled) {
   background: var(--ui-hover);
+}
+
+.diagram-type-category button:disabled {
+  opacity: 0.48;
 }
 
 .diagram-type-category button.selected {
@@ -1151,6 +1144,13 @@ legend {
 .diagram-type-icon .filled {
   fill: currentColor;
   stroke: none;
+}
+
+.chart-type-options .appearance-preview {
+  margin: 4px 0;
+  border: 0;
+  background: transparent;
+  transform: scale(1.333333);
 }
 
 .visualization-description {

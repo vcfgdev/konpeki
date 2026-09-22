@@ -52,8 +52,11 @@ function chartPreviewColors() {
     const line = getComputedStyle(preview('line'), '::before');
     const pie = getComputedStyle(preview('pie'), '::before');
     const bar = getComputedStyle(preview('grouped-bar').querySelector('i:nth-child(2)'));
+    const scatter = getComputedStyle(preview('scatter').querySelector('circle'));
+    const sankey = getComputedStyle(preview('sankey').querySelector('rect'));
     if (line.borderTopWidth !== '2px' || line.borderTopColor === 'rgba(0, 0, 0, 0)' || pie.backgroundImage === 'none' || bar.backgroundColor === 'rgba(0, 0, 0, 0)') throw Error('Chart preview palette missing');
-    return { line: line.borderTopColor, pie: pie.backgroundImage, bar: bar.backgroundColor };
+    if (scatter.fill !== bar.backgroundColor || sankey.fill !== bar.backgroundColor) throw Error('Scatter and Sankey must retain the chart accent color');
+    return { line: line.borderTopColor, pie: pie.backgroundImage, bar: bar.backgroundColor, scatter: scatter.fill, sankey: sankey.fill };
   })()`));
 }
 try {
@@ -66,6 +69,11 @@ try {
     const rect = element.getBoundingClientRect();
     return rect.width >= 40 && rect.height >= 40;
   })`, "visible controls must have at least 40 by 40 pixel targets");
+  check(`(() => {
+    const icon = document.querySelector('.component-dock button[title="Add or select Diagram"] svg');
+    const target = icon.querySelectorAll('rect')[1];
+    return icon.querySelector('path').isPointInStroke(new DOMPoint(target.x.baseVal.value + target.width.baseVal.value / 2, target.y.baseVal.value));
+  })()`, "Diagram arrow must touch the top center of its destination square");
   browser("set", "viewport", "1000", "700", "2");
   browser("wait", "--fn", "document.querySelector('.right-panel').classList.contains('collapsed')");
   evaluate("Promise.all(document.querySelector('.stage').getAnimations().map(animation => animation.finished))");
@@ -137,11 +145,24 @@ try {
       browser("click", ".diagram-type-field > summary");
     }
     if (kind === "Chart") {
-      check('document.querySelector(".chart-type-field > summary").textContent === "YOLO"', "new chart must be YOLO");
+      check('document.querySelector(".chart-type-field > summary").textContent === "Template" && !document.querySelector(".chart-type-field").open', "chart Template section must start collapsed");
+      check('document.querySelectorAll(".chart-type-options button").length === 9 && document.querySelector(".chart-type-options button.selected").textContent.trim() === "YOLO"', "new chart must select only the YOLO tile alongside eight templates");
       check('![...document.querySelectorAll(".inspector-content small")].some(el => /Describe the goal|Auto lets the agent/.test(el.textContent))', "removed chart help text returned");
       browser("click", ".chart-type-field > summary");
+      check(`[...document.querySelectorAll('.chart-type-options button')].every(button => {
+        const icon = button.firstElementChild.getBoundingClientRect();
+        const label = button.lastElementChild.getBoundingClientRect();
+        return icon.bottom <= label.top && Math.abs((icon.left + icon.right) - (label.left + label.right)) < 2;
+      })`, "chart templates must center their icons above labels like diagram templates");
+      check('getComputedStyle(document.querySelector(".chart-type-options")).overflowY === "visible" && getComputedStyle(document.querySelector(".chart-type-options")).maxHeight === "none"', "chart templates must not create nested scrolling");
       chartPreviewColors();
       capture("draft-chart-auto");
+      browser("focus", '.chart-type-options button:has([data-value="pie"])');
+      browser("press", "Enter");
+      check('document.querySelectorAll(".chart-type-options button[aria-pressed=true]").length === 1 && document.querySelector(".chart-type-options button.selected").textContent.trim() === "Pie" && document.querySelector(".chart-type-field > summary").textContent === "Template"', "keyboard template selection must exclusively select Pie without changing the section heading");
+      click("YOLO");
+      browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.selection === "auto" && JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.template === "pie"');
+      check('JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.template === "pie" && document.querySelector("[name=content-intent]").value === "Illustrative workflow comparison" && document.querySelectorAll(".chart-type-options button.selected").length === 1 && document.querySelector(".chart-type-options button.selected").textContent.trim() === "YOLO"', "YOLO must preserve the chart form and intent, and clear the explicit highlight");
       browser("click", ".chart-type-field > summary");
     }
   }
@@ -228,9 +249,7 @@ try {
   ]) {
     click(`Page ${String(pageIndex + 1).padStart(2, "0")}`);
     click(`Select ${kind}`);
-    check(kind === "Diagram"
-      ? 'document.querySelector(".diagram-type-options button.selected").textContent.trim() !== "YOLO"'
-      : 'document.querySelector(".chart-type-field > summary").textContent.startsWith("Required form:")', "imported artwork choice must be explicit and visible");
+    check('document.querySelector(".diagram-type-options button.selected").textContent.trim() !== "YOLO"', "imported artwork choice must be explicit and visible");
     browser("click", ".diagram-type-field > summary");
     for (const selection of ["explicit", "auto", "explicit"]) {
       click(selection === "auto" ? "YOLO" : label);
@@ -263,7 +282,7 @@ try {
   click("Page 04");
   click("Select Chart");
   browser("click", ".chart-type-field > summary");
-  check('[...document.querySelectorAll(".chart-type-field .appearance-options button")].every(button => button.textContent.trim() === "Sankey" ? !button.disabled : button.disabled)', "Sankey topology guard missing");
+  check('document.querySelectorAll(".chart-type-options [role=group] button").length === 8 && [...document.querySelectorAll(".chart-type-options [role=group] button")].every(button => button.textContent.trim() === "Sankey" ? !button.disabled : button.disabled)', "Sankey topology guard missing");
   click("Sankey");
   click("YOLO");
   browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.selection === "auto"');
@@ -289,7 +308,7 @@ try {
     capture(`${finished ? "finished" : "draft"}-chart-themed`);
   }
   console.log("PASS: finished diagram/chart form selection, Auto, imported artwork preservation and persistence/reload; Sankey topology remains protected.");
-  console.log("PASS: bar, line and pie thumbnails retain palette colors for draft/finished charts and respond to theme changes.");
+  console.log("PASS: bar, line, pie, scatter and Sankey thumbnails retain palette colors for draft/finished charts and respond to theme changes.");
   openDocument(completed);
   for (const [index, [kind]] of cases.entries()) {
     click(`Page ${String(index + 2).padStart(2, "0")}`);

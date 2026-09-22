@@ -33,8 +33,8 @@ function DockIcon({
       ) : kind === "diagram" ? (
         <>
           <rect x="3" y="5" width="6" height="5" rx="1" />
-          <rect x="15" y="14" width="6" height="5" rx="1" />
-          <path d="M9 8h6v8M12 13l3 3 3-3" />
+          <rect x="15" y="16" width="6" height="5" rx="1" />
+          <path d="M9 8h9v8m-2.5-2.5L18 16l2.5-2.5" />
         </>
       ) : kind === "image" ? (
         <>

@@ -206,6 +206,22 @@ function SegmentedControl({ label, value, options, onChange }: {
   );
 }
 
+function AutoTemplateButton({ selected, onClick }: { selected: boolean; onClick: () => void }) {
+  return (
+    <button type="button" className={selected ? "selected" : ""} aria-pressed={selected} onClick={onClick}>
+      <svg className="diagram-type-icon" viewBox="0 0 48 32" aria-hidden="true">
+        <rect x="13" y="5" width="22" height="22" rx="4" />
+        <circle className="filled" cx="19" cy="11" r="1.5" />
+        <circle className="filled" cx="29" cy="11" r="1.5" />
+        <circle className="filled" cx="24" cy="16" r="1.5" />
+        <circle className="filled" cx="19" cy="21" r="1.5" />
+        <circle className="filled" cx="29" cy="21" r="1.5" />
+      </svg>
+      <span>YOLO</span>
+    </button>
+  );
+}
+
 function DiagramTypePicker({
   value,
   selection,
@@ -221,22 +237,7 @@ function DiagramTypePicker({
       <div className="diagram-type-options" aria-labelledby="diagram-type-label">
         <div className="diagram-type-category">
           <div>
-            <button
-              type="button"
-              className={selection === "auto" ? "selected" : ""}
-              aria-pressed={selection === "auto"}
-              onClick={() => onChange(value, "auto")}
-            >
-              <svg className="diagram-type-icon" viewBox="0 0 48 32" aria-hidden="true">
-                <rect x="13" y="5" width="22" height="22" rx="4" />
-                <circle className="filled" cx="19" cy="11" r="1.5" />
-                <circle className="filled" cx="29" cy="11" r="1.5" />
-                <circle className="filled" cx="24" cy="16" r="1.5" />
-                <circle className="filled" cx="19" cy="21" r="1.5" />
-                <circle className="filled" cx="29" cy="21" r="1.5" />
-              </svg>
-              <span>YOLO</span>
-            </button>
+            <AutoTemplateButton selected={selection === "auto"} onClick={() => onChange(value, "auto")} />
           </div>
         </div>
         {diagramCategories.map((category) => (
@@ -273,21 +274,60 @@ function ChartTypePicker({ value, selection, hasTopology, onChange }: {
 }) {
   return (
     <details className="field chart-type-field diagram-type-field">
-      <summary>{selection === "auto" ? "YOLO" : `Required form: ${chartDefinitions[value].label}`}</summary>
-      <button type="button" aria-pressed={selection === "auto"} onClick={() => onChange(value, "auto")}>YOLO</button>
-      <AppearancePicker
-        label="Chart form"
-        name="template"
-        value={selection === "explicit" ? value : ""}
-        options={chartTemplates}
-        labels={Object.fromEntries(Object.entries(chartDefinitions).map(([type, definition]) => [type, definition.label]))}
-        description={`${chartDefinitions[value].expression}${hasTopology ? " Recorded Sankey topology is preserved; remove it before changing chart type, even in YOLO." : ""}`}
-        disabledOptions={hasTopology ? new Set(chartTemplates.filter(type => type !== "sankey")) : undefined}
-        onChange={(value) => {
-          const template = chartTemplates.find(type => type === value);
-          if (template) onChange(template, "explicit");
-        }}
-      />
+      <summary id="chart-type-label">Template</summary>
+      <div className="diagram-type-options chart-type-options" aria-labelledby="chart-type-label">
+        <div className="diagram-type-category">
+          <div>
+            <AutoTemplateButton selected={selection === "auto"} onClick={() => onChange(value, "auto")} />
+          </div>
+        </div>
+        <div className="diagram-type-category" role="group" aria-label="Chart templates">
+          <div>
+            {chartTemplates.map((template) => (
+              <button
+                key={template}
+                type="button"
+                className={selection === "explicit" && value === template ? "selected" : ""}
+                aria-pressed={selection === "explicit" && value === template}
+                disabled={hasTopology && template !== "sankey"}
+                title={hasTopology && template !== "sankey"
+                  ? "Remove the recorded Sankey topology before changing chart type."
+                  : chartDefinitions[template].expression}
+                onClick={() => onChange(template, "explicit")}
+              >
+                <span className="appearance-preview" data-property="template" data-value={template} aria-hidden="true">
+                  {template === "scatter" ? (
+                    <svg viewBox="0 0 36 24">
+                      <path d="M3 2v20h31" fill="none" stroke="var(--preview-muted)" strokeWidth="1.2" />
+                      {[[7, 6], [10, 11], [14, 9], [17, 13], [20, 16], [24, 15], [28, 18], [29, 7], [32, 19]].map(([cx, cy], index) => (
+                        <circle key={index} cx={cx} cy={cy} r="1.35" fill="var(--preview-accent)" />
+                      ))}
+                    </svg>
+                  ) : template === "sankey" ? (
+                    <svg viewBox="0 0 36 24" fill="var(--preview-accent)">
+                      <g fillOpacity="0.3">
+                        <path d="M4 4C10.5 4 10.5 2 17 2V12.5C10.5 12.5 10.5 14.5 4 14.5Z" />
+                        <path d="M4 14.5C10.5 14.5 10.5 17.5 17 17.5V22C10.5 22 10.5 19 4 19Z" />
+                        <path d="M19 8C25.5 8 25.5 10 32 10V14.5C25.5 14.5 25.5 12.5 19 12.5Z" />
+                        <path d="M19 17.5C25.5 17.5 25.5 18 32 18V22.5C25.5 22.5 25.5 22 19 22Z" />
+                      </g>
+                      <path d="M19 2C25.5 2 25.5 1 32 1V7C25.5 7 25.5 8 19 8Z" fillOpacity="0.65" />
+                      <rect x="2" y="4" width="2" height="15" />
+                      <rect x="17" y="2" width="2" height="10.5" />
+                      <rect x="17" y="17.5" width="2" height="4.5" />
+                      <rect x="32" y="1" width="2" height="6" />
+                      <rect x="32" y="10" width="2" height="4.5" />
+                      <rect x="32" y="18" width="2" height="4.5" />
+                    </svg>
+                  ) : Array.from({ length: 4 }, (_, index) => <i key={index} />)}
+                </span>
+                <span>{chartDefinitions[template].label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      {hasTopology && <small className="visualization-description">Recorded Sankey topology is preserved; remove it before changing chart type, even in YOLO.</small>}
     </details>
   );
 }
