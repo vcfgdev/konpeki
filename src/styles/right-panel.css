@@ -10,6 +10,10 @@
   margin-bottom: 16px;
 }
 
+.inspector-content:has(> .page-number-picker) legend {
+  margin-bottom: 7px;
+}
+
 .field-error {
   color: #a02020 !important;
 }

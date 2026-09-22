@@ -15,6 +15,35 @@ const click = (name) => browser("find", "role", "button", "click", "--name", nam
 const settlePanels = () => evaluate("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))).then(() => Promise.all([...document.querySelectorAll('.left-sidebar,.left-panel,.action-island,.right-panel,.right-panel-body,.right-panel>.panel-toolbar,.stage')].flatMap(element => element.getAnimations().map(animation => animation.finished))))");
 const capture = (name) => { settlePanels(); browser("screenshot", join(output, name)); };
 try {
+  browser("open", new URL("?example=introducing-konpeki", base).href);
+  browser("set", "viewport", "1556", "1030", "2");
+  evaluate("document.fonts.ready");
+  settlePanels();
+  browser("scroll", "down", "1000", "--selector", ".inspector-content");
+  evaluate(`{
+    const inspector = document.querySelector('.inspector-content');
+    if (!inspector.querySelector('.page-number-picker .choice-picker:nth-child(2)')) throw Error('Numbering color must be present for the full settings check');
+    if (inspector.scrollHeight !== inspector.clientHeight || inspector.scrollTop !== 0)
+      throw Error('Full page settings should fit a 1556×1030 viewport without redundant scrolling');
+    if (inspector.lastElementChild.getBoundingClientRect().bottom > inspector.getBoundingClientRect().bottom - 18)
+      throw Error('Page settings must keep their bottom padding');
+  }`);
+  capture("page-settings-fit.png");
+  browser("set", "viewport", "1556", "800", "2");
+  settlePanels();
+  browser("scroll", "down", "1000", "--selector", ".inspector-content");
+  evaluate(`{
+    const inspector = document.querySelector('.inspector-content');
+    const last = inspector.lastElementChild.getBoundingClientRect();
+    if (inspector.scrollHeight <= inspector.clientHeight || inspector.scrollTop <= 0 ||
+      Math.abs(inspector.scrollHeight - inspector.clientHeight - inspector.scrollTop) > 1 ||
+      Math.abs(inspector.getBoundingClientRect().bottom - last.bottom - 18) > 1)
+      throw Error('Short windows must still scroll to all settings with bottom padding');
+    if ([document.querySelector('.right-panel'), document.querySelector('.right-panel-body'), document.scrollingElement].some(element => element.scrollTop !== 0))
+      throw Error('Only the inspector should scroll');
+  }`);
+  capture("page-settings-scrolled.png");
+  console.log("PASS: full page settings fit without scrolling at 1556×1030; shorter windows scroll only the inspector and retain bottom padding.");
   browser("open", base);
   browser("set", "viewport", "1280", "900", "2");
   evaluate("document.fonts.ready");
