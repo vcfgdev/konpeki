@@ -29,13 +29,18 @@ pnpm dev
 For a production preview, run `pnpm build` then `pnpm preview`. The build produces
 a static site in `dist` for a root or subdirectory. Use
 `?example=introducing-konpeki` or `?example=custom-visual` to open a bundled editable
-example. Example links do not autosave; open a composition in a file-backed
-session to preserve edits.
+example. Each example has an isolated browser-local working copy that survives
+reload. The Browser menu supports JSON import/download, starting blank and
+resetting the example. These actions never replace another example or the normal
+local draft. Invalid stored data remains untouched until an explicit reset.
 
-Hosting shares bundled examples, not private drafts, arbitrary documents or an
-AI service. No deployment is automatic. In a remote environment, expose the
-server through its authenticated preview mechanism; a local address is not a
-shareable URL.
+Deploy only the static `dist` output for the public playground, not a file-session
+server. Imported documents stay in that browser; there is no account, cloud sync,
+AI generation or Build/notes handoff in standalone mode. Downloaded JSON can be
+opened in a file-backed session with a coding agent. Browser storage is not a
+backup. Hosting shares bundled examples, not private drafts or an AI service.
+No deployment is automatic. In a remote environment, expose a review server
+through its authenticated preview mechanism, not a loopback address.
 
 The source CLI's `preview` chooses the next available port if its default is
 occupied. An explicit `--port <number>` fails rather than silently changing the
@@ -108,7 +113,8 @@ trusted local React source; never use it on untrusted JSX. It rejects unsupporte
 SVG elements rather than silently flattening them. Review converted typography
 and geometry in the browser; conversion is not a fidelity guarantee.
 The bundled `?example=react-page-migration` preview uses the same format.
-Example previews do not autosave; use a file-backed session to save edits.
+Its working copy autosaves in that browser. Download JSON or use a file-backed
+session to retain edits outside browser storage.
 
 ## Package contents
 

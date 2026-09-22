@@ -71,14 +71,31 @@
   }
 }
 .recovery {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
-  background: #fff;
-  border-bottom: 1px solid #ccc;
+  gap: 12px;
+  width: max-content;
+  max-width: min(520px, max(240px, calc(100vw - 744px)), calc(100vw - 40px));
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  box-shadow: var(--ui-shadow);
   padding: 12px;
   font-size: 13px;
+  line-height: 1.5;
+}
+.recovery > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.recovery > button {
+  flex: none;
 }
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -146,6 +146,82 @@
   justify-content: center;
 }
 
+.browser-menu {
+  position: relative;
+  min-width: 0;
+}
+
+.browser-menu > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  list-style: none;
+}
+
+.browser-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.browser-menu > summary:hover,
+.browser-menu[open] > summary {
+  background: var(--ui-hover);
+}
+
+.browser-menu-popover {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  left: -95px;
+  display: grid;
+  width: 304px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--ui-border);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+
+.browser-menu-popover strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.browser-menu-popover p {
+  color: var(--ui-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.browser-menu-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.action-island .browser-menu-actions button {
+  justify-content: flex-start;
+  min-width: 0;
+  border-color: var(--ui-border);
+  background: var(--ui-surface);
+  font-size: 12px;
+}
+
+.browser-agent-handoff {
+  padding-top: 10px;
+  border-top: 1px solid var(--ui-border);
+}
+
+.browser-agent-handoff a {
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .action-island button.primary {
   background: white;
   color: var(--ui-text);

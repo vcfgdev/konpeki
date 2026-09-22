@@ -58,6 +58,18 @@ Canvas review notes use **Build it** and an active agent listener, or the
 button's copyable handoff to resume the agent. Opening the editor alone does not
 connect or wake an agent. The skill modes are not terminal CLI subcommands.
 
+## Try the editor in your browser
+
+The browser-only playground lets you edit an example or start blank, keep a local
+working copy, import/download editable JSON, export PNG and present. It requires
+no account or AI service. Browser-local data is not cloud backup; download JSON
+to keep or move your work. Continue with your coding agent using that file.
+
+The static build is ready for [demo hosting](docs/development.md#development-server-and-demo-hosting);
+an official hosted URL is not published yet. It does not connect to an agent or
+expose **Build it**. The agent-led workflow above is the route from a prompt to a
+finished visual.
+
 ## Manual npm start
 
 For a manual start, install [Konpeki from npm](https://www.npmjs.com/package/konpeki)

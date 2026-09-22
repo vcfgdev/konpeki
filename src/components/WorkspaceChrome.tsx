@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import { useRef, type RefObject } from "react";
 import type { CompositionComponent } from "../../composition/types.ts";
 import { componentLabels } from "../lib/model.ts";
 import mark from "../assets/konpeki-mark.png";
@@ -68,6 +68,7 @@ export function WorkspaceChrome({
   building,
   buildState,
   onBuild,
+  browserTools,
   onSelectTool,
   onComponentTool,
   leftCollapsed,
@@ -88,9 +89,22 @@ export function WorkspaceChrome({
   building: boolean;
   buildState?: "ready" | "working";
   onBuild?: () => void;
+  browserTools?: {
+    example: boolean;
+    saveMessage: string;
+    onImportJSON: (file: File) => void;
+    onDownloadJSON: () => void;
+    onStartBlank: () => void;
+    onReset: () => void;
+  };
   onSelectTool: () => void;
   onComponentTool: (kind: CompositionComponent["kind"]) => void;
 }) {
+  const browserMenu = useRef<HTMLDetailsElement>(null);
+  const importInput = useRef<HTMLInputElement>(null);
+  function closeBrowserMenu() {
+    if (browserMenu.current) browserMenu.current.open = false;
+  }
   return (
     <>
       <header className="document-island" aria-label="Document controls">
@@ -158,6 +172,67 @@ export function WorkspaceChrome({
             <path d="M12 16v5m-4 0h8M10 7l5 3-5 3Z" />
           </svg>
         </button>
+        {browserTools && (
+          <details className="browser-menu" ref={browserMenu}>
+            <summary>Browser</summary>
+            <div className="browser-menu-popover">
+              <strong>Browser playground</strong>
+              <p role="status">
+                {browserTools.saveMessage}
+                {" "}Nothing syncs automatically.
+              </p>
+              <div className="browser-menu-actions">
+                <button type="button" onClick={() => importInput.current?.click()}>
+                  Import JSON
+                </button>
+                <input
+                  ref={importInput}
+                  hidden
+                  type="file"
+                  accept="application/json,.json"
+                  aria-label="Choose composition JSON"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (!file) return;
+                    closeBrowserMenu();
+                    browserTools.onImportJSON(file);
+                  }}
+                />
+                <button type="button" onClick={() => {
+                  closeBrowserMenu();
+                  browserTools.onDownloadJSON();
+                }}>
+                  Download JSON
+                </button>
+                <button type="button" onClick={() => {
+                  closeBrowserMenu();
+                  browserTools.onStartBlank();
+                }}>
+                  Start blank
+                </button>
+                <button type="button" onClick={() => {
+                  closeBrowserMenu();
+                  browserTools.onReset();
+                }}>
+                  {browserTools.example ? "Reset example" : "Reset local draft"}
+                </button>
+              </div>
+              <p className="browser-agent-handoff">
+                To continue with a coding agent, download the editable JSON and
+                follow the{" "}
+                <a
+                  href="https://github.com/vcfgdev/konpeki/blob/main/SETUP.md"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  setup guidance
+                </a>
+                .
+              </p>
+            </div>
+          </details>
+        )}
         {onBuild && (
           <button
             type="button"

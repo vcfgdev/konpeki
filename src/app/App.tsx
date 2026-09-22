@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositionComponent } from "../../composition/types.ts";
 import { validateComposition } from "../../composition/validate.ts";
 import { removeVectorElement } from "../../composition/vector.ts";
@@ -25,7 +25,15 @@ import {
   redoHistory,
   undoHistory,
 } from "../lib/history.ts";
-import { clearStoredDraft, loadDraft, persistDraft } from "../lib/storage.ts";
+import {
+  clearStoredDraft,
+  clearStoredExampleDraft,
+  loadDraft,
+  loadExampleDraft,
+  persistDraft,
+  persistExampleDraft,
+} from "../lib/storage.ts";
+import { canonicalJSON } from "../../composition/compile.ts";
 import { diagramDefinition } from "../../composition/visualizations.ts";
 import { Canvas } from "../components/Canvas.tsx";
 import { BuildOrb } from "../components/BuildOrb.tsx";
@@ -50,15 +58,18 @@ function loadInitialDraft() {
     return {
       draft: initialDraft(true),
       storageBlocked: false,
-      example: false,
+      exampleName: undefined,
       fileSession: true,
     };
-  const example = exampleDraft(
-    new URLSearchParams(window.location.search).get("example"),
-  );
+  const exampleName = new URLSearchParams(window.location.search).get("example");
+  const example = exampleDraft(exampleName);
   return example
-    ? { draft: example, storageBlocked: false, example: true, fileSession: false }
-    : { ...loadDraft(), example: false, fileSession: false };
+    ? {
+        ...loadExampleDraft(exampleName!, example),
+        exampleName: exampleName!,
+        fileSession: false,
+      }
+    : { ...loadDraft(), exampleName: undefined, fileSession: false };
 }
 
 export function App() {
@@ -71,6 +82,8 @@ export function App() {
   );
   const { draft, selected, activeSlideId } = history.present;
   const slide = getSlide(draft, activeSlideId);
+  const validation = useMemo(() => validateComposition(draft), [draft]);
+  const [savedDraft, setSavedDraft] = useState<Draft>();
   const [blocked, setBlocked] = useState(loaded.storageBlocked);
   const [error, setError] = useState(loaded.error ?? "");
   const [notice, setNotice] = useState<{
@@ -130,20 +143,22 @@ export function App() {
   }, [history.present]);
   useEffect(() => {
     if (loaded.fileSession) return;
-    if (blocked || loaded.example) return;
-    if (!validateComposition(draft).ok) return;
+    if (blocked) return;
+    if (!validation.ok) return;
     const timer = setTimeout(() => {
       try {
-        persistDraft(draft);
+        if (loaded.exampleName) persistExampleDraft(loaded.exampleName, draft);
+        else persistDraft(draft);
+        setSavedDraft(draft);
       } catch {
         setError(
-          "Unable to save this draft. Export your work or reset saved draft to retry.",
+          "Unable to save this browser-local draft. Download JSON or reset to retry.",
         );
         setBlocked(true);
       }
     }, 250);
     return () => clearTimeout(timer);
-  }, [draft, blocked, loaded.example, loaded.fileSession]);
+  }, [draft, validation, blocked, loaded.exampleName, loaded.fileSession]);
   useEffect(() => {
     if (!notice) return;
     const timer = window.setTimeout(() => setToastClosing(true), 3000);
@@ -524,20 +539,64 @@ export function App() {
       setExportBusy(false);
     }
   }
+  function downloadJSON() {
+    const validation = validateComposition(draft);
+    if (!validation.ok) {
+      showNotice("Fix the composition before downloading JSON.", "error");
+      return;
+    }
+    const blob = new Blob([canonicalJSON(draft)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${draft.title.replace(/[^a-z0-9_-]+/gi, "-") || "konpeki-composition"}.json`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showNotice("Editable composition JSON downloaded.");
+  }
+  function startBlank() {
+    if (!window.confirm(
+      "Start with a blank composition? You can undo this replacement until you reload.",
+    )) return;
+    const next = initialDraft(true);
+    focusAfterHistory.current = true;
+    updateDraft(next, {
+      activeSlideId: next.slides[0].id,
+      selected: undefined,
+    });
+    setTitleError(false);
+    showNotice("Blank composition started. Undo restores the previous document.");
+  }
   function reset() {
+    const target = loaded.exampleName ? "example" : "saved local draft";
+    if (!window.confirm(
+      `Reset this ${target}? This removes its browser-local working copy.`,
+    )) return;
     try {
-      clearStoredDraft();
-      const next = initialDraft(true);
+      if (loaded.exampleName) clearStoredExampleDraft(loaded.exampleName);
+      else clearStoredDraft();
+      const next = loaded.exampleName
+        ? structuredClone(exampleDraft(loaded.exampleName)!)
+        : initialDraft(true);
       setHistory(
         createHistory({ draft: next, activeSlideId: next.slides[0].id }),
       );
       setBlocked(false);
       setError("");
-      showNotice("Saved draft reset.");
+      setTitleError(false);
+      showNotice(loaded.exampleName ? "Example reset." : "Saved draft reset.");
     } catch {
+      setBlocked(true);
       setError("Storage remains unavailable. Export your work to keep it.");
     }
   }
+  const browserSaveMessage = !validation.ok
+    ? `Autosave paused: ${validation.issues[0]?.path || "document"} ${validation.issues[0]?.message || "is invalid"}. Fix this to resume saving.`
+    : blocked
+      ? "Changes are not being saved. Download JSON to keep your work."
+      : savedDraft !== draft
+        ? "Saving changes in this browser…"
+        : "Your editable composition is saved only in this browser.";
   const selectedComponent = slide.components.find((c) => c.id === selected);
   const buildState = fileSession.building
     ? fileSession.review.request?.status === "working" ? "working" : "ready"
@@ -554,7 +613,7 @@ export function App() {
         <div className="recovery" role="alert">
           <span>{error}</span>
           <button type="button" onClick={reset}>
-            Reset saved draft
+            {loaded.exampleName ? "Reset example" : "Reset saved draft"}
           </button>
         </div>
       )}
@@ -597,6 +656,14 @@ export function App() {
           building={fileSession.building}
           buildState={buildState}
           onBuild={loaded.fileSession ? () => { void requestBuild(); } : undefined}
+          browserTools={loaded.fileSession ? undefined : {
+            example: Boolean(loaded.exampleName),
+            saveMessage: browserSaveMessage,
+            onImportJSON: (file) => { void openComposition(file); },
+            onDownloadJSON: downloadJSON,
+            onStartBlank: startBlank,
+            onReset: reset,
+          }}
           onSelectTool={() => selectComponent()}
           onComponentTool={useComponentTool}
         />
