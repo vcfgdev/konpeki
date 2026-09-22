@@ -54,9 +54,22 @@ copy is needed.
 `theme:background`, `theme:surface`, `theme:divider`, `theme:accent`,
 `theme:on-accent`, and `theme:wash`. `font-family` accepts `theme:heading-font`
 and `theme:body-font`. These resolve from the deck theme in every canvas view.
-Use on-accent for text over an accent fill. Heading fonts are IBM Plex Serif for
-Editorial, Noto Sans for Precision, and IBM Plex Sans otherwise; body fonts are
-Noto Sans for Precision and IBM Plex Sans otherwise.
+Use on-accent for text over an accent fill. `theme.typography` independently selects
+`plex-sans` (IBM Plex Sans throughout), `noto-sans` (Noto Sans throughout),
+`plex-serif` (IBM Plex Serif headings / IBM Plex Sans body), or `hanken-grotesk`
+(Hanken Grotesk throughout). `theme.id` still selects the color palette and
+`theme.mode` selects Paper or Night. For example:
+
+```json
+{ "id": "green", "mode": "paper", "typography": "noto-sans" }
+```
+
+Omitting typography preserves the legacy pairing: Precision uses Noto Sans;
+Editorial uses Plex Serif headings and Plex Sans body; other palettes use Plex
+Sans. When revising colors, retain the current typography explicitly so changing
+the palette does not change fonts. The editor does this automatically. Older
+runtimes that do not support `theme.typography` reject documents containing it;
+use a compatible runtime rather than removing the field and changing appearance.
 
 Literal values are fixed overrides. SVG conversion preserves literals; it never
 guesses roles from colors. Legacy raw SVG stays inert, fixed artwork. In the

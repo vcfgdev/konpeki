@@ -4,6 +4,7 @@ import {
   compositionSchema,
   themeIds,
   themeModes,
+  typographyIds,
   vectorElementKinds,
 } from "./types.ts";
 import { chartTemplates, diagramTypes } from "./visualizations.ts";
@@ -319,7 +320,8 @@ export const schema = {
       theme: object({
         id: enumeration(themeIds),
         mode: enumeration(themeModes),
-      }),
+        typography: enumeration(typographyIds),
+      }, ["id", "mode"]),
       slides: array(
         object(
           {

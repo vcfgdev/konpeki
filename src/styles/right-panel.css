@@ -202,14 +202,6 @@
   white-space: nowrap;
 }
 
-.theme-options button[data-theme="precision"] > span:first-child {
-  font-family: "Noto Sans", sans-serif;
-}
-
-.theme-options button[data-theme="editorial"] > span:first-child {
-  font-family: Georgia, serif;
-}
-
 .theme-swatches {
   display: flex;
   gap: 3px;
@@ -354,6 +346,11 @@
 
 .field > span {
   color: #565656;
+}
+
+.field:has(> select[name="Font"]) > span {
+  color: var(--ui-text);
+  font-weight: 500;
 }
 
 .field textarea {

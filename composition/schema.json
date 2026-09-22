@@ -2968,6 +2968,15 @@
             "night"
           ],
           "type": "string"
+        },
+        "typography": {
+          "enum": [
+            "plex-sans",
+            "noto-sans",
+            "plex-serif",
+            "hanken-grotesk"
+          ],
+          "type": "string"
         }
       },
       "required": [

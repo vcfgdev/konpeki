@@ -760,7 +760,7 @@ export function Canvas({
   const themeId = draft.theme?.id ?? "plex";
   const themeMode = draft.theme?.mode ?? "paper";
   const palette = composerPalette(themeId, themeMode);
-  const typography = getTheme(themeLabel(themeId), themeMode);
+  const typography = getTheme(themeLabel(themeId), themeMode, draft.theme?.typography);
   const canvasStyle = {
     "--component-layers": slide.paintOrder.length,
     "--slide-bg": palette.bg,

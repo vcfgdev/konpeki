@@ -1,5 +1,6 @@
 import {
   themeIds,
+  typographyIds,
   type CompositionComponent,
   type CompositionSlide,
   type ChartTemplate,
@@ -7,6 +8,7 @@ import {
   type Rect,
   type TextColor,
   type ThemeId,
+  type TypographyId,
   type VectorElement,
 } from "../../composition/types.ts";
 import {
@@ -30,6 +32,7 @@ import {
   type Draft,
 } from "../lib/model.ts";
 import { composerPalette, themeLabel } from "../lib/theme.ts";
+import { getTheme, typographyLabels } from "../../design/themes/index.ts";
 import { DiagramTypeIcon } from "./DiagramTypeIcon.tsx";
 import { Field, Select, humanize } from "./ui.tsx";
 import { moveVectorElement, removeVectorElement } from "../../composition/vector.ts";
@@ -141,7 +144,7 @@ function AppearancePicker({
   );
 }
 
-function ThemePicker({
+function PalettePicker({
   value,
   mode,
   onChange,
@@ -152,7 +155,7 @@ function ThemePicker({
 }) {
   return (
     <fieldset className="theme-picker">
-      <legend>Theme</legend>
+      <legend>Color palette</legend>
       <div className="theme-options">
         {themeIds.map((id) => {
           const palette = composerPalette(id, mode);
@@ -326,32 +329,42 @@ export function InspectorPanel({
     target?.scrollIntoView({ block: "nearest" });
     control?.select();
   }, [vectorEditRequest]);
+  const theme = draft.theme ?? { id: "plex", mode: "paper" };
+  const typography = getTheme(themeLabel(theme.id), theme.mode, theme.typography);
   if (!component)
     return (
       <section className="inspector-content" aria-labelledby="inspector-heading">
         <h2 id="inspector-heading">Page</h2>
         <PageSizePicker key={slide.id} slide={slide} onChange={onSlide} />
         <h2>Document appearance</h2>
-        <ThemePicker
-          value={draft.theme?.id ?? "plex"}
-          mode={draft.theme?.mode ?? "paper"}
+        <Select
+          label="Font"
+          value={typography.typographyId}
+          options={typographyIds}
+          optionLabels={typographyLabels}
+          onChange={(value) => onDraft({ theme: { ...theme, typography: value as TypographyId } })}
+        />
+        <PalettePicker
+          value={theme.id}
+          mode={theme.mode}
           onChange={(value) =>
             onDraft({
               theme: {
+                ...theme,
                 id: value,
-                mode: draft.theme?.mode ?? "paper",
+                typography: typography.typographyId,
               },
             })
           }
         />
         <SegmentedControl
-          label="Theme mode"
-          value={draft.theme?.mode ?? "paper"}
+          label="Background"
+          value={theme.mode}
           options={["paper", "night"]}
           onChange={(value) =>
             onDraft({
               theme: {
-                id: draft.theme?.id ?? "plex",
+                ...theme,
                 mode: value as "paper" | "night",
               },
             })

@@ -25,6 +25,8 @@ export const themeIds = [
 export type ThemeId = (typeof themeIds)[number];
 export const themeModes = ["paper", "night"] as const;
 export type ThemeMode = (typeof themeModes)[number];
+export const typographyIds = ["plex-sans", "noto-sans", "plex-serif", "hanken-grotesk"] as const;
+export type TypographyId = (typeof typographyIds)[number];
 export type Rect = { x: number; y: number; width: number; height: number };
 export type Alignment = "start" | "center" | "end";
 export type TitleStyle = "plain" | "prominent";
@@ -262,6 +264,6 @@ export type CompositionDocument = {
   schema: typeof compositionSchema;
   title: string;
   authoringMode?: AuthoringMode;
-  theme?: { id: ThemeId; mode: ThemeMode };
+  theme?: { id: ThemeId; mode: ThemeMode; typography?: TypographyId };
   slides: CompositionSlide[];
 };

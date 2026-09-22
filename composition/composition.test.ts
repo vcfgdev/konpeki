@@ -7,9 +7,9 @@ import { fixtures } from './fixtures.ts';
 import { canonicalJSON, compileHandoff } from './compile.ts';
 import { validateComposition } from './validate.ts';
 import { parseEditableSvg } from './vector.ts';
-import { canvasPadding, componentKinds, compositionSchema, themeIds } from './types.ts';
+import { canvasPadding, componentKinds, compositionSchema, themeIds, typographyIds } from './types.ts';
 import { chartDefinitions, chartTemplates, diagramDefinitions, diagramTypes } from './visualizations.ts';
-import { addComponent, addSlide, createComponent, initialDraft } from "./document.ts";
+import { addComponent, addSlide, createComponent, initialDraft, parseCompositionJSON, parseStoredDraft, serializeDraft } from "./document.ts";
 const publicSchema = JSON.parse(readFileSync(new URL('./schema.json', import.meta.url), 'utf8'));
 const validateSchema = new Ajv2020({ strict: false }).compile(publicSchema);
 const firstSlide = (document: ReturnType<typeof initialDraft>) => document.slides[0];
@@ -387,6 +387,20 @@ test('theme contract covers trusted themes in both modes, independent from autho
     assert.equal(validateComposition(doc).ok, true);
   }
   assert.equal(validateSchema({ ...doc, theme: { id: 'invented', mode: 'paper' } }), false);
+});
+test('independent typography survives validation, handoff and both JSON storage formats', () => {
+  const doc = initialDraft();
+  for (const typography of typographyIds) {
+    doc.theme = { id: 'precision', mode: 'night', typography };
+    assert.equal(validateSchema(doc), true);
+    assert.equal(validateComposition(doc).ok, true);
+    assert.deepEqual(parseCompositionJSON(canonicalJSON(doc)), { ok: true, document: doc });
+    assert.deepEqual(parseStoredDraft(serializeDraft(doc)), { ok: true, draft: doc });
+    assert.match(compileHandoff(doc), new RegExp(`Use typography ${typography} independently of the color palette`));
+  }
+  const invalid = { ...doc, theme: { ...doc.theme, typography: 'invented' } };
+  assert.equal(validateSchema(invalid), false);
+  assert.equal(validateComposition(invalid).ok, false);
 });
 test('Konpeki primary white text satisfies normal-text WCAG AA', () => {
   const linear = [0, 123, 187].map(v => v / 255 <= .04045 ? v / 255 / 12.92 : ((v / 255 + .055) / 1.055) ** 2.4);

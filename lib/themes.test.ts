@@ -57,5 +57,25 @@ test('themes compose font roles with the independent palette resource', () => {
     assert.deepEqual(theme.palette, themePalette(name, 'night'));
     assert.equal(theme.typography.family, theme.body);
     assert(theme.headline.includes(name === 'Editorial' ? 'IBM Plex Serif' : name === 'Precision' ? 'Noto Sans' : 'IBM Plex Sans'));
+    assert(theme.body.includes(name === 'Precision' ? 'Noto Sans' : 'IBM Plex Sans'));
+  }
+});
+
+test('explicit typography overrides legacy pairings without changing colors', () => {
+  const fonts = [
+    ['plex-sans', '"IBM Plex Sans", sans-serif', '"IBM Plex Sans", sans-serif'],
+    ['noto-sans', '"Noto Sans", sans-serif', '"Noto Sans", sans-serif'],
+    ['plex-serif', '"IBM Plex Serif", serif', '"IBM Plex Sans", sans-serif'],
+    ['hanken-grotesk', '"Hanken Grotesk", sans-serif', '"Hanken Grotesk", sans-serif'],
+  ] as const;
+  for (const name of themeNames) for (const mode of ['paper', 'night'] as const) {
+    for (const [id, headline, body] of fonts) {
+      const theme = getTheme(name, mode, id);
+      assert.equal(theme.typographyId, id);
+      assert.equal(theme.headline, headline);
+      assert.equal(theme.body, body);
+      assert.equal(theme.typography.family, body);
+      assert.deepEqual(theme.palette, themePalette(name, mode));
+    }
   }
 });
