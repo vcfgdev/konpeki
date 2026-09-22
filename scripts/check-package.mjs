@@ -19,6 +19,7 @@ for (const required of [
   "skills/konpeki/scripts/prepare-document.mjs", "skills/konpeki/assets/blank.json",
   "runtime/konpeki.mjs",
   "index.html", "vite.config.ts", "src/main.tsx", "src/assets/konpeki-mark.png",
+  "public/og.png",
   "composition/schema.json", "composition/README.md",
   "scripts/migrate-react-page.ts", "slides/README.md",
   "slides/introducing-konpeki/composition.json",

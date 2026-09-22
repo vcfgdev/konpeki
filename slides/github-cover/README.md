@@ -4,6 +4,9 @@
 Konpeki's PNG exporter from `composition.json`, not rasterized from a separate
 design runtime. The document retains native editable text and vector artwork.
 
+The browser playground serves a copy at `public/og.png` for Open Graph and
+Twitter cards. Refresh that copy after exporting a new cover.
+
 Open for editing:
 
 ```sh

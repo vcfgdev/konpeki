@@ -32,6 +32,7 @@
     "runtime/konpeki.mjs",
     "index.html",
     "vite.config.ts",
+    "public/og.png",
     "src/main.tsx",
     "src/app/*.tsx",
     "src/components/*.tsx",
