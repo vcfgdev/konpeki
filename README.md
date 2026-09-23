@@ -49,6 +49,45 @@ The [GitHub Pages playground](docs/development.md#github-pages) does not connect
 to an agent or expose **Build it**. The agent-led workflow above is the route
 from a prompt to a finished visual.
 
+## Showcase
+
+Illustrative examples with editable text and vector artwork. Click a preview to
+view it full-size, or download its JSON and choose **Demo Mode → Import** in the
+[playground](https://vcfgdev.github.io/konpeki/).
+
+<table>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <a href="slides/gallery/architecture.png"><img src="slides/gallery/architecture.png" width="420" alt="Harbor Market order-platform architecture"></a><br>
+      <strong>Explain a system</strong><br>
+      Order handling, events and fulfillment<br>
+      <a href="slides/gallery/architecture.json">Editable JSON</a>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <a href="slides/gallery/sankey.png"><img src="slides/gallery/sankey.png" width="420" alt="Proportional Sankey showing a fictional 1,000-user trial cohort"></a><br>
+      <strong>Communicate data</strong><br>
+      Trial users, activation and outcomes<br>
+      <a href="slides/gallery/sankey.json">Editable JSON</a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center" valign="top">
+      <a href="slides/gallery/release.png"><img src="slides/gallery/release.png" width="420" alt="Clearpath 0.4 portrait release announcement in orange"></a><br>
+      <strong>Announce a release</strong><br>
+      A portrait social graphic for Clearpath<br>
+      <a href="slides/gallery/release.json">Editable JSON</a>
+    </td>
+    <td width="50%" align="center" valign="top">
+      <a href="slides/gallery/explainer.png"><img src="slides/gallery/explainer.png" width="420" alt="Folio one-page explainer showing accepted and rejected document saves"></a><br>
+      <strong>Teach a concept</strong><br>
+      One-page guide to preventing stale saves<br>
+      <a href="slides/gallery/explainer.json">Editable JSON</a>
+    </td>
+  </tr>
+</table>
+
+[Browse the gallery](slides/README.md) for briefs, sources and more examples.
+
 ## Manual npm start
 
 For a manual start, install [Konpeki from npm](https://www.npmjs.com/package/konpeki)
