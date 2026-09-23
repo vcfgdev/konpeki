@@ -35,6 +35,8 @@ export function useFileSession(
   const reviewRef = useRef(review);
   const buildPending = useRef(false);
   const submittingBuild = useRef(false);
+  const loading = useRef(false);
+  const loadGeneration = useRef(0);
   const callbacksRef = useRef(callbacks);
   callbacksRef.current = callbacks;
   const draftRef = useRef(draft);
@@ -49,29 +51,15 @@ export function useFileSession(
 
   useEffect(() => {
     if (!enabled || !token) return;
-    let cancelled = false;
-    void loadFileSession(token).then((session) => {
-      if (cancelled) return;
-      state.current = {
-        ready: true,
-        revision: session.revision,
-        savedJSON: canonicalJSON(session.document),
-      };
-      setStatus("saved");
-      receiveReview(session.review);
-      callbacksRef.current.onOpen(session.document, session.name);
-    }).catch((error) => {
-      if (cancelled) return;
-      setStatus("error");
-      callbacksRef.current.onError(
-        error instanceof Error ? error.message : "Could not open the file-backed composition.",
-      );
-    });
-    return () => { cancelled = true; };
+    void reload();
+    return () => {
+      loadGeneration.current++;
+      loading.current = false;
+    };
   }, [enabled, token]);
 
   useEffect(() => {
-    if (!enabled || !state.current.ready || ["conflict", "error"].includes(status))
+    if (!enabled || !state.current.ready || ["loading", "conflict", "error"].includes(status))
       return;
     if (!validateComposition(draft).ok) return;
     const timer = window.setTimeout(() => { void save(draft); }, 250);
@@ -82,19 +70,20 @@ export function useFileSession(
     if (!enabled || !token) return;
     let cancelled = false;
     const timer = window.setInterval(() => {
-      if (!state.current.ready || state.current.drain || submittingBuild.current) return;
+      if (!state.current.ready || loading.current || state.current.drain || submittingBuild.current) return;
       const revision = state.current.revision;
+      const generation = loadGeneration.current;
       void loadFileSession(token).then((remote) => {
-        if (cancelled || state.current.drain || submittingBuild.current || revision !== state.current.revision) return;
+        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingBuild.current || revision !== state.current.revision) return;
         receiveReview(remote.review);
-        setStatus(current => current === "error" ? "saved" : current);
+        if (canonicalJSON(draftRef.current) === state.current.savedJSON) {
+          setStatus("saved");
+          callbacksRef.current.onError("");
+        }
         if (remote.revision === revision) return;
         if (canonicalJSON(draftRef.current) !== state.current.savedJSON) {
           setStatus("conflict");
-          callbacksRef.current.onNotice(
-            "The file changed elsewhere. Neither version was overwritten.",
-            "error",
-          );
+          callbacksRef.current.onError("The file changed elsewhere. Your browser edits are not saved; neither version was overwritten.");
           return;
         }
         state.current = {
@@ -104,12 +93,10 @@ export function useFileSession(
         };
         setStatus("saved");
         callbacksRef.current.onExternalChange(remote.document);
-      }).catch(() => {
-        if (cancelled || submittingBuild.current || revision !== state.current.revision) return;
+      }).catch((error) => {
+        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingBuild.current || revision !== state.current.revision) return;
         setStatus("error");
-        if (buildPending.current) {
-          callbacksRef.current.onNotice("Could not load the agent result. Check the local file service.", "error");
-        }
+        callbacksRef.current.onError(`Could not load the latest file. ${error instanceof Error ? error.message : "Check the local file service."}`);
       });
     }, 1000);
     return () => {
@@ -132,6 +119,7 @@ export function useFileSession(
   }
 
   async function noteAction(action: () => Promise<ReviewState>, saveFirst = false) {
+    if (loading.current || !state.current.ready) throw new Error("Wait for the file to open before submitting.");
     if (submittingBuild.current) throw new Error("Wait for the current save before submitting.");
     submittingBuild.current = true;
     try {
@@ -141,7 +129,8 @@ export function useFileSession(
   }
 
   function save(next: Draft): Promise<string | undefined> {
-    if (!token || !state.current.ready || activeRequest(reviewRef.current.request)) return Promise.resolve(undefined);
+    if (!token || loading.current || !state.current.ready || activeRequest(reviewRef.current.request)) return Promise.resolve(undefined);
+    if (!validateComposition(next).ok) return Promise.resolve(undefined);
     const serialized = canonicalJSON(next);
     if (serialized === state.current.savedJSON && !state.current.drain)
       return Promise.resolve(state.current.revision);
@@ -170,15 +159,15 @@ export function useFileSession(
         state.current.revision = result.revision;
         state.current.savedJSON = pending.serialized;
         setStatus("saved");
+        callbacksRef.current.onError("");
       } catch (error) {
         state.current.pending = undefined;
         const conflict = error instanceof FileSessionError && error.status === 409;
         setStatus(conflict ? "conflict" : "error");
-        callbacksRef.current.onNotice(
+        callbacksRef.current.onError(
           conflict
-            ? "The composition changed outside this browser. Your edits were not overwritten."
-            : error instanceof Error ? error.message : "Could not save the composition file.",
-          "error",
+            ? "The file changed elsewhere. Your browser edits are not saved; neither version was overwritten."
+            : `Changes are not saved. ${error instanceof Error ? error.message : "Could not save the composition file."}`,
         );
         return;
       }
@@ -191,7 +180,7 @@ export function useFileSession(
     componentId?: string,
     elementId?: string,
   ) {
-    if (!token || buildPending.current) return false;
+    if (!token || loading.current || !state.current.ready || buildPending.current) return false;
     if (submittingBuild.current) throw new Error("Wait for your note to finish saving before building.");
     buildPending.current = true;
     submittingBuild.current = true;
@@ -218,8 +207,41 @@ export function useFileSession(
     }
   }
 
+  async function reload() {
+    if (!token || loading.current || state.current.drain || submittingBuild.current) return;
+    loading.current = true;
+    const generation = ++loadGeneration.current;
+    const requestedJSON = canonicalJSON(draftRef.current);
+    setStatus("loading");
+    try {
+      const session = await loadFileSession(token);
+      if (generation !== loadGeneration.current) return;
+      if (canonicalJSON(draftRef.current) !== requestedJSON) {
+        setStatus("conflict");
+        callbacksRef.current.onError("Your browser edits changed while opening the file. Neither version was overwritten. Download JSON before loading the file again.");
+        return;
+      }
+      state.current = { ready: true, revision: session.revision, savedJSON: canonicalJSON(session.document) };
+      draftRef.current = session.document;
+      receiveReview(session.review);
+      callbacksRef.current.onOpen(session.document, session.name);
+      callbacksRef.current.onError("");
+      setStatus("saved");
+    } catch (error) {
+      if (generation !== loadGeneration.current) return;
+      setStatus("error");
+      callbacksRef.current.onError(error instanceof Error ? error.message : "Could not open the file.");
+    } finally {
+      if (generation === loadGeneration.current) loading.current = false;
+    }
+  }
+
   return {
     status, build, building, review,
+    opening: status === "loading",
+    ready: state.current.ready,
+    reload,
+    retry: () => state.current.ready && !activeRequest(reviewRef.current.request) ? save(draftRef.current) : reload(),
     addNote: (target: ReviewTarget, text: string) => noteAction(() => addNote(token!, target, text), true),
     removeNote: (id: string) => noteAction(() => removeNote(token!, id)),
     cancel: () => noteAction(() => cancelRequest(token!, reviewRef.current.request!.id)),

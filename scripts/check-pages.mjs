@@ -81,6 +81,11 @@ try {
       if (!shell.contains(panel) || !shell.contains(actions) || Math.abs(h.width - s.width + 2) > 0.5 || Math.abs(h.bottom - b.top) > 0.5 || Math.abs(b.bottom - a.top) > 0.5 ||
         [header, panel, actions].some(el => getComputedStyle(el).transform !== 'none'))
         throw Error('Left header, body and footer separated during collapse');
+      const bodyOpacity = parseFloat(getComputedStyle(panel).opacity);
+      const titleStyle = getComputedStyle(title.closest('.document-title'));
+      if (Math.abs(parseFloat(titleStyle.opacity) - bodyOpacity) > 0.02 ||
+        (bodyOpacity > 0 && titleStyle.visibility !== 'visible'))
+        throw Error('Left title must fade with the body, not disappear first');
       samples.push({ width: s.width, height: s.height, padding: parseFloat(getComputedStyle(stage).paddingLeft) });
       await frame();
     } while (performance.now() - start < 300);
@@ -132,6 +137,13 @@ try {
       const p = panel.getBoundingClientRect(), h = tabs.parentElement.getBoundingClientRect(), b = body.getBoundingClientRect();
       if (Math.abs(h.width - p.width + 2) > 0.5 || Math.abs(h.bottom - b.top) > 0.5 || Math.abs(b.right - p.right + 1) > 0.5 || getComputedStyle(body).transform !== 'none')
         throw Error('Right header and body separated during collapse');
+      const bodyOpacity = parseFloat(getComputedStyle(body).opacity);
+      const tabStyle = getComputedStyle(tabs);
+      if (Math.abs(parseFloat(tabStyle.opacity) - bodyOpacity) > 0.02 ||
+        (bodyOpacity > 0 && tabStyle.visibility !== 'visible'))
+        throw Error('Right tabs must fade with the body, not disappear first');
+      if (tabStyle.clipPath === 'none' || tabs.getBoundingClientRect().right > toggle.getBoundingClientRect().left)
+        throw Error('Shrinking tab text must not paint beneath the toggle');
       samples.push({ width: p.width, height: p.height, padding: parseFloat(getComputedStyle(stage).paddingRight) });
       await frame();
     } while (performance.now() - start < 300);

@@ -791,8 +791,10 @@ export function Canvas({
         if (
           event.target instanceof Element &&
           !event.target.closest(".canvas")
-        )
+        ) {
+          event.currentTarget.focus({ preventScroll: true });
           onSelect();
+        }
       }}
     >
       <div className="slide-wrap">
@@ -802,6 +804,7 @@ export function Canvas({
               aria-label="Page name"
               autoFocus
               value={nextSlideName}
+              onPointerDown={(event) => event.stopPropagation()}
               onChange={(event) => setNextSlideName(event.target.value)}
               onBlur={() => {
                 const name = nextSlideName.trim();
@@ -850,7 +853,10 @@ export function Canvas({
           style={canvasStyle}
           aria-label="Page canvas"
           onPointerDown={(e) => {
-            if (interactive && e.target === e.currentTarget) onSelect();
+            if (interactive && e.target === e.currentTarget) {
+              e.currentTarget.closest<HTMLElement>(".stage")?.focus({ preventScroll: true });
+              onSelect();
+            }
           }}
           onPointerMove={interactive ? move : undefined}
           onPointerUp={interactive ? () => end() : undefined}

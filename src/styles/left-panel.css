@@ -37,7 +37,6 @@
 .revision-note-target > span { color: var(--ui-muted); }
 .revision-note-list p { font-size: 12px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 .revision-note-remove { display: inline-flex; align-items: center; min-height: 40px; border: 0; padding: 6px 0; background: none; color: var(--ui-muted); font-size: 11px; }
-.revision-note-error { color: #a02020; font-size: 12px; }
 
 .slide-list {
   flex: 1;

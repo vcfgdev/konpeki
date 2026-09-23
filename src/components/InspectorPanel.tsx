@@ -34,10 +34,9 @@ import {
 import { composerPalette, themeLabel } from "../lib/theme.ts";
 import { getTheme, typographyLabels } from "../../design/themes/index.ts";
 import { DiagramTypeIcon } from "./DiagramTypeIcon.tsx";
-import { Field, Select, humanize } from "./ui.tsx";
+import { Field, NumberField, Select, humanize } from "./ui.tsx";
 import { moveVectorElement, removeVectorElement } from "../../composition/vector.ts";
 import { tokensForAttribute } from "../../composition/theme-tokens.ts";
-import { VectorOverflowWarning } from "./VectorOverflowWarning.tsx";
 import { PageSizePicker } from "./PageSizePicker.tsx";
 
 const appearanceLabels: Record<string, string> = {
@@ -410,7 +409,6 @@ export function InspectorPanel({
             })
           }
         />
-        <VectorOverflowWarning slide={slide} theme={draft.theme} />
         <h2 className="slide-settings-heading">Page numbering</h2>
         <fieldset className="page-number-picker">
           <SegmentedControl
@@ -477,9 +475,9 @@ export function InspectorPanel({
     if (key === "x") next.x = clamp(value, 0, slide.canvas.width - rect.width);
     if (key === "y") next.y = clamp(value, 0, slide.canvas.height - rect.height);
     if (key === "width")
-      next.width = clamp(value, Math.min(180, slide.canvas.width - rect.x), slide.canvas.width - rect.x);
+      next.width = clamp(value, Math.min(180, rect.width, slide.canvas.width - rect.x), slide.canvas.width - rect.x);
     if (key === "height")
-      next.height = clamp(value, Math.min(72, slide.canvas.height - rect.y), slide.canvas.height - rect.y);
+      next.height = clamp(value, Math.min(72, rect.height, slide.canvas.height - rect.y), slide.canvas.height - rect.y);
     onComponent(
       { ...component!, preferredRect: next },
       `geometry:${component!.id}`,
@@ -504,18 +502,17 @@ export function InspectorPanel({
         <span>{componentLabel ?? componentLabels[component.kind]}</span>
       </h2>
       {component.kind === "text-block" && !component.customVisual && <>
-        <VectorOverflowWarning slide={slide} theme={draft.theme} />
         <Field label="Text"><textarea name="text-content" value={component.content ?? ""}
           onChange={(event) => onComponent({ ...component, content: event.target.value }, `content:${component.id}`)} onBlur={onEditEnd} /></Field>
         <div className="text-typography-fields">
-        <Field label="Font size"><input type="number" min={8} max={240} value={component.textStyle?.size ?? 36}
-          onChange={(event) => { const size = event.target.valueAsNumber; if (size >= 8 && size <= 240) onComponent({ ...component, textStyle: { ...component.textStyle, size } }, `font:${component.id}`); }} onBlur={onEditEnd} /></Field>
+        <NumberField label="Font size" min={8} max={240} value={component.textStyle?.size ?? 36}
+          onCommit={size => onComponent({ ...component, textStyle: { ...component.textStyle, size } }, `font:${component.id}`)} onEditEnd={onEditEnd} />
         <Select label="Text color" value={component.textStyle?.color ?? "ink"} options={["ink", "muted", "accent"]}
           onChange={(color) => onComponent({ ...component, textStyle: { ...component.textStyle, color: color as "ink" | "muted" | "accent" } })} />
         <Select label="Font weight" value={String(component.textStyle?.weight ?? 400)} options={["400", "500", "600"]}
           onChange={(weight) => onComponent({ ...component, textStyle: { ...component.textStyle, weight: Number(weight) as 400 | 500 | 600 } })} />
-        <Field label="Line height"><input type="number" min={1} max={3} step={0.1} value={component.textStyle?.lineHeight ?? 1.4}
-          onChange={(event) => { const lineHeight = event.target.valueAsNumber; if (lineHeight >= 1 && lineHeight <= 3) onComponent({ ...component, textStyle: { ...component.textStyle, lineHeight } }, `leading:${component.id}`); }} onBlur={onEditEnd} /></Field>
+        <NumberField label="Line height" min={1} max={3} step={0.1} value={component.textStyle?.lineHeight ?? 1.4}
+          onCommit={lineHeight => onComponent({ ...component, textStyle: { ...component.textStyle, lineHeight } }, `leading:${component.id}`)} onEditEnd={onEditEnd} />
         </div>
       </>}
       <Field label={component.kind === "diagram" || component.kind === "chart" ? "What should this explain?" : "Content intent"}>
@@ -555,23 +552,10 @@ export function InspectorPanel({
         <legend>Position & size</legend>
         <div className="geometry">
           {(["x", "y", "width", "height"] as const).map((key) => (
-            <Field key={key} label={humanize(key)}>
-              <span className="parameter-input">
-                <input
-                  name={key}
-                  autoComplete="off"
-                  type="number"
-                  step="1"
-                  value={Math.round(rect[key])}
-                  onChange={(e) => {
-                    if (e.target.value !== "")
-                      geometry(key, e.target.valueAsNumber);
-                  }}
-                  onBlur={onEditEnd}
-                />
-                <span className="parameter-unit" aria-hidden="true">px</span>
-              </span>
-            </Field>
+            <NumberField key={key} name={key} label={humanize(key)} unit="px" value={rect[key]}
+              min={key === "width" ? Math.min(180, rect.width, slide.canvas.width - rect.x) : key === "height" ? Math.min(72, rect.height, slide.canvas.height - rect.y) : 0}
+              max={key === "x" ? slide.canvas.width - rect.width : key === "y" ? slide.canvas.height - rect.height : key === "width" ? slide.canvas.width - rect.x : slide.canvas.height - rect.y}
+              onCommit={value => geometry(key, value)} onEditEnd={onEditEnd} />
           ))}
         </div>
       </fieldset>

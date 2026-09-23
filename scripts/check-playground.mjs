@@ -159,7 +159,7 @@ try {
   browser("click", ".browser-menu > summary");
   check("document.querySelector('.browser-menu [role=status]').textContent.includes('Changes are not being saved')", "quota failure must not claim a successful save");
   evaluate("window.__downloadedJSON = undefined");
-  click("Download JSON");
+  browser("click", ".browser-menu-actions button:nth-of-type(2)");
   browser("wait", "--fn", 'typeof window.__downloadedJSON === "string"');
   assert.equal(JSON.parse(JSON.parse(evaluate("window.__downloadedJSON"))).title, "Recoverable quota work", "unsaved work must remain downloadable");
   browser("click", ".browser-menu > summary");
@@ -171,10 +171,10 @@ try {
   browser("click", ".browser-menu > summary");
   capture("storage-unavailable");
   evaluate("Storage.prototype.setItem = window.__setItem; Storage.prototype.removeItem = window.__removeItem");
-  browser("click", ".browser-menu-actions button:last-child");
-  acceptConfirmation();
-  browser("wait", "--fn", "!document.querySelector('.recovery') && document.querySelector('.browser-menu [role=status]').textContent.includes('saved only in this browser')");
-  check(`JSON.parse(localStorage.getItem(${JSON.stringify(exampleKey)}))?.document.title === "Introducing Konpeki"`, "successful recovery must persist the restored example");
+  browser("click", ".browser-menu > summary");
+  click("Retry save");
+  browser("wait", "--fn", "!document.querySelector('.recovery.visible') && document.querySelector('.browser-menu [role=status]').textContent.includes('saved only in this browser')");
+  check(`JSON.parse(localStorage.getItem(${JSON.stringify(exampleKey)}))?.document.title === "Recoverable quota work"`, "Retry save must preserve dirty work, not reset it");
 
   evaluate(`localStorage.setItem(${JSON.stringify(exampleKey)}, "{broken"); location.reload()`);
   browser("wait", "--text", "This example's saved working copy could not be read");
@@ -184,7 +184,21 @@ try {
   browser("press", "Tab");
   assert.equal(evaluate(`localStorage.getItem(${JSON.stringify(exampleKey)})`), '"{broken"');
   capture("storage-recovery");
-  console.log("Playground OK: isolated save/reload, validation pause/resume, JSON round-trip/undo, blank/reset accept/cancel, quota/reset failure recovery, local-only copy, and no standalone Build/notes.");
+  check("!document.querySelector('.recovery').textContent.includes('Retry save')", "corrupt bytes must remain protected until explicit reset");
+  browser("click", ".browser-menu > summary");
+  browser("click", ".recovery-actions button:last-child");
+  acceptConfirmation();
+  browser("wait", "--fn", `JSON.parse(localStorage.getItem(${JSON.stringify(exampleKey)}))?.document.title === "Introducing Konpeki"`);
+  evaluate(`window.__setItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function () { throw new DOMException("full", "QuotaExceededError"); }`);
+  browser("fill", '[name="composition-title"]', "Keep work after corruption reset");
+  browser("press", "Tab");
+  browser("wait", "--text", "Unable to save this browser-local draft");
+  check("document.querySelector('.recovery').textContent.includes('Retry save')", "a successful reset must unblock later save retries");
+  evaluate("Storage.prototype.setItem = window.__setItem");
+  click("Retry save");
+  browser("wait", "--fn", `!document.querySelector('.recovery.visible') && JSON.parse(localStorage.getItem(${JSON.stringify(exampleKey)}))?.document.title === "Keep work after corruption reset"`);
+  console.log("Playground OK: isolated save/reload, validation pause/resume, JSON round-trip/undo, blank/reset accept/cancel, quota/reset failure recovery, dirty Retry save including after corruption reset, local-only copy, and no standalone Build/notes.");
 } finally {
   try {
     browser("close");

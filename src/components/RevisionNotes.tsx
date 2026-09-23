@@ -3,7 +3,7 @@ import type { CompositionDocument } from "../../composition/types.ts";
 import { componentInstanceLabel } from "../lib/model.ts";
 import { activeRequest, type ReviewState, type ReviewTarget } from "../lib/review.ts";
 
-export function RevisionNotes({ document, target, review, disabled, onAdd, onRemove, onSelect }: {
+export function RevisionNotes({ document, target, review, disabled, onAdd, onRemove, onSelect, onNotice }: {
   document: CompositionDocument;
   target: ReviewTarget;
   review: ReviewState;
@@ -11,10 +11,10 @@ export function RevisionNotes({ document, target, review, disabled, onAdd, onRem
   onAdd: (target: ReviewTarget, text: string) => Promise<void>;
   onRemove: (id: string) => Promise<void>;
   onSelect: (target: ReviewTarget) => void;
+  onNotice: (message: string) => void;
 }) {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
   const key = JSON.stringify(target);
   const text = drafts[key] ?? "";
   function label(value: ReviewTarget) {
@@ -28,16 +28,16 @@ export function RevisionNotes({ document, target, review, disabled, onAdd, onRem
     return `${slide.name} · ${name}${value.elementId ? ` · ${element ? value.elementId : "Deleted element"}` : ""}`;
   }
   async function run(action: () => Promise<void>) {
-    setSaving(true); setError("");
-    try { await action(); }
-    catch (error) { setError(error instanceof Error ? error.message : "Could not save revision note"); }
+    setSaving(true);
+    try { await action(); onNotice(""); }
+    catch (error) { onNotice(error instanceof Error ? error.message : "Could not save revision note"); }
     finally { setSaving(false); }
   }
   const pending = review.notes.filter(n => !n.resolved);
   return <section className="revision-notes" aria-label="Revision notes">
     <form onSubmit={event => { event.preventDefault(); void run(async () => {
       await onAdd(target, text);
-      setDrafts(current => ({ ...current, [key]: "" }));
+      setDrafts(current => ({ ...current, [key]: current[key] === text ? "" : current[key] }));
     }); }}>
       <label htmlFor="revision-note">Request a change</label>
       <p className="revision-note-scope">{label(target)}</p>
@@ -45,7 +45,6 @@ export function RevisionNotes({ document, target, review, disabled, onAdd, onRem
         onChange={event => setDrafts(current => ({ ...current, [key]: event.target.value }))} />
       <div className="revision-note-submit"><button type="submit" disabled={disabled || saving || !text.trim()}>{saving ? "Saving…" : "Add note"}</button></div>
     </form>
-    {error && <p role="alert" className="revision-note-error">{error}</p>}
     <p className="revision-note-count">{pending.length} pending</p>
     {pending.length > 0 && <ol className="revision-note-list">{pending.map((note, i) => <li key={note.id} id={`note-${note.id}`}>
       <button type="button" className="revision-note-target" onClick={() => onSelect(note)}><span>{i + 1}</span>{label(note)}</button>

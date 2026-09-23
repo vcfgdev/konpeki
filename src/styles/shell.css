@@ -32,9 +32,9 @@
   overflow: hidden;
   background: var(--ui-surface);
   min-height: 0;
-  border: 1px solid var(--ui-border);
+  border: 1px solid transparent;
   border-radius: 12px;
-  box-shadow: var(--ui-shadow);
+  box-shadow: var(--ui-floating-shadow);
   transition: width var(--panel-duration) var(--panel-easing),
     height var(--panel-duration) var(--panel-easing);
 }
@@ -60,11 +60,9 @@
 }
 .right-panel.collapsed > .panel-toolbar {
   gap: 0;
+  grid-template-columns: minmax(0, 1fr) 0 40px;
   padding: 0 4px;
   border-bottom-color: transparent;
-}
-.right-panel.collapsed .panel-tabs {
-  visibility: hidden;
 }
 .left-panel,
 .right-panel-body {
@@ -78,12 +76,28 @@
 .right-panel-body {
   align-self: flex-end;
 }
+.right-panel > .panel-toolbar > .panel-tabs {
+  clip-path: inset(-4px 0);
+}
+.right-panel .panel-tabs button:focus-visible {
+  outline-offset: -3px;
+}
+.document-title,
+.document-title-error,
+.file-status,
+.right-panel > .panel-toolbar > .panel-tabs,
+.right-panel > .panel-toolbar > .overflow-control,
 .left-panel,
 .action-island,
 .right-panel-body {
   transition: opacity var(--panel-duration) var(--panel-easing),
     visibility 0s;
 }
+.left-collapsed .document-title,
+.left-collapsed .document-title-error,
+.left-collapsed .file-status,
+.right-panel.collapsed .panel-tabs,
+.right-panel.collapsed .overflow-control,
 .left-panel.collapsed,
 .left-collapsed .action-island,
 .right-panel.collapsed .right-panel-body {
@@ -110,12 +124,14 @@
 .right-panel > .panel-toolbar {
   flex: none;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 40px;
+  grid-template-columns: minmax(0, 1fr) 48px 40px;
   height: var(--panel-header-height);
   padding: 0 8px 0 12px;
   overflow: hidden;
   transition: padding var(--panel-duration) var(--panel-easing),
-    gap var(--panel-duration) var(--panel-easing);
+    gap var(--panel-duration) var(--panel-easing),
+    grid-template-columns var(--panel-duration) var(--panel-easing),
+    border-bottom-color var(--panel-duration) var(--panel-easing);
 }
 .panel-heading {
   flex: 1;

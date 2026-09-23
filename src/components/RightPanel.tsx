@@ -5,6 +5,7 @@ import type {
 } from "../../composition/types.ts";
 import { componentInstanceLabel, type Draft } from "../lib/model.ts";
 import { InspectorPanel } from "./InspectorPanel.tsx";
+import { VectorOverflowWarning } from "./VectorOverflowWarning.tsx";
 
 export type RightPanelView = "settings" | "layers";
 
@@ -112,6 +113,7 @@ export function RightPanel({
   onSelectSlide,
   onSelectComponent,
   onSelectVectorElement,
+  onSelectOverflow,
   onReorderPaintOrder,
   onComponent,
   onSlide,
@@ -132,6 +134,7 @@ export function RightPanel({
   onSelectSlide: () => void;
   onSelectComponent: (id: string) => void;
   onSelectVectorElement: (id?: string) => void;
+  onSelectOverflow: (componentId: string, elementId?: string) => void;
   onReorderPaintOrder: (ids: string[]) => void;
   onComponent: (component: CompositionComponent, mergeKey?: string) => void;
   onSlide: (slide: CompositionSlide, mergeKey?: string) => void;
@@ -154,6 +157,9 @@ export function RightPanel({
             </button>
           ))}
         </div>
+        <div className="overflow-control" inert={collapsed}>
+          <VectorOverflowWarning slide={slide} theme={draft.theme} onSelect={onSelectOverflow} />
+        </div>
         <button
           type="button"
           className="panel-toggle"
@@ -174,6 +180,7 @@ export function RightPanel({
       <div className="right-panel-body" inert={collapsed}>
       {view === "settings" ? (
         <InspectorPanel
+          key={component?.id ?? slide.id}
           component={component}
           componentLabel={componentLabel}
           slide={slide}

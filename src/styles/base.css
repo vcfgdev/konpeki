@@ -17,6 +17,7 @@
   --ui-hover: #f2f2f2;
   --ui-selected: #edf6fa;
   --ui-shadow: 0 8px 28px #00000014, 0 1px 3px #00000012;
+  --ui-floating-shadow: 0 0 0 1px #0000000f, 0 2px 4px #00000006, 0 8px 24px #0000000a;
 }
 * {
   box-sizing: border-box;
@@ -51,6 +52,12 @@ button:hover:not(:disabled) {
 button:disabled {
   cursor: default;
   color: #767676;
+}
+.right-panel input[type="number"],
+.revision-note-count,
+.overflow-trigger,
+.thumbnail-page-number {
+  font-variant-numeric: tabular-nums;
 }
 :focus-visible {
   outline: 2px solid var(--accent);

@@ -44,6 +44,7 @@ import {
   type RightPanelView,
 } from "../components/RightPanel.tsx";
 import { WorkspaceChrome } from "../components/WorkspaceChrome.tsx";
+import { FeedbackNotice } from "../components/ui.tsx";
 import { exampleDraft } from "../lib/examples.ts";
 import { exportPagePNG } from "../lib/export-png.ts";
 import { fileSessionToken } from "../lib/file-session.ts";
@@ -85,12 +86,13 @@ export function App() {
   const validation = useMemo(() => validateComposition(draft), [draft]);
   const [savedDraft, setSavedDraft] = useState<Draft>();
   const [blocked, setBlocked] = useState(loaded.storageBlocked);
+  const [requiresReset, setRequiresReset] = useState(loaded.storageBlocked);
   const [error, setError] = useState(loaded.error ?? "");
   const [notice, setNotice] = useState<{
     message: string;
     tone: "neutral" | "error";
   }>();
-  const [toastClosing, setToastClosing] = useState(false);
+  const [toastPaused, setToastPaused] = useState(false);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [leftView, setLeftView] = useState<LeftPanelView>("pages");
   const [rightCollapsed, setRightCollapsed] = useState(false);
@@ -125,6 +127,7 @@ export function App() {
     onNotice: showNotice,
     onError: setError,
   });
+  const fileLocked = loaded.fileSession && (!fileSession.ready || fileSession.opening);
   useEffect(() => {
     if (!focusAfterHistory.current) return;
     focusAfterHistory.current = false;
@@ -160,18 +163,10 @@ export function App() {
     return () => clearTimeout(timer);
   }, [draft, validation, blocked, loaded.exampleName, loaded.fileSession]);
   useEffect(() => {
-    if (!notice) return;
-    const timer = window.setTimeout(() => setToastClosing(true), 3000);
+    if (!notice || notice.tone === "error" || toastPaused) return;
+    const timer = window.setTimeout(() => setNotice(undefined), 3000);
     return () => window.clearTimeout(timer);
-  }, [notice]);
-  useEffect(() => {
-    if (!toastClosing) return;
-    const timer = window.setTimeout(() => {
-      setNotice(undefined);
-      setToastClosing(false);
-    }, 280);
-    return () => window.clearTimeout(timer);
-  }, [toastClosing]);
+  }, [notice, toastPaused]);
   useEffect(() => {
     const narrow = window.matchMedia("(max-width: 1200px)");
     const compact = window.matchMedia("(max-width: 900px)");
@@ -189,7 +184,7 @@ export function App() {
   }, []);
   useEffect(() => {
     function keydown(event: KeyboardEvent) {
-      if (presenting || fileSession.building) return;
+      if (presenting || fileLocked || fileSession.building) return;
       const modifier = event.metaKey || event.ctrlKey;
       const target = event.target;
       const editable =
@@ -246,10 +241,10 @@ export function App() {
     }
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [draft, presenting, selected, vectorSelection, fileSession.building]);
+  }, [draft, presenting, selected, vectorSelection, fileSession.building, fileLocked]);
   function showNotice(message: string, tone: "neutral" | "error" = "neutral") {
-    setToastClosing(false);
-    setNotice({ message: message.replace(/\.$/, ""), tone });
+    if (!message) setToastPaused(false);
+    setNotice(message ? { message: message.replace(/\.$/, ""), tone } : undefined);
   }
   function updateDraft(
     next: Draft,
@@ -474,7 +469,7 @@ export function App() {
       const requested = await fileSession.build(instruction, slide.id, selected, vectorSelection?.componentId === selected ? vectorSelection?.elementId : undefined);
       if (requested) {
         setNotice(undefined);
-        setToastClosing(false);
+        setToastPaused(false);
       }
     } catch (requestError) {
       showNotice(requestError instanceof Error ? requestError.message : "Could not send the build request.", "error");
@@ -582,6 +577,7 @@ export function App() {
         createHistory({ draft: next, activeSlideId: next.slides[0].id }),
       );
       setBlocked(false);
+      setRequiresReset(false);
       setError("");
       setTitleError(false);
       showNotice(loaded.exampleName ? "Example reset." : "Saved draft reset.");
@@ -597,6 +593,11 @@ export function App() {
       : savedDraft !== draft
         ? "Saving changes in this browser…"
         : "Your editable composition is saved only in this browser.";
+  const recoveryMessage = fileSession.opening
+    ? "Opening the file… Editing is paused."
+    : !validation.ok
+    ? `Changes are not saved: ${validation.issues[0]?.path || "document"} ${validation.issues[0]?.message || "is invalid"}. Undo the edit or correct this value.`
+    : error;
   const selectedComponent = slide.components.find((c) => c.id === selected);
   const buildState = fileSession.building
     ? fileSession.review.request?.status === "working" ? "working" : "ready"
@@ -609,25 +610,36 @@ export function App() {
       <a className="skip-link" href="#canvas-stage">
         Skip to canvas
       </a>
-      {error && (
-        <div className="recovery" role="alert">
-          <span>{error}</span>
-          <button type="button" onClick={reset}>
-            {loaded.exampleName ? "Reset example" : "Reset saved draft"}
-          </button>
-        </div>
-      )}
+      <FeedbackNotice kind="recovery">
+        {recoveryMessage ? <>
+          <span>{recoveryMessage}</span>
+          <div className="recovery-actions">
+            {!validation.ok ? <button type="button" onClick={() => setHistory(current => undoHistory(current))}>Undo edit</button> : <>
+              {(!loaded.fileSession || fileSession.ready) && <button type="button" onClick={downloadJSON}>Download JSON</button>}
+              {loaded.fileSession ? fileSession.status === "conflict" ? (
+                <button type="button" onClick={() => {
+                  if (window.confirm("Replace your browser edits with the current file? Download JSON first to keep a copy.")) void fileSession.reload();
+                }}>Load file version</button>
+              ) : <button type="button" disabled={fileSession.opening} onClick={() => { void fileSession.retry(); }}>{fileSession.opening ? "Opening…" : fileSession.ready ? "Retry save" : "Retry open"}</button> : <>
+                {!requiresReset && <button type="button" onClick={() => { setBlocked(false); setError(""); }}>Retry save</button>}
+                <button type="button" onClick={reset}>{loaded.exampleName ? "Reset example" : "Reset saved draft"}</button>
+              </>}
+            </>}
+          </div>
+        </> : null}
+      </FeedbackNotice>
       <div
         className={`workspace ${fileSession.building ? "is-building" : ""} ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
         aria-hidden={presenting || undefined}
-        inert={presenting || undefined}
+        inert={presenting || fileLocked || undefined}
+        aria-busy={fileSession.opening || undefined}
         onDragOver={(event) => {
           if (!event.dataTransfer.types.includes("Files")) return;
           event.preventDefault();
           event.dataTransfer.dropEffect = "copy";
         }}
         onDrop={(event) => {
-          if (fileSession.building) {
+          if (fileLocked || fileSession.building) {
             event.preventDefault();
             return;
           }
@@ -679,6 +691,7 @@ export function App() {
             onAdd={fileSession.addNote}
             onRemove={fileSession.removeNote}
             onSelect={selectNoteTarget}
+            onNotice={(message) => showNotice(message, "error")}
           />}
           activeSlideId={slide.id}
           collapsed={leftCollapsed}
@@ -758,6 +771,13 @@ export function App() {
           onSelectVectorElement={(elementId) =>
             selected && setVectorSelection({ componentId: selected, elementId })
           }
+          onSelectOverflow={(componentId, elementId) => {
+            selectComponent(componentId);
+            setVectorSelection(elementId ? { componentId, elementId } : undefined);
+            setRightView("settings");
+            setRightCollapsed(false);
+            if (elementId) setVectorEditRequest(request => request + 1);
+          }}
           onReorderPaintOrder={updatePaintOrder}
           onComponent={updateComponent}
           onSlide={(nextSlide, mergeKey) =>
@@ -808,13 +828,10 @@ export function App() {
           onExit={() => setPresenting(false)}
         />
       )}
-      <div
-        className={`toast ${notice ? "visible" : ""} ${notice?.tone === "error" ? "error" : ""} ${toastClosing ? "closing" : ""}`}
-      >
-        <span role={notice?.tone === "error" ? "alert" : "status"} aria-live={notice?.tone === "error" ? "assertive" : "polite"}>
-          {notice?.message}
-        </span>
-      </div>
+      <FeedbackNotice kind="toast" tone={notice?.tone} onPauseChange={setToastPaused}
+        onDismiss={() => { setNotice(undefined); setToastPaused(false); }}>
+        {notice?.message}
+      </FeedbackNotice>
     </>
   );
 }

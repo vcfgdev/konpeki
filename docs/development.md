@@ -234,6 +234,14 @@ directory and `--record` to also record the animation.
 reload persistence, CLI claim/finish, clarification and cancellation in a disposable
 file-backed browser session. It accepts a screenshot directory as its first argument.
 
+`node scripts/check-feedback.mjs <output-directory>` checks invalid numeric input,
+blank-canvas commits, page renaming, stable panel geometry, native/vector overflow targets,
+note-save recovery, and file-save/conflict recovery with delayed opens and stale polls
+in a disposable session with injected service failures. It
+also checks notification exits, interrupted re-entry, inert hidden controls and reduced
+motion, and records screenshots and measurements. Run with `--before` on a baseline checkout
+to record the same failure states without asserting the revised behavior.
+
 These checks exercise all five component kinds, empty slides, JSON round trips,
 vector editing/history and fitted line dragging. They capture editor and
 presentation states at two sizes; inspect the images because assertions alone

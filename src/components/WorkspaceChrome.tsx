@@ -134,18 +134,16 @@ export function WorkspaceChrome({
             Enter a title.
           </span>
         )}
-        {fileStatus && fileStatus !== "saved" && (
+        {fileStatus && (
           <span
-            className={`file-status ${fileStatus}${leftCollapsed ? " sr-only" : ""}`}
+            className={`file-status ${fileStatus}`}
             role="status"
             aria-live="polite"
-            title={fileStatus === "conflict"
-              ? "The file changed elsewhere while this browser has edits."
-              : undefined}
+            title={fileStatus === "saved" ? "Saved to file" : fileStatus === "saving" ? "Saving to file" : fileStatus === "loading" ? "Opening file" : "Changes are not saved — see the recovery notice"}
           >
-            {fileStatus === "loading" ? "Opening"
+            <span className="sr-only">{fileStatus === "saved" ? "Saved" : fileStatus === "loading" ? "Opening"
               : fileStatus === "saving" ? "Saving"
-              : fileStatus === "conflict" ? "Conflict" : "Save error"}
+              : fileStatus === "conflict" ? "Conflict" : "Save error"}</span>
           </span>
         )}
         <button type="button" className="panel-toggle"

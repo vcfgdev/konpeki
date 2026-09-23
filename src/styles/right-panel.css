@@ -14,8 +14,69 @@
   margin-bottom: 7px;
 }
 
-.field-error {
-  color: #a02020 !important;
+.overflow-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 48px;
+  height: 40px;
+  padding: 0;
+  color: #8a5409;
+  border: 0;
+  background: #fff5dd;
+  font-size: 12px;
+}
+.overflow-trigger:disabled {
+  visibility: hidden;
+}
+.overflow-trigger svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.overflow-popover {
+  position: fixed;
+  inset: 84px 20px auto auto;
+  margin: 0;
+  width: min(328px, calc(100vw - 40px));
+  max-height: calc(100dvh - 120px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid var(--ui-border);
+  border-radius: 10px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  box-shadow: 0 8px 32px #0000001a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.overflow-popover p {
+  margin: 8px 0 12px;
+  color: var(--ui-muted);
+  font-size: 12px;
+}
+.overflow-popover ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.overflow-popover button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.overflow-popover li + li {
+  margin-top: 8px;
 }
 
 .custom-visual-summary p {
@@ -142,7 +203,7 @@
   gap: 3px;
   padding: 3px;
   background: #f4f4f5;
-  border-radius: 7px;
+  border-radius: 8px;
 }
 
 .segmented-options button {

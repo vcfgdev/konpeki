@@ -56,7 +56,7 @@ try {
   await browser("open", `http://127.0.0.1:${port}/?session=disposable-build-test`);
   await browser("set", "viewport", "1440", "900", "2");
   await browser("wait", "--fn", "!!document.querySelector('.build-button:not(:disabled)')");
-  await check("!document.querySelector('.toast button')", "Opening notification has an unexpected dismiss button");
+  await check("document.querySelector('.toast button[aria-label=\"Dismiss notification\"]')", "Opening notification needs an accessible dismiss button");
   await browser("wait", "--fn", "!document.querySelector('.toast.visible')");
   rejectSave = true;
   await browser("eval", `new Promise(resolve => {
@@ -70,7 +70,7 @@ try {
     });
   })`);
   await browser("wait", "--text", "Save rejected for test");
-  await check("document.querySelector('.toast.error [role=alert]') && !document.querySelector('.build-loading')", "Failed pre-build save lost its error or left the editor locked");
+  await check("document.querySelector('.recovery[role=alert]') && !document.querySelector('.build-loading')", "Failed pre-build save lost its recovery notice or left the editor locked");
   assert.equal(requests, 0, "Build request was sent after its save failed");
   rejectSave = false;
   await browser("reload");
@@ -103,6 +103,7 @@ try {
   await browser("eval", "Object.defineProperty(navigator.clipboard, 'writeText', {configurable:true,value:async()=>{throw Error('Clipboard denied')}})");
   await browser("find", "role", "button", "click", "--name", "Copy prompt", "--exact");
   await browser("wait", "--text", "Could not copy. Ask your coding agent to pick up your pending Konpeki request");
+  await browser("find", "role", "button", "click", "--name", "Dismiss notification", "--exact");
   await browser("wait", "--fn", "!document.querySelector('.toast.visible')");
   const { stdout } = await exec(process.execPath, ["bin/konpeki.mjs", "wait", compositionPath]);
   const request = JSON.parse(stdout);
@@ -140,7 +141,7 @@ try {
   await check("[...document.querySelectorAll('.build-orb, .build-orb circle, .build-label')].every(e=>getComputedStyle(e).animationName === 'none') && getComputedStyle(document.querySelector('.build-nebula'), '::before').animationName === 'none'", "Reduced motion still animates");
   await capture("waiting-reduced-motion");
   await writeFile(compositionPath, "invalid JSON");
-  await browser("wait", "--text", "Could not load the agent result.");
+  await browser("wait", "--text", "Could not load the latest file.");
   await check("!!document.querySelector('.build-loading') && [...document.querySelectorAll('.editor-content')].every(element => element.inert)", "Polling failure unlocked an active request");
   await capture("connection-error");
   await writeFile(compositionPath, JSON.stringify(document));

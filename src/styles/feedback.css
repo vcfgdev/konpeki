@@ -1,42 +1,78 @@
-.toast {
+.feedback-notice {
   position: fixed;
-  top: 20px;
-  bottom: auto;
   left: 50%;
-  transform: translateX(-50%);
-  transform-origin: center top;
-  display: none;
-  align-items: center;
-  gap: 12px;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -3px);
+  transition: opacity 120ms ease-in, transform 120ms ease-in,
+    visibility 0s 120ms;
   background: var(--ui-surface);
   color: var(--ui-text);
-  border: 1px solid var(--ui-border);
-  box-shadow: 0 4px 16px #0000000a, 0 1px 3px #00000008;
-  padding: 10px 14px;
+  border: 1px solid transparent;
   border-radius: 12px;
+  box-shadow: var(--ui-floating-shadow);
   font-size: 13px;
   line-height: 1.5;
-  width: max-content;
-  max-width: min(520px, max(240px, calc(100vw - 744px)), calc(100vw - 40px));
-  z-index: 50;
 }
-.toast > span {
+.feedback-notice.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+  transition: opacity 180ms ease-out, transform 180ms ease-out,
+    visibility 0s;
+}
+@starting-style {
+  .feedback-notice.visible {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+}
+.toast {
+  top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  width: max-content;
+  max-width: min(560px, calc(100vw - 40px));
+}
+.toast > span,
+.recovery > span,
+.parameter-error {
   min-width: 0;
   overflow-wrap: anywhere;
+  text-wrap: pretty;
 }
-.toast.visible {
-  display: flex;
-  animation: toast-enter 180ms ease-out both;
+.toast > button {
+  flex: none;
+  min-height: 36px;
+  font-size: 12px;
+  border: 0;
 }
-.toast.visible.closing {
-  pointer-events: none;
-  animation: toast-exit 180ms ease-in both;
+.toast > button,
+.recovery-actions button {
+  border-radius: 6px;
+  background: transparent;
+}
+.toast > button:hover:not(:disabled),
+.recovery-actions button:hover:not(:disabled) {
+  background: var(--ui-hover);
+}
+.toast-dismiss {
+  width: 36px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 20px !important;
+  color: inherit;
 }
 .toast.error {
-  border-color: #e4b5b5;
   background: #fff7f7;
   color: #8d1717;
-  box-shadow: 0 0 0 1px #b13d3d14, 0 4px 16px #5f11110d;
+  box-shadow: 0 0 0 1px #b13d3d33, 0 4px 16px #5f11110d;
 }
 .toast.error::before {
   display: grid;
@@ -50,52 +86,51 @@
   content: "!";
   font-weight: 600;
 }
-@keyframes toast-enter {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -6px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-@keyframes toast-exit {
-  from {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  to {
-    opacity: 0;
-    transform: translate(-50%, -6px);
-  }
-}
 .recovery {
-  position: fixed;
   bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
   gap: 12px;
   width: max-content;
-  max-width: min(520px, max(240px, calc(100vw - 744px)), calc(100vw - 40px));
-  background: var(--ui-surface);
-  border: 1px solid var(--ui-border);
-  border-radius: 12px;
-  box-shadow: var(--ui-shadow);
+  max-width: min(420px, calc(100vw - 40px));
   padding: 12px;
-  font-size: 13px;
+}
+.recovery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.recovery-actions button {
+  min-height: 36px;
+  font-size: 12px;
+  border: 1px solid var(--ui-border);
+}
+.recovery-actions button:hover:not(:disabled) {
+  border-color: var(--ui-control);
+}
+input[aria-invalid="true"] {
+  border-color: #b13d3d;
+  box-shadow: none;
+}
+input[aria-invalid="true"]:focus-visible {
+  outline: 2px solid #b13d3d;
+  outline-offset: -1px;
+}
+.parameter-error {
+  position: fixed;
+  z-index: 60;
+  width: 260px;
+  padding: 10px 12px;
+  border: 1px solid #e4b5b5;
+  border-radius: 8px;
+  background: #fff7f7;
+  color: #8d1717;
+  box-shadow: 0 4px 16px #0000000a;
+  font-size: 12px;
   line-height: 1.5;
 }
-.recovery > span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.recovery > button {
-  flex: none;
+@media (max-width: 900px) {
+  .toast { top: 88px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *,
