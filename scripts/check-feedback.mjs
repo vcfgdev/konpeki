@@ -207,8 +207,21 @@ try {
   }
   await capture("overflow");
   if (!before) {
+    await b("press", "Escape");
+    await b("set", "viewport", "390", "844", "2");
+    await wait("document.querySelector('.right-panel .panel-toggle').getAttribute('aria-expanded') === 'false'");
+    await click("Expand right panel");
+    await b("click", ".overflow-trigger");
+    await capture("overflow-narrow");
+    assert.equal(await evaluate(`(() => {
+      const popover = document.querySelector('.overflow-popover').getBoundingClientRect();
+      const header = document.querySelector('.right-panel > .panel-toolbar').getBoundingClientRect();
+      return popover.top >= header.bottom && popover.left >= 0 && popover.right <= innerWidth && popover.bottom <= innerHeight;
+    })()`), true, "Narrow overflow popover must sit below the shifted inspector header");
     await b("click", ".overflow-popover button");
     assert.equal(await evaluate("!!document.querySelector('[data-component].selected')"), true);
+    await b("set", "viewport", "1556", "1030", "2");
+    await wait("document.querySelector('.right-panel .panel-toggle').getAttribute('aria-expanded') === 'true'");
     await commit("Height", 420);
     await wait("!!document.querySelector('.overflow-trigger:disabled')");
   } else await commit("Height", 420);
@@ -235,6 +248,21 @@ try {
     // Longer than the former three-second error timeout.
     await new Promise(resolve => setTimeout(resolve, 3600));
     assert.equal(await evaluate("!!document.querySelector('.toast.error.visible')"), true);
+    await b("set", "viewport", "390", "844", "2");
+    await wait("document.querySelector('.right-panel .panel-toggle').getAttribute('aria-expanded') === 'false'");
+    await click("Expand right panel");
+    await capture("note-notification-narrow");
+    assert.equal(await evaluate(`(() => {
+      const notice = document.querySelector('.toast').getBoundingClientRect();
+      const header = document.querySelector('.right-panel > .panel-toolbar').getBoundingClientRect();
+      return notice.top >= header.bottom && [...document.querySelectorAll('.panel-toggle')].every(button => {
+        const r = button.getBoundingClientRect();
+        return button.contains(document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2));
+      });
+    })()`), true, "Narrow notifications must not cover either panel toggle");
+    await click("Collapse right panel");
+    await b("set", "viewport", "1556", "1030", "2");
+    await wait("document.querySelector('.document-island .panel-toggle').getAttribute('aria-expanded') === 'true'");
     await watchExit(".toast");
     await click("Dismiss notification");
     const exitOpacity = await checkExit();

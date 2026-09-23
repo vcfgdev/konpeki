@@ -1,3 +1,6 @@
+:root {
+  --panel-top: 20px;
+}
 .skip-link {
   position: fixed;
   top: -60px;
@@ -23,8 +26,8 @@
 .left-sidebar,
 .right-panel {
   position: fixed;
-  top: 20px;
-  height: calc(100dvh - 112px);
+  top: var(--panel-top);
+  height: calc(100dvh - 92px - var(--panel-top));
   width: var(--panel-width);
   z-index: 30;
   display: flex;
@@ -36,7 +39,8 @@
   border-radius: 12px;
   box-shadow: var(--ui-floating-shadow);
   transition: width var(--panel-duration) var(--panel-easing),
-    height var(--panel-duration) var(--panel-easing);
+    height var(--panel-duration) var(--panel-easing),
+    top var(--panel-duration) var(--panel-easing);
 }
 .left-sidebar {
   --panel-width: 252px;
@@ -44,6 +48,7 @@
   z-index: 40;
 }
 .left-sidebar.collapsed {
+  top: 20px;
   width: 107px;
   height: calc(var(--panel-header-height) + 2px);
 }
@@ -55,6 +60,7 @@
   right: 20px;
 }
 .right-panel.collapsed {
+  top: 20px;
   width: 50px;
   height: calc(var(--panel-header-height) + 2px);
 }
@@ -338,6 +344,12 @@
   .workspace.right-collapsed .stage,
   .workspace.left-collapsed.right-collapsed .stage {
     padding: 96px 16px 110px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --panel-top: 88px;
   }
 }
 

@@ -2,7 +2,7 @@
 // Uses its own browser session; never touches a person's browser storage.
 import { execFileSync } from "node:child_process";
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseEditableSvg } from "../composition/vector.ts";
@@ -69,6 +69,7 @@ try {
     const rect = element.getBoundingClientRect();
     return rect.width >= 40 && rect.height >= 40;
   })`, "visible controls must have at least 40 by 40 pixel targets");
+  console.log("PASS: visible controls meet the 40×40px target minimum.");
   check(`(() => {
     const icon = document.querySelector('.component-dock button[title="Add or select Diagram"] svg');
     const target = icon.querySelectorAll('rect')[1];
@@ -94,6 +95,33 @@ try {
   check('document.querySelectorAll(".slide-thumbnail").length === 2', "Add page must create the second page");
   check('document.querySelectorAll("#canvas-stage [data-component]").length === 0', "new slide is not empty");
   capture("empty-slide");
+  const removeTarget = '.slide-thumbnail-item:nth-child(2) .remove-slide';
+  const removePoint = JSON.parse(evaluate(`(() => {
+    const button = document.querySelector('${removeTarget}');
+    const rect = button.getBoundingClientRect();
+    const card = button.parentElement.getBoundingClientRect();
+    const preview = button.previousElementSibling.firstElementChild.getBoundingClientRect();
+    if (rect.width !== 40 || rect.height !== 40 || rect.top < preview.bottom || rect.bottom > card.bottom || rect.right > card.right)
+      throw Error('Remove target must be 40×40 and contained in the caption, not cover the preview');
+    const x = Math.round(rect.left + 2), y = Math.round((rect.top + rect.bottom) / 2);
+    if (!button.contains(document.elementFromPoint(x, y))) throw Error('Expanded remove target is not clickable');
+    return { x, y };
+  })()`));
+  browser("hover", removeTarget);
+  browser("screenshot", '.slide-thumbnail-item:nth-child(2)', join(artifacts, "remove-page-target.png"));
+  // Hit the added outer edge, not the small × glyph or the old 28px area.
+  browser("mouse", "move", String(removePoint.x), String(removePoint.y));
+  browser("mouse", "down", "left");
+  browser("mouse", "up", "left");
+  check('document.querySelectorAll(".slide-thumbnail").length === 1', "Remove target edge must delete the page");
+  browser("press", "Control+z");
+  check('document.querySelectorAll(".slide-thumbnail").length === 2', "Page removal must remain undoable");
+  browser("focus", removeTarget);
+  browser("press", "Enter");
+  check('document.querySelectorAll(".slide-thumbnail").length === 1', "Remove page must work from the keyboard");
+  browser("press", "Control+z");
+  check('document.querySelectorAll(".slide-thumbnail").length === 2', "Keyboard page removal must remain undoable");
+  console.log("PASS: Remove page has a contained 40×40px target; outer-edge and keyboard activation work and undo restores the page.");
   const cases = [
     ["Text block", "One canvas for people and agents"],
     ["Diagram", "Draft → Review → Present"],
@@ -412,4 +440,5 @@ try {
   console.log("PASS: agent-completed editable vector interiors rendered in all five owning component kinds at both sizes.");
 } finally {
   browser("close");
+  rmSync(scratch, { recursive: true, force: true });
 }

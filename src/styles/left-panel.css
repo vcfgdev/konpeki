@@ -83,8 +83,8 @@
 .slide-thumbnail > span:last-child {
   display: flex;
   align-items: center;
-  min-height: 28px;
-  padding-right: 36px;
+  min-height: 40px;
+  padding-right: 48px;
   overflow-wrap: anywhere;
 }
 
@@ -92,8 +92,8 @@
   position: absolute;
   right: 9px;
   bottom: 9px;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border-color: transparent;
   border-radius: 5px;

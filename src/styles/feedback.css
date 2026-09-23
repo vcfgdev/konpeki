@@ -130,7 +130,7 @@ input[aria-invalid="true"]:focus-visible {
   line-height: 1.5;
 }
 @media (max-width: 900px) {
-  .toast { top: 88px; }
+  .toast { top: calc(var(--panel-top) + 68px); }
 }
 @media (prefers-reduced-motion: reduce) {
   *,

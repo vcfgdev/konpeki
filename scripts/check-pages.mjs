@@ -14,6 +14,24 @@ const evaluate = (code) => browser("eval", code);
 const click = (name) => browser("find", "role", "button", "click", "--name", name, "--exact");
 const settlePanels = () => evaluate("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))).then(() => Promise.all([...document.querySelectorAll('.left-sidebar,.left-panel,.action-island,.right-panel,.right-panel-body,.right-panel>.panel-toolbar,.stage')].flatMap(element => element.getAnimations().map(animation => animation.finished))))");
 const capture = (name) => { settlePanels(); browser("screenshot", join(output, name)); };
+const checkCompactPanels = () => evaluate(`{
+  const left = document.querySelector('.left-sidebar'), right = document.querySelector('.right-panel');
+  if (!left.classList.contains('collapsed') && !right.classList.contains('collapsed'))
+    throw Error('Compact panels must expand one at a time');
+  const a = left.getBoundingClientRect(), b = right.getBoundingClientRect();
+  if (a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top)
+    throw Error('Compact panel cards overlap');
+  if ([a, b].some(r => r.left < 0 || r.right > innerWidth || r.top < 0 || r.bottom > innerHeight))
+    throw Error('Compact panel exceeds viewport');
+  for (const button of document.querySelectorAll('.panel-toggle, .right-panel .panel-tabs button')) {
+    if (button.closest('[inert]')) continue;
+    const r = button.getBoundingClientRect(), x = (r.left + r.right) / 2, y = (r.top + r.bottom) / 2;
+    for (const [px, py] of [[x, y], [r.left + 2, y], [r.right - 2, y], [x, r.top + 2], [x, r.bottom - 2]]) {
+      if (!button.contains(document.elementFromPoint(px, py)))
+        throw Error('Panel control is covered: ' + (button.getAttribute('aria-label') || button.textContent));
+    }
+  }
+}`);
 try {
   browser("open", new URL("?example=introducing-konpeki", base).href);
   browser("set", "viewport", "1556", "1030", "2");
@@ -244,17 +262,47 @@ try {
   settlePanels();
   evaluate("if(document.documentElement.scrollWidth !== 390 || document.querySelector('.left-sidebar').getBoundingClientRect().width !== 107)throw Error('Narrow collapsed layout overflows')");
   capture("panel-collapsed-narrow.png");
+  for (const width of [390, 360, 600, 601, 900]) {
+    browser("set", "viewport", String(width), "700", "2"); settlePanels();
+    checkCompactPanels();
+    click("Expand right panel"); settlePanels();
+    checkCompactPanels();
+    click("Layers");
+    evaluate("if(!document.querySelector('.layers-panel'))throw Error('Narrow Layers tab is not usable')");
+    click("Settings");
+    evaluate("if(!document.querySelector('.inspector-content'))throw Error('Narrow Settings tab is not usable')");
+    if (width === 390) capture("right-panel-expanded-narrow.png");
+    browser("focus", ".document-island .panel-toggle");
+    browser("press", "Enter"); settlePanels();
+    checkCompactPanels();
+    evaluate("if(document.activeElement !== document.querySelector('.document-island .panel-toggle') || document.querySelector('.left-sidebar').classList.contains('collapsed'))throw Error('Keyboard panel switch lost focus or did not open the left panel')");
+    if (width === 390) {
+      capture("left-panel-expanded-narrow.png");
+      browser("scroll", "down", "1000", "--selector", ".slide-list");
+      evaluate(`{
+        const list = document.querySelector('.slide-list'), add = document.querySelector('.add-slide');
+        const r = add.getBoundingClientRect();
+        if (r.bottom > list.getBoundingClientRect().bottom || !add.contains(document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2)))
+          throw Error('Narrow page list must scroll to its final action without the footer covering it');
+      }`);
+      capture("left-panel-scrolled-narrow.png");
+    }
+    click("Expand right panel"); settlePanels();
+    checkCompactPanels();
+    click("Collapse right panel"); settlePanels();
+    checkCompactPanels();
+  }
+  browser("set", "viewport", "901", "700", "2"); settlePanels();
   click("Expand right panel"); settlePanels();
-  evaluate("{const r=document.querySelector('.right-panel-body').getBoundingClientRect();if(r.left < 0 || r.right > innerWidth || r.bottom > innerHeight)throw Error('Narrow inspector exceeds viewport')}");
-  capture("right-panel-expanded-narrow.png");
-  click("Collapse right panel"); settlePanels();
+  evaluate("if(document.querySelector('.left-sidebar').classList.contains('collapsed') || document.querySelector('.right-panel').classList.contains('collapsed'))throw Error('Above the compact breakpoint both panels must remain independently expandable')");
+  browser("set", "viewport", "390", "700", "2"); settlePanels();
   browser("set", "media", "light", "reduced-motion");
   click("Expand left panel");
   click("Expand right panel");
   evaluate("if([...document.querySelectorAll('.left-sidebar,.left-panel,.action-island,.right-panel,.right-panel-body,.right-panel>.panel-toolbar,.stage')].some(element => getComputedStyle(element).transitionDuration.split(',').some(duration => parseFloat(duration) !== 0) || element.getAnimations().length))throw Error('Panel motion ignores reduced-motion preference')");
-  click("Collapse left panel");
+  checkCompactPanels();
   click("Collapse right panel");
   evaluate("if(getComputedStyle(document.querySelector('.right-panel-body')).visibility !== 'hidden' || document.querySelector('.right-panel').getBoundingClientRect().width !== 50)throw Error('Reduced-motion right collapse did not settle immediately')");
   evaluate("if(getComputedStyle(document.querySelector('.left-panel')).visibility !== 'hidden' || document.querySelector('.left-sidebar').getBoundingClientRect().width !== 107)throw Error('Reduced-motion collapse did not settle immediately')");
-  console.log("PASS: both panels contract as continuous cards in sync with the canvas, joined headers/bodies/footer at every frame, rapid reversal, inert controls, centered right toggle, keyboard toggle/tab retention, narrow layout and reduced motion; PNG actions, four ratios, native/vector exports, editing, resize undo, presentation, reload and overflow refusal");
+  console.log("PASS: both panels contract as continuous cards in sync with the canvas, joined headers/bodies/footer at every frame, rapid reversal, inert controls, centered right toggle, keyboard toggle/tab retention, unobstructed one-panel switching at 360/390/600/601/900px and reduced motion; PNG actions, four ratios, native/vector exports, editing, resize undo, presentation, reload and overflow refusal");
 } finally { browser("close"); }

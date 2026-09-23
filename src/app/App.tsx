@@ -246,6 +246,14 @@ export function App() {
     if (!message) setToastPaused(false);
     setNotice(message ? { message: message.replace(/\.$/, ""), tone } : undefined);
   }
+  function changeLeftPanel(collapsed: boolean) {
+    setLeftCollapsed(collapsed);
+    if (!collapsed && window.matchMedia("(max-width: 900px)").matches) setRightCollapsed(true);
+  }
+  function changeRightPanel(collapsed: boolean) {
+    setRightCollapsed(collapsed);
+    if (!collapsed && window.matchMedia("(max-width: 900px)").matches) setLeftCollapsed(true);
+  }
   function updateDraft(
     next: Draft,
     options: { mergeKey?: string; selected?: string; activeSlideId?: string } = {},
@@ -449,7 +457,7 @@ export function App() {
     const page = draft.slides.find(s => s.id === target.slideId);
     if (!page) return;
     selectSlide(page.id);
-    setLeftCollapsed(false);
+    changeLeftPanel(false);
     setLeftView("notes");
     const component = page.components.find(c => c.id === target.componentId);
     if (component) {
@@ -651,7 +659,7 @@ export function App() {
       >
         <WorkspaceChrome
           leftCollapsed={leftCollapsed}
-          onToggleLeftPanel={() => setLeftCollapsed(!leftCollapsed)}
+          onToggleLeftPanel={() => changeLeftPanel(!leftCollapsed)}
           title={draft.title}
           titleRef={title}
           titleError={titleError}
@@ -716,7 +724,7 @@ export function App() {
               setVectorSelection(selection);
               setRightView("settings");
               if (edit) {
-                setRightCollapsed(false);
+                changeRightPanel(false);
                 setVectorEditRequest((request) => request + 1);
               }
             } else setVectorSelection(undefined);
@@ -765,7 +773,7 @@ export function App() {
           slide={slide}
           draft={draft}
           onView={setRightView}
-          onCollapsedChange={setRightCollapsed}
+          onCollapsedChange={changeRightPanel}
           onSelectSlide={() => selectComponent()}
           onSelectComponent={selectComponent}
           onSelectVectorElement={(elementId) =>
@@ -775,7 +783,7 @@ export function App() {
             selectComponent(componentId);
             setVectorSelection(elementId ? { componentId, elementId } : undefined);
             setRightView("settings");
-            setRightCollapsed(false);
+            changeRightPanel(false);
             if (elementId) setVectorEditRequest(request => request + 1);
           }}
           onReorderPaintOrder={updatePaintOrder}
