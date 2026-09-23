@@ -1,0 +1,713 @@
+{
+  "schema": "konpeki-composition/v1",
+  "title": "Clearpath 0.4 — release announcement",
+  "authoringMode": "default",
+  "theme": {
+    "id": "orange-coral",
+    "mode": "paper",
+    "typography": "hanken-grotesk"
+  },
+  "slides": [
+    {
+      "id": "release",
+      "name": "Clearpath 0.4 — release announcement",
+      "canvas": {
+        "width": 1080,
+        "height": 1350
+      },
+      "innerPadding": {
+        "top": 72,
+        "right": 72,
+        "bottom": 72,
+        "left": 72
+      },
+      "intendedViewingSize": "social",
+      "audience": "Small software teams reviewing release notes",
+      "question": "What does Clearpath 0.4 help me do?",
+      "pageNumber": {
+        "style": "none",
+        "color": "muted"
+      },
+      "components": [
+        {
+          "id": "headline",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 202,
+            "width": 936,
+            "height": 260
+          },
+          "slotIds": [
+            "headline-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Review the release\nbefore you publish.",
+          "textStyle": {
+            "size": 90,
+            "weight": 600,
+            "color": "ink",
+            "lineHeight": 1.06,
+            "font": "heading"
+          },
+          "appearance": {
+            "role": "title",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "product",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 88,
+            "width": 936,
+            "height": 56
+          },
+          "slotIds": [
+            "product-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Clearpath 0.4",
+          "textStyle": {
+            "size": 38,
+            "weight": 500,
+            "color": "accent",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "support",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 490,
+            "width": 936,
+            "height": 132
+          },
+          "slotIds": [
+            "support-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Preview release notes. Review the wording.\nExport Markdown when you’re ready.",
+          "textStyle": {
+            "size": 39,
+            "weight": 400,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "release-steps",
+          "kind": "diagram",
+          "preferredRect": {
+            "x": 72,
+            "y": 730,
+            "width": 936,
+            "height": 300
+          },
+          "slotIds": [
+            "release-steps-content"
+          ],
+          "intent": "Three illustrative documents: preview release notes, review a highlighted line, then export Markdown. These are symbolic steps, not screenshots of a real application.",
+          "appearance": {
+            "type": "process",
+            "selection": "explicit",
+            "border": "none",
+            "colorScheme": "monochrome",
+            "emphasis": "none",
+            "density": "sparse"
+          },
+          "customVisual": {
+            "format": "vector",
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 936,
+              "height": 300
+            },
+            "description": "Three illustrative documents: preview release notes, review a highlighted line, then export Markdown. These are symbolic steps, not screenshots of a real application.",
+            "elements": [
+              {
+                "id": "document-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 1,
+                  "y": 12,
+                  "width": 222,
+                  "height": 268,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "heading-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 27,
+                  "y": 44,
+                  "width": 132,
+                  "height": 14,
+                  "rx": 8,
+                  "fill": "theme:muted",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-0-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 27,
+                  "y": 93,
+                  "width": 169,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-0-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 27,
+                  "y": 127,
+                  "width": 134,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-0-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 27,
+                  "y": 161,
+                  "width": 169,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-0-3",
+                "kind": "rect",
+                "attributes": {
+                  "x": 27,
+                  "y": 195,
+                  "width": 134,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "step-arrow-0",
+                "kind": "path",
+                "attributes": {
+                  "d": "M254 145H310M299 135L310 145L299 155",
+                  "fill": "none",
+                  "stroke": "theme:ink",
+                  "stroke-width": 3,
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round"
+                }
+              },
+              {
+                "id": "document-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 345,
+                  "y": 12,
+                  "width": 222,
+                  "height": 268,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "heading-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 371,
+                  "y": 44,
+                  "width": 132,
+                  "height": 14,
+                  "rx": 8,
+                  "fill": "theme:muted",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-1-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 371,
+                  "y": 93,
+                  "width": 169,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-1-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 371,
+                  "y": 127,
+                  "width": 134,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-1-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 371,
+                  "y": 161,
+                  "width": 169,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:accent",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-1-3",
+                "kind": "rect",
+                "attributes": {
+                  "x": 371,
+                  "y": 195,
+                  "width": 134,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "step-arrow-1",
+                "kind": "path",
+                "attributes": {
+                  "d": "M598 145H654M643 135L654 145L643 155",
+                  "fill": "none",
+                  "stroke": "theme:ink",
+                  "stroke-width": 3,
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round"
+                }
+              },
+              {
+                "id": "document-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 689,
+                  "y": 12,
+                  "width": 222,
+                  "height": 268,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "heading-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 715,
+                  "y": 44,
+                  "width": 132,
+                  "height": 14,
+                  "rx": 8,
+                  "fill": "theme:muted",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-2-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 715,
+                  "y": 93,
+                  "width": 169,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-2-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 715,
+                  "y": 127,
+                  "width": 134,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-2-2",
+                "kind": "rect",
+                "attributes": {
+                  "x": 715,
+                  "y": 161,
+                  "width": 169,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "line-2-3",
+                "kind": "rect",
+                "attributes": {
+                  "x": 715,
+                  "y": 195,
+                  "width": 134,
+                  "height": 9,
+                  "rx": 8,
+                  "fill": "theme:divider",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "export-field",
+                "kind": "rect",
+                "attributes": {
+                  "x": 708,
+                  "y": 130,
+                  "width": 184,
+                  "height": 120,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "none",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "export-icon",
+                "kind": "path",
+                "attributes": {
+                  "d": "M800 142V201M784 186L800 202L816 186M770 217V234H830V217",
+                  "fill": "none",
+                  "stroke": "theme:accent",
+                  "stroke-width": 5,
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "step-1",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 1062,
+            "width": 248,
+            "height": 104
+          },
+          "slotIds": [
+            "step-1-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Preview\nrelease notes.",
+          "textStyle": {
+            "size": 34,
+            "weight": 500,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "step-2",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 416,
+            "y": 1062,
+            "width": 248,
+            "height": 104
+          },
+          "slotIds": [
+            "step-2-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Review\nthe wording.",
+          "textStyle": {
+            "size": 34,
+            "weight": 500,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "step-3",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 760,
+            "y": 1062,
+            "width": 248,
+            "height": 104
+          },
+          "slotIds": [
+            "step-3-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Export\nMarkdown.",
+          "textStyle": {
+            "size": 34,
+            "weight": 500,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "caveat",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 1250,
+            "width": 936,
+            "height": 40
+          },
+          "slotIds": [
+            "caveat-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Fictional product · illustrative example",
+          "textStyle": {
+            "size": 25,
+            "weight": 400,
+            "color": "muted",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        }
+      ],
+      "contentSlots": [
+        {
+          "id": "headline-content",
+          "label": "headline",
+          "role": "body",
+          "required": true,
+          "instruction": "Review the release\nbefore you publish."
+        },
+        {
+          "id": "product-content",
+          "label": "product",
+          "role": "body",
+          "required": true,
+          "instruction": "Clearpath 0.4"
+        },
+        {
+          "id": "support-content",
+          "label": "support",
+          "role": "body",
+          "required": true,
+          "instruction": "Preview release notes. Review the wording.\nExport Markdown when you’re ready."
+        },
+        {
+          "id": "release-steps-content",
+          "label": "release-steps",
+          "role": "body",
+          "required": true,
+          "instruction": "Three illustrative documents: preview release notes, review a highlighted line, then export Markdown. These are symbolic steps, not screenshots of a real application."
+        },
+        {
+          "id": "step-1-content",
+          "label": "step-1",
+          "role": "body",
+          "required": true,
+          "instruction": "Preview\nrelease notes."
+        },
+        {
+          "id": "step-2-content",
+          "label": "step-2",
+          "role": "body",
+          "required": true,
+          "instruction": "Review\nthe wording."
+        },
+        {
+          "id": "step-3-content",
+          "label": "step-3",
+          "role": "body",
+          "required": true,
+          "instruction": "Export\nMarkdown."
+        },
+        {
+          "id": "caveat-content",
+          "label": "caveat",
+          "role": "body",
+          "required": true,
+          "instruction": "Fictional product · illustrative example"
+        }
+      ],
+      "groups": [],
+      "relationships": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "headline"
+        },
+        {
+          "kind": "component",
+          "id": "product"
+        },
+        {
+          "kind": "component",
+          "id": "support"
+        },
+        {
+          "kind": "component",
+          "id": "release-steps"
+        },
+        {
+          "kind": "component",
+          "id": "step-1"
+        },
+        {
+          "kind": "component",
+          "id": "step-2"
+        },
+        {
+          "kind": "component",
+          "id": "step-3"
+        },
+        {
+          "kind": "component",
+          "id": "caveat"
+        }
+      ],
+      "paintOrder": [
+        "headline",
+        "product",
+        "support",
+        "release-steps",
+        "step-1",
+        "step-2",
+        "step-3",
+        "caveat"
+      ]
+    }
+  ]
+}
