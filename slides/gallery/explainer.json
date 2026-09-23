@@ -1,0 +1,647 @@
+{
+  "schema": "konpeki-composition/v1",
+  "title": "Folio — preventing a stale overwrite",
+  "authoringMode": "default",
+  "theme": {
+    "id": "green",
+    "mode": "paper",
+    "typography": "plex-sans"
+  },
+  "slides": [
+    {
+      "id": "explainer",
+      "name": "Folio — preventing a stale overwrite",
+      "canvas": {
+        "width": 1200,
+        "height": 1600
+      },
+      "innerPadding": {
+        "top": 72,
+        "right": 72,
+        "bottom": 72,
+        "left": 72
+      },
+      "intendedViewingSize": "article",
+      "audience": "Junior backend engineers familiar with HTTP and database updates",
+      "question": "How does an atomic revision check prevent a silent lost update?",
+      "pageNumber": {
+        "style": "none",
+        "color": "muted"
+      },
+      "components": [
+        {
+          "id": "headline",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 72,
+            "width": 1056,
+            "height": 184
+          },
+          "slotIds": [
+            "headline-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "A stale save must not\nerase a newer edit.",
+          "textStyle": {
+            "size": 68,
+            "weight": 600,
+            "color": "ink",
+            "lineHeight": 1.1,
+            "font": "heading"
+          },
+          "appearance": {
+            "role": "title",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "setup",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 272,
+            "width": 1056,
+            "height": 100
+          },
+          "slotIds": [
+            "setup-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "In fictional Folio, Leena and Omar both read document 42:\n“Launch notes”, revision 7. Then each changes the title.",
+          "textStyle": {
+            "size": 31,
+            "weight": 400,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "mechanism-title",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 403,
+            "width": 1056,
+            "height": 48
+          },
+          "slotIds": [
+            "mechanism-title-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Check the revision and write in one atomic update.",
+          "textStyle": {
+            "size": 33,
+            "weight": 600,
+            "color": "accent",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "mechanism",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 463,
+            "width": 1056,
+            "height": 134
+          },
+          "slotIds": [
+            "mechanism-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Match document ID + expected revision, write the title, increment the\nrevision. Success means one row changed. Every title writer must use\nthis contract; never reuse a revision, even after restoration.",
+          "textStyle": {
+            "size": 28,
+            "weight": 400,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "two-saves",
+          "kind": "diagram",
+          "preferredRect": {
+            "x": 72,
+            "y": 644,
+            "width": 1056,
+            "height": 442
+          },
+          "slotIds": [
+            "two-saves-content"
+          ],
+          "intent": "Leena's save expects revision 7 and changes one row to revision 8. Omar's later save expects 7, changes zero rows, returns HTTP 409 Conflict, and preserves Leena's title. The two arrows are save requests, in top-to-bottom order.",
+          "appearance": {
+            "type": "process",
+            "selection": "explicit",
+            "border": "none",
+            "colorScheme": "monochrome",
+            "emphasis": "none",
+            "density": "sparse"
+          },
+          "customVisual": {
+            "format": "vector",
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1056,
+              "height": 442
+            },
+            "description": "Leena's save expects revision 7 and changes one row to revision 8. Omar's later save expects 7, changes zero rows, returns HTTP 409 Conflict, and preserves Leena's title. The two arrows are save requests, in top-to-bottom order.",
+            "elements": [
+              {
+                "id": "request-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 1,
+                  "y": 8,
+                  "width": 358,
+                  "height": 180,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "result-0",
+                "kind": "rect",
+                "attributes": {
+                  "x": 600,
+                  "y": 8,
+                  "width": 455,
+                  "height": 180,
+                  "rx": 8,
+                  "fill": "theme:wash",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "person-0",
+                "kind": "text",
+                "text": "Leena saves first",
+                "attributes": {
+                  "x": 24,
+                  "y": 53,
+                  "font-family": "theme:body-font",
+                  "font-size": 29,
+                  "font-weight": 600,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "title-0",
+                "kind": "text",
+                "text": "“Launch checklist”",
+                "attributes": {
+                  "x": 24,
+                  "y": 104,
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "expects-0",
+                "kind": "text",
+                "text": "expects revision 7",
+                "attributes": {
+                  "x": 24,
+                  "y": 153,
+                  "font-family": "theme:body-font",
+                  "font-size": 25,
+                  "font-weight": 400,
+                  "fill": "theme:muted"
+                }
+              },
+              {
+                "id": "save-0",
+                "kind": "path",
+                "attributes": {
+                  "d": "M381 97H577M563 85L577 97L563 109",
+                  "fill": "none",
+                  "stroke": "theme:accent",
+                  "stroke-width": 3,
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round"
+                }
+              },
+              {
+                "id": "rows-0",
+                "kind": "text",
+                "text": "1 row changed",
+                "attributes": {
+                  "x": 624,
+                  "y": 53,
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "fill": "theme:accent"
+                }
+              },
+              {
+                "id": "stored-title-0",
+                "kind": "text",
+                "text": "“Launch checklist”",
+                "attributes": {
+                  "x": 624,
+                  "y": 104,
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "stored-revision-0",
+                "kind": "text",
+                "text": "Stored at revision 8",
+                "attributes": {
+                  "x": 624,
+                  "y": 153,
+                  "font-family": "theme:body-font",
+                  "font-size": 25,
+                  "font-weight": 400,
+                  "fill": "theme:muted"
+                }
+              },
+              {
+                "id": "request-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 1,
+                  "y": 232,
+                  "width": 358,
+                  "height": 180,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "result-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 600,
+                  "y": 232,
+                  "width": 455,
+                  "height": 180,
+                  "rx": 8,
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "person-1",
+                "kind": "text",
+                "text": "Omar saves next",
+                "attributes": {
+                  "x": 24,
+                  "y": 277,
+                  "font-family": "theme:body-font",
+                  "font-size": 29,
+                  "font-weight": 600,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "title-1",
+                "kind": "text",
+                "text": "“Release notes”",
+                "attributes": {
+                  "x": 24,
+                  "y": 328,
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "expects-1",
+                "kind": "text",
+                "text": "expects revision 7",
+                "attributes": {
+                  "x": 24,
+                  "y": 377,
+                  "font-family": "theme:body-font",
+                  "font-size": 25,
+                  "font-weight": 400,
+                  "fill": "theme:muted"
+                }
+              },
+              {
+                "id": "save-1",
+                "kind": "path",
+                "attributes": {
+                  "d": "M381 321H577M563 309L577 321L563 333",
+                  "fill": "none",
+                  "stroke": "theme:muted",
+                  "stroke-width": 3,
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round"
+                }
+              },
+              {
+                "id": "rows-1",
+                "kind": "text",
+                "text": "0 rows · HTTP 409 Conflict",
+                "attributes": {
+                  "x": 624,
+                  "y": 277,
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "stored-title-1",
+                "kind": "text",
+                "text": "“Launch checklist”",
+                "attributes": {
+                  "x": 624,
+                  "y": 328,
+                  "font-family": "theme:body-font",
+                  "font-size": 28,
+                  "font-weight": 400,
+                  "fill": "theme:ink"
+                }
+              },
+              {
+                "id": "stored-revision-1",
+                "kind": "text",
+                "text": "Revision 8 stays untouched",
+                "attributes": {
+                  "x": 624,
+                  "y": 377,
+                  "font-family": "theme:body-font",
+                  "font-size": 25,
+                  "font-weight": 400,
+                  "fill": "theme:muted"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "recovery-title",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 1130,
+            "width": 1056,
+            "height": 55
+          },
+          "slotIds": [
+            "recovery-title-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "After the conflict, show both versions.",
+          "textStyle": {
+            "size": 36,
+            "weight": 600,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "recovery",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 1203,
+            "width": 1056,
+            "height": 134
+          },
+          "slotIds": [
+            "recovery-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Fetch revision 8. Let Omar keep Leena’s title, revise it, or deliberately\nreplace it. Any new save uses the fetched revision and can conflict\nagain. Never silently retry Omar’s stale title with a newer revision.",
+          "textStyle": {
+            "size": 28,
+            "weight": 400,
+            "color": "ink",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "limits",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 72,
+            "y": 1400,
+            "width": 1056,
+            "height": 140
+          },
+          "slotIds": [
+            "limits-content"
+          ],
+          "intent": "Explain the supporting idea in concise language.",
+          "content": "Why atomic? Separate checks can both pass before either write.\nScope: one document; no deletion. This does not merge edits or make\nmulti-document changes atomic. A lost success response can look like\na later conflict: revision checks alone do not deduplicate requests.",
+          "textStyle": {
+            "size": 25,
+            "weight": 400,
+            "color": "muted",
+            "lineHeight": 1.25,
+            "font": "body"
+          },
+          "appearance": {
+            "role": "body",
+            "alignment": "start",
+            "border": "none",
+            "layout": "single",
+            "orientation": "horizontal",
+            "purpose": "narrative",
+            "treatment": "plain",
+            "logicalOrder": "none",
+            "titleStyle": "plain",
+            "rule": "none"
+          }
+        }
+      ],
+      "contentSlots": [
+        {
+          "id": "headline-content",
+          "label": "headline",
+          "role": "body",
+          "required": true,
+          "instruction": "A stale save must not\nerase a newer edit."
+        },
+        {
+          "id": "setup-content",
+          "label": "setup",
+          "role": "body",
+          "required": true,
+          "instruction": "In fictional Folio, Leena and Omar both read document 42:\n“Launch notes”, revision 7. Then each changes the title."
+        },
+        {
+          "id": "mechanism-title-content",
+          "label": "mechanism-title",
+          "role": "body",
+          "required": true,
+          "instruction": "Check the revision and write in one atomic update."
+        },
+        {
+          "id": "mechanism-content",
+          "label": "mechanism",
+          "role": "body",
+          "required": true,
+          "instruction": "Match document ID + expected revision, write the title, increment the\nrevision. Success means one row changed. Every title writer must use\nthis contract; never reuse a revision, even after restoration."
+        },
+        {
+          "id": "two-saves-content",
+          "label": "two-saves",
+          "role": "body",
+          "required": true,
+          "instruction": "Leena's save expects revision 7 and changes one row to revision 8. Omar's later save expects 7, changes zero rows, returns HTTP 409 Conflict, and preserves Leena's title. The two arrows are save requests, in top-to-bottom order."
+        },
+        {
+          "id": "recovery-title-content",
+          "label": "recovery-title",
+          "role": "body",
+          "required": true,
+          "instruction": "After the conflict, show both versions."
+        },
+        {
+          "id": "recovery-content",
+          "label": "recovery",
+          "role": "body",
+          "required": true,
+          "instruction": "Fetch revision 8. Let Omar keep Leena’s title, revise it, or deliberately\nreplace it. Any new save uses the fetched revision and can conflict\nagain. Never silently retry Omar’s stale title with a newer revision."
+        },
+        {
+          "id": "limits-content",
+          "label": "limits",
+          "role": "body",
+          "required": true,
+          "instruction": "Why atomic? Separate checks can both pass before either write.\nScope: one document; no deletion. This does not merge edits or make\nmulti-document changes atomic. A lost success response can look like\na later conflict: revision checks alone do not deduplicate requests."
+        }
+      ],
+      "groups": [],
+      "relationships": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "headline"
+        },
+        {
+          "kind": "component",
+          "id": "setup"
+        },
+        {
+          "kind": "component",
+          "id": "mechanism-title"
+        },
+        {
+          "kind": "component",
+          "id": "mechanism"
+        },
+        {
+          "kind": "component",
+          "id": "two-saves"
+        },
+        {
+          "kind": "component",
+          "id": "recovery-title"
+        },
+        {
+          "kind": "component",
+          "id": "recovery"
+        },
+        {
+          "kind": "component",
+          "id": "limits"
+        }
+      ],
+      "paintOrder": [
+        "headline",
+        "setup",
+        "mechanism-title",
+        "mechanism",
+        "two-saves",
+        "recovery-title",
+        "recovery",
+        "limits"
+      ]
+    }
+  ]
+}

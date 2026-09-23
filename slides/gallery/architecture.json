@@ -1,0 +1,772 @@
+{
+  "schema": "konpeki-composition/v1",
+  "title": "Orders stay consistent; fulfillment stays independent",
+  "authoringMode": "default",
+  "theme": {
+    "id": "plex",
+    "mode": "paper"
+  },
+  "slides": [
+    {
+      "id": "architecture",
+      "name": "architecture",
+      "canvas": {
+        "width": 1600,
+        "height": 1000
+      },
+      "innerPadding": {
+        "top": 64,
+        "right": 80,
+        "bottom": 40,
+        "left": 80
+      },
+      "audience": "Systems and operations reviewers",
+      "question": "Where do order responsibilities and integration contracts belong?",
+      "intendedViewingSize": "presentation",
+      "components": [
+        {
+          "id": "headline",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 80,
+            "y": 64,
+            "width": 1440,
+            "height": 75.89999999999999
+          },
+          "slotIds": [
+            "headline"
+          ],
+          "content": "Orders stay consistent; fulfillment stays independent",
+          "textStyle": {
+            "size": 46,
+            "weight": 600,
+            "lineHeight": 1.3,
+            "color": "ink",
+            "font": "body"
+          },
+          "appearance": {
+            "role": "title",
+            "alignment": "start",
+            "border": "none",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "context",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 80,
+            "y": 140,
+            "width": 1440,
+            "height": 42.9
+          },
+          "slotIds": [
+            "context"
+          ],
+          "content": "Illustrative • Harbor Market / logical service architecture",
+          "textStyle": {
+            "size": 26,
+            "weight": 400,
+            "lineHeight": 1.3,
+            "color": "muted",
+            "font": "body"
+          },
+          "appearance": {
+            "role": "subtitle",
+            "alignment": "start",
+            "border": "none",
+            "rule": "none"
+          }
+        },
+        {
+          "id": "system",
+          "kind": "diagram",
+          "preferredRect": {
+            "x": 80,
+            "y": 220,
+            "width": 1440,
+            "height": 660
+          },
+          "slotIds": [
+            "shop",
+            "api",
+            "ledger",
+            "events",
+            "warehouse"
+          ],
+          "intent": "Where do order responsibilities and integration contracts belong?",
+          "appearance": {
+            "type": "architecture",
+            "selection": "explicit",
+            "border": "none",
+            "colorScheme": "accent-with-muted-context"
+          },
+          "topology": {
+            "kind": "explicit",
+            "nodes": [
+              {
+                "id": "shop",
+                "slotId": "shop",
+                "preferredRect": {
+                  "x": 80,
+                  "y": 400,
+                  "width": 290,
+                  "height": 145
+                }
+              },
+              {
+                "id": "api",
+                "slotId": "api",
+                "preferredRect": {
+                  "x": 520,
+                  "y": 400,
+                  "width": 320,
+                  "height": 145
+                }
+              },
+              {
+                "id": "ledger",
+                "slotId": "ledger",
+                "preferredRect": {
+                  "x": 1100,
+                  "y": 300,
+                  "width": 330,
+                  "height": 145
+                }
+              },
+              {
+                "id": "events",
+                "slotId": "events",
+                "preferredRect": {
+                  "x": 1100,
+                  "y": 520,
+                  "width": 330,
+                  "height": 145
+                }
+              },
+              {
+                "id": "warehouse",
+                "slotId": "warehouse",
+                "preferredRect": {
+                  "x": 520,
+                  "y": 710,
+                  "width": 320,
+                  "height": 140
+                }
+              }
+            ],
+            "edges": [
+              {
+                "from": "shop",
+                "to": "api",
+                "label": "HTTPS"
+              },
+              {
+                "from": "api",
+                "to": "ledger",
+                "label": "Commit"
+              },
+              {
+                "from": "ledger",
+                "to": "events",
+                "label": "Outbox relay"
+              },
+              {
+                "from": "events",
+                "to": "warehouse",
+                "label": "OrderPlaced"
+              }
+            ]
+          },
+          "customVisual": {
+            "format": "vector",
+            "viewBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 660
+            },
+            "fit": "contain",
+            "description": "Where do order responsibilities and integration contracts belong?",
+            "elements": [
+              {
+                "id": "v-1",
+                "kind": "rect",
+                "attributes": {
+                  "x": 395,
+                  "y": 10,
+                  "width": 1010,
+                  "height": 455,
+                  "rx": 12,
+                  "fill": "#F2F7FD",
+                  "stroke": "#C5D6E9",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "v-2",
+                "kind": "text",
+                "attributes": {
+                  "x": 419,
+                  "y": 47,
+                  "fill": "#2463CC",
+                  "font-size": 23,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "ORDER PLATFORM · Commerce team"
+              },
+              {
+                "id": "v-3",
+                "kind": "rect",
+                "attributes": {
+                  "x": 0,
+                  "y": 180,
+                  "width": 290,
+                  "height": 145,
+                  "rx": 12,
+                  "fill": "white",
+                  "stroke": "#C5D6E9",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "v-4",
+                "kind": "text",
+                "attributes": {
+                  "x": 24,
+                  "y": 222,
+                  "fill": "#142C48",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Storefront"
+              },
+              {
+                "id": "v-5",
+                "kind": "text",
+                "attributes": {
+                  "x": 24,
+                  "y": 260,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Captures buyer intent"
+              },
+              {
+                "id": "v-6",
+                "kind": "text",
+                "attributes": {
+                  "x": 24,
+                  "y": 290,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Shows order status"
+              },
+              {
+                "id": "v-7",
+                "kind": "rect",
+                "attributes": {
+                  "x": 440,
+                  "y": 180,
+                  "width": 320,
+                  "height": 145,
+                  "rx": 12,
+                  "fill": "#F2F7FD",
+                  "stroke": "#2463CC",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "v-8",
+                "kind": "text",
+                "attributes": {
+                  "x": 464,
+                  "y": 222,
+                  "fill": "#142C48",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Order service"
+              },
+              {
+                "id": "v-9",
+                "kind": "text",
+                "attributes": {
+                  "x": 464,
+                  "y": 260,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Owns order lifecycle"
+              },
+              {
+                "id": "v-10",
+                "kind": "text",
+                "attributes": {
+                  "x": 464,
+                  "y": 290,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Validates commands"
+              },
+              {
+                "id": "v-11",
+                "kind": "rect",
+                "attributes": {
+                  "x": 1020,
+                  "y": 80,
+                  "width": 330,
+                  "height": 145,
+                  "rx": 12,
+                  "fill": "white",
+                  "stroke": "#C5D6E9",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "v-12",
+                "kind": "text",
+                "attributes": {
+                  "x": 1044,
+                  "y": 122,
+                  "fill": "#142C48",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Order ledger"
+              },
+              {
+                "id": "v-13",
+                "kind": "text",
+                "attributes": {
+                  "x": 1044,
+                  "y": 160,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "System of record"
+              },
+              {
+                "id": "v-14",
+                "kind": "text",
+                "attributes": {
+                  "x": 1044,
+                  "y": 190,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Order + outbox commit"
+              },
+              {
+                "id": "v-15",
+                "kind": "rect",
+                "attributes": {
+                  "x": 1020,
+                  "y": 300,
+                  "width": 330,
+                  "height": 145,
+                  "rx": 12,
+                  "fill": "white",
+                  "stroke": "#C5D6E9",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "v-16",
+                "kind": "text",
+                "attributes": {
+                  "x": 1044,
+                  "y": 342,
+                  "fill": "#142C48",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Event stream"
+              },
+              {
+                "id": "v-17",
+                "kind": "text",
+                "attributes": {
+                  "x": 1044,
+                  "y": 380,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "OrderPlaced contract"
+              },
+              {
+                "id": "v-18",
+                "kind": "text",
+                "attributes": {
+                  "x": 1044,
+                  "y": 410,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Replayable delivery"
+              },
+              {
+                "id": "v-19",
+                "kind": "rect",
+                "attributes": {
+                  "x": 440,
+                  "y": 490,
+                  "width": 320,
+                  "height": 140,
+                  "rx": 12,
+                  "fill": "white",
+                  "stroke": "#C5D6E9",
+                  "stroke-width": 2
+                }
+              },
+              {
+                "id": "v-20",
+                "kind": "text",
+                "attributes": {
+                  "x": 464,
+                  "y": 532,
+                  "fill": "#142C48",
+                  "font-size": 28,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Fulfillment"
+              },
+              {
+                "id": "v-21",
+                "kind": "text",
+                "attributes": {
+                  "x": 464,
+                  "y": 570,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Warehouse team"
+              },
+              {
+                "id": "v-22",
+                "kind": "text",
+                "attributes": {
+                  "x": 464,
+                  "y": 600,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Owns pick + dispatch"
+              },
+              {
+                "id": "v-23",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "290,230 440,230",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-24",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "428.9171812132264,236.79493397609858 440,230 428.9171812132264,223.20506602390142",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-25",
+                "kind": "text",
+                "attributes": {
+                  "x": 318,
+                  "y": 208,
+                  "fill": "#2463CC",
+                  "font-size": 21,
+                  "font-weight": 500,
+                  "font-family": "theme:body-font"
+                },
+                "text": "HTTPS"
+              },
+              {
+                "id": "v-26",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "760,218 870,218 870,152 1020,152",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-27",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "1008.9171812132264,158.79493397609858 1020,152 1008.9171812132264,145.20506602390142",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-28",
+                "kind": "text",
+                "attributes": {
+                  "x": 875,
+                  "y": 129,
+                  "fill": "#2463CC",
+                  "font-size": 21,
+                  "font-weight": 500,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Commit"
+              },
+              {
+                "id": "v-29",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "1185,225 1185,300",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-30",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "1178.2050660239015,288.9171812132264 1185,300 1191.7949339760985,288.9171812132264",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-31",
+                "kind": "text",
+                "attributes": {
+                  "x": 1207,
+                  "y": 268,
+                  "fill": "#2463CC",
+                  "font-size": 21,
+                  "font-weight": 500,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Outbox relay"
+              },
+              {
+                "id": "v-32",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "1020,375 880,375 880,560 760,560",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-33",
+                "kind": "polyline",
+                "attributes": {
+                  "points": "771.0828187867736,553.2050660239014 760,560 771.0828187867736,566.7949339760986",
+                  "fill": "none",
+                  "stroke": "#2463CC",
+                  "stroke-width": 3
+                }
+              },
+              {
+                "id": "v-34",
+                "kind": "text",
+                "attributes": {
+                  "x": 799,
+                  "y": 595,
+                  "fill": "#2463CC",
+                  "font-size": 21,
+                  "font-weight": 500,
+                  "font-family": "theme:body-font"
+                },
+                "text": "OrderPlaced"
+              },
+              {
+                "id": "v-35",
+                "kind": "text",
+                "attributes": {
+                  "x": 0,
+                  "y": 450,
+                  "fill": "#142C48",
+                  "font-size": 25,
+                  "font-weight": 600,
+                  "font-family": "theme:body-font"
+                },
+                "text": "One authoritative order"
+              },
+              {
+                "id": "v-36",
+                "kind": "text",
+                "attributes": {
+                  "x": 0,
+                  "y": 490,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "Fulfillment consumes events;"
+              },
+              {
+                "id": "v-37",
+                "kind": "text",
+                "attributes": {
+                  "x": 0,
+                  "y": 522,
+                  "fill": "#53677E",
+                  "font-size": 22,
+                  "font-weight": 400,
+                  "font-family": "theme:body-font"
+                },
+                "text": "it cannot mutate the ledger."
+              }
+            ]
+          }
+        },
+        {
+          "id": "caveat",
+          "kind": "text-block",
+          "preferredRect": {
+            "x": 80,
+            "y": 920,
+            "width": 1440,
+            "height": 36.3
+          },
+          "slotIds": [
+            "caveat"
+          ],
+          "content": "Boundary = product ownership, not infrastructure. Arrows show request or event direction.",
+          "textStyle": {
+            "size": 22,
+            "weight": 400,
+            "lineHeight": 1.3,
+            "color": "muted",
+            "font": "body"
+          },
+          "appearance": {
+            "role": "caption",
+            "alignment": "start",
+            "border": "none",
+            "rule": "none"
+          }
+        }
+      ],
+      "contentSlots": [
+        {
+          "id": "headline",
+          "role": "takeaway",
+          "label": "Orders stay consistent; fulfillment stays independent",
+          "required": true,
+          "instruction": "Preserve this native text."
+        },
+        {
+          "id": "context",
+          "role": "body",
+          "label": "Illustrative • Harbor Market / logical service architecture",
+          "required": true,
+          "instruction": "Preserve this native text."
+        },
+        {
+          "id": "caveat",
+          "role": "body",
+          "label": "Boundary = product ownership, not infrastructure. Arrows show request or event direction.",
+          "required": true,
+          "instruction": "Preserve this native text."
+        },
+        {
+          "id": "shop",
+          "role": "entity",
+          "label": "shop",
+          "required": true,
+          "instruction": "Preserve this node and its visible connections."
+        },
+        {
+          "id": "api",
+          "role": "entity",
+          "label": "api",
+          "required": true,
+          "instruction": "Preserve this node and its visible connections."
+        },
+        {
+          "id": "ledger",
+          "role": "entity",
+          "label": "ledger",
+          "required": true,
+          "instruction": "Preserve this node and its visible connections."
+        },
+        {
+          "id": "events",
+          "role": "entity",
+          "label": "events",
+          "required": true,
+          "instruction": "Preserve this node and its visible connections."
+        },
+        {
+          "id": "warehouse",
+          "role": "entity",
+          "label": "warehouse",
+          "required": true,
+          "instruction": "Preserve this node and its visible connections."
+        }
+      ],
+      "groups": [],
+      "readingOrder": [
+        {
+          "kind": "component",
+          "id": "headline"
+        },
+        {
+          "kind": "component",
+          "id": "context"
+        },
+        {
+          "kind": "component",
+          "id": "system"
+        },
+        {
+          "kind": "component",
+          "id": "caveat"
+        }
+      ],
+      "paintOrder": [
+        "headline",
+        "context",
+        "system",
+        "caveat"
+      ],
+      "relationships": []
+    }
+  ]
+}
