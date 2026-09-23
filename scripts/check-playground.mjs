@@ -31,6 +31,9 @@ function click(name) {
 function check(source, message) {
   evaluate(`if (!(${source})) throw Error(${JSON.stringify(message)})`);
 }
+function settlePanels() {
+  evaluate("new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))).then(() => Promise.all([...document.querySelectorAll('.left-sidebar,.right-panel')].flatMap(element => element.getAnimations().map(a => a.finished))))");
+}
 function capture(name) {
   evaluate(
     "document.fonts.ready.then(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))",
@@ -82,8 +85,47 @@ try {
   browser("click", ".browser-menu > summary");
   check("document.querySelector('.browser-menu-popover').checkVisibility()", "browser menu did not open");
   browser("wait", "--fn", "document.querySelector('.browser-menu [role=status]').textContent.includes('saved only in this browser')");
-  check("document.querySelector('.browser-menu-popover').textContent.includes('saved only in this browser') && document.querySelector('.browser-menu-popover').textContent.includes('Nothing syncs automatically')", "local-only storage limits are unclear");
-  capture("browser-menu");
+  check("document.querySelector('.browser-menu > summary').textContent.trim() === 'Demo Mode'", "standalone disclosure must be labelled Demo Mode");
+  check("document.querySelector('.browser-menu-popover').textContent.includes('saved only in this browser') && document.querySelector('.browser-menu-popover').textContent.includes('No agent connection or file sync')", "local-only storage limits are unclear");
+  check("document.querySelector('.browser-agent-handoff').textContent.includes('Download JSON, then ask your coding agent to open it with Konpeki.') && document.querySelector('.browser-agent-handoff a').href.endsWith('/SETUP.md')", "agent handoff must explain how to continue with the downloaded file");
+  capture("demo-mode");
+  browser("press", "Tab");
+  check("document.activeElement.textContent.trim() === 'Import JSON'", "keyboard opening must lead to the file actions");
+  browser("press", "Escape");
+  check("!document.querySelector('.browser-menu').open && document.activeElement.matches('.browser-menu > summary')", "Escape must close Demo Mode and return focus");
+  browser("press", "Enter");
+  browser("click", '[name="composition-title"]');
+  check("!document.querySelector('.browser-menu').open && document.activeElement.name === 'composition-title'", "outside clicks must dismiss without stealing focus");
+  browser("click", ".browser-menu > summary");
+  browser("press", "Shift+Tab");
+  check("!document.querySelector('.browser-menu').open && document.activeElement.getAttribute('aria-label') === 'Present'", "tabbing outside must dismiss the menu");
+
+  for (const [width, height] of [[390, 844], [320, 568], [844, 390]]) {
+    browser("set", "viewport", String(width), String(height), "2");
+    settlePanels();
+    if (evaluate("document.querySelector('.left-sidebar').classList.contains('collapsed')") === "true") click("Expand left panel");
+    settlePanels();
+    browser("click", ".browser-menu > summary");
+    evaluate(`{
+      const menu = document.querySelector('.browser-menu-popover'), r = menu.getBoundingClientRect();
+      if (r.left < 0 || r.right > innerWidth || r.top < parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--panel-top')) || r.bottom > innerHeight || menu.scrollWidth > menu.clientWidth)
+        throw Error('Demo Mode overflows the viewport');
+      for (const action of menu.querySelectorAll('button, a')) {
+        action.scrollIntoView({ block: 'nearest' });
+        const b = action.getBoundingClientRect();
+        if (b.height < 40 || !action.contains(document.elementFromPoint((b.left + b.right) / 2, (b.top + b.bottom) / 2)))
+          throw Error('Demo action is too small or unreachable: ' + action.textContent);
+      }
+      menu.scrollTop = 0;
+      const heading = menu.querySelector('strong'), h = heading.getBoundingClientRect();
+      if (!heading.contains(document.elementFromPoint(h.left + 2, (h.top + h.bottom) / 2)))
+        throw Error('Panel chrome paints over the Demo Mode heading');
+    }`);
+    capture(`demo-mode-${width}`);
+    browser("press", "Escape");
+  }
+  browser("set", "viewport", "1440", "900", "2");
+  settlePanels();
 
   const validCopy = evaluate(`localStorage.getItem(${JSON.stringify(exampleKey)})`);
   browser("click", '[name="composition-title"]');
@@ -94,12 +136,15 @@ try {
   check("!document.querySelector('.browser-menu [role=status]').textContent.includes('saved only')", "invalid edits must not be described as saved");
   evaluate("new Promise(resolve => setTimeout(resolve, 350))");
   assert.equal(evaluate(`localStorage.getItem(${JSON.stringify(exampleKey)})`), validCopy, "invalid edits must preserve the last valid save");
+  browser("click", ".browser-menu > summary");
   capture("validation-paused");
   browser("fill", '[name="composition-title"]', "Edited example copy");
   browser("press", "Tab");
   browser("wait", "--fn", "document.querySelector('.browser-menu [role=status]').textContent.includes('saved only in this browser')");
   assert.equal(evaluate(`localStorage.getItem(${JSON.stringify(exampleKey)})`), validCopy, "correcting validation must resume saving without reset");
+  browser("click", ".browser-menu > summary");
   click("Download JSON");
+  check("!document.querySelector('.browser-menu').open && document.activeElement.matches('.browser-menu > summary')", "download must close the menu and restore focus");
   browser("wait", "--fn", 'typeof window.__downloadedJSON === "string"');
   const downloaded = JSON.parse(evaluate("window.__downloadedJSON"));
   const document = JSON.parse(downloaded);
@@ -183,6 +228,7 @@ try {
   browser("fill", '[name="composition-title"]', "Recoverable unsaved work");
   browser("press", "Tab");
   assert.equal(evaluate(`localStorage.getItem(${JSON.stringify(exampleKey)})`), '"{broken"');
+  browser("click", ".browser-menu > summary");
   capture("storage-recovery");
   check("!document.querySelector('.recovery').textContent.includes('Retry save')", "corrupt bytes must remain protected until explicit reset");
   browser("click", ".browser-menu > summary");
@@ -198,7 +244,7 @@ try {
   evaluate("Storage.prototype.setItem = window.__setItem");
   click("Retry save");
   browser("wait", "--fn", `!document.querySelector('.recovery.visible') && JSON.parse(localStorage.getItem(${JSON.stringify(exampleKey)}))?.document.title === "Keep work after corruption reset"`);
-  console.log("Playground OK: isolated save/reload, validation pause/resume, JSON round-trip/undo, blank/reset accept/cancel, quota/reset failure recovery, dirty Retry save including after corruption reset, local-only copy, and no standalone Build/notes.");
+  console.log("Playground OK: Demo Mode keyboard/outside dismissal and focus, reachable 40px actions at 320/390/844px, isolated save/reload, validation pause/resume, JSON round-trip/undo, blank/reset accept/cancel, quota/reset failure recovery, dirty Retry save including after corruption reset, local-only copy, and no standalone Build/notes.");
 } finally {
   try {
     browser("close");

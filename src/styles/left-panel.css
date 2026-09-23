@@ -59,7 +59,7 @@
 .slide-thumbnail {
   display: grid;
   width: 100%;
-  gap: 9px;
+  gap: 0;
   padding: 8px;
   border-color: transparent;
   font-size: 12px;
@@ -101,10 +101,24 @@
   color: var(--ui-muted);
 }
 
+.remove-slide::before {
+  position: absolute;
+  inset: 5px;
+  border-radius: 5px;
+  background: transparent;
+  pointer-events: none;
+  transition: background-color 120ms ease-out;
+  content: "";
+}
+
 .remove-slide:hover:not(:disabled) {
   border-color: transparent;
-  background: #ffe9e9;
+  background: transparent;
   color: #9d2020;
+}
+
+.remove-slide:hover:not(:disabled)::before {
+  background: #ffe9e9;
 }
 
 .add-slide {

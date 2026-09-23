@@ -30,7 +30,7 @@ For a production preview, run `pnpm build` then `pnpm preview`. The build produc
 a static site in `dist` for a root or subdirectory. Use
 `?example=introducing-konpeki` or `?example=custom-visual` to open a bundled editable
 example. Each example has an isolated browser-local working copy that survives
-reload. The Browser menu supports JSON import/download, starting blank and
+reload. The Demo Mode menu supports JSON import/download, starting blank and
 resetting the example. These actions never replace another example or the normal
 local draft. Invalid stored data remains untouched until an explicit reset.
 
@@ -70,7 +70,7 @@ package releases remain separate. Inspect the public example after deployment,
 including reload, fonts, editing, JSON download and Present.
 
 Existing example working copies survive deployments. Download any edits before
-choosing **Browser → Reset example** to load a newly published example.
+choosing **Demo Mode → Reset example** to load a newly published example.
 
 ## Skill and plugin packaging
 

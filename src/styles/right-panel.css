@@ -306,9 +306,11 @@
 .layer-list {
   display: grid;
   gap: 4px;
+  padding-block: 3px;
 }
 
 .layer-row {
+  position: relative;
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr) auto;
   align-items: center;
@@ -325,6 +327,26 @@
 
 .layer-row.dragging {
   opacity: 0.45;
+}
+
+.layer-row[data-drop-edge]::after {
+  position: absolute;
+  z-index: 1;
+  left: -1px;
+  right: -1px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+  pointer-events: none;
+  content: "";
+}
+
+.layer-row[data-drop-edge="before"]::after {
+  top: -4px;
+}
+
+.layer-row[data-drop-edge="after"]::after {
+  bottom: -4px;
 }
 
 .layer-drag {

@@ -21,6 +21,7 @@ function LayersPanel({
   onReorderPaintOrder: (ids: string[]) => void;
 }) {
   const [dragging, setDragging] = useState<string>();
+  const [dropIndex, setDropIndex] = useState<number>();
   const layers = [...slide.paintOrder].reverse();
   function moveLayer(id: string, toIndex: number) {
     const next = layers.filter((item) => item !== id);
@@ -34,7 +35,36 @@ function LayersPanel({
         <span>Front to back</span>
       </div>
       {layers.length ? (
-        <div className="layer-list">
+        <div className="layer-list"
+          onDragOver={(event) => {
+            if (!dragging) return;
+            event.preventDefault();
+            const rows = [...event.currentTarget.querySelectorAll<HTMLElement>(".layer-row")];
+            const next = rows.findIndex((row) => {
+              const rect = row.getBoundingClientRect();
+              return event.clientY < rect.top + rect.height / 2;
+            });
+            const boundary = next < 0 ? layers.length : next;
+            const sourceIndex = layers.indexOf(dragging);
+            const unchanged = boundary === sourceIndex || boundary === sourceIndex + 1;
+            event.dataTransfer.dropEffect = unchanged ? "none" : "move";
+            setDropIndex(unchanged ? undefined : boundary);
+          }}
+          onDragLeave={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+              setDropIndex(undefined);
+            }
+          }}
+          onDrop={(event) => {
+            if (!dragging) return;
+            event.preventDefault();
+            if (dropIndex !== undefined) {
+              moveLayer(dragging, dropIndex > layers.indexOf(dragging) ? dropIndex - 1 : dropIndex);
+            }
+            setDragging(undefined);
+            setDropIndex(undefined);
+          }}
+        >
           {layers.map((id, index) => {
             const component = slide.components.find((item) => item.id === id)!;
             const groups = slide.groups
@@ -45,23 +75,18 @@ function LayersPanel({
               <div
                 key={id}
                 data-layer={id}
+                data-drop-edge={dropIndex === index ? "before" : dropIndex === layers.length && index === layers.length - 1 ? "after" : undefined}
                 className={`layer-row ${selectedComponentId === id ? "selected" : ""} ${dragging === id ? "dragging" : ""}`}
                 draggable
                 onDragStart={(event) => {
                   setDragging(id);
+                  setDropIndex(undefined);
                   event.dataTransfer.effectAllowed = "move";
                   event.dataTransfer.setData("text/plain", id);
                 }}
-                onDragEnd={() => setDragging(undefined)}
-                onDragOver={(event) => {
-                  event.preventDefault();
-                  event.dataTransfer.dropEffect = "move";
-                }}
-                onDrop={(event) => {
-                  event.preventDefault();
-                  const source = dragging || event.dataTransfer.getData("text/plain");
-                  if (source && source !== id) moveLayer(source, index);
+                onDragEnd={() => {
                   setDragging(undefined);
+                  setDropIndex(undefined);
                 }}
               >
                 <span className="layer-drag" aria-hidden="true">⠿</span>

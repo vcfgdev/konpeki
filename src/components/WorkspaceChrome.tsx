@@ -104,12 +104,28 @@ export function WorkspaceChrome({
 }) {
   const browserMenu = useRef<HTMLDetailsElement>(null);
   const importInput = useRef<HTMLInputElement>(null);
-  function closeBrowserMenu() {
-    if (browserMenu.current) browserMenu.current.open = false;
+  function closeBrowserMenu(restoreFocus = true) {
+    const menu = browserMenu.current;
+    if (!menu?.open) return;
+    menu.open = false;
+    if (restoreFocus) menu.querySelector("summary")?.focus();
   }
   useEffect(() => {
-    if (leftCollapsed) closeBrowserMenu();
+    if (leftCollapsed) closeBrowserMenu(false);
   }, [leftCollapsed]);
+  useEffect(() => {
+    function dismissOutside(event: Event) {
+      if (event.target instanceof Node && !browserMenu.current?.contains(event.target)) {
+        closeBrowserMenu(false);
+      }
+    }
+    document.addEventListener("pointerdown", dismissOutside);
+    document.addEventListener("focusin", dismissOutside);
+    return () => {
+      document.removeEventListener("pointerdown", dismissOutside);
+      document.removeEventListener("focusin", dismissOutside);
+    };
+  }, []);
   return (
     <>
       <div className={`left-sidebar${leftCollapsed ? " collapsed" : ""}`}>
@@ -182,14 +198,23 @@ export function WorkspaceChrome({
           </svg>
         </button>
         {browserTools && (
-          <details className="browser-menu" ref={browserMenu}>
-            <summary>Browser</summary>
-            <div className="browser-menu-popover">
-              <strong>Browser playground</strong>
-              <p role="status">
-                {browserTools.saveMessage}
-                {" "}Nothing syncs automatically.
-              </p>
+          <details className="browser-menu" ref={browserMenu} onKeyDown={(event) => {
+            if (event.key === "Escape" && browserMenu.current?.open) {
+              event.preventDefault();
+              event.stopPropagation();
+              closeBrowserMenu();
+            }
+          }}>
+            <summary>
+              Demo Mode
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4" /></svg>
+            </summary>
+            <div className="browser-menu-popover" role="region" aria-label="Demo Mode">
+              <div className="browser-menu-intro">
+                <strong>Demo Mode</strong>
+                <p>Explore the canvas here. No agent connection or file sync.</p>
+                <p className="browser-save-status" role="status">{browserTools.saveMessage}</p>
+              </div>
               <div className="browser-menu-actions">
                 <button type="button" onClick={() => importInput.current?.click()}>
                   Import JSON
@@ -214,31 +239,30 @@ export function WorkspaceChrome({
                 }}>
                   Download JSON
                 </button>
-                <button type="button" onClick={() => {
+                <button type="button" className="secondary" onClick={() => {
                   closeBrowserMenu();
                   browserTools.onStartBlank();
                 }}>
                   Start blank
                 </button>
-                <button type="button" onClick={() => {
+                <button type="button" className="secondary" onClick={() => {
                   closeBrowserMenu();
                   browserTools.onReset();
                 }}>
                   {browserTools.example ? "Reset example" : "Reset local draft"}
                 </button>
               </div>
-              <p className="browser-agent-handoff">
-                To continue with a coding agent, download the editable JSON and
-                follow the{" "}
+              <div className="browser-agent-handoff">
+                <strong>Continue with an agent</strong>
+                <p>Download JSON, then ask your coding agent to open it with Konpeki.</p>
                 <a
                   href="https://github.com/vcfgdev/konpeki/blob/main/SETUP.md"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  setup guidance
+                  Setup guide
                 </a>
-                .
-              </p>
+              </div>
             </div>
           </details>
         )}

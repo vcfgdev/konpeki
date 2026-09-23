@@ -37,6 +37,15 @@ try {
   browser("set", "viewport", "1556", "1030", "2");
   evaluate("document.fonts.ready");
   settlePanels();
+  evaluate(`{
+    for (const item of document.querySelectorAll('.slide-thumbnail-item')) {
+      const thumbnail = item.querySelector('.slide-thumbnail-canvas').getBoundingClientRect();
+      const caption = item.querySelector('.slide-thumbnail > span:last-child').getBoundingClientRect();
+      const remove = item.querySelector('.remove-slide').getBoundingClientRect();
+      if (Math.abs(caption.top - thumbnail.bottom) > 1 || caption.height < 40 || remove.width < 40 || remove.height < 40 || remove.top < caption.top || remove.bottom > caption.bottom)
+        throw Error('Page captions must sit directly below thumbnails without shrinking or overlapping Remove');
+    }
+  }`);
   browser("scroll", "down", "1000", "--selector", ".inspector-content");
   evaluate(`{
     const inspector = document.querySelector('.inspector-content');

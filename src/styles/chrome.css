@@ -158,16 +158,32 @@
   align-items: center;
   justify-content: center;
   height: 40px;
+  gap: 6px;
   padding: 0 12px;
   border-radius: 7px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
   list-style: none;
+  white-space: nowrap;
 }
 
 .browser-menu > summary::-webkit-details-marker {
   display: none;
+}
+
+.browser-menu > summary svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.browser-menu[open] > summary svg {
+  transform: rotate(180deg);
 }
 
 .browser-menu > summary:hover,
@@ -177,11 +193,18 @@
 
 .browser-menu-popover {
   position: absolute;
+  z-index: 3;
   bottom: calc(100% + 14px);
-  left: -95px;
+  left: -88px;
   display: grid;
-  width: 304px;
-  gap: 12px;
+  width: 320px;
+  max-width: calc(100vw - 56px);
+  max-height: calc(100dvh - var(--panel-top) - 164px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 transparent;
+  gap: 16px;
   padding: 16px;
   border: 1px solid var(--ui-border);
   border-radius: 12px;
@@ -189,39 +212,74 @@
   box-shadow: var(--ui-shadow);
 }
 
+.browser-menu-intro,
+.browser-agent-handoff {
+  display: grid;
+  gap: 6px;
+}
+
 .browser-menu-popover strong {
   font-size: 13px;
   font-weight: 600;
+}
+
+.browser-menu-intro > strong {
+  font-size: 14px;
 }
 
 .browser-menu-popover p {
   color: var(--ui-muted);
   font-size: 12px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.browser-save-status {
+  margin-top: 4px;
 }
 
 .browser-menu-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
 
 .action-island .browser-menu-actions button {
-  justify-content: flex-start;
+  justify-content: center;
   min-width: 0;
+  min-height: 40px;
+  height: auto;
+  padding: 8px;
   border-color: var(--ui-border);
   background: var(--ui-surface);
   font-size: 12px;
 }
 
+.action-island .browser-menu-actions button.secondary {
+  border-color: transparent;
+  color: var(--ui-muted);
+}
+
+.action-island .browser-menu-actions button:hover {
+  background: var(--ui-hover);
+  color: var(--ui-text);
+}
+
 .browser-agent-handoff {
-  padding-top: 10px;
-  border-top: 1px solid var(--ui-border);
+  padding: 12px 12px 4px;
+  border-radius: 8px;
+  background: var(--ui-hover);
 }
 
 .browser-agent-handoff a {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  min-height: 40px;
   color: var(--accent);
+  font-size: 12px;
   font-weight: 500;
+  text-underline-offset: 3px;
 }
 
 .action-island button.primary {

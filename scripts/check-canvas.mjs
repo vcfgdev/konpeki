@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { initialDraft } from "../composition/document.ts";
 import { parseEditableSvg } from "../composition/vector.ts";
 import { assertComposition } from "../composition/validate.ts";
 
@@ -32,9 +33,73 @@ function capture(name) {
   evaluate("document.fonts.ready.then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))");
   browser("screenshot", join(artifacts, `${name}.png`));
 }
+function checkLayerInsertion() {
+  const dispatch = (source) => evaluate(`(async () => { ${source}; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); })()`);
+  const saved = JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'));
+  const fixture = { version: 2, document: initialDraft() };
+  const [a, b, c, d] = [...fixture.document.slides[0].paintOrder].reverse();
+  const slide = fixture.document.slides[0];
+  slide.groups = [{ id: "review-group", label: "Review group", childIds: [a, c] }];
+  slide.readingOrder = [{ kind: "group", id: "review-group" }, { kind: "component", id: b }, { kind: "component", id: d }];
+  assertComposition(fixture.document);
+  evaluate(`localStorage.setItem('konpeki-composer/v1', ${JSON.stringify(JSON.stringify(fixture))})`);
+  browser("reload");
+  evaluate("document.fonts.ready");
+  click("Layers");
+  // Each case starts from [a, b, c, d]. Test both halves of one row in both directions.
+  for (const [source, target, fraction, boundary, expected] of [
+    [a, c, 0.25, 2, [b, a, c, d]],
+    [a, c, 0.75, 3, [b, c, a, d]],
+    [d, b, 0.25, 1, [a, d, b, c]],
+    [d, b, 0.75, 2, [a, b, d, c]],
+    [d, a, 0.1, 0, [d, a, b, c]],
+    [a, d, 0.9, 4, [b, c, d, a]],
+    [b, a, 0.75, null, [a, b, c, d]],
+    [b, c, 0.25, null, [a, b, c, d]],
+  ]) {
+    const row = `[data-layer="${target}"]`;
+    dispatch(`window.layerDrag = new DataTransfer(); document.querySelector('[data-layer="${source}"]').dispatchEvent(new DragEvent('dragstart', {bubbles:true, dataTransfer:window.layerDrag})); window.layerRects = [...document.querySelectorAll('.layer-row')].map(row => row.getBoundingClientRect().toJSON())`);
+    dispatch(`{const row = document.querySelector('${row}'), r = row.getBoundingClientRect(); row.querySelector('strong').dispatchEvent(new DragEvent('dragover', {bubbles:true, cancelable:true, dataTransfer:window.layerDrag, clientY:r.top+r.height*${fraction}}))}`);
+    evaluate(`{
+      const rows = [...document.querySelectorAll('.layer-row')], marked = rows.findIndex(row => row.hasAttribute('data-drop-edge'));
+      const boundary = ${JSON.stringify(boundary)};
+      if (boundary === null ? marked !== -1 : marked !== Math.min(boundary, rows.length - 1) || rows[marked].dataset.dropEdge !== (boundary === rows.length ? 'after' : 'before'))
+        throw Error('Insertion marker disagrees with expected destination: ' + JSON.stringify({boundary, marked, rows:rows.map(row => row.dataset)}));
+      if (JSON.stringify(rows.map(row => row.getBoundingClientRect().toJSON())) !== JSON.stringify(window.layerRects))
+        throw Error('Insertion marker shifts the layer layout');
+      if (marked !== -1) {
+        const style = getComputedStyle(rows[marked], '::after');
+        if (style.height !== '2px' || style.backgroundColor !== 'rgb(0, 123, 187)') throw Error('Insertion line must be blue and 2px');
+      }
+    }`);
+    if (boundary === 2 || boundary === 0 || boundary === 4) capture(`layers-insertion-${source}-${boundary}`);
+    // Internal child transitions must keep the marker; leaving the list must clear it.
+    dispatch(`{const row = document.querySelector('${row}'); row.dispatchEvent(new DragEvent('dragleave', {bubbles:true, relatedTarget:row.querySelector('strong')}))}`);
+    check(`document.querySelectorAll('[data-drop-edge]').length === ${boundary === null ? 0 : 1}`, "moving within a row must retain the insertion marker");
+    dispatch(`document.querySelector('${row}').dispatchEvent(new DragEvent('drop', {bubbles:true, cancelable:true, dataTransfer:window.layerDrag}))`);
+    check(`JSON.stringify([...document.querySelectorAll('.layer-row')].map(row => row.dataset.layer)) === ${JSON.stringify(JSON.stringify(expected))}`, "drop order differs from the preview");
+    check("!document.querySelector('[data-drop-edge], .layer-row.dragging')", "drop must clear all drag feedback");
+    const expectedDoc = structuredClone(fixture.document);
+    expectedDoc.slides[0].paintOrder = [...expected].reverse();
+    browser("wait", "--fn", `JSON.stringify(JSON.parse(localStorage.getItem('konpeki-composer/v1')).document) === ${JSON.stringify(JSON.stringify(expectedDoc))}`);
+    if (boundary !== null) browser("press", "Control+z");
+  }
+  dispatch(`document.querySelector('[data-layer="${d}"]').dispatchEvent(new DragEvent('dragstart', {bubbles:true, dataTransfer:new DataTransfer()}))`);
+  dispatch(`{const row=document.querySelector('[data-layer="${a}"]');row.dispatchEvent(new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:new DataTransfer(),clientY:row.getBoundingClientRect().top}))}`);
+  dispatch("document.querySelector('.layer-list').dispatchEvent(new DragEvent('dragleave',{bubbles:true,relatedTarget:document.body}))");
+  check("!document.querySelector('[data-drop-edge]')", "leaving the list must clear the line");
+  dispatch(`{const row=document.querySelector('[data-layer="${a}"]');row.dispatchEvent(new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:new DataTransfer(),clientY:row.getBoundingClientRect().top}))}`);
+  dispatch(`document.querySelector('[data-layer="${d}"]').dispatchEvent(new DragEvent('dragend', {bubbles:true}))`);
+  check("!document.querySelector('[data-drop-edge], .layer-row.dragging')", "cancelled drag must clear the line and source styling");
+  evaluate(`localStorage.setItem('konpeki-composer/v1', ${JSON.stringify(saved)})`);
+  browser("reload");
+  console.log("PASS: blue layer insertion before/after rows in both directions, first/last boundaries, no-op drops, stable geometry, leave/cancel cleanup, undo and unchanged groups/reading order/content.");
+}
 function checkDoubleClickEditing(cases) {
   for (const [index, [kind]] of cases.entries()) {
-    click(`Page ${String(index + 2).padStart(2, "0")}`);
+    const name = `Page ${String(index + 2).padStart(2, "0")}`;
+    evaluate(`[...document.querySelectorAll('.slide-thumbnail')].find(button => button.lastElementChild.textContent === ${JSON.stringify(name)}).scrollIntoView({block:'center'})`);
+    click(name);
     const before = JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document;
     browser("dblclick", "#canvas-stage .component-surface");
     const field = kind === "Text block" ? "content" : "intent";
@@ -91,6 +156,7 @@ try {
   browser("set", "viewport", "1440", "900", "2");
   browser("wait", "--fn", "!document.querySelector('.left-panel').classList.contains('collapsed') && !document.querySelector('.right-panel').classList.contains('collapsed')");
   evaluate("Promise.all(document.querySelector('.left-sidebar').getAnimations().map(animation => animation.finished))");
+  checkLayerInsertion();
   click("Add page");
   check('document.querySelectorAll(".slide-thumbnail").length === 2', "Add page must create the second page");
   check('document.querySelectorAll("#canvas-stage [data-component]").length === 0', "new slide is not empty");
@@ -108,6 +174,13 @@ try {
     return { x, y };
   })()`));
   browser("hover", removeTarget);
+  evaluate(`Promise.all(document.querySelector('${removeTarget}').getAnimations({subtree:true}).map(animation => animation.finished))`);
+  check(`(() => {
+    const button = document.querySelector('${removeTarget}'), fill = getComputedStyle(button, '::before');
+    return getComputedStyle(button).backgroundColor === 'rgba(0, 0, 0, 0)' &&
+      fill.backgroundColor === 'rgb(255, 233, 233)' && fill.width === '28px' && fill.height === '28px' &&
+      fill.top === '5px' && fill.right === '5px' && fill.bottom === '5px' && fill.left === '5px';
+  })()`, "Remove hover fill must be inset, not touch the preview or fill the 40px hit target");
   browser("screenshot", '.slide-thumbnail-item:nth-child(2)', join(artifacts, "remove-page-target.png"));
   // Hit the added outer edge, not the small × glyph or the old 28px area.
   browser("mouse", "move", String(removePoint.x), String(removePoint.y));
