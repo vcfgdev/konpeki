@@ -37,6 +37,35 @@ try {
   browser("set", "viewport", "1556", "1030", "2");
   evaluate("document.fonts.ready");
   settlePanels();
+  const assertCanvasStill = () => evaluate(`{
+    const rect = document.querySelector('#canvas-stage .canvas').getBoundingClientRect();
+    for (const key of ['x', 'y', 'width', 'height']) {
+      if (Math.abs(rect[key] - window.canvasBeforeSelection[key]) > 0.25)
+        throw Error('Canvas shifted on selection or page rename: ' + key + ' changed by ' + (rect[key] - window.canvasBeforeSelection[key]));
+    }
+  }`);
+  for (const [width, height] of [[1556, 1030], [390, 844], [1024, 768]]) {
+    browser("set", "viewport", String(width), String(height), "2");
+    settlePanels();
+    browser("click", ".component-dock button:first-child");
+    evaluate("window.canvasBeforeSelection = document.querySelector('#canvas-stage .canvas').getBoundingClientRect().toJSON()");
+    click("Select Diagram"); assertCanvasStill();
+    click("Edit elements"); assertCanvasStill();
+    click("Done editing"); assertCanvasStill();
+    browser("click", ".component-dock button:first-child"); assertCanvasStill();
+    browser("dblclick", ".stage-meta h2"); assertCanvasStill();
+    browser("fill", '[aria-label="Page name"]', "Meet Konpeki — a longer page name that must not move the canvas when actions appear");
+    browser("press", "Enter"); assertCanvasStill();
+    click("Select Diagram"); assertCanvasStill();
+    capture(`stable-selection-${width}.png`);
+    browser("dblclick", ".stage-meta h2");
+    browser("fill", '[aria-label="Page name"]', "Meet Konpeki");
+    browser("press", "Enter"); assertCanvasStill();
+  }
+  browser("set", "viewport", "1556", "1030", "2");
+  settlePanels();
+  browser("click", ".component-dock button:first-child");
+  console.log("PASS: canvas position and dimensions stay fixed on component selection, deselection, vector editing and page renaming at 1556/390/1024px, including long page names.");
   evaluate(`{
     for (const item of document.querySelectorAll('.slide-thumbnail-item')) {
       const thumbnail = item.querySelector('.slide-thumbnail-canvas').getBoundingClientRect();
