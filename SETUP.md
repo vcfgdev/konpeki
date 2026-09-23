@@ -1,35 +1,47 @@
 # Set up Konpeki for your coding agent
 
-Install the `konpeki` skill once, then give your agent a creation brief:
+Requires **Node.js 24+**, npm, a coding agent with file and command access, and a browser.
 
-```text
-Use Konpeki to turn these launch notes into a product announcement.
+Install once, choosing your agent when prompted:
+
+```sh
+npx skills add vcfgdev/konpeki -g
 ```
 
-Opening and inspecting the editable preview is part of the skill, not an extra
-instruction the person has to remember. Covers, social graphics, charts,
-diagrams and presentations use the same workflow. Keep the brief and revisions
-in agent chat; the browser edits, reviews, presents and exports the document.
-Konpeki supplies no hosted AI service or additional model subscription.
+Start a new conversation or reload your agent's skills. **Send this to your agent:**
 
-## 1. Install the skill or plugin
+> Use Konpeki to create a one-page explainer of how a browser, API and database work together.
 
-Use the host's skill installer to install the complete
-[`skills/konpeki`](skills/konpeki/) directory from
-`vcfgdev/konpeki`. Keep its `scripts/` and `assets/` directories. In Codex, ask the skill installer:
+Or use your own brief and materials. The agent prepares the runtime, creates the
+document, opens the canvas and checks the result; no separate `init` step is
+needed. Allow any required installation/browser permissions. Remote workspaces
+need authenticated preview forwarding. Keep revisions in the same conversation.
+
+## Other installers
+
+For an unattended install, select a single agent (Amp example):
+
+```sh
+npx skills add vcfgdev/konpeki -g -a amp -y
+```
+
+This avoids auto-selecting unrelated agent targets when no terminal prompt is available.
+
+You can also use your agent's native skill installer:
 
 ```text
 Install the konpeki skill from vcfgdev/konpeki, at skills/konpeki.
 ```
 
-Other agents may use another installer or skill location. Follow their documented
-mechanism; there is no universal slash command. If a host does not discover skills,
-read the installed `SKILL.md` directly. Do not overwrite existing agent guidance.
+Install the complete [`skills/konpeki`](skills/konpeki/) directory, including
+`scripts/` and `assets/`. Follow the host's documented skill location; if it does
+not discover skills, read the installed `SKILL.md` directly. Do not overwrite
+existing agent guidance.
 
 If you previously installed `authoring-visuals`, replace that installed skill
 with `konpeki` rather than keeping both copies. The runtime package is unchanged.
 
-### Choose init or generate
+## Optional commands
 
 | Mode | Codex CLI / IDE | Claude Code standalone skill |
 | --- | --- | --- |
@@ -77,7 +89,11 @@ It becomes available from the remote repository after these files are published.
 Native Codex GUI installation needs a separate client smoke test; package checks
 alone do not establish host compatibility.
 
-## 2. Let the skill prepare the runtime
+## Agent setup reference
+
+The installed skill handles these steps; the person does not need to run them manually.
+
+### Prepare the runtime
 
 Check Node.js 24+, npm, command/file access and the host's browser capabilities.
 Follow host approval and toolchain rules if prerequisites are missing.
@@ -101,7 +117,7 @@ For manual project-local npm installation, see [Manual npm start](README.md#manu
 Repository contributors instead use the [mise setup](docs/development.md); users
 of the published package do not need mise.
 
-## 3. Generate, validate and open the visual
+### Generate, validate and open the visual
 
 Follow the installed skill and the runtime's `AUTHORING.md`, composition contract
 and design resources. Use the brief already supplied; ask only for information

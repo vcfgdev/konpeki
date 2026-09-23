@@ -15,48 +15,26 @@ editable JSON, or use **Present** for a chrome-free presentation.
 Requires **Node.js 24+**, npm, a coding agent that can edit files and run commands,
 and a browser.
 
-Install the [Konpeki skill](skills/konpeki/) with your agent's
-skill installer. Install the whole directory, including `scripts/` and `assets/`, not just
-`SKILL.md`. For example, ask a Codex skill installer:
+Install once, choosing your agent when prompted:
 
-```text
-Install the konpeki skill from vcfgdev/konpeki, at skills/konpeki.
+```sh
+npx skills add vcfgdev/konpeki -g
 ```
 
-Then choose a mode, or just give it a brief:
+Start a new conversation or reload your agent's skills. **Send this to your agent:**
 
-| Workflow | Codex CLI / IDE | Claude Code standalone skill |
-| --- | --- | --- |
-| Open a blank or existing editor; no generation | `$konpeki init` | `/konpeki init` |
-| Create, inspect and revise a visual | `$konpeki generate …` | `/konpeki generate …` |
+> Use Konpeki to create a one-page explainer of how a browser, API and database work together.
 
-`init` accepts a composition JSON path and preserves existing work. `generate`
-uses the materials already in your conversation and prepares the runtime if
-needed; there is no required init step. Plugin installations may namespace the
-skill. Other hosts can select the skill or use natural language:
+Replace the example with your own brief and materials. Your agent prepares the
+runtime, creates editable JSON in your workspace, opens the canvas and checks the
+result. No clone or separate `init` step. First use may require installation and
+browser permissions; remote workspaces need authenticated preview forwarding.
 
-> Use Konpeki to turn these launch notes into a product announcement.
-
-Or ask for an article cover, a social graphic, a chart, a diagram or a presentation.
-Natural-language creation requests select `generate` automatically.
-The skill reuses a compatible runtime or, with permission, installs the pinned
-npm release in a user cache. It creates editable JSON in your workspace, opens
-the preview and visually checks the result. You do not need to clone Konpeki,
-edit a package manifest, or repeat your prompt in a blank canvas.
-
-First-run installation, browser permissions and remote preview forwarding depend
-on your agent host. If skills are unavailable, give the agent the public
-[SETUP.md](https://raw.githubusercontent.com/vcfgdev/konpeki/main/SETUP.md) URL and
-your brief together. The setup guide also covers the optional Codex plugin package.
-
-Ask for revisions in the same conversation. Add “Stop after the outline for
-approval” when you want a checkpoint. Supply a visual direction or leave it open;
-[authoring modes](AUTHORING.md#authoring-mode) provide defaults without requiring
-you to choose fonts, colors or layouts first.
-
-Canvas review notes use **Build it** and an active agent listener, or the
-button's copyable handoff to resume the agent. Opening the editor alone does not
-connect or wake an agent. The skill modes are not terminal CLI subcommands.
+Keep revisions in the same conversation. Canvas notes use **Build it** and its
+copyable handoff unless an agent listener is active; the button cannot wake an
+idle agent. See [setup details and optional commands](SETUP.md) for other install
+methods, or give that guide's [raw URL](https://raw.githubusercontent.com/vcfgdev/konpeki/main/SETUP.md)
+to your agent with your brief.
 
 ## Try the editor in your browser
 
