@@ -311,7 +311,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 26px;
+  height: 40px;
   margin: 0 0 12px;
 }
 .edit-elements-action {
@@ -321,10 +321,14 @@
   font-size: 12px;
 }
 .stage-meta h2 {
+  min-width: 0;
+  overflow: hidden;
   font-size: 12px;
   font-weight: 500;
   color: var(--ui-muted);
   margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   cursor: text;
 }
 .stage-meta input {

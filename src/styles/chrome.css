@@ -153,6 +153,16 @@
   min-width: 0;
 }
 
+.browser-menu::details-content {
+  opacity: 0;
+  transition: opacity 120ms ease-in, content-visibility 120ms allow-discrete;
+}
+
+.browser-menu[open]::details-content {
+  opacity: 1;
+  transition: opacity 180ms ease-out, content-visibility 180ms allow-discrete;
+}
+
 .browser-menu > summary {
   display: flex;
   align-items: center;
@@ -210,6 +220,24 @@
   border-radius: 12px;
   background: var(--ui-surface);
   box-shadow: var(--ui-shadow);
+  transform: translateY(6px) scale(0.98);
+  transform-origin: bottom center;
+  transition: transform 120ms ease-in;
+}
+
+.browser-menu[open] .browser-menu-popover {
+  transform: none;
+  transition: transform 180ms ease-out;
+}
+
+@starting-style {
+  .browser-menu[open]::details-content {
+    opacity: 0;
+  }
+
+  .browser-menu[open] .browser-menu-popover {
+    transform: translateY(6px) scale(0.98);
+  }
 }
 
 .browser-menu-intro,
@@ -234,10 +262,6 @@
   overflow-wrap: anywhere;
 }
 
-.browser-save-status {
-  margin-top: 4px;
-}
-
 .browser-menu-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -256,7 +280,6 @@
 }
 
 .action-island .browser-menu-actions button.secondary {
-  border-color: transparent;
   color: var(--ui-muted);
 }
 
@@ -367,6 +390,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .browser-menu::details-content {
+    transition: none !important;
+  }
+
   .build-button.building .build-label,
   .build-orb.active circle,
   .build-orb.nebula circle,

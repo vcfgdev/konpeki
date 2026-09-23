@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { CompositionComponent } from "../../composition/types.ts";
 import { componentLabels } from "../lib/model.ts";
 import mark from "../assets/konpeki-mark.png";
@@ -103,11 +103,12 @@ export function WorkspaceChrome({
   onComponentTool: (kind: CompositionComponent["kind"]) => void;
 }) {
   const browserMenu = useRef<HTMLDetailsElement>(null);
+  const [browserMenuOpen, setBrowserMenuOpen] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
   function closeBrowserMenu(restoreFocus = true) {
     const menu = browserMenu.current;
     if (!menu?.open) return;
-    menu.open = false;
+    setBrowserMenuOpen(false);
     if (restoreFocus) menu.querySelector("summary")?.focus();
   }
   useEffect(() => {
@@ -198,26 +199,31 @@ export function WorkspaceChrome({
           </svg>
         </button>
         {browserTools && (
-          <details className="browser-menu" ref={browserMenu} onKeyDown={(event) => {
+          <details className="browser-menu" ref={browserMenu} open={browserMenuOpen} onKeyDown={(event) => {
             if (event.key === "Escape" && browserMenu.current?.open) {
               event.preventDefault();
               event.stopPropagation();
               closeBrowserMenu();
             }
           }}>
-            <summary>
+            <summary onClick={(event) => {
+              event.preventDefault();
+              setBrowserMenuOpen(open => !open);
+            }}>
               Demo Mode
               <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 10 4-4 4 4" /></svg>
             </summary>
-            <div className="browser-menu-popover" role="region" aria-label="Demo Mode">
+            <div className="browser-menu-popover" role="region" aria-label="Demo Mode" inert={!browserMenuOpen}>
               <div className="browser-menu-intro">
                 <strong>Demo Mode</strong>
-                <p>Explore the canvas here. No agent connection or file sync.</p>
-                <p className="browser-save-status" role="status">{browserTools.saveMessage}</p>
+                <p>
+                  Explore the canvas here. No agent connection or file sync.{" "}
+                  <span role="status">{browserTools.saveMessage}</span>
+                </p>
               </div>
               <div className="browser-menu-actions">
                 <button type="button" onClick={() => importInput.current?.click()}>
-                  Import JSON
+                  Import
                 </button>
                 <input
                   ref={importInput}
@@ -237,7 +243,7 @@ export function WorkspaceChrome({
                   closeBrowserMenu();
                   browserTools.onDownloadJSON();
                 }}>
-                  Download JSON
+                  Export
                 </button>
                 <button type="button" className="secondary" onClick={() => {
                   closeBrowserMenu();
@@ -254,7 +260,7 @@ export function WorkspaceChrome({
               </div>
               <div className="browser-agent-handoff">
                 <strong>Continue with an agent</strong>
-                <p>Download JSON, then ask your coding agent to open it with Konpeki.</p>
+                <p>Export the JSON file, then ask your coding agent to open it with Konpeki.</p>
                 <a
                   href="https://github.com/vcfgdev/konpeki/blob/main/SETUP.md"
                   target="_blank"
