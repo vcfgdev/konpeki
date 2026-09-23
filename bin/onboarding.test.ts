@@ -14,7 +14,7 @@ import { validateComposition } from "../composition/validate.ts";
 const skill = new URL("../skills/konpeki/", import.meta.url);
 const cli = fileURLToPath(new URL("./konpeki.mjs", import.meta.url));
 
-async function fixture(path: string, version = "0.3.0") {
+async function fixture(path: string, version = "0.3.1") {
   for (const file of ["AGENTS.md", "AUTHORING.md", "composition/README.md", "design/README.md", "docs/workflow.md"]) {
     await mkdir(dirname(join(path, file)), { recursive: true });
     await writeFile(join(path, file), "fixture\n");
@@ -58,9 +58,9 @@ test("a copied skill resolves pinned runtimes without touching project files", a
   await mkdir(join(checkout, "bin"));
   await writeFile(join(checkout, "bin/konpeki.mjs"), 'import "missing-dependency";');
   assert.equal(run().status, 1, "a dependency-free checkout is not a usable runtime");
-  const cachedRoot = join(cache, "konpeki/0.3.0/node_modules/konpeki");
+  const cachedRoot = join(cache, "konpeki/0.3.1/node_modules/konpeki");
   await fixture(cachedRoot);
-  assert.deepEqual(JSON.parse(run().stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.3.0" });
+  assert.deepEqual(JSON.parse(run().stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.3.1" });
   const installedRoot = join(workspace, "node_modules/konpeki");
   await fixture(installedRoot);
   assert.equal(JSON.parse(run("--install").stdout).root, installedRoot, "reuse beats installation, including with --install");
@@ -68,9 +68,9 @@ test("a copied skill resolves pinned runtimes without touching project files", a
   const fallback = run();
   assert.equal(fallback.stderr, "", "failed probes must not leak diagnostics into bootstrap output");
   assert.equal(JSON.parse(fallback.stdout).root, cachedRoot, "broken workspace and checkout must not shadow a usable cache");
-  await fixture(installedRoot, "0.2.0");
+  await fixture(installedRoot, "0.3.0");
   assert.equal(JSON.parse(run().stdout).root, cachedRoot, "an incompatible workspace package must not be reused or replaced");
-  assert.equal(JSON.parse(await readFile(join(installedRoot, "package.json"), "utf8")).version, "0.2.0");
+  assert.equal(JSON.parse(await readFile(join(installedRoot, "package.json"), "utf8")).version, "0.3.0");
   await rm(join(cachedRoot, "AUTHORING.md"));
   assert.equal(run().status, 1, "incomplete runtime must not be reported ready");
   assert.equal(await readFile(join(workspace, "package.json"), "utf8"), packageJSON);
@@ -102,8 +102,8 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
     if (request.url === "/konpeki") {
       response.setHeader("Content-Type", "application/json");
       response.end(JSON.stringify({
-        name: "konpeki", "dist-tags": { latest: "0.3.0" },
-        versions: { "0.3.0": { name: "konpeki", version: "0.3.0", bin: { konpeki: "runtime/konpeki.mjs" }, dist: { tarball: `${registryURL}/konpeki.tgz` } } },
+        name: "konpeki", "dist-tags": { latest: "0.3.1" },
+        versions: { "0.3.1": { name: "konpeki", version: "0.3.1", bin: { konpeki: "runtime/konpeki.mjs" }, dist: { tarball: `${registryURL}/konpeki.tgz` } } },
       }));
     } else if (request.url === "/konpeki.tgz") {
       downloads++;
@@ -126,8 +126,8 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
       npm_config_userconfig: join(root, "empty-npmrc"),
     },
   });
-  const cachedRoot = join(workspace, "nested cache/konpeki/0.3.0/node_modules/konpeki");
-  assert.deepEqual(JSON.parse(installed.stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.3.0" });
+  const cachedRoot = join(workspace, "nested cache/konpeki/0.3.1/node_modules/konpeki");
+  assert.deepEqual(JSON.parse(installed.stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.3.1" });
   assert.equal(downloads, 1, "exercise a real npm install against the disposable registry");
   assert.equal(await readFile(join(workspace, "package.json"), "utf8"), manifest);
   assert.equal(await readFile(join(workspace, "package-lock.json"), "utf8"), lock);

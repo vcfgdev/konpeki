@@ -106,7 +106,7 @@ node "<installed-skill>/scripts/ensure-runtime.mjs"
 
 The script reuses a compatible workspace installation, surrounding Konpeki
 checkout, or cached runtime. If none exists, obtain any required host approval
-and rerun with `--install`. It installs the pinned `konpeki@0.3.0` release in a
+and rerun with `--install`. It installs the pinned `konpeki@0.3.1` release in a
 user cache, without adding project dependencies or changing project guidance.
 Missing/incompatible runtimes are never reported ready. The script prints JSON
 with `root`, `cli` and `version`; installation diagnostics go to stderr.

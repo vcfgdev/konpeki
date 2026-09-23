@@ -93,7 +93,7 @@ Its `scripts/ensure-runtime.mjs` pins the release runtime. It performs
 no installation without `--install`, and never updates project dependencies.
 When preparing a new release, deliberately update its pin and the plugin version
 together with the package version after testing the target runtime. The current
-pin is 0.3.0; local CLI/playground changes do not republish that npm version.
+pin is 0.3.1; local CLI/playground changes do not republish that npm version.
 
 ## Implementation reference
 
