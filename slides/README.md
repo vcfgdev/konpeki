@@ -1,153 +1,56 @@
-# Decks and examples
+# What can I make with Konpeki?
 
-The image gallery below is for the repository checkout. The npm package includes
-editable examples and prompts but omits gallery PNGs; view this page and its
-screenshots in the repository, or render the source locally.
+Reviewed examples with editable text and vector artwork. Scenarios and data
+are illustrative; these are finished documents, not one-click templates.
 
-## Introducing Konpeki
+Download JSON and choose **Browser → Import JSON** in the
+[playground](https://vcfgdev.github.io/konpeki/). For revision notes and agent
+handoff, open it in a [file-backed preview](../docs/workflow.md#file-backed-editing-with-an-agent).
+Playground edits stay in your browser.
 
-[Introducing Konpeki](introducing-konpeki/README.md) is a six-slide factual product
-introduction authored in the shared canvas's editable composition format.
-Open `?example=introducing-konpeki` in the running application, or download
-its [composition JSON](introducing-konpeki/composition.json) and use **Open**.
+## Explain a system
 
-## Retained drawing references
+An order platform's request handling, data, events and fulfillment.
 
-Each retained example contains its approved `PROMPT.md`, editable `index.tsx`, and final
-PNGs in `screenshots/`. Generation logs, environment records, review reports and
-superseded captures are not included. Subjects and datasets in these retained
-references are fictional; they are not another presentation runtime.
+[Editable JSON](https://github.com/vcfgdev/wf/blob/main/playground/konpeki-catalog/architecture/composition.json) ·
+[Brief and source](https://github.com/vcfgdev/wf/tree/main/playground/konpeki-catalog/architecture)
 
-## Representative charts
+![Editable order-platform architecture](https://raw.githubusercontent.com/vcfgdev/wf/main/playground/konpeki-catalog/architecture/screenshot.png)
 
-### Line chart — Tide, page 1
+## Communicate data
 
-Two time series on a shared scale, direct labels, a target line, an event marker
-and an explicit gap for missing data. [Editable source](line-chart/index.tsx).
+A proportional Sankey follows 1,000 trial users through activation and outcomes.
 
-![Line chart with a target and missing-data gap](line-chart/screenshots/page-1.png)
+[Editable JSON](https://github.com/vcfgdev/wf/blob/main/playground/konpeki-catalog/sankey/composition.json) ·
+[Brief and source](https://github.com/vcfgdev/wf/tree/main/playground/konpeki-catalog/sankey)
 
-### Grouped bar chart — Birch, page 1
+![Editable trial-user flow with proportional ribbons](https://raw.githubusercontent.com/vcfgdev/wf/main/playground/konpeki-catalog/sankey/screenshot.png)
 
-Horizontal before/after bars with a shared zero baseline and direct values.
-[Editable source](bar-chart/index.tsx).
+## Announce a release
 
-![Grouped horizontal before-and-after bars](bar-chart/screenshots/page-1.png)
+A 1080×1350 Clearpath release announcement: preview, review and export Markdown.
 
-### Vertical bar chart — Fieldnote, page 1
+[Editable JSON](https://github.com/vcfgdev/wf/blob/main/playground/konpeki-showcase/release.json) ·
+[Brief and source](https://github.com/vcfgdev/wf/tree/main/playground/konpeki-showcase)
 
-Zero-based columns compare processing throughput with direct values.
-[Editable source](vertical-bar-charts/index.tsx).
+![Clearpath portrait announcement](https://raw.githubusercontent.com/vcfgdev/wf/main/playground/konpeki-showcase/release.png)
 
-![Vertical bars comparing indexing throughput](vertical-bar-charts/screenshots/page-1.png)
+## Teach a concept
 
-### Two charts side by side — Fieldnote, page 2
+A 1200×1600 Folio explainer shows a stale save, its rejection and recovery choices.
 
-Throughput on the left and visibility delay on the right show the trade-off,
-with separate units, zero-based scales and acceptance thresholds.
-[Editable source](vertical-bar-charts/index.tsx).
+[Editable JSON](https://github.com/vcfgdev/wf/blob/main/playground/konpeki-showcase/explainer.json) ·
+[Brief and source](https://github.com/vcfgdev/wf/tree/main/playground/konpeki-showcase)
 
-![Side-by-side throughput and visibility-delay bar charts](vertical-bar-charts/screenshots/page-2.png)
+![Folio optimistic-concurrency explainer](https://raw.githubusercontent.com/vcfgdev/wf/main/playground/konpeki-showcase/explainer.png)
 
-### Stacked bar chart — Fern, page 1
+## More examples
 
-Direct-count segments compare completion before and after a hint, with the same
-denominator for every task. [Editable source](research-brief/index.tsx).
+- [Chart and diagram catalog](https://github.com/vcfgdev/wf/tree/main/playground/konpeki-catalog): 40 editable examples.
+- [Introducing Konpeki](introducing-konpeki/README.md): six-page product overview.
+- [Repository cover](github-cover/README.md): 1280×640 social preview.
+- [React/SVG drawing references](drawing-references.md): 18 older examples, not editor-importable documents.
 
-![Stacked bars showing task completion counts](research-brief/screenshots/page-1.png)
-
-## Representative content layouts
-
-### Two columns — Fern, page 2
-
-Parallel columns separate observed evidence from researchers' interpretations.
-[Editable source](research-brief/index.tsx).
-
-![Two-column observations and interpretations](research-brief/screenshots/page-2.png)
-
-### Three columns — Lantern, page 2
-
-Three aligned time-based columns distinguish rollback, partial recovery and
-backlog clearance. [Editable source](incident-workflow/index.tsx).
-
-![Three-column incident recovery stages](incident-workflow/screenshots/page-2.png)
-
-### Main panel and sidebar — Patchnote, page 2
-
-A large illustrative draft panel pairs with a narrower human-review checklist.
-[Editable source](product-introduction/index.tsx).
-
-![Draft interface with a review sidebar](product-introduction/screenshots/page-2.png)
-
-## Representative diagrams and structured information
-
-### Architecture diagram — Parcel Relay, page 1
-
-Named components and attached connectors explain acceptance and delivery.
-[Editable source](architecture/index.tsx).
-
-![Event acceptance and delivery architecture](architecture/screenshots/page-1.png)
-
-### Sequence diagram — Parcel Relay, page 3
-
-Two participant lifelines show a lost response and retry of the same event.
-[Editable source](architecture/index.tsx).
-
-![Timeout and retry sequence diagram](architecture/screenshots/page-3.png)
-
-### Gantt chart — Harbor, page 1
-
-A shared calendar axis compares baseline, completed and forecast work, with
-dependencies and release gates. [Editable source](delivery-plan/index.tsx).
-
-![Gantt chart with dependencies and gates](delivery-plan/screenshots/page-1.png)
-
-### Sankey chart — Brook, page 1
-
-Proportional flows carry 120 tickets from intake through handling to outcomes,
-with direct counts and conservation at each stage.
-[Editable source](sankey/index.tsx).
-
-![Sankey chart of support ticket routing and outcomes](sankey/screenshots/page-1.png)
-
-### Evidence table — Harbor, page 2
-
-Aligned stage–evidence rows use horizontal rules to make gate requirements easy
-to compare. [Editable source](delivery-plan/index.tsx).
-
-![Stage and evidence requirements table](delivery-plan/screenshots/page-2.png)
-
-## All examples
-
-The selections above demonstrate distinct visual patterns rather than ranking
-decks. All final screenshots remain available below.
-
-| Example | Prompt | Final screenshots |
-| --- | --- | --- |
-| Patchnote — product introduction | [Prompt](product-introduction/PROMPT.md) | [Images](product-introduction/screenshots/) |
-| Parcel Relay — architecture | [Prompt](architecture/PROMPT.md) | [Images](architecture/screenshots/) |
-| Fieldnote — experiment | [Prompt](experiment/PROMPT.md) | [Images](experiment/screenshots/) |
-| Lantern — incident workflow | [Prompt](incident-workflow/PROMPT.md) | [Images](incident-workflow/screenshots/) |
-| Moss — comparison | [Prompt](comparison/PROMPT.md) | [Images](comparison/screenshots/) |
-| Juniper — migration | [Prompt](migration/PROMPT.md) | [Images](migration/screenshots/) |
-| Clearpath — OG images | [Prompt](og-images/PROMPT.md) | [Images](og-images/screenshots/) |
-| Alder — article briefing | [Prompt](article-brief/PROMPT.md) | [Images](article-brief/screenshots/) |
-| Waymark — results explanation | [Prompt](results-explanation/PROMPT.md) | [Images](results-explanation/screenshots/) |
-| Dockline — retrospective | [Prompt](retrospective/PROMPT.md) | [Images](retrospective/screenshots/) |
-| Fern — research briefing | [Prompt](research-brief/PROMPT.md) | [Images](research-brief/screenshots/) |
-| Cedar Support — decision memo | [Prompt](decision-memo/PROMPT.md) | [Images](decision-memo/screenshots/) |
-| Harbor — delivery plan | [Prompt](delivery-plan/PROMPT.md) | [Images](delivery-plan/screenshots/) |
-| Folio — teaching | [Prompt](teaching/PROMPT.md) | [Images](teaching/screenshots/) |
-| Tide — line chart | [Prompt](line-chart/PROMPT.md) | [Images](line-chart/screenshots/) |
-| Birch — bar chart | [Prompt](bar-chart/PROMPT.md) | [Images](bar-chart/screenshots/) |
-| Fieldnote — vertical and paired bar charts | [Prompt](vertical-bar-charts/PROMPT.md) | [Images](vertical-bar-charts/screenshots/) |
-| Brook — Sankey chart | [Prompt](sankey/PROMPT.md) | [Images](sankey/screenshots/) |
-
-The `index.tsx` files are retained presentation-runtime-independent React/SVG
-drawing references, not runnable routes or a second deck format. Agents can
-inspect and adapt their techniques, then convert supported SVG primitives into
-editable vector elements in the owning composition component.
-Shared authoring resources live in `design/` and `lib/`.
-
-Screenshots reflect the final reviewed browser renders, including manual repairs.
-They do not establish PDF/PPTX, cross-browser or cross-application fidelity.
+The catalog and portrait examples live in wf, outside the npm package and hosted
+playground. The introduction and cover JSONs are included in npm; the playground
+bundles the introduction. Gallery screenshots are repository-only.

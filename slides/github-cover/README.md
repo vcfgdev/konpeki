@@ -1,29 +1,21 @@
 # GitHub repository cover
 
-`cover.png` is the 1280 × 640 GitHub social-preview image. It was exported with
-Konpeki's PNG exporter from `composition.json`, not rasterized from a separate
-design runtime. The document retains native editable text and vector artwork.
+[composition.json](composition.json) holds the editable text and vectors;
+[cover.png](cover.png) is its 1280×640 Konpeki PNG export.
+The varied canvas sizes illustrate possible formats, not a fixed workflow.
 
-The browser playground serves a copy at `public/og.png` for Open Graph and
-Twitter cards. Refresh that copy after exporting a new cover.
-
-Open for editing:
+Open from the repository root, edit, then choose **Export PNG**:
 
 ```sh
 mise exec -- pnpm konpeki preview slides/github-cover/composition.json
 ```
 
-Use **Export PNG** after editing.
+Refresh [public/og.png](../../public/og.png) for the playground's social cards.
+Uploading the cover to GitHub's repository social-preview setting is separate.
 
-`PROMPT.md` records the brief, assumptions and asset sources. `author.ts`
-reconstructs the initial composition with Node.js and ImageMagick; running it
-overwrites the JSON, so do not run it over subsequent human edits.
+[Brief and sources](PROMPT.md). [author.ts](author.ts) reconstructs the initial
+composition using Node.js and ImageMagick; **it overwrites canvas edits**.
 
-Verified: composition validation, TypeScript check and application build;
-the real canvas loaded all five components and IBM Plex Sans. Inspected the
-1280 × 640 PNG and a 640 × 320 review copy for alignment, clipping and legibility.
-Corrected the logo's vertical alignment after the first export. The current
-illustration uses differently sized canvases to show the breadth of the visual
-framework without prescribing one workflow or fixed set of outputs.
-Uploading the PNG as the repository social preview remains a separate GitHub
-setting.
+Original review: validation, typecheck and build passed; all five components and
+IBM Plex Sans loaded. Inspected the 1280×640 export and a 640×320 copy for alignment,
+clipping and legibility.

@@ -88,9 +88,9 @@ authenticated preview mechanism rather than sharing a local address.
 
 ## Examples and guides
 
-- [Example gallery](slides/README.md): 18 fictional examples and an editable
-  Konpeki introduction. Retained React/SVG examples are drawing references;
-  new editable documents use composition JSON.
+- [Native example gallery](slides/README.md): editable diagrams, data graphics,
+  a social announcement and a one-page explainer, plus the product introduction
+  and repository cover. Older React/SVG drawing references remain separate.
 - [Agent-led setup](SETUP.md) and [authoring guidance](AUTHORING.md).
 - [Canvas workflow](docs/workflow.md): page sizes, export and agent handoff.
 - [Development](docs/development.md): architecture, demo hosting, packaging and checks.

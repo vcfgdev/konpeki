@@ -22,6 +22,7 @@ for (const required of [
   "public/og.png",
   "composition/schema.json", "composition/README.md",
   "scripts/migrate-react-page.ts", "slides/README.md",
+  "slides/drawing-references.md", "slides/github-cover/composition.json",
   "slides/introducing-konpeki/composition.json",
   "slides/architecture/index.tsx", "slides/architecture/PROMPT.md",
 ]) assert(paths.has(required), `Missing package resource: ${required}`);

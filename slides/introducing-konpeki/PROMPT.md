@@ -1,40 +1,30 @@
 # Public brief excerpt
 
-This file retains the original creation request and its authoring context.
-Implementation debugging and product-development follow-ups are omitted; this
-is not the complete conversation record.
+Public requests and authoring decisions; debugging and product-development
+follow-ups are omitted. This is not the complete conversation.
 
 > build a pre to introduce konpeki
 
-## Authoring record
+## Creation
 
-- Requested mode: unspecified. Resolved mode: default.
-- Explicit visual preferences: none supplied.
-- Interpretation: “pre” means presentation. Build a six-slide English introduction
-  for people and coding-agent users who have not used Konpeki.
-- Direction: white, IBM Plex Sans, dark ink and Konpeki blue; restrained diagrams,
-  clear hierarchy, no invented metrics or unsupported export claims.
-- Sources: the repository's documented capabilities;
-  see SOURCE.md for concrete references and qualifications.
-- Deliverable: composition JSON, browser presentation, reviewed captures.
+- Interpreted “pre” as a six-page English introduction for first-time users.
+- No mode or visual preferences supplied; chose default mode, white, IBM Plex
+  Sans, dark ink and Konpeki blue, with restrained diagrams and clear hierarchy.
+- Use documented capabilities, not invented metrics or export claims.
+  Deliver editable JSON, browser presentation and reviewed captures.
 
-## Public revision request
+## Revision
 
 > review the example composition and revise if needed
 
-### Adaptation record
+- Show creation from a brief, with init optional. Canvas-first intent / Build it
+  remains an alternative; Konpeki is not primarily a slide explainer.
+- Separate browser-local storage from agent-opened files. Notes and Build it
+  require a file session; Copy prompt resumes an idle agent.
+- Use skill installation and user prerequisites, not contributor setup or
+  assumptions that every agent supports the same slash command.
+- Retain default mode, six pages, stable IDs, unrelated geometry and the existing
+  Precision Paper appearance. Its Noto Sans differs from the original font choice.
+- Refresh JSON, authoring source, source notes and captures.
 
-- Requested mode: unspecified. Resolved mode: retain default.
-- Scope: review the introduction against the current skill-led creation,
-  file-backed revision and browser-only playground workflows.
-- Position Konpeki as a creator of editable visuals, not primarily a slide
-  explainer. Show a creation brief without a mandatory init or canvas-drafting step;
-  keep the canvas-first intent / Build it workflow as an alternative.
-- Distinguish browser-local playground storage from an agent-opened file session.
-  Notes and Build it need the latter; Copy prompt resumes an idle agent.
-- Replace contributor setup commands with skill installation and current user
-  prerequisites. Do not imply that every agent uses the same slash command.
-- Preserve the six pages, existing Precision/Paper appearance, stable IDs and
-  unrelated geometry. Precision uses Noto Sans; the IBM Plex direction above
-  records the original creation, not the current theme.
-- Refresh the editable JSON, authoring source, source notes and reviewed captures.
+See [SOURCE.md](SOURCE.md) for capability evidence and artwork provenance.
