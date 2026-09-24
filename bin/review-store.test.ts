@@ -13,15 +13,15 @@ async function fixture(t: { after: (fn: () => Promise<void>) => void }) {
   await writeFile(path, await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url)));
   return path;
 }
-const target = { slideId: "editing", componentId: "editable-diagram", elementId: "review-node" };
+const target = { slideId: "notes", componentId: "notes-ui", elementId: "ui-page-sel" };
 
 test("notes retain distinct scopes and builds persist until explicitly acknowledged", async t => {
   const path = await fixture(t);
   const original = await readFile(path, "utf8");
   await addRevisionNote(path, target, "  Use square corners  ");
-  await addRevisionNote(path, { slideId: "introduction" }, "Keep the headline");
+  await addRevisionNote(path, { slideId: "cover" }, "Keep the headline");
   const notes = (await readReview(path)).notes;
-  assert.equal(notes[0].elementId, "review-node");
+  assert.equal(notes[0].elementId, "ui-page-sel");
   assert.equal(notes[0].text, "Use square corners");
   assert.equal(notes[1].componentId, undefined);
   assert.equal(await readFile(path, "utf8"), original, "Notes must not modify artwork");
@@ -65,7 +65,7 @@ test("stale revisions and deleted targets are rejected without losing notes", as
   await writeFile(path, JSON.stringify(opened.document));
   await assert.rejects(writeBuildRequest(path, { ...target, revision: opened.revision, instruction: "Build" }), /latest composition/);
   const revision = (await readCompositionFile(path)).revision;
-  await assert.rejects(writeBuildRequest(path, { slideId: "editing", revision, instruction: "Build" }), /vector element/);
+  await assert.rejects(writeBuildRequest(path, { slideId: "notes", revision, instruction: "Build" }), /vector element/);
   assert.equal((await readReview(path)).notes.length, 1);
   await removeRevisionNote(path, saved.notes[0].id);
   assert.equal((await readReview(path)).notes.length, 0);
@@ -84,7 +84,7 @@ test("failed and clarification requests retain notes; retries exclude resolved n
   await assert.rejects(finishBuildRequest(path, first.id, "done"), /no longer active/);
   await claimBuildRequest(path);
   await finishBuildRequest(path, second.id, "done"); // No-op completion is valid, with explicit acknowledgement.
-  await addRevisionNote(path, { slideId: "introduction" }, "New note");
+  await addRevisionNote(path, { slideId: "cover" }, "New note");
   const third = (await writeBuildRequest(path, { ...target, revision, instruction: "Build" })).request!;
   assert.deepEqual(third.notes.map(n => n.text), ["New note"]);
   await finishBuildRequest(path, third.id, "failed", "Cancelled");
@@ -93,6 +93,6 @@ test("failed and clarification requests retain notes; retries exclude resolved n
 
 test("concurrent note additions do not overwrite each other", async t => {
   const path = await fixture(t);
-  await Promise.all([addRevisionNote(path, target, "One"), addRevisionNote(path, { slideId: "introduction" }, "Two")]);
+  await Promise.all([addRevisionNote(path, target, "One"), addRevisionNote(path, { slideId: "cover" }, "Two")]);
   assert.deepEqual((await readReview(path)).notes.map(n => n.text).sort(), ["One", "Two"]);
 });

@@ -50,7 +50,7 @@
     "slides/README.md",
     "slides/drawing-references.md",
     "slides/{architecture,article-brief,bar-chart,comparison,decision-memo,delivery-plan,experiment,incident-workflow,line-chart,migration,og-images,product-introduction,research-brief,results-explanation,retrospective,sankey,teaching,vertical-bar-charts}/{PROMPT.md,index.tsx}",
-    "slides/introducing-konpeki/{README.md,PROMPT.md,SOURCE.md,composition.json,author.ts}",
+    "slides/introducing-konpeki/{README.md,PROMPT.md,SOURCE.md,composition.json,author.mjs}",
     "slides/github-cover/{README.md,PROMPT.md,composition.json,author.ts}",
     "!**/*.test.ts"
   ],

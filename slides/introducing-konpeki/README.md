@@ -1,44 +1,68 @@
 # Introducing Konpeki
 
-A six-page introduction covering creation, shared editing, components, revision
-notes, browser/file sessions and a first brief. Uses default authoring mode and
-Precision Paper with theme-linked colors and fonts.
+A seven-page `konpeki-composition/v1` deck introducing Konpeki. It was rebuilt
+from the original one-line brief using the public README, skill and authoring
+guide, then revised after comparison with the previous bundled deck. See
+[PROMPT.md](PROMPT.md) for the brief and revision, and [SOURCE.md](SOURCE.md) for
+claim provenance.
 
-## Open and revise
+[composition.json](composition.json) is the editable document of record.
+[author.mjs](author.mjs) regenerates it; the screenshots are Chromium captures.
 
-Open the [playground example](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki)
-and select **Present**. Edits save to a separate browser-local copy; use
-**Browser → Download JSON** to keep them. **Reset example** restores the bundled
-version, so download your work first. Browser storage is not a backup or agent sync.
+![Cover](screenshots/page-1.png)
 
-For agent revisions, follow [setup](../../SETUP.md) and open a copy of
-[composition.json](composition.json) in a file-backed preview. Notes, **Build it**
-and **Copy prompt** work there, not in the standalone playground. See the
-[canvas workflow](../../docs/workflow.md) for handoff details.
+## Pages
 
-The JSON is the editable source: double-click text to edit it; diagrams contain
-editable vector elements. [author.ts](author.ts) reconstructs the original deck:
+1. Create clear visuals with your coding agent — cover with the supported page sizes.
+2. Give your agent a brief. It returns an editable page — four-step flow, plus
+   the sketch-first path and first-use setup.
+3. You and your agent edit the same file — browser canvas, `composition.json`
+   and agent, with save/load/write/reread arrows.
+4. Every page is built from five editable components.
+5. Point at what to change, then choose Build it — notes, pins and the request loop.
+6. Try it in the browser. Keep working with your agent — playground vs agent table.
+7. Start with one install and a brief.
 
-```sh
-mise exec -- node slides/introducing-konpeki/author.ts
-```
+## Open, regenerate and review
 
-Run from the repository root. **This overwrites canvas edits.**
-[Brief](PROMPT.md) · [Sources](SOURCE.md) · [Reviewed screenshots](screenshots/)
-
-## Review
-
-With a dev/preview server and `agent-browser`, run from the repository root:
+Requires Node.js 24+. From the repository root:
 
 ```sh
-mise exec -- node slides/introducing-konpeki/review.mjs <preview-url> /tmp/konpeki-intro Precision paper
+mise exec -- node bin/konpeki.mjs preview slides/introducing-konpeki/composition.json
 ```
 
-The script checks text bounds and vector alignment at 1920×1080 and 1024×768,
-DPR2. Repeat with `Precision night` and `Editorial paper`, then inspect captures.
-An optional final font ID overrides the palette's default, e.g. `Green paper plex-serif`.
-These 36 states passed the original visual review, alongside validation, typecheck,
-tests and build. Browser review does not verify agent-client installation,
-PDF/PPTX, mobile, reduced motion, focus styling or cross-application fidelity.
+In an Amp orb, run the preview as a supervised service and share its portal URL
+with the printed `?session=` query. Session URLs grant editing access.
 
-![Title slide](screenshots/page-1.png)
+To regenerate (this overwrites canvas edits in `composition.json`):
+
+```sh
+mise exec -- node slides/introducing-konpeki/author.mjs
+mise exec -- node bin/konpeki.mjs validate slides/introducing-konpeki/composition.json
+```
+
+The Konpeki mark is read from `slides/github-cover/composition.json`.
+
+With `agent-browser` installed and a preview running:
+
+```sh
+mise exec -- node slides/introducing-konpeki/review.mjs "<preview-url-with-session>" /tmp/intro-review
+```
+
+It enters Present, checks every page at 1920×1080 and 1024×768 for text-block
+overflow and clipped vector text, and saves a capture of each page. All seven
+pages passed at both sizes. It does not check contrast, Night mode, other
+palettes, PDF/PPTX or cross-browser rendering.
+
+Known limitations: the Konpeki mark keeps its brand blue, which differs from the
+Plex accent. Page layouts 2, 4 and 5 share a column rhythm.
+
+## Authoring notes
+
+Friction found while following the documentation as a new author:
+
+- Apart from the target deck, `github-cover` is the only full example JSON in
+  the npm package, so the format was inferred from it and `composition/types.ts`.
+- A text block with `border: "filled"` gets no inner padding, and text blocks
+  paint an opaque background; boxed text needs a separate vector panel behind it.
+- Text blocks do not grow to fit, so heights need a render check.

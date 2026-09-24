@@ -11,7 +11,7 @@ test("review sidecars are API-only, including temporary and /@fs/ paths", async 
   const root = await mkdtemp(join(tmpdir(), "konpeki-private-review-"));
   const path = join(root, "composition.json");
   await writeFile(path, await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url)));
-  await addRevisionNote(path, { slideId: "introduction" }, "Private feedback");
+  await addRevisionNote(path, { slideId: "cover" }, "Private feedback");
   await writeFile(`${path}.review.json.test.tmp`, "Private temporary data");
   await writeFile(join(root, ".env"), "PRIVATE=value");
   for (const file of ["private.key", ".npmrc", ".yarnrc.yml", "caller-private.txt"])

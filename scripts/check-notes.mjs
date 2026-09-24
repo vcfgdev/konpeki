@@ -44,9 +44,9 @@ try {
   await wait("document.querySelectorAll('.revision-note-list li').length===1");
   assert.equal((await readReview(path)).request, undefined, "Adding a note must not submit a build");
   await tab("Pages");
-  await b("find", "role", "button", "click", "--name", "04/06 Keep the detail editable", "--exact");
+  await b("find", "role", "button", "click", "--name", "05 Revision notes", "--exact");
   await tab("Notes");
-  await b("find", "role", "button", "click", "--name", "Select Diagram", "--exact");
+  await b("find", "role", "button", "click", "--name", "Select Image", "--exact");
   await b("fill", "#revision-note", "Component draft");
   await tab("Pages");
   await check("!document.querySelector('#revision-note').checkVisibility()");
@@ -55,14 +55,14 @@ try {
   await b("click", ".stage-meta h2");
   await check("document.querySelector('#revision-note').value===''");
   await b("fill", "#revision-note", "Page draft");
-  await b("find", "role", "button", "click", "--name", "Select Diagram", "--exact");
+  await b("find", "role", "button", "click", "--name", "Select Image", "--exact");
   await check("document.querySelector('#revision-note').value==='Component draft'");
   await b("press", "Enter");
-  const point = JSON.parse(await b("eval", '(()=>{const r=document.querySelector("[data-vector-element=review-node]").getBoundingClientRect();return {x:r.x+12,y:r.y+12}})()'));
+  const point = JSON.parse(await b("eval", '(()=>{const r=document.querySelector("[data-vector-element=ui-page-sel]").getBoundingClientRect();return {x:r.x+12,y:r.y+12}})()'));
   await b("mouse", "move", String(Math.round(point.x)), String(Math.round(point.y)));
   await b("mouse", "down", "left");
   await b("mouse", "up", "left");
-  await wait("document.querySelector('.revision-note-scope').textContent.includes('review-node')");
+  await wait("document.querySelector('.revision-note-scope').textContent.includes('ui-page-sel')");
   await check("(() => { const buttons = [...document.querySelectorAll('.vector-actions button')]; const boxes = buttons.map(button => button.getBoundingClientRect()); return buttons.length === 3 && boxes.every(box => box.width >= 40 && box.height >= 40) && boxes.every(box => Math.abs(box.y - boxes[0].y) < 1) && buttons.every(button => button.scrollWidth <= button.clientWidth); })()");
   await b("fill", "#revision-note", "Use square corners; keep size and position");
   await b("find", "role", "button", "click", "--name", "Add note", "--exact");
@@ -70,12 +70,12 @@ try {
   await check("[...document.querySelectorAll('.revision-pin')].every(pin => [...document.querySelectorAll('.resize-handle')].every(handle => { const a = pin.getBoundingClientRect(); const b = handle.getBoundingClientRect(); return a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom; }))");
   await check("[...document.querySelectorAll('.resize-handle')].every(handle => { const rect = handle.getBoundingClientRect(); return document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2) === handle; })");
   const notes = (await readReview(path)).notes;
-  assert.deepEqual(notes.map(n => [n.slideId, n.componentId, n.elementId]), [["introduction", undefined, undefined], ["editing", "editable-diagram", "review-node"]]);
+  assert.deepEqual(notes.map(n => [n.slideId, n.componentId, n.elementId]), [["cover", undefined, undefined], ["notes", "notes-ui", "ui-page-sel"]]);
   await tab("Pages");
   await b("click", ".revision-pin");
   await check("document.querySelector('.left-notes').checkVisibility() && !document.querySelector('.slide-list').checkVisibility()");
   await check("!document.querySelector('.right-panel .revision-notes')");
-  await check("document.querySelector('.revision-note-scope').textContent.includes('review-node')");
+  await check("document.querySelector('.revision-note-scope').textContent.includes('ui-page-sel')");
   await capture("scoped-notes");
   await b("eval", `(async()=>{
     const {exportPagePNG}=await import('/src/lib/export-png.ts');
