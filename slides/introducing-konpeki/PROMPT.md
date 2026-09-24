@@ -1,30 +1,26 @@
-# Public brief excerpt
+# Brief
 
-Public requests and authoring decisions; debugging and product-development
-follow-ups are omitted. This is not the complete conversation.
+Initial prompt (reused from the original example's public brief excerpt, to compare
+an independent rebuild against it):
 
 > build a pre to introduce konpeki
 
-## Creation
+- Supplied material: none beyond Konpeki's own public documentation.
+- Visual preferences: none. Authoring mode requested: unspecified → resolved `default`.
 
-- Interpreted “pre” as a six-page English introduction for first-time users.
-- No mode or visual preferences supplied; chose default mode, white, IBM Plex
-  Sans, dark ink and Konpeki blue, with restrained diagrams and clear hierarchy.
-- Use documented capabilities, not invented metrics or export claims.
-  Deliver editable JSON, browser presentation and reviewed captures.
+## Assumptions
+
+- "pre" means a short presentation for developers meeting Konpeki for the first time.
+- 1920×1080 presentation pages, six pages, one audience question per page.
+- Plex palette on paper (white, dark ink, Konpeki blue accent) with Hanken Grotesk,
+  which AUTHORING.md suggests for a product-oriented feel.
+- Product claims come only from the 0.3.1 runtime docs (see SOURCE.md). No metrics.
 
 ## Revision
 
-> review the example composition and revise if needed
+> agreed. keep going  (after comparing with the bundled example)
 
-- Show creation from a brief, with init optional. Canvas-first intent / Build it
-  remains an alternative; Konpeki is not primarily a slide explainer.
-- Separate browser-local storage from agent-opened files. Notes and Build it
-  require a file session; Copy prompt resumes an idle agent.
-- Use skill installation and user prerequisites, not contributor setup or
-  assumptions that every agent supports the same slash command.
-- Retain default mode, six pages, stable IDs, unrelated geometry and the existing
-  Precision Paper appearance. Its Noto Sans differs from the original font choice.
-- Refresh JSON, authoring source, source notes and captures.
-
-See [SOURCE.md](SOURCE.md) for capability evidence and artwork provenance.
+- Merge in the strengths of the bundled example: a page contrasting the browser
+  playground with the agent-opened editor, the sketch-first / Build it path and `init`.
+- Keep this deck's diagrams, install command and theme. Now seven pages.
+- Page 2's empty lower half now holds the sketch-first and first-use notes.

@@ -31,13 +31,13 @@ import {
 import { exampleDraft } from "./examples.ts";
 const firstSlide = (draft: ReturnType<typeof initialDraft>) => draft.slides[0];
 
-test("Konpeki introduction is a six-slide editable composition with all five semantic kinds", () => {
+test("Konpeki introduction is a seven-slide composition with native text and editable vectors", () => {
   const deck = exampleDraft("introducing-konpeki")!;
   assert.equal(deck.title, "Introducing Konpeki");
-  assert.equal(deck.slides.length, 6);
+  assert.equal(deck.slides.length, 7);
   assert.equal(validateComposition(deck).ok, true);
   assert.deepEqual(new Set(deck.slides.flatMap((slide) => slide.components.map((c) => c.kind))),
-    new Set(["text-block", "diagram", "chart", "image", "table"]));
+    new Set(["text-block", "diagram", "image"]));
   assert.ok(deck.slides.every((slide) => slide.components.every((c) => c.customVisual?.format === "vector" || (c.kind === "text-block" && typeof c.content === "string"))));
   const opened = parseCompositionJSON(canonicalJSON(deck));
   assert.equal(opened.ok, true);
