@@ -2,7 +2,8 @@ import {execFileSync} from 'node:child_process';
 import {writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {assertComposition} from '../../composition/validate.ts';
-import {compositionSchema, type CompositionComponent, type CompositionDocument, type VectorElement} from '../../composition/types.ts';
+import {gridSchema, type GridArea, type GridComponent, type GridDocument, type TypeStep} from '../../composition/grid.ts';
+import type {VectorElement} from '../../composition/types.ts';
 
 // Reproduce the existing mark's alpha silhouette as editable vector geometry.
 const mask=execFileSync('magick',[fileURLToPath(new URL('../../src/assets/konpeki-mark.png',import.meta.url)),'-alpha','extract','-threshold','50%','-depth','8','gray:-']);
@@ -13,11 +14,11 @@ for(let y=0;y<128;y++)for(let x=0;x<128;x++){
   while(x+1<128&&mask[y*128+x+1]>=128)x++;
   outline+=`M${start} ${y}h${x-start+1}v1H${start}Z`;
 }
-const ink='#202630',blue='#007fb5',lightGray='#b2bdc2';
-const text=(id:string,content:string,x:number,y:number,width:number,height:number,size:number,weight:400|600=600):CompositionComponent=>({
-  id,kind:'text-block',content,slotIds:[`${id}-content`],preferredRect:{x,y,width,height},
-  textStyle:{size,weight,lineHeight:1.18,color:'ink',font:'heading'},
-  appearance:{role:id==='brand'?'title':'body',alignment:'start',border:'none',rule:'none'},
+const blue='theme:accent',lightGray='theme:divider';
+const text=(id:string,content:string,area:GridArea,step:TypeStep,weight:400|600=600,leading?:number):GridComponent=>({
+  id,kind:'text-block',content,slotIds:[`${id}-content`],area,
+  textStyle:{step,weight,leading,color:'ink',font:'heading'},
+  appearance:{role:id==='brand'?'title':'body',alignment:'center',border:'none',rule:'none'},
 });
 const elements:VectorElement[]=[
   {id:'cover-frame',kind:'rect',attributes:{x:10,y:8,width:260,height:140,rx:8,fill:'#ffffff',stroke:blue,'stroke-width':2.5}},
@@ -50,15 +51,22 @@ const elements:VectorElement[]=[
   {id:'table-grid',kind:'path',attributes:{d:'M250 339V401M330 339V401M181 359H431M181 380H431',fill:'none',stroke:lightGray,'stroke-width':2}},
   {id:'table-emphasis',kind:'rect',attributes:{x:196,y:365,width:38,height:8,rx:3,fill:blue}},
 ];
-const components:CompositionComponent[]=[
-  text('brand','Konpeki',150,120,480,110,84),
-  {id:'brand-mark',kind:'image',slotIds:['brand-mark-content'],preferredRect:{x:64,y:143,width:66,height:66},customVisual:{format:'vector',viewBox:{x:0,y:0,width:128,height:128},description:'Konpeki blue brush mark',elements:[{id:'mark-silhouette',kind:'path',attributes:{d:outline,fill:blue}}]}},
-  text('promise','Create clear visuals',64,302,680,90,62),
-  text('audience','with your coding agent.',64,400,660,76,44,400),
-  {id:'visual-family',kind:'image',slotIds:['visual-family-content'],preferredRect:{x:772,y:106,width:444,height:412},customVisual:{format:'vector',viewBox:{x:0,y:0,width:444,height:412},description:'Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components.',elements}},
+// Keep the existing editable illustrations, with colors owned by the theme.
+for(const element of elements)for(const key of ['fill','stroke']){
+  const value=element.attributes[key];
+  if(value==='#ffffff')element.attributes[key]='theme:background';
+  if(value==='#eaf6fb'||value==='#9adbed')element.attributes[key]='theme:wash';
+  if(value==='#5cb9df')element.attributes[key]='theme:muted';
+}
+const components:GridComponent[]=[
+  text('brand','Konpeki',{column:1,span:2,row:23,rows:11},'display',600,10),
+  {id:'brand-mark',kind:'image',slotIds:['brand-mark-content'],area:{column:1,span:2,row:14,rows:8},customVisual:{format:'vector',viewBox:{x:0,y:0,width:128,height:128},description:'Konpeki blue brush mark',elements:[{id:'mark-silhouette',kind:'path',attributes:{d:outline,fill:blue}}]}},
+  text('promise','Create clear visuals',{column:1,span:2,row:40,rows:7},'heading'),
+  text('audience','with your coding agent.',{column:1,span:2,row:47,rows:6},'lead',400),
+  {id:'visual-family',kind:'image',slotIds:['visual-family-content'],area:{column:3,span:2,row:5,rows:57},customVisual:{format:'vector',viewBox:{x:0,y:0,width:444,height:412},description:'Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components.',elements}},
 ];
-const document:CompositionDocument={schema:compositionSchema,title:'Konpeki GitHub cover',authoringMode:'default',theme:{id:'plex',mode:'paper'},slides:[{
-  id:'github-cover',name:'GitHub repository cover',canvas:{width:1280,height:640},innerPadding:{top:64,right:64,bottom:64,left:64},pageNumber:{style:'none',color:'muted'},
+const document:GridDocument={schema:gridSchema,title:'Konpeki GitHub cover',authoringMode:'default',theme:{id:'plex',mode:'paper'},slides:[{
+  id:'github-cover',name:'GitHub repository cover',grid:{preset:'link'},pageNumber:{style:'none',color:'muted'},
   audience:'Developers discovering Konpeki on GitHub',question:'What can I create with Konpeki and my coding agent?',intendedViewingSize:'social',components,
   contentSlots:components.map(c=>({id:c.slotIds[0],label:c.id,role:'body',required:true,instruction:c.kind==='text-block'?c.content??'':c.customVisual?.description??''})),
   groups:[],relationships:[],readingOrder:components.map(c=>({kind:'component',id:c.id})),paintOrder:components.map(c=>c.id),

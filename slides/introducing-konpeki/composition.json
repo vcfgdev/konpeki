@@ -86,6 +86,7 @@
           "textStyle": {
             "color": "ink",
             "font": "heading",
+            "leading": 8,
             "step": "display",
             "weight": 600
           }

@@ -153,7 +153,7 @@ p1.s.pageNumber = { style: "none", color: "muted" };
 p1.add({ id: "mark", kind: "image", customVisual: markVisual }, "image");
 p1.add(text("wordmark", "Konpeki", "heading", { weight: 600, font: "heading" }));
 p1.add(text("cover-title", "Create clear visuals\nwith your coding agent.",
-  "display", { weight: 600, font: "heading" }, "title"), "takeaway");
+  "display", { weight: 600, font: "heading", leading: 8 }, "title"), "takeaway");
 p1.add(text("cover-lead", "Your agent drafts covers, social graphics, visual explanations and presentations. You and your agent edit the same page.",
   "body", { color: "muted" }, "subtitle"));
 {

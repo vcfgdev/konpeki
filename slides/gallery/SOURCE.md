@@ -85,11 +85,11 @@ Konpeki supplies IBM Plex Sans.
 
 ## Rendering scope
 
-The PNGs are reviewed Chromium captures. All four gallery pages, together with
-the seven introduction pages, passed `scripts/check-grid.mjs` geometry, overflow
-and overlap checks at 1920×1080 and 1024×768. It also checks the release drawing/
-label alignment, samples opaque vector text/fill contrast, and warns about scaled
-chart artwork so pixel-unit claims receive review. These checks do not establish
-PDF/PPTX export, cross-browser or cross-application fidelity, blind preference,
-or first-attempt agent quality. The examples are authored and reviewed results,
-not evidence of automatic layout or preset recomposition.
+The PNGs are inspected owned-scene exports at exactly 2× page size, not fitted
+browser captures. All four gallery pages and the seven introduction pages pass
+`scripts/check-grid.mjs` glyph overflow, clipping, missing-glyph and paint-aware
+contrast checks. The Sankey's artwork-scale warning remains a review flag for
+pixel-unit claims. Titles retain the previous canvas's bottom alignment.
+These checks do not establish aesthetic preference, arbitrary application
+fidelity, or first-attempt agent quality. The examples are authored and reviewed
+results, not evidence of automatic layout or preset recomposition.

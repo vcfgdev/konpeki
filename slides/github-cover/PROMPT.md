@@ -13,6 +13,14 @@
 - A generated concept informed placement; the final uses editable text and
   vectors, not a flattened concept image.
 
+## v2 adaptation
+
+The original 1280×640 size is not a v2 preset. The port uses the existing
+1200×630 `link` destination with a centered brand/copy group and the retained
+canvas motifs. It preserves component and artwork IDs, uses named type steps
+and theme colors, and exports through the owned scene. The wordmark uses an
+explicit 80px leading override to keep its descenders inside the title region.
+
 ## Sources
 
 - Product: [README](../../README.md) and [workflow](../../docs/workflow.md).

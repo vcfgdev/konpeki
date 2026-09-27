@@ -89,11 +89,20 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
       const step = component.textStyle?.step ?? roleSteps[component.appearance.role], index = typeSteps.indexOf(step);
       const size = grid.scale[index], height = component.textStyle?.leading === undefined ? grid.lineHeights[index] : component.textStyle.leading * grid.baseline;
       const regions = textRegions(component, cell, grid.gutter);
-      for (const region of regions) scene.items.push(text(region.text, region.box, owner, size, height, component.textStyle?.font === "heading" ? heading : body,
-        component.textStyle?.weight ?? 400, appearance.treatment === "strong" ? palette.bg : colors[component.textStyle?.color ?? "ink"],
-        appearance.alignment === "center" ? "center" : appearance.alignment === "end" ? "right" : "left"));
+      for (const region of regions) {
+        const item = text(region.text, region.box, owner, size, height, component.textStyle?.font === "heading" ? heading : body,
+          component.textStyle?.weight ?? 400, appearance.treatment === "strong" ? palette.bg : colors[component.textStyle?.color ?? "ink"],
+          appearance.alignment === "center" ? "center" : appearance.alignment === "end" ? "right" : "left");
+        // Preserve the canvas's title alignment, including multiline titles and
+        // padding. Keep the original clip so overflowing copy is still diagnosed.
+        if (component.appearance.role === "title") {
+          const offset = Math.max(0, region.box.height - item.layout.height);
+          item.box = { ...region.box, y: region.box.y + offset, height: region.box.height - offset };
+        }
+        scene.items.push(item);
+      }
     } else {
-      const caption = text(component.kind[0].toUpperCase() + component.kind.slice(1), { ...cell, height: grid.lineHeights[2] }, owner, grid.scale[2], grid.lineHeights[2], heading, 500, palette.fg);
+      const caption = text(`Draft ${component.kind}`, { ...cell, height: grid.lineHeights[2] }, owner, grid.scale[2], grid.lineHeights[2], heading, 500, palette.fg);
       scene.items.push(caption);
       const intent = text(component.intent ?? "", { ...cell, y: cell.y + caption.layout.height + 12, height: Math.max(0, cell.height - caption.layout.height - 12) }, owner, grid.scale[1], grid.lineHeights[1], body, 400, palette.muted);
       scene.items.push(intent);

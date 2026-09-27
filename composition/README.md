@@ -29,6 +29,12 @@ subtitle→lead, and title→title. `textStyle.step` overrides the role default.
 `textStyle.leading` is a positive whole number of baseline units; without it,
 each preset's leading table supplies the line height. Leading is derived rather
 than stored as arbitrary pixels and must not be smaller than the type size.
+Title-role blocks bottom-align their lines inside each padded text region;
+other roles start at the top. Overlong titles start at the top and report overflow.
+
+Page numbers are opt-in: omitting `pageNumber` or choosing `style: "none"` hides
+them. Set `style: "01"` or `"01/02"` to show them. This differs from the old
+canvas's implicit `"01"` default.
 
 ## Components and artwork
 
@@ -43,6 +49,9 @@ font sizes use `scale:<step>`. Supported primitives include groups, rectangles,
 circles, ellipses, lines, polylines, polygons, paths, text, and tspans. Outlined
 shapes remain outlines in SVG and PNG. Standard diagram, chart, and table artwork
 is a draft until deliberately authored and may be flagged as such.
+Unauthored topology shows a neutral reserved area and node/edge counts, not an
+inferred diagram. The topology remains in the document for authoring; the draft
+is not a finished representation of its relationships.
 
 Labels allow `x`, `y`, `text-anchor`, `fill`, `font-family`, `font-size` (a type
 step), `font-weight`, and `font-style`. Tspans are whole lines with explicit

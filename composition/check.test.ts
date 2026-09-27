@@ -63,3 +63,25 @@ test("reproduces the port's fixed-row overflow, scaled Sankey, and dark 400 cont
   // Independently computed from those colors, rather than the review's 2.37.
   assert.ok(Math.abs(Number(contrast.evidence.minimumRatio) - 2.347865) < .000001);
 });
+
+test("unauthored topology is visibly neutral and introduces no contrast or clipping errors", () => {
+  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/gallery/sankey.json", import.meta.url), "utf8")));
+  const page = document.slides[0], chart = page.components.find(component => component.id === "chart")!;
+  delete chart.customVisual;
+  const scene = lowerPage(document, page, fonts);
+  const items = scene.items.filter(item => item.componentId === "chart");
+  assert.deepEqual(items.filter(item => item.kind === "text").map(item => item.source), [
+    "Draft chart", "", "Artwork not authored", "6 nodes · 5 recorded edges",
+  ]);
+  assert.deepEqual(items.filter(item => item.kind === "shape").map(item => item.tag), ["rect"], "no inferred arrows or node arrangement");
+  const diagnostics = checkPageNode(scene, fonts);
+  assert.ok(diagnostics.some(item => item.code === "draft-placeholder" && item.componentId === "chart"));
+  assert.deepEqual(diagnostics.filter(item => item.severity === "error"), []);
+});
+
+test("packaged cover is a finished v2 link page with no scene diagnostics", () => {
+  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const scene = lowerPage(document, document.slides[0], fonts);
+  assert.deepEqual([scene.width, scene.height], [1200, 630]);
+  assert.deepEqual(checkPageNode(scene, fonts), []);
+});

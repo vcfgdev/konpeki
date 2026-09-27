@@ -94,3 +94,38 @@ test("nested vertical regions keep pixel gutters and put sparse content first", 
     { x: 822, y: 360, width: 276, height: 228 },
   ]);
 });
+
+test("titles bottom-align multiline copy inside padding; body copy stays at the top", () => {
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const page = document.slides[0], component = page.components[0];
+  assert.ok(component.kind === "text-block");
+  component.area = { column: 2, span: 6, row: 4, rows: 20 };
+  component.padding = 2;
+  component.content = "First line\nSecond line";
+  component.textStyle = { step: "heading" };
+  const region = { x: 246, y: 132, width: 828, height: 192 };
+  for (const role of ["title", "body"] as const) {
+    component.appearance.role = role;
+    const item = lowerPage(document, page, fonts).items.find(item => item.kind === "text");
+    assert.ok(item?.kind === "text");
+    assert.deepEqual(item.clip, region);
+    assert.equal(item.layout.lines.length, 2);
+    // Two 52px lines use 104px of a 192px padded region, leaving 88px above a title.
+    assert.deepEqual(item.box, role === "title" ? { ...region, y: 220, height: 104 } : region);
+  }
+});
+
+test("restores the reviewed title offsets without moving subtitles", () => {
+  for (const [name, id, offset] of [["sankey", "title", 44], ["explainer", "headline", 44], ["architecture", "headline", 20]] as const) {
+    const document = assertComposition(JSON.parse(readFileSync(new URL(`../slides/gallery/${name}.json`, import.meta.url), "utf8")));
+    const scene = lowerPage(document, document.slides[0], fonts);
+    const title = scene.items.find(item => item.kind === "text" && item.componentId === id);
+    assert.ok(title?.kind === "text" && title.clip);
+    assert.equal(title.box.y - title.clip.y, offset, name);
+    for (const component of document.slides[0].components.filter(item => item.kind === "text-block" && item.appearance.role === "subtitle")) {
+      const subtitle = scene.items.find(item => item.kind === "text" && item.componentId === component.id);
+      assert.ok(subtitle?.kind === "text" && subtitle.clip);
+      assert.equal(subtitle.box.y, subtitle.clip.y);
+    }
+  }
+});

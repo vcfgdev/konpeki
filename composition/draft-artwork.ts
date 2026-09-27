@@ -14,21 +14,11 @@ export function draftArtwork(component: GridComponent, palette: ReturnType<typeo
   const path = (d: string, stroke = palette.muted, width = 2) => add("path", { d, fill: "none", stroke, "stroke-width": width });
   const rect = (x: number, y: number, width: number, height: number, fill = accent) => add("rect", { x, y, width, height, fill });
   if ((component.kind === "diagram" || component.kind === "chart") && component.topology) {
-    const nodes = component.topology.nodes;
-    const width = Math.min(120, 480 / nodes.length), pitch = 540 / nodes.length;
-    const centers = new Map(nodes.map((node, index) => [node.id, { x: 30 + pitch * (index + 0.5), y: 120 }]));
-    for (const edge of component.topology.edges) {
-      const from = centers.get(edge.from)!, to = centers.get(edge.to)!;
-      const direction = Math.sign(to.x - from.x), start = from.x + direction * width / 2, end = to.x - direction * width / 2;
-      path(`M${start} 120H${end}m${-direction * 8} -6L${end} 120l${-direction * 8} 6`);
-      if (edge.label) labels.push({ x: (start + end) / 2, y: 95, text: edge.label });
-    }
-    for (const node of nodes) {
-      if (node.visible === false) continue;
-      const center = centers.get(node.id)!;
-      add("rect", { x: center.x - width / 2, y: 90, width, height: 60, rx: 6, fill: palette.bg, stroke: accent, "stroke-width": 2 });
-      labels.push({ ...center, y: 126, text: node.id });
-    }
+    // A neutral reserved area, not a guessed layout: routing edges through a
+    // row of opaque nodes can imply connections absent from the topology.
+    add("rect", { x: 20, y: 20, width: 560, height: 200, rx: 6, fill: "none", stroke: context, "stroke-width": 2, "stroke-dasharray": "8 8" });
+    labels.push({ x: 300, y: 100, text: "Artwork not authored" });
+    labels.push({ x: 300, y: 150, text: `${component.topology.nodes.length} nodes · ${component.topology.edges.length} recorded edges` });
   } else if (component.kind === "diagram") {
     for (const element of icons[component.appearance.type]) {
       // Icons share a 48×32 coordinate space. Keep their exact generated paths.

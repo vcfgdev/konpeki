@@ -47,7 +47,7 @@ A 1200×1600 Folio explainer shows a stale save, its rejection and recovery choi
 ## More examples
 
 - [Introducing Konpeki](introducing-konpeki/README.md): seven-page product overview.
-- [Repository cover](github-cover/README.md): 1280×640 social preview.
+- [Repository cover](github-cover/README.md): 1200×630 social preview.
 - [React/SVG drawing references](drawing-references.md): 18 older examples, not editor-importable documents.
 
 These four gallery exports are repository-only; their authoring projects are

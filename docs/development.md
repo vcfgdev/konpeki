@@ -72,10 +72,10 @@ pnpm build
 pnpm check:package
 ```
 
-The package check validates npm's file selection and relative imports. An
-isolated tarball install should additionally exercise validate, check, all three
-render formats, and preview. Do not infer rendering fidelity from a browser
-screenshot or a structural test.
+The package check validates npm's file selection, every bundled composition,
+and relative imports. An isolated tarball install should additionally exercise
+validate, check, all three render formats, and preview. Do not infer rendering
+fidelity from a browser screenshot or a structural test.
 
 Retained React/SVG examples remain supported drawing references, not a second
 runtime. Do not present the retained trusted-source conversion helper as a v1

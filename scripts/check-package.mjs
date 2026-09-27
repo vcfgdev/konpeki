@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, posix } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertComposition } from "../composition/validate.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 execFileSync(process.execPath, ["scripts/build-cli.mjs"], { cwd: root, stdio: "inherit" });
@@ -51,6 +52,10 @@ for (const path of paths) {
     `Gallery image in package: ${path}`);
   assert(!/(^|\/)(node_modules|dist|resources|fixtures|pilot|first-return|outputs|inputs)(\/|$)|\.test\.|(^|\/)\.env|pnpm-lock|tsconfig|intent-.*trial|impeccable|DEMO-REVIEW|RESULTS\.md|scripts\/check-|\/review\.mjs/.test(path),
     `Development or research file in package: ${path}`);
+  if (path.endsWith("/composition.json") || path === "skills/konpeki/assets/blank.json") {
+    assert.doesNotThrow(() => assertComposition(JSON.parse(readFileSync(new URL(path, new URL("../", import.meta.url)), "utf8"))),
+      `Invalid bundled composition: ${path}`);
+  }
   if (!/\.(?:ts|tsx|mjs|js)$/.test(path)) continue;
   const source = readFileSync(new URL(path, new URL("../", import.meta.url)), "utf8");
   // Every static relative import must resolve inside the tarball, including
@@ -61,4 +66,4 @@ for (const path of paths) {
     assert(candidates.some((candidate) => paths.has(candidate)), `Missing import: ${path} -> ${target}`);
   }
 }
-console.log(`Package OK: ${pack.entryCount} files, ${(pack.size / 1e6).toFixed(2)} MB packed; resources and relative imports verified.`);
+console.log(`Package OK: ${pack.entryCount} files, ${(pack.size / 1e6).toFixed(2)} MB packed; resources, bundled compositions and relative imports verified.`);
