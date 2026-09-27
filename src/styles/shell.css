@@ -245,10 +245,10 @@
   transition: padding-left var(--panel-duration) var(--panel-easing),
     padding-right var(--panel-duration) var(--panel-easing);
 }
-.workspace.left-collapsed .stage {
+.workspace.left-collapsed .stage:not(.presentation-stage) {
   padding-left: 96px;
 }
-.workspace.right-collapsed .stage {
+.workspace.right-collapsed .stage:not(.presentation-stage) {
   padding-right: 96px;
 }
 .editor-content {
@@ -296,9 +296,9 @@
   }
 }
 @media (max-width: 900px) {
-  .workspace.left-collapsed .stage,
-  .workspace.right-collapsed .stage,
-  .workspace.left-collapsed.right-collapsed .stage {
+  .workspace.left-collapsed .stage:not(.presentation-stage),
+  .workspace.right-collapsed .stage:not(.presentation-stage),
+  .workspace.left-collapsed.right-collapsed .stage:not(.presentation-stage) {
     padding: 96px 16px 110px;
   }
 }

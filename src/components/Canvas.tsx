@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import type { CompositionComponent, Rect, VectorElement } from "../../composition/runtime.ts";
 import { areaRect, gridMetrics, snapArea, toComposition } from "../../composition/grid.ts";
 import { lowerPage } from "../../composition/lower.ts";
@@ -157,7 +157,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     changed(component, next); onNotice(`Size ${Math.round(next.width)} by ${Math.round(next.height)}`);
   }
 
-  return <main id="canvas-stage" className="stage" tabIndex={interactive ? -1 : undefined} onPointerDown={event => { if (event.target === event.currentTarget) onSelect(); }}>
+  return <main id="canvas-stage" className={`stage ${interactive ? "" : "presentation-stage"}`} style={{ "--page-ratio": slide.canvas.width / slide.canvas.height } as CSSProperties} tabIndex={interactive ? -1 : undefined} onPointerDown={event => { if (event.target === event.currentTarget) onSelect(); }}>
     <div className="slide-wrap">
       {interactive && <div className="stage-meta">{renaming ? <input aria-label="Page name" autoFocus value={name} onChange={e => setName(e.target.value)} onBlur={() => { if (name.trim()) onSlideName(name.trim()); setRenaming(false); }} onKeyDown={e => e.key === "Enter" && e.currentTarget.blur()} /> : <h2 onClick={() => onSelect()} onDoubleClick={() => { setName(slide.name); setRenaming(true); }}>{slide.name}</h2>}
         {selectedComponent?.customVisual?.format === "vector" && <button type="button" className="edit-elements-action" aria-pressed={vectorSelection?.componentId === selected} onClick={() => onVectorSelect?.(vectorSelection?.componentId === selected ? undefined : { componentId: selectedComponent.id })}>{vectorSelection?.componentId === selected ? "Done editing" : "Edit elements"}</button>}

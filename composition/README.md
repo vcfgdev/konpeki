@@ -16,11 +16,20 @@ New pages choose a fixed preset with `grid.revision: 2`:
 | `link` | 1200×630 | 8 × 66 | 8 px |
 | `square` | 1080×1080 | 12 × 80 | 12 px |
 | `article` | 1600×600 | 16 × 63 | 8 px |
+| `a4` | 210×297 mm | 12 × 252 | 4 px |
 | `explainer` | 1200×1600 | 12 × 123 | 12 px |
 | `gallery` | 1600×1000 | 24 × 72 | 12 px |
 
+`a4` uses exact millimetres converted to CSS pixels at 96 dpi (approximately
+793.70×1122.52 px), with roughly 15 mm margins and 16 px gutters. PDF preserves
+210×297 mm; PNG uses a rounded 794×1123 base raster, or 1588×2246 at 2×. Its
+fine-through-display sizes are 10/12/14/18/24/32/44 px, with leading
+14/16/20/24/30/38/50 px. Body text is 10.5 pt in PDF. Use `custom` as its
+`intendedViewingSize`. Pages remain explicitly composed; A4 does not add
+automatic text flow or pagination.
+
 Omitted `revision` or explicit `1` retains the original grid: half as many
-columns, with the same rows, margins, 24 px gutters, and typography. Loading and
+columns, with the same rows, margins, preset gutters, and typography. Loading and
 saving never upgrades a page implicitly. Revision is independent of destination
 and is preserved when switching presets. New pages in an existing document
 inherit its first page's grid.

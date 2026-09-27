@@ -8,7 +8,7 @@ resources to adapt freely.
 ## Destination and surface
 
 A single page is a complete creation. The brief may request a social graphic,
-Open Graph preview, article header, standalone explanation or presentation.
+Open Graph preview, article header, standalone explanation, print document or presentation.
 Choose page dimensions for that destination, within 256–4096 pixels per side;
 do not assume 16:9 or invent extra pages. Record the destination in
 `intendedViewingSize` (`social`, `article`, `presentation` or `custom`).
@@ -16,7 +16,12 @@ For another aspect ratio, recompose deliberately rather than stretching artwork,
 silently cropping evidence or shrinking essential text. Each page can have its own size.
 
 New documents use `grid.revision: 2` with one of the v2 presets: `presentation`,
-`portrait`, `link`, `square`, `article`, `explainer` and `gallery`. Revision 2
+`portrait`, `link`, `square`, `article`, `a4`, `explainer` and `gallery`. Choose
+`a4` and destination `custom` for 210×297 mm print documents, including résumés,
+one-pagers, letters and reports. It has print-scale typography and exact PDF
+dimensions; compose each page explicitly, since text does not auto-paginate.
+When reproducing a reference, preserve its destination, content and page count
+unless an adaptation is requested. Revision 2
 doubles columns, not rows. Existing pages without a revision retain their
 original grid. Use the editor's **Use finer grid** action or `konpeki refine-grid`
 to convert existing areas losslessly; never change the revision alone. Place each

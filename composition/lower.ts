@@ -151,7 +151,11 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
   }
   if (page.pageNumber && page.pageNumber.style !== "none") {
     const index = document.slides.findIndex(item => item.id === page.id), source = String(index + 1).padStart(2, "0") + (page.pageNumber?.style === "01/02" ? `/${String(document.slides.length).padStart(2, "0")}` : "");
-    scene.items.push(text(source, { x: grid.width * 0.65, y: grid.height * 0.978 - grid.scale[0], width: grid.width * (1 - 0.65 - 0.058333333), height: grid.scale[0] }, target(), grid.scale[0], grid.scale[0], body, 400, colors[page.pageNumber?.color ?? "muted"], "right", true));
+    const number = text(source, { x: grid.width * 0.65, y: grid.height * 0.978 - grid.scale[0], width: grid.width * (1 - 0.65 - 0.058333333), height: grid.scale[0] }, target(), grid.scale[0], grid.scale[0], body, 400, colors[page.pageNumber?.color ?? "muted"], "right", true);
+    // A page label belongs to the page, not a font-size-high clipping cell.
+    // Preserve its baseline while allowing slash/descender ink below the em.
+    number.clip = { x: 0, y: 0, width: grid.width, height: grid.height };
+    scene.items.push(number);
   }
   return scene;
 }

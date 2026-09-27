@@ -23,7 +23,7 @@ export function PageSizePicker({ slide, onChange }: { slide: CompositionSlide; o
         {pagePresets.map((item) => {
           const unavailable = Boolean(pageSizeIssue(slide, item));
           return <option key={item.name} value={item.name} disabled={unavailable}>
-            {item.name} · {item.width} × {item.height}{unavailable ? " · unavailable" : ""}
+            {item.name} · {"displaySize" in item ? item.displaySize : `${item.width} × ${item.height}`}{unavailable ? " · unavailable" : ""}
           </option>;
         })}
       </select>

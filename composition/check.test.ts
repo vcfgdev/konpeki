@@ -85,3 +85,23 @@ test("packaged cover is a finished v2 link page with no scene diagnostics", () =
   assert.deepEqual([scene.width, scene.height], [1200, 630]);
   assert.deepEqual(checkPageNode(scene, fonts), []);
 });
+
+test("A4 page totals do not clip slash ink below the em box", () => {
+  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const page = document.slides[0];
+  page.grid = { preset: "a4", revision: 2 };
+  page.components = [];
+  page.paintOrder = [];
+  page.groups = [];
+  page.pageNumber = { style: "01/02", color: "muted" };
+  const scene = lowerPage(document, page, fonts);
+  const number = scene.items[0] as SceneText;
+  assert.equal(number.source, "01/01");
+  assert.deepEqual(checkPageNode(scene, fonts), []);
+  // The slash extends below the font-size box; it must still be drawn.
+  const cramped = { ...number, clip: number.box };
+  assert.ok(checkPage({ ...scene, items: [cramped] }, fonts).some(item => item.code === "clipped-label"));
+  // Page edges remain a real clipping boundary.
+  number.box = { ...number.box, y: scene.height };
+  assert.ok(checkPage(scene, fonts).some(item => item.code === "clipped-label"));
+});

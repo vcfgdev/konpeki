@@ -884,7 +884,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
 
 exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
 {
-  "digest": "893e47a66d3d13d5fe95403b08de9e470b4f827060c5e690e469e72c0096de25",
+  "digest": "dd9baccffcccc02d5e741ae6a086165cb7376dcec236cbfd23ae40b3c901927c",
   "size": [
     1920,
     1080
@@ -1270,7 +1270,7 @@ exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
 
 exports[`intro/browser-or-agent: deterministic scene snapshot 1`] = `
 {
-  "digest": "e7d3d9ae5fad3bd1d709cfd585d740313113b96c8afcda6748dd63d9103a84b4",
+  "digest": "a62cb85f567045d17b17d0ab8103e6f73a658030617d64e04b41955a7b2298d3",
   "size": [
     1920,
     1080
@@ -1576,7 +1576,7 @@ exports[`intro/browser-or-agent: deterministic scene snapshot 1`] = `
 
 exports[`intro/components: deterministic scene snapshot 1`] = `
 {
-  "digest": "f540d6e7c710a5de1d07e14d3cbff8511136a1d2474d3eb878ed606d9cf62a24",
+  "digest": "f016627a7e18b5aec439d88c3b061d8882d2836ade27b71a66af3f5ebb2591da",
   "size": [
     1920,
     1080
@@ -2027,7 +2027,7 @@ exports[`intro/cover: deterministic scene snapshot 1`] = `
 
 exports[`intro/notes: deterministic scene snapshot 1`] = `
 {
-  "digest": "1acaf235dc497cd457822cadf931b1aa12263f9a18b6258a4be60a4afaf91ab5",
+  "digest": "f399be061eec0c932031c3584ac2ac97db087d613341c8394aa9ab2b3ca88b73",
   "size": [
     1920,
     1080
@@ -2467,7 +2467,7 @@ exports[`intro/notes: deterministic scene snapshot 1`] = `
 
 exports[`intro/shared-file: deterministic scene snapshot 1`] = `
 {
-  "digest": "de66c57467b300ad5a645f09204500169b8fb6fa5a727accbddf164167f584ba",
+  "digest": "0c878b416822218ad2fd7b155db6c588560b98411b0a5b85e3876b78454e2066",
   "size": [
     1920,
     1080
@@ -2792,7 +2792,7 @@ exports[`intro/shared-file: deterministic scene snapshot 1`] = `
 
 exports[`intro/start: deterministic scene snapshot 1`] = `
 {
-  "digest": "227de3e72658f58fffc906033b0f71d43218e7204b0016ab4385c7066184f159",
+  "digest": "43d147380e567e133655cb0d53786cbec8b8e206df3a9a81a409b20393665508",
   "size": [
     1920,
     1080

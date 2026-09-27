@@ -24,6 +24,25 @@ test("shared renderer selects one-based pages, sizes mixed PDFs, and scales only
   for (const scale of [0, -1, Infinity, 9]) await assert.rejects(renderDocument(document, { format: "png", scale }), /scale must/);
 });
 
+test("A4 keeps exact print dimensions while PNG rounds only at rasterization", async () => {
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  document.slides[0].grid = { preset: "a4", revision: 2 };
+  document.slides[0].components[0].area = { column: 1, span: 12, row: 1, rows: 12 };
+  const pdf = await PDFDocument.load((await renderDocument(document, { format: "pdf", scale: 4 })).bytes);
+  const { width, height } = pdf.getPage(0).getSize();
+  assert.ok(Math.abs(width * 25.4 / 72 - 210) < 1e-9);
+  assert.ok(Math.abs(height * 25.4 / 72 - 297) < 1e-9);
+  const svg = new TextDecoder().decode((await renderDocument(document, { format: "svg" })).bytes);
+  const size = /<svg[^>]+width="([\d.]+)" height="([\d.]+)"/.exec(svg)!;
+  assert.ok(Math.abs(Number(size[1]) / 96 * 25.4 - 210) < 1e-9);
+  assert.ok(Math.abs(Number(size[2]) / 96 * 25.4 - 297) < 1e-9);
+  // PNG scales the integral 96 dpi canvas (794×1123), not the physical PDF.
+  for (const [scale, expected] of [[1, [794, 1123]], [2, [1588, 2246]]] as const) {
+    const png = Buffer.from((await renderDocument(document, { format: "png", scale })).bytes);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], expected);
+  }
+});
+
 test("CLI render never overwrites outputs and check emits machine-readable errors", async t => {
   const directory = await mkdtemp(join(tmpdir(), "konpeki-render-"));
   t.after(() => rm(directory, { recursive: true, force: true }));

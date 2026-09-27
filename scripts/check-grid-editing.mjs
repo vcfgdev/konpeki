@@ -127,6 +127,32 @@ try {
   })()`), true, "presentation clips resolve inside its own scene");
   capture("scene-presentation"); click("Exit");
 
+  // Print pages must fit vertically as well as horizontally, in both modes.
+  const print = toComposition(addComponent(initialGridDraft(), "text-block"));
+  print.title = "A4 viewport regression";
+  print.slides[0].grid = { preset: "a4", revision: 2 };
+  print.slides[0].components[0].area = { column: 1, span: 12, row: 1, rows: 12 };
+  importDocument(print);
+  const fit = selector => {
+    const rect = evaluate(`document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().toJSON()`);
+    assert.ok(Math.abs(rect.width / rect.height - 210 / 297) < .001, "preserve paper proportions");
+    assert.ok(rect.left >= 0 && rect.right <= 1600 && rect.top >= 0 && rect.bottom <= 916, "whole A4 page fits above controls");
+  };
+  fit(".scene-canvas");
+  capture("a4-editor");
+  click("Collapse right panel");
+  click("Present"); b("wait", ".presentation .scene-artwork svg");
+  fit(".presentation .scene-canvas");
+  capture("a4-presentation"); click("Exit");
+  click("Expand right panel");
+  const printSize = evaluate(`(async () => {
+    const { exportComposition } = await import('/src/lib/export-scene.ts');
+    const blob = await exportComposition(${JSON.stringify(print)}, 'png', 0, 2);
+    const bitmap = await createImageBitmap(blob);
+    return [bitmap.width, bitmap.height];
+  })()`);
+  assert.deepEqual(printSize, [1588, 2246], "browser and CLI share the rounded A4 raster size");
+
   importDocument(document);
   b("click", ".component-dock button:first-child");
   const geometry = () => evaluate("[...document.querySelectorAll('.component-hit')].map(node=>[node.dataset.component,node.style.left,node.style.top,node.style.width,node.style.height])");

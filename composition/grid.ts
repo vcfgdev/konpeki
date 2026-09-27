@@ -17,6 +17,9 @@ export const gridPresets = {
   link: { width: 1200, height: 630, columns: 4, gutter: 24, margin: 48, baseline: 8, scale: [16, 20, 24, 30, 40, 52, 64], lineHeights: [20, 24, 32, 36, 48, 60, 72] },
   square: { width: 1080, height: 1080, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76], lineHeights: [24, 28, 36, 44, 52, 68, 84] },
   article: { width: 1600, height: 600, columns: 8, gutter: 24, margin: 48, baseline: 8, scale: [18, 22, 28, 34, 44, 56, 72], lineHeights: [24, 28, 36, 44, 52, 64, 80] },
+  // CSS pixels at 96 dpi preserve the physical A4 size in the PDF writer.
+  // Raster exports round to device pixels; never round the scene dimensions.
+  a4: { width: 210 / 25.4 * 96, height: 297 / 25.4 * 96, columns: 6, gutter: 16, margin: 56, baseline: 4, scale: [10, 12, 14, 18, 24, 32, 44], lineHeights: [14, 16, 20, 24, 30, 38, 50] },
   // The original gallery briefs specify these two additional destinations.
   explainer: { width: 1200, height: 1600, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [28, 32, 40, 46, 52, 68, 84] },
   gallery: { width: 1600, height: 1000, columns: 12, gutter: 24, margin: 64, baseline: 12, scale: [20, 24, 28, 34, 44, 56, 72], lineHeights: [24, 32, 36, 44, 52, 64, 80] },

@@ -20,13 +20,19 @@ export async function exportComposition(document: GridDocument, format: ExportFo
   const scene = lowerPage(document, document.slides[pageIndex], fonts);
   const svg = renderSVG(scene, fonts);
   if (format === "svg") return new Blob([svg], { type: "image/svg+xml" });
+  // Match resvg's rounded 1x viewport while preserving the exact viewBox.
+  // Otherwise fractional A4 dimensions shift glyphs between PNG writers.
+  const width = Math.round(scene.width), height = Math.round(scene.height);
+  const raster = new DOMParser().parseFromString(svg, "image/svg+xml").documentElement;
+  raster.setAttribute("width", String(width));
+  raster.setAttribute("height", String(height));
   const image = new Image();
-  image.src = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+  image.src = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(raster)], { type: "image/svg+xml" }));
   try {
     await image.decode();
     const canvas = documentElement("canvas");
-    canvas.width = scene.width * scale;
-    canvas.height = scene.height * scale;
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(height * scale);
     const context = canvas.getContext("2d");
     if (!context) throw new Error("PNG export is unavailable in this browser.");
     context.scale(scale, scale);

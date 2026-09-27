@@ -7,6 +7,7 @@ export const pagePresets = [
   { name: "Portrait post", width: 1080, height: 1350, destination: "social" },
   { name: "Link preview / OG", width: 1200, height: 630, destination: "social" },
   { name: "Article header", width: 1600, height: 600, destination: "article" },
+  { name: "A4 document", width: gridPresets.a4.width, height: gridPresets.a4.height, destination: "custom", displaySize: "210 × 297 mm" },
 ] as const;
 
 export function pageSizeIssue(slide: CompositionSlide, size: CanvasSize): string | undefined {
