@@ -2353,6 +2353,21 @@
                       "minimum": 0,
                       "type": "integer"
                     },
+                    "processFlow": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "direction": {
+                          "enum": [
+                            "right",
+                            "down"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "direction"
+                      ],
+                      "type": "object"
+                    },
                     "slotIds": {
                       "items": {
                         "minLength": 1,
@@ -2373,6 +2388,11 @@
                               "from": {
                                 "minLength": 1,
                                 "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "id": {
+                                "maxLength": 120,
+                                "minLength": 1,
                                 "type": "string"
                               },
                               "label": {
@@ -2408,6 +2428,22 @@
                                 "minLength": 1,
                                 "pattern": "\\S",
                                 "type": "string"
+                              },
+                              "position": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "x": {
+                                    "type": "number"
+                                  },
+                                  "y": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y"
+                                ],
+                                "type": "object"
                               },
                               "primitive": {
                                 "oneOf": [

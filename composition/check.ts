@@ -4,7 +4,7 @@ export { textInkBounds } from "./scene.ts";
 
 export type DiagnosticSeverity = "error" | "warning";
 export interface Diagnostic {
-  code: "native-overflow" | "clipped-label" | "missing-glyph" | "draft-placeholder" | "chart-scale" | "text-contrast" | "group-overflow";
+  code: "native-overflow" | "clipped-label" | "missing-glyph" | "draft-placeholder" | "chart-scale" | "text-contrast" | "group-overflow" | "process-layout";
   severity: DiagnosticSeverity;
   pageId: string;
   componentId?: string;
@@ -44,6 +44,9 @@ export function checkPage(scene: ScenePage, fonts: FontContext): Diagnostic[] {
       message: "Aligned group contents exceed its area; recompose the members or enlarge the area.",
       evidence: { bounds: group.bounds, area: group.box } });
   for (const component of scene.components) {
+    for (const issue of component.processIssues ?? []) diagnostics.push({ code: "process-layout", severity: "error",
+      pageId: scene.pageId, componentId: component.id, elementId: issue.elementId, message: issue.message,
+      evidence: { nodes: component.processNodes, contentBox: component.contentBox } });
     if (component.draft) diagnostics.push({ code: "draft-placeholder", severity: "warning", pageId: scene.pageId, componentId: component.id,
       message: "Component still uses generated draft artwork.", evidence: { draft: true } });
     if (component.chart && component.artworkScale && component.artworkScale.some(value => Math.abs(value - 1) > 1e-6))

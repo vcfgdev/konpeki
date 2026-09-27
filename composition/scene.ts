@@ -1,6 +1,7 @@
 import type { Rect, VectorElementKind } from "./types.ts";
 import type { TextLayout } from "./text-layout.ts";
 import type { FontContext } from "./fonts.ts";
+import type { ProcessNode, ProcessLayoutIssue } from "./process-flow.ts";
 import { svgPathBbox } from "svg-path-bbox";
 
 export type SceneTarget = { pageId: string; componentId?: string; elementId?: string };
@@ -32,7 +33,8 @@ export type ScenePage = {
   height: number;
   background: string;
   items: SceneItem[];
-  components: { id: string; box: Rect; contentBox: Rect; draft: boolean; artworkScale?: [number, number]; chart: boolean }[];
+  components: { id: string; box: Rect; contentBox: Rect; draft: boolean; artworkScale?: [number, number]; chart: boolean;
+    processNodes?: ProcessNode[]; processIssues?: ProcessLayoutIssue[] }[];
   groups?: { id: string; box: Rect; bounds: Rect }[];
 };
 

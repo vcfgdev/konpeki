@@ -40,7 +40,21 @@ for (const component of slide.properties.components.items.oneOf) {
     style.properties.step = { enum: typeSteps };
     style.properties.leading = { type: "integer", minimum: 1, maximum: 32 };
   }
-  if (component.properties.topology) delete component.properties.topology.properties.nodes.items.properties.preferredRect;
+  if (component.properties.topology) {
+    component.properties.topology = structuredClone(component.properties.topology);
+    delete component.properties.topology.properties.nodes.items.properties.preferredRect;
+  }
+  if (component.properties.kind.const === "diagram") {
+    component.properties.processFlow = {
+      type: "object", additionalProperties: false, required: ["direction"],
+      properties: { direction: { enum: ["right", "down"] } },
+    };
+    component.properties.topology.properties.nodes.items.properties.position = {
+      type: "object", additionalProperties: false, required: ["x", "y"],
+      properties: { x: { type: "number" }, y: { type: "number" } },
+    };
+    component.properties.topology.properties.edges.items.properties.id = { type: "string", minLength: 1, maxLength: 120 };
+  }
   const visual = component.properties.customVisual.oneOf[0];
   component.properties.customVisual = visual; // v2 artwork is editable, theme-bound vectors only.
   const attributes = visual.properties.elements.items.properties.attributes;

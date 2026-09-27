@@ -35,7 +35,8 @@ and explicit user direction takes precedence. Consult other sections as needed:
 | --- | --- |
 | Create a page, change size, or repair placement/text | `composition/README.md` → **Grid and type**; A4 is explicitly paginated |
 | Choose a diagram, chart, or comparison | `design/semantic-patterns.md`, then `composition/README.md` → **Components and artwork** |
-| Author custom artwork | `composition/README.md` → **Components and artwork**; topology alone is a draft, not a finished diagram |
+| Lay out a chain or one decision | `composition/README.md` → **Semantic process flows**, when available in the resolved runtime; preserve node position overrides |
+| Author custom artwork | `composition/README.md` → **Components and artwork**; without an explicit layout opt-in, topology alone remains a draft |
 | Repair a measurement or export issue | `composition/README.md` → **Agent layout report** or **Fonts, checks, and writers** |
 | Open the canvas or apply notes/pins | `docs/workflow.md` → **Optional preview** |
 | Explore a direction or contribute a showcase | `AUTHORING.md` → **Explore an uncertain direction** or **Showcase records** |

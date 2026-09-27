@@ -21,6 +21,7 @@ export function summarizePage(page: GridSlide, scene: ScenePage) {
           ? { textLines: items.filter(item => item.kind === "text").map(item => item.layout.lines.map(line => line.text)) }
           : { artwork: { shapes: items.filter(item => item.kind === "shape").length, labels: items.filter(item => item.kind === "text" && item.label).length } }),
         ...(component.draft ? { draft: true } : {}),
+        ...(component.processNodes ? { processNodes: component.processNodes.map(node => ({ ...node, box: box(node.box) })) } : {}),
       };
     }),
     ...(scene.groups?.length ? { groups: scene.groups.map(group => ({
@@ -55,6 +56,7 @@ export function inspectPage(page: GridSlide, scene: ScenePage, fonts: FontContex
         area: authored.area, resolvedArea: resolveArea(page.grid, authored.area),
         box: component.box, contentBox: component.contentBox,
         draft: component.draft, artworkScale: component.artworkScale,
+        ...(component.processNodes ? { processNodes: component.processNodes } : {}),
       };
     }),
     groups: page.groups.map(group => {

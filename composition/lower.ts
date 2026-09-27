@@ -6,6 +6,7 @@ import { itemBounds, type ScenePage, type SceneShape, type SceneText, type Scene
 import { composerPalette, themeLabel } from "../src/lib/theme.ts";
 import { getTheme } from "../design/themes/index.ts";
 import { draftArtwork } from "./draft-artwork.ts";
+import { layoutProcessFlow } from "./process-flow.ts";
 
 const identity: SceneShape["transform"] = [1, 0, 0, 1, 0, 0];
 const familyName = (value: string) => value.split(",")[0].replaceAll('"', "").trim();
@@ -42,7 +43,16 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
       const y = appearance.rule === "top" ? box.y : box.y + box.height;
       shape("line", { x1: box.x, y1: y, x2: box.x + box.width, y2: y, stroke: palette.line, "stroke-width": 1, fill: "none" }, owner);
     }
-    if (component.customVisual) {
+    if (component.kind === "diagram" && component.processFlow) {
+      const flow = layoutProcessFlow(component, page.contentSlots, cell, page.id, fonts, {
+        family: body, size: grid.scale[1], leading: grid.lineHeights[1], ink: palette.fg,
+        background: palette.bg, wash: palette.wash,
+      });
+      info.draft = false;
+      info.processNodes = flow.nodes;
+      info.processIssues = flow.issues;
+      scene.items.push(...flow.items);
+    } else if (component.customVisual) {
       const visual = component.customVisual, view = visual.viewBox;
       const sx = cell.width / view.width, sy = cell.height / view.height;
       const fit = visual.fit === "cover" ? Math.max(sx, sy) : Math.min(sx, sy);
@@ -147,6 +157,7 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
     for (const component of scene.components) if (members.has(component.id)) {
       component.box = translate(component.box);
       component.contentBox = translate(component.contentBox);
+      if (component.processNodes) component.processNodes = component.processNodes.map(node => ({ ...node, box: translate(node.box) }));
     }
   }
   if (page.pageNumber && page.pageNumber.style !== "none") {

@@ -31,6 +31,7 @@
 .component-hit:focus-visible { outline: 1px solid #8b8b8b; background: transparent; }
 .component-hit.selected,
 .component-hit.selected:hover:not(:disabled) { outline: 2px solid var(--accent); }
+.process-node-hit { z-index: 3; }
 .scene-canvas:has(.component-hit.element-editing) .component-hit { pointer-events: none; }
 .scene-canvas:has(.component-hit.element-editing) .scene-artwork [data-vector-element] { cursor: pointer; }
 .presentation-canvas .scene-artwork { position: relative; }

@@ -41,6 +41,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
   const [renaming, setRenaming] = useState(false), [name, setName] = useState(slide.name);
   const gesture = useRef<{ id: string; x: number; y: number; rect: Rect; scale: number; corner?: Corner; duplicate?: boolean } | undefined>(undefined);
   const lineGesture = useRef<{ pointerId: number; endpoint: "start" | "end"; line: VectorElement; screenInverse: DOMMatrix } | undefined>(undefined);
+  const nodeGesture = useRef<{ componentId: string; nodeId: string; x: number; y: number; position: { x: number; y: number }; scale: number } | undefined>(undefined);
 
   useEffect(() => {
     let stale = false;
@@ -79,6 +80,12 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     if (!gesture.current.duplicate) holdGroup(component);
   }
   function move(event: ReactPointerEvent) {
+    const node = nodeGesture.current;
+    if (node) {
+      const dx = (event.clientX - node.x) / node.scale, dy = (event.clientY - node.y) / node.scale;
+      if (Math.hypot(dx, dy) >= 3) positionNode(node.componentId, node.nodeId, { x: node.position.x + dx, y: node.position.y + dy });
+      return;
+    }
     const active = gesture.current;
     if (!active) return;
     let component = slide.components.find(item => item.id === active.id); if (!component) return;
@@ -93,7 +100,16 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     if (active.duplicate) { active.duplicate = false; component = onDuplicate?.(component.id, result.rect); if (!component) gesture.current = undefined; else active.id = component.id; return; }
     changed(component, result.rect);
   }
-  function end() { gesture.current = undefined; lineGesture.current = undefined; setHeldGroup(undefined); setGuides([]); onEditEnd(); }
+  function end() { gesture.current = undefined; lineGesture.current = undefined; nodeGesture.current = undefined; setHeldGroup(undefined); setGuides([]); onEditEnd(); }
+  function positionNode(componentId: string, nodeId: string, position?: { x: number; y: number }) {
+    const component = slide.components.find(item => item.id === componentId);
+    if (component?.kind !== "diagram" || !component.processFlow || !component.topology) return;
+    onComponent({ ...component, topology: { ...component.topology, nodes: component.topology.nodes.map(node => {
+      if (node.id !== nodeId) return node;
+      const { position: _, ...rest } = node;
+      return position ? { ...rest, position: { x: Math.round(position.x), y: Math.round(position.y) } } : rest;
+    }) } }, `process-node:${componentId}:${nodeId}`);
+  }
   function commitEdit() {
     if (!editing) return;
     const component = editing.component;
@@ -111,6 +127,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     if (vectorSelection?.componentId === componentId && target?.dataset.vectorElement) onVectorSelect?.({ componentId, elementId: target.dataset.vectorElement });
   }
   const selectedComponent = slide.components.find(item => item.id === selected);
+  const selectedScene = rendered.components.find(item => item.id === selected);
   const selectedLine = selectedComponent?.customVisual?.format === "vector" && vectorSelection?.componentId === selected
     ? selectedComponent.customVisual.elements.find(item => item.id === vectorSelection?.elementId && item.kind === "line" && !item.parentId) : undefined;
   function linePoint(line: VectorElement, endpoint: "start" | "end") {
@@ -164,7 +181,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
       </div>}
       <div ref={root} className={`canvas scene-canvas ${interactive ? "" : "presentation-canvas"}`} style={{ aspectRatio: `${slide.canvas.width}/${slide.canvas.height}` }} aria-label="Page canvas" aria-busy={!markup || undefined}
         onPointerDown={selectArtwork} onDoubleClick={event => { const target = svgTarget(event); const componentId = target?.dataset.component, elementId = target?.dataset.vectorElement; if (componentId && elementId) { event.stopPropagation(); onSelect(componentId); onVectorSelect?.({ componentId, elementId }, true); } }} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end}
-        onBlur={() => { if (!gesture.current && !lineGesture.current) end(); }}
+        onBlur={() => { if (!gesture.current && !lineGesture.current && !nodeGesture.current) end(); }}
         onKeyUp={event => { if (event.key.startsWith("Arrow")) end(); }}
         onDragOver={event => { if (interactive) event.preventDefault(); }} onDrop={event => { if (!interactive) return; event.preventDefault(); const kind = event.dataTransfer.getData("application/konpeki-component") as CompositionComponent["kind"]; const r = event.currentTarget.getBoundingClientRect(); onAdd(kind, { x: (event.clientX-r.left)/r.width*slide.canvas.width, y: (event.clientY-r.top)/r.height*slide.canvas.height }); }}>
         {renderError ? <p className="scene-error" role="alert">{renderError}</p> : <div className="scene-artwork" dangerouslySetInnerHTML={{ __html: markup }} />}
@@ -172,6 +189,30 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
         {interactive && slide.paintOrder.map(id => slide.components.find(component => component.id === id)!).map(component => <button key={component.id} type="button" data-component={component.id} className={`component-hit ${selected === component.id ? "selected" : ""} ${vectorSelection?.componentId === component.id ? "element-editing" : ""}`} style={{ left: `${box(component).x/slide.canvas.width*100}%`, top: `${box(component).y/slide.canvas.height*100}%`, width: `${box(component).width/slide.canvas.width*100}%`, height: `${box(component).height/slide.canvas.height*100}%` }} aria-label={`Select ${componentInstanceLabel(slide.components, component.id)}`} aria-pressed={selected === component.id}
           onPointerDown={event => start(event, component)} onDoubleClick={event => { event.stopPropagation(); setEditing({ component, value: component.kind === "text-block" ? component.content ?? "" : component.intent ?? "" }); }} onKeyDown={event => nudge(event, component)} />)}
         {interactive && selectedComponent && (["nw","ne","sw","se"] as Corner[]).map(corner => <button key={corner} type="button" className={`resize-handle resize-${corner}`} style={{ left: `${(box(selectedComponent).x + (corner.endsWith("e") ? box(selectedComponent).width : 0))/slide.canvas.width*100}%`, top: `${(box(selectedComponent).y + (corner.startsWith("s") ? box(selectedComponent).height : 0))/slide.canvas.height*100}%` }} aria-label={`Resize ${componentInstanceLabel(slide.components, selectedComponent.id)} from ${corner}`} onPointerDown={event => start(event, selectedComponent, corner)} onKeyDown={event => keyboardResize(event, selectedComponent, corner)} />)}
+        {interactive && selectedComponent && selectedScene?.processNodes?.map(node => <button key={node.id} type="button" className="component-hit process-node-hit" data-process-node={node.id}
+          aria-label={`Move step: ${node.label}`} title="Drag or use arrow keys to pin this step. Delete resets automatic placement."
+          style={{ left: `${node.box.x/slide.canvas.width*100}%`, top: `${node.box.y/slide.canvas.height*100}%`, width: `${node.box.width/slide.canvas.width*100}%`, height: `${node.box.height/slide.canvas.height*100}%` }}
+          onPointerDown={event => {
+            if (event.button !== 0) return;
+            event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); holdGroup(selectedComponent);
+            nodeGesture.current = { componentId: selectedComponent.id, nodeId: node.id, x: event.clientX, y: event.clientY,
+              position: { x: node.box.x - selectedScene.contentBox.x, y: node.box.y - selectedScene.contentBox.y },
+              scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
+          }}
+          onDoubleClick={event => event.stopPropagation()}
+          onKeyDown={event => {
+            if (["Delete", "Backspace"].includes(event.key)) {
+              event.preventDefault(); event.stopPropagation(); positionNode(selectedComponent.id, node.id); onEditEnd();
+              onNotice(`Automatic placement restored for ${node.label}`); return;
+            }
+            if (!event.key.startsWith("Arrow")) return;
+            event.preventDefault(); event.stopPropagation(); holdGroup(selectedComponent);
+            const step = slide.grid ? gridMetrics(slide.grid).baseline : 10;
+            positionNode(selectedComponent.id, node.id, {
+              x: node.box.x - selectedScene.contentBox.x + (event.key === "ArrowRight" ? step : event.key === "ArrowLeft" ? -step : 0),
+              y: node.box.y - selectedScene.contentBox.y + (event.key === "ArrowDown" ? step : event.key === "ArrowUp" ? -step : 0),
+            });
+          }} />)}
         {editing && <textarea className="scene-text-editor" aria-label={`Edit ${componentInstanceLabel(slide.components, editing.component.id)}`} autoFocus value={editing.value} style={{ left: `${box(editing.component).x/slide.canvas.width*100}%`, top: `${box(editing.component).y/slide.canvas.height*100}%`, width: `${box(editing.component).width/slide.canvas.width*100}%`, height: `${box(editing.component).height/slide.canvas.height*100}%` }} onPointerDown={e => e.stopPropagation()} onChange={e => setEditing({ ...editing, value: e.target.value })} onBlur={commitEdit} onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); setEditing(undefined); } }} />}
         {interactive && selectedComponent && selectedLine && <svg className="line-handles" viewBox={`0 0 ${slide.canvas.width} ${slide.canvas.height}`}>{(["start","end"] as const).map(endpoint => { const point = linePoint(selectedLine, endpoint); return point && <circle key={endpoint} cx={point.x} cy={point.y} r="9" tabIndex={0} aria-label={`${endpoint} endpoint`} onPointerDown={event => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); const rendered = root.current!.querySelector<SVGGraphicsElement>(`[data-component="${CSS.escape(selected!)}"][data-vector-element="${CSS.escape(selectedLine.id)}"] line`)!; lineGesture.current = { pointerId: event.pointerId, endpoint, line: selectedLine, screenInverse: rendered.getScreenCTM()!.inverse() }; holdGroup(selectedComponent); }} onPointerMove={moveLine} />; })}</svg>}
         {interactive && guides.map((guide,index) => <i key={index} className={`guide guide-${guide.axis}`} style={guide.axis === "x" ? { left: `${guide.value/slide.canvas.width*100}%` } : { top: `${guide.value/slide.canvas.height*100}%` }} />)}

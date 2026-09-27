@@ -545,7 +545,16 @@ export function InspectorPanel({
           onBlur={onEditEnd}
         />
       </Field>
-      {component.kind === "diagram" && <DiagramTypePicker
+      {component.kind === "diagram" && component.processFlow && <fieldset>
+        <legend>Process flow</legend>
+        <Select label="Flow direction" value={component.processFlow.direction} options={["right", "down"]}
+          optionLabels={{ right: "Left to right", down: "Top to bottom" }}
+          onChange={direction => onComponent({ ...component, processFlow: { direction: direction as "right" | "down" } })} />
+        <p>Drag a step or use arrow keys to pin its position. Delete on a focused step restores automatic placement. Pinned steps stay fixed when direction or text changes.</p>
+        <button type="button" disabled={!component.topology?.nodes.some(node => node.position)}
+          onClick={() => onComponent({ ...component, topology: { ...component.topology!, nodes: component.topology!.nodes.map(({ position: _, ...node }) => node) } })}>Reset step positions</button>
+      </fieldset>}
+      {component.kind === "diagram" && !component.processFlow && <DiagramTypePicker
         value={component.appearance.type}
         selection={component.appearance.selection ?? "explicit"}
         onChange={(type, selection) => onComponent({ ...component, appearance: { ...component.appearance, type, selection } })}

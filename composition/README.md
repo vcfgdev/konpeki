@@ -103,7 +103,7 @@ font sizes use `scale:<step>`. Supported primitives include groups, rectangles,
 circles, ellipses, lines, polylines, polygons, paths, text, and tspans. Outlined
 shapes remain outlines in SVG and PNG. Standard diagram, chart, and table artwork
 is a draft until deliberately authored and may be flagged as such.
-Unauthored topology shows a neutral reserved area and node/edge counts, not an
+Unless `processFlow` is explicitly enabled, unauthored topology shows a neutral reserved area and node/edge counts, not an
 inferred diagram. The topology remains in the document for authoring; the draft
 is not a finished representation of its relationships.
 
@@ -127,6 +127,60 @@ must not change without instruction. Auto permits the agent to choose and update
 the form while preserving topology and required facts. Scaling chart artwork
 produces a review warning for pixel-unit details; it is not evidence that chart
 captions or semantics are correct.
+
+## Semantic process flows
+
+For a chain or one two-way decision, a `diagram` with appearance type `process`
+or `flowchart` may opt into `processFlow: {direction: "right" | "down"}`.
+Keep the existing component grid area, slot IDs, and explicit topology; omit
+`customVisual`. Node text comes from the matching content slot's `label`, not its
+instruction. Every node and edge needs a distinct stable ID within the component.
+Both decision edges need distinct, nonempty labels. Edge order chooses branch
+order (top/bottom or left/right); node-array order does not determine flow order.
+
+```json
+{
+  "id": "approval", "kind": "diagram",
+  "area": {"column": 1, "span": 24, "row": 12, "rows": 48},
+  "slotIds": ["request", "accept", "decline"],
+  "appearance": {"type": "process"},
+  "processFlow": {"direction": "right"},
+  "topology": {
+    "kind": "explicit",
+    "nodes": [
+      {"id": "decision", "slotId": "request"},
+      {"id": "accepted", "slotId": "accept"},
+      {"id": "declined", "slotId": "decline"}
+    ],
+    "edges": [
+      {"id": "yes", "from": "decision", "to": "accepted", "label": "Yes"},
+      {"id": "no", "from": "decision", "to": "declined", "label": "No"}
+    ]
+  }
+}
+```
+
+This component example fits the presentation revision-2 grid; its page must also
+declare the three content slots and include `approval` in reading/paint order.
+The renderer measures caption-step text, grows boxes vertically, and derives
+orthogonal routes and open arrowheads. It never shrinks text or saves generated
+vectors. Existing custom artwork and non-opted-in diagrams remain unchanged.
+Only one connected, acyclic chain with at most one fork is supported: no joins,
+loops, nested decisions, hidden nodes, or custom node primitives.
+
+In the canvas, select the component and drag a step or use arrow keys. This saves
+only that topology node's `position: {x, y}` in content-local page pixels, measured
+from the component's padded top-left. Positions survive text edits, insertion of
+other steps, component moves/resizes, and direction changes; they do not scale
+or move automatically. Delete/Backspace on a focused step clears its override;
+**Reset step positions** clears all overrides. Other steps remain derived.
+
+`inspect` exposes `processNodes` with stable IDs, labels, absolute page-space boxes,
+and `pinned` flags. Never save those derived boxes back into the composition.
+`process-layout` errors identify overflowing/overlapping nodes, backward or
+obstructed connections, and overflowing/overlapping edge labels. Recompose or
+enlarge the area instead of suppressing errors. These checks do not prove general
+graph readability; visually review the rendered result and requested exports.
 
 ## Fonts, checks, and writers
 

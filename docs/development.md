@@ -108,6 +108,7 @@ With the dev server running and `agent-browser` installed:
 node scripts/check-text-layout.mjs
 node scripts/check-scene-writers.mjs
 node scripts/check-grid-editing.mjs http://localhost:4318 /tmp/konpeki-editing
+node scripts/check-process-flow.mjs http://localhost:4318 /tmp/konpeki-process-flow
 node scripts/check-notes.mjs /tmp/konpeki-notes
 node scripts/check-grid.mjs /tmp/konpeki-gallery
 ```
@@ -115,6 +116,11 @@ node scripts/check-grid.mjs /tmp/konpeki-gallery
 Inspect the captured editor, presentation, night, and export states. Assertions
 do not establish visual correctness. `check-grid` uses the scene checks and
 renders all 11 pages without a browser; chart scale is a review warning.
+
+`check-process-flow` exercises node drag/nudge, undo/redo, reset, reload, and a
+subsequent JSON revision preserving the human's position override. It captures
+horizontal, vertical, night, and crowded states; compares PNG/PDF rasters and
+checks PDF text extraction. Inspect its captures as well as its assertions.
 
 The original 3,719-case layout harness was not supplied. The reconstructed
 45-case corpus is regression coverage, not a replacement for that acceptance

@@ -143,6 +143,8 @@ export type ExplicitTopology = {
     slotId: string;
     visible?: boolean;
     preferredRect?: Rect;
+    /** Authored process-flow override, in pixels relative to the content box. */
+    position?: { x: number; y: number };
     primitive?:
       | {
           kind: "shape";
@@ -157,10 +159,11 @@ export type ExplicitTopology = {
           color?: TextColor;
         };
   }[];
-  edges: { from: string; to: string; label?: string }[];
+  edges: { id?: string; from: string; to: string; label?: string }[];
 };
 export type DiagramComponent = ComponentBase & {
   kind: "diagram";
+  processFlow?: { direction: "right" | "down" };
   appearance: {
     type: DiagramType;
     selection?: "auto" | "explicit";

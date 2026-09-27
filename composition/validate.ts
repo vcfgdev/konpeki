@@ -3,6 +3,7 @@ import { schemaV2 } from "./schema-v2.ts";
 import { areaIssue, gridSchema, gridMetrics, resolveDocument, type WireDocument } from "./grid.ts";
 import { vectorAttributeNames } from "./vector.ts";
 import { validThemeBinding } from "./theme-tokens.ts";
+import { processFlowIssue } from "./process-flow.ts";
 
 export type ValidationIssue = { path: string; message: string };
 export type ValidationResult =
@@ -115,6 +116,18 @@ export function validateComposition(input: unknown): ValidationResult {
     }
     if (component.kind === "chart" && component.topology && component.appearance.template !== "sankey")
       fail(path, "Only Sankey charts may define topology");
+    if (component.kind === "diagram") {
+      if (component.processFlow) {
+        const issue = processFlowIssue(component);
+        if (issue) fail(`${path}/processFlow`, issue);
+        for (const node of component.topology?.nodes ?? []) {
+          if (!slide.contentSlots.find(slot => slot.id === node.slotId)?.label.trim())
+            fail(path, "Process flow nodes require nonempty content-slot labels");
+        }
+      } else if (component.topology?.nodes.some(node => node.position)) {
+        fail(path, "Node position overrides require processFlow");
+      }
+    }
     if ((component.kind === "diagram" || component.kind === "chart") && component.topology) {
       const { nodes, edges } = component.topology;
       unique(
