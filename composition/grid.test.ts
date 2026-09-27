@@ -9,7 +9,7 @@ import { schemaV2 } from "./schema-v2.ts";
 import { assertComposition, validateComposition } from "./validate.ts";
 import { canonicalJSON, compileHandoff } from "./compile.ts";
 import { addComponent, addSlide, duplicateComponent, initialDraft, initialGridDraft, parseCompositionJSON, parseStoredDraft, serializeDraft, transformComponentRect, validateDraft } from "./document.ts";
-import { areaRect, gridMetrics, gridPresets, gridSchema, lineLengthWarnings, resolveArea, resolveDocument, snapArea, toComposition, type GridDocument, type GridPreset } from "./grid.ts";
+import { areaRect, gridMetrics, gridPresets, gridSchema, lineLengthWarnings, refineGrid, resolveArea, resolveDocument, snapArea, toComposition, type GridDocument, type GridPreset } from "./grid.ts";
 import { pageSizeIssue, resizePage } from "../src/lib/page-size.ts";
 import { readCompositionFile, saveCompositionFile } from "../bin/session-store.ts";
 import { composerPalette } from "../src/lib/theme.ts";
@@ -17,6 +17,7 @@ import { contrastRatio } from "../lib/contrast.ts";
 
 function fixture(): GridDocument {
   const document = toComposition(addComponent(initialDraft(true), "text-block")) as GridDocument;
+  delete document.slides[0].grid.revision; // Historical geometry stays supported.
   document.slides[0].components[0].area = { column: 3, span: 4, row: 9, rows: 11 };
   return document;
 }
@@ -35,11 +36,71 @@ test("v2 is the sole public generated schema and rejects pixels", () => {
     (d: any) => d.slides[0].components[0].area.column = 1.5,
     (d: any) => d.slides[0].components[0].area.row = 0,
     (d: any) => d.slides[0].grid.preset = "unknown",
+    (d: any) => d.slides[0].grid.revision = 3,
+    (d: any) => d.slides[0].grid.revision = "2",
     (d: any) => d.schema = "konpeki-composition/v3",
   ]) {
     const document = fixture(); mutate(document);
     assert.equal(validateComposition(document).ok, false);
   }
+});
+
+test("finer grids halve horizontal pitch, preserve rows and upgrade all areas without mutation", () => {
+  for (const [preset, columns, rows] of [
+    ["presentation", 24, 78], ["portrait", 12, 102], ["link", 8, 66],
+    ["square", 12, 80], ["article", 16, 63], ["explainer", 12, 123], ["gallery", 24, 72],
+  ] as const) for (const revision of [undefined, 1] as const) {
+    const page = fixture().slides[0];
+    page.grid = { preset, ...(revision && { revision }) };
+    page.components[0].area = { column: 2, span: 3, row: 9, rows: 11 };
+    page.groups = [
+      { id: "aligned", childIds: [page.components[0].id], area: { column: "center", span: 2, row: "center", rows }, verticalAlignment: "center" },
+      { id: "move-only", childIds: [page.components[0].id] },
+    ];
+    const before = structuredClone(page), next = refineGrid(page), metrics = gridMetrics(next.grid);
+    assert.deepEqual(page, before);
+    assert.equal(refineGrid(next), next);
+    assert.equal(metrics.columns, columns); assert.equal(metrics.rows, rows);
+    const old = gridMetrics(page.grid);
+    assert.equal(metrics.columnWidth + metrics.gutter, (old.columnWidth + old.gutter) / 2);
+    for (const key of ["baseline", "margin", "marginY", "gutter", "scale", "lineHeights"] as const)
+      assert.deepEqual(metrics[key], old[key]);
+    assert.deepEqual(next.components[0].area, { column: 3, span: 6, row: 9, rows: 11 });
+    assert.deepEqual(next.groups[0].area, { column: "center", span: 4, row: "center", rows });
+    assert.deepEqual(next.groups[1], before.groups[1]);
+    assert.deepEqual(areaRect(next.grid, next.components[0].area), areaRect(page.grid, page.components[0].area));
+    assert.deepEqual(areaRect(next.grid, next.groups[0].area!), areaRect(page.grid, page.groups[0].area!));
+    // Every old column/span pair, including odd widths and the right edge.
+    for (let column = 1; column <= old.columns; column++) for (let span = 1; span <= old.columns - column + 1; span++) {
+      page.components[0].area = { column, span, row: 1, rows: 2 };
+      const upgraded = refineGrid(page);
+      assert.deepEqual(areaRect(upgraded.grid, upgraded.components[0].area), areaRect(page.grid, page.components[0].area));
+    }
+  }
+});
+
+test("new drafts use finer placement, retain parity and bounds, and inherit revision on new pages", () => {
+  const document = toComposition(addComponent(initialGridDraft(), "text-block")), page = document.slides[0];
+  assert.deepEqual(page.grid, { preset: "presentation", revision: 2 });
+  const component = page.components[0];
+  component.area = { column: 24, span: 1, row: 78, rows: 1 };
+  assert.ok(validateComposition(document).ok);
+  assert.deepEqual(areaRect(page.grid, component.area), { x: 1797, y: 996, width: 51, height: 12 });
+  assert.deepEqual(snapArea(page.grid, { x: -50, y: 2000, width: 10000, height: 24 }),
+    { column: 1, span: 24, row: 77, rows: 2 });
+  component.area.column = 25;
+  assert.equal(validateComposition(document).ok, false);
+  component.area = { column: "center", span: 5, row: 1, rows: 10 };
+  const invalid = validateComposition(document);
+  assert.ok(!invalid.ok); assert.match(invalid.issues[0].message, /use span 4 or 6/);
+  component.area.span = 6;
+  assert.equal(resolveArea(page.grid, component.area).column, 10);
+  const draft = resolveDocument(document), resolved = draft.slides[0].components[0];
+  const moved = transformComponentRect(resolved, resolved.preferredRect, { ...resolved.preferredRect, x: resolved.preferredRect.x + 75 }, page.grid);
+  assert.deepEqual(moved.area, { column: 11, span: 6, row: 1, rows: 10 });
+  assert.deepEqual(addSlide(draft).draft.slides[1].grid, page.grid);
+  assert.deepEqual(toComposition(resolveDocument(document)), document);
+  assert.match(compileHandoff(document), /24 columns, 78 baseline rows/);
 });
 
 test("areas use gutters only between columns; snapping clamps all page edges", () => {

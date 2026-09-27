@@ -1,8 +1,10 @@
 import type { CompositionSlide } from "../../composition/runtime.ts";
+import { gridMetrics, refineGrid, resolveSlide, toGridComponent } from "../../composition/grid.ts";
 import { pagePresets, pageSizeIssue, resizePage } from "../lib/page-size.ts";
 
 export function PageSizePicker({ slide, onChange }: { slide: CompositionSlide; onChange: (slide: CompositionSlide) => void }) {
   const preset = pagePresets.find((item) => item.width === slide.canvas.width && item.height === slide.canvas.height);
+  const metrics = slide.grid && gridMetrics(slide.grid);
   function apply(w: number, h: number, destination: CompositionSlide["intendedViewingSize"] = "custom") {
     const size = { width: w, height: h };
     if (!pageSizeIssue(slide, size)) {
@@ -26,5 +28,14 @@ export function PageSizePicker({ slide, onChange }: { slide: CompositionSlide; o
         })}
       </select>
     </label>
+    {metrics && <div className="field">
+      <span>{metrics.columns} columns × {metrics.rows} rows</span>
+      {slide.grid!.revision !== 2 && <>
+        <button type="button" onClick={() => onChange(resolveSlide(refineGrid({
+          ...slide, grid: slide.grid!, components: slide.components.map(toGridComponent),
+        })))}>Use finer grid</button>
+        <small className="visualization-description">Double the columns without moving content. Rows stay the same.</small>
+      </>}
+    </div>}
   </fieldset>;
 }

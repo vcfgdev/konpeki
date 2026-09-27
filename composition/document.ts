@@ -8,7 +8,7 @@ import {
   type ContentSlot,
   type Rect,
 } from "./runtime.ts";
-import { gridSchema, gridMetrics, resolveArea, resolveDocument, resolveSlide, resolveComponent, snapArea, toComposition, toGridComponent, type GridArea, type PageGrid } from "./grid.ts";
+import { gridSchema, gridMetrics, refineGrid, resolveArea, resolveDocument, resolveSlide, resolveComponent, snapArea, toComposition, toGridComponent, type GridArea, type PageGrid } from "./grid.ts";
 import { validateComposition } from "./validate.ts";
 import { appearanceOptions } from "./schema.ts";
 import { diagramDefinition } from "./visualizations.ts";
@@ -203,14 +203,15 @@ export function initialDraft(empty = false): Draft {
     schema: gridSchema,
     title: "Untitled composition",
     theme: { id: "plex", mode: "paper" },
-    slides: [{
+    // Keep the starter's original geometry while new documents use revision 2.
+    slides: [refineGrid({
       ...wireSlide,
       grid: { preset: "presentation" },
       components: slide.components.map((component) => ({
         ...toGridComponent(component),
         area: snapArea({ preset: "presentation" }, component.preferredRect),
       })),
-    }],
+    })],
   });
 }
 export function initialGridDraft(): Draft {

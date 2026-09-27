@@ -23,7 +23,8 @@
       "paintOrder": [],
       "relationships": [],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       }
     }
   ]

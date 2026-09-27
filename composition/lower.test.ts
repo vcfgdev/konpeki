@@ -11,6 +11,13 @@ import { areaRect, toComposition } from "./grid.ts";
 import { itemBounds, textInkBounds, type SceneShape } from "./scene.ts";
 import { checkPage } from "./check.ts";
 
+// These independently measured fit/baseline fixtures use the original grid.
+function legacyGridDraft() {
+  const draft = initialGridDraft();
+  draft.slides[0].grid = { preset: "presentation" };
+  return draft;
+}
+
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 const baseline = JSON.parse(readFileSync(new URL("./fixtures/text-layout-browser-baseline.json", import.meta.url), "utf8"));
 for (const name of ["architecture", "sankey", "release", "explainer", "intro"]) {
@@ -60,7 +67,7 @@ for (const name of ["architecture", "sankey", "release", "explainer", "intro"]) 
 }
 
 test("artwork fits once; labels keep unscaled steps, anchors, IDs and paint order", () => {
-  const document = toComposition(addComponent(initialGridDraft(), "image"));
+  const document = toComposition(addComponent(legacyGridDraft(), "image"));
   const page = document.slides[0], component = page.components[0];
   component.area = { column: 2, span: 2, row: 4, rows: 10 };
   component.customVisual = { format: "vector", description: "Asymmetric anchor fixture", viewBox: { x: 10, y: 20, width: 200, height: 80 }, elements: [
@@ -81,7 +88,7 @@ test("artwork fits once; labels keep unscaled steps, anchors, IDs and paint orde
 });
 
 test("artwork alignment uses the padded cell, keeps labels attached, and preserves default centering", () => {
-  const document = toComposition(addComponent(initialGridDraft(), "image"));
+  const document = toComposition(addComponent(legacyGridDraft(), "image"));
   const page = document.slides[0], component = page.components[0];
   component.area = { column: 2, span: 2, row: 4, rows: 10 }; component.padding = 1;
   // Padded cell [234,120,252,96]. Contain leaves 204px spare width; cover
@@ -109,7 +116,7 @@ test("artwork alignment uses the padded cell, keeps labels attached, and preserv
 });
 
 test("nested vertical regions keep pixel gutters and put sparse content first", () => {
-  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const document = toComposition(addComponent(legacyGridDraft(), "text-block"));
   const page = document.slides[0], component = page.components[0];
   assert.ok(component.kind === "text-block");
   component.area = { column: 2, span: 6, row: 4, rows: 40 };
@@ -128,7 +135,7 @@ test("nested vertical regions keep pixel gutters and put sparse content first", 
 });
 
 test("titles bottom-align multiline copy inside padding; body copy stays at the top", () => {
-  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const document = toComposition(addComponent(legacyGridDraft(), "text-block"));
   const page = document.slides[0], component = page.components[0];
   assert.ok(component.kind === "text-block");
   component.area = { column: 2, span: 6, row: 4, rows: 20 };
@@ -163,7 +170,7 @@ test("restores the reviewed title offsets without moving subtitles", () => {
 });
 
 test("explicit vertical alignment overrides roles; cap centering ignores descenders and leading", () => {
-  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const document = toComposition(addComponent(legacyGridDraft(), "text-block"));
   const page = document.slides[0], component = page.components[0];
   assert.ok(component.kind === "text-block");
   component.area = { column: 2, span: 6, row: 4, rows: 20 };
@@ -191,7 +198,7 @@ test("explicit vertical alignment overrides roles; cap centering ignores descend
 });
 
 test("group centering translates ink and selection cells together and responds to changed copy", () => {
-  const document = toComposition(addComponent(addComponent(initialGridDraft(), "image"), "text-block"));
+  const document = toComposition(addComponent(addComponent(legacyGridDraft(), "image"), "text-block"));
   const page = document.slides[0], [mark, copy] = page.components;
   assert.ok(copy.kind === "text-block");
   mark.area = { column: 1, span: 1, row: 3, rows: 10 };

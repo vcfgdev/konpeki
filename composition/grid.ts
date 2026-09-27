@@ -22,7 +22,8 @@ export const gridPresets = {
   gallery: { width: 1600, height: 1000, columns: 12, gutter: 24, margin: 64, baseline: 12, scale: [20, 24, 28, 34, 44, 56, 72], lineHeights: [24, 32, 36, 44, 52, 64, 80] },
 } as const;
 export type GridPreset = keyof typeof gridPresets;
-export type PageGrid = { preset: GridPreset };
+// Omitted revisions keep existing documents on the original column counts.
+export type PageGrid = { preset: GridPreset; revision?: 1 | 2 };
 export type GridArea = { column: number | "center"; span: number; row: number | "center"; rows: number };
 export type NumericGridArea = GridArea & { column: number; row: number };
 export type GridGroup = Contract.ManipulationGroup & { area?: GridArea; verticalAlignment?: Contract.Alignment };
@@ -59,7 +60,21 @@ export function gridMetrics(grid: PageGrid) {
   const p = gridPresets[grid.preset];
   const width = p.width - p.margin * 2;
   const rows = Math.floor((p.height - p.margin * 2) / p.baseline);
-  return { ...p, rows, marginY: (p.height - rows * p.baseline) / 2, columnWidth: (width - p.gutter * (p.columns - 1)) / p.columns };
+  const columns = p.columns * (grid.revision === 2 ? 2 : 1);
+  return { ...p, columns, rows, marginY: (p.height - rows * p.baseline) / 2, columnWidth: (width - p.gutter * (columns - 1)) / columns };
+}
+
+/** Double column resolution without moving content. Reapplying is a no-op. */
+export function refineGrid(slide: GridSlide): GridSlide {
+  if (slide.grid.revision === 2) return slide;
+  // With unchanged gutters the pitch halves, not the column width.
+  const refine = (area: GridArea): GridArea => ({ ...area,
+    column: area.column === "center" ? "center" : area.column * 2 - 1, span: area.span * 2,
+  });
+  return { ...slide, grid: { ...slide.grid, revision: 2 },
+    components: slide.components.map(component => ({ ...component, area: refine(component.area) })),
+    groups: slide.groups.map(group => group.area ? { ...group, area: refine(group.area) } : group),
+  };
 }
 export function typeSize(grid: PageGrid, step: TypeStep) {
   return gridPresets[grid.preset].scale[typeSteps.indexOf(step)];

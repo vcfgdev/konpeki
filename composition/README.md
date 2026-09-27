@@ -7,22 +7,36 @@ are rejected. There is no supported v1 migration command.
 
 ## Grid and type
 
-Each page chooses a fixed preset:
+New pages choose a fixed preset with `grid.revision: 2`:
 
 | Preset | Size | Columns × rows | Baseline |
 | --- | --- | --- | --- |
-| `presentation` | 1920×1080 | 12 × 78 | 12 px |
-| `portrait` | 1080×1350 | 6 × 102 | 12 px |
-| `link` | 1200×630 | 4 × 66 | 8 px |
-| `square` | 1080×1080 | 6 × 80 | 12 px |
-| `article` | 1600×600 | 8 × 63 | 8 px |
-| `explainer` | 1200×1600 | 6 × 123 | 12 px |
-| `gallery` | 1600×1000 | 12 × 72 | 12 px |
+| `presentation` | 1920×1080 | 24 × 78 | 12 px |
+| `portrait` | 1080×1350 | 12 × 102 | 12 px |
+| `link` | 1200×630 | 8 × 66 | 8 px |
+| `square` | 1080×1080 | 12 × 80 | 12 px |
+| `article` | 1600×600 | 16 × 63 | 8 px |
+| `explainer` | 1200×1600 | 12 × 123 | 12 px |
+| `gallery` | 1600×1000 | 24 × 72 | 12 px |
+
+Omitted `revision` or explicit `1` retains the original grid: half as many
+columns, with the same rows, margins, 24 px gutters, and typography. Loading and
+saving never upgrades a page implicitly. Revision is independent of destination
+and is preserved when switching presets. New pages in an existing document
+inherit its first page's grid.
+
+The editor's **Use finer grid** action upgrades one page and supports undo.
+`konpeki refine-grid input.json --output refined.json` upgrades all pages into a
+new file; it never overwrites a file. It maps numeric column `c` to `2c − 1` and
+span `s` to `2s`, preserving `"center"`, rows, IDs and all other content. Group
+areas convert too. Applying it again does nothing. Do not change the revision
+without converting areas. This halves horizontal placement steps (150 → 75 px
+on presentation, 282 → 141 px on link) without changing existing page pixels.
 
 Components use `area: {column, span, row, rows}`. Starts are one-based integers
 or `"center"`; spans are positive integers. Center placement requires the span
 and the grid count to have the same parity on that axis. For example, a
-12-column grid accepts centered spans 2, 4, 6…; the article preset's 63 rows
+24-column grid accepts centered spans 2, 4, 6…; the article preset's 63 rows
 accept centered heights 1, 3, 5…. Invalid spans suggest the nearest valid sizes.
 No fractional starts or pixel offsets are supported. Spare height after the
 last full baseline row is split equally above and below the grid.

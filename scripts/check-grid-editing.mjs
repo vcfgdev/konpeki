@@ -50,6 +50,7 @@ try {
   b("open", base); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
   // A fresh v2 draft is intentionally blank; import content before querying it.
   const document = toComposition(addComponent(addComponent(initialGridDraft(), "text-block"), "image"));
+  delete document.slides[0].grid.revision; // Exercise old documents before upgrading.
   document.title = "Lowered scene editing regression";
   const [text, vector] = document.slides[0].components;
   text.area = { column: 2, span: 4, row: 8, rows: 10 }; text.content = "Editable baseline text"; text.padding = 1;
@@ -126,10 +127,40 @@ try {
   })()`), true, "presentation clips resolve inside its own scene");
   capture("scene-presentation"); click("Exit");
 
+  importDocument(document);
+  b("click", ".component-dock button:first-child");
+  const geometry = () => evaluate("[...document.querySelectorAll('.component-hit')].map(node=>[node.dataset.component,node.style.left,node.style.top,node.style.width,node.style.height])");
+  const beforeUpgrade = geometry();
+  capture("coarse-grid-settings");
+  click("Use finer grid");
+  assert.equal(stored().slides[0].grid.revision, 2);
+  assert.equal(stored().slides[0].components[0].area.column, 13);
+  assert.equal(stored().slides[0].components[0].area.span, 8);
+  assert.deepEqual(geometry(), beforeUpgrade, "upgrade preserves pixel hit boxes");
+  assert.ok(evaluate("document.querySelector('.inspector-content').textContent.includes('24 columns × 78 rows')"));
+  assert.equal(evaluate("[...document.querySelectorAll('button')].some(node=>node.textContent==='Use finer grid')"), false);
+  b("press", "Control+z");
+  assert.equal(stored().slides[0].grid.revision, undefined, "undo restores the original grid");
+  assert.deepEqual(geometry(), beforeUpgrade);
+  b("press", "Control+Shift+z");
+  assert.equal(stored().slides[0].grid.revision, 2);
+  assert.deepEqual(geometry(), beforeUpgrade);
+  capture("fine-grid-settings");
+  b("focus", hit); b("press", "ArrowRight");
+  assert.equal(stored().slides[0].components[0].area.column, 14);
+  const newLeft = Number.parseFloat(geometry().find(item=>item[0]===text.id)[1]);
+  const oldLeft = Number.parseFloat(beforeUpgrade.find(item=>item[0]===text.id)[1]);
+  assert.ok(Math.abs((newLeft-oldLeft)*1920/100-75)<.001, "one finer column moves 75 page pixels");
+  b("press", "Control+z");
+  assert.equal(stored().slides[0].components[0].area.column, 13, "wait for the undone placement to persist");
+  b("reload"); b("wait", ".scene-artwork svg:not([aria-busy])"); settle();
+  assert.equal(stored().slides[0].grid.revision, 2, "reload retains grid revision");
+  assert.deepEqual(geometry(), beforeUpgrade);
+
   const centered = toComposition(addComponent(initialGridDraft(), "text-block"));
   centered.title = "Centered placement editing regression";
   const block = centered.slides[0].components[0];
-  block.area = { column: "center", span: 4, row: "center", rows: 10 };
+  block.area = { column: "center", span: 8, row: "center", rows: 10 };
   block.content = "Konpeki"; block.textStyle = { step: "title" };
   block.appearance.alignment = "center"; block.appearance.verticalAlignment = "center";
   importDocument(centered);
@@ -139,15 +170,18 @@ try {
   assert.equal(evaluate("document.querySelector('select[name=Column]').value"), "center");
   assert.equal(evaluate("document.querySelector('select[name=Row]').value"), "center");
   assert.equal(evaluate("document.querySelector('select[name=\"Vertical alignment\"]').value"), "center");
-  b("fill", "input[name=span]", "3"); b("press", "Enter");
-  assert.equal(stored().slides[0].components[0].area.span, 4, "invalid centered spans never reach the scene");
-  assert.ok(evaluate("document.querySelector('[role=alert]').textContent.includes('use span 2 or 4')"));
+  b("fill", "input[name=span]", "7"); b("press", "Enter");
+  assert.equal(stored().slides[0].components[0].area.span, 8, "invalid centered spans never reach the scene");
+  assert.ok(evaluate("document.querySelector('[role=alert]').textContent.includes('use span 6 or 8')"));
   b("press", "Escape"); b("focus", centeredHit); b("press", "ArrowDown");
-  assert.deepEqual(stored().slides[0].components[0].area, { column: "center", span: 4, row: 36, rows: 10 });
+  assert.deepEqual(stored().slides[0].components[0].area, { column: "center", span: 8, row: 36, rows: 10 });
   capture("centered-text-inspector");
 
   const cover = JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8"));
   importDocument(cover);
+  b("click", ".component-dock button:first-child");
+  assert.ok(evaluate("document.querySelector('.inspector-content').textContent.includes('8 columns × 66 rows')"));
+  capture("fine-grid-cover");
   const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
   const assertGroupHits = current => {
     settle();

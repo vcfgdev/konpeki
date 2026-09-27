@@ -15,8 +15,11 @@ do not assume 16:9 or invent extra pages. Record the destination in
 For another aspect ratio, recompose deliberately rather than stretching artwork,
 silently cropping evidence or shrinking essential text. Each page can have its own size.
 
-New browser-authored documents use the v2 grid presets: `presentation`,
-`portrait`, `link`, `square`, `article`, `explainer` and `gallery`. Place each
+New documents use `grid.revision: 2` with one of the v2 presets: `presentation`,
+`portrait`, `link`, `square`, `article`, `explainer` and `gallery`. Revision 2
+doubles columns, not rows. Existing pages without a revision retain their
+original grid. Use the editor's **Use finer grid** action or `konpeki refine-grid`
+to convert existing areas losslessly; never change the revision alone. Place each
 component with an explicit `area` (`column`, `span`, `row`, `rows`). Starts are
 one-based integers or `"center"`; centered spans must match the grid's parity.
 Preset changes never recompose a page; adapt areas and copy deliberately. Baseline

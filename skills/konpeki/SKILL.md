@@ -32,7 +32,10 @@ facts prevent faithful work. For new work, use an unused
 existing document's stable page, component, and vector IDs and reread it before
 each revision. Never overwrite a newer revision.
 
-Choose the destination preset and one-based grid areas. Use named type steps;
+Choose the destination preset, `grid.revision: 2`, and one-based grid areas.
+Preserve existing revisions; omitted means the original, coarser grid. To gain
+finer placement without moving content, run `node "<cli>" refine-grid <input.json>
+--output <new-file.json>`; never change the revision alone. Use named type steps;
 padding and leading are baseline units. Keep editable artwork as structured
 vectors owned by its semantic component. Preserve required facts, relationships,
 and explicit chart/diagram choices. Save substantial sources and caveats beside

@@ -2,11 +2,13 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { canonicalJSON } from "../../composition/compile.ts";
+import { refineGrid } from "../../composition/grid.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const runtimeRoot = join(here, "../..");
 const cover = JSON.parse(readFileSync(join(runtimeRoot, "slides/github-cover/composition.json"), "utf8"));
-const markVisual = cover.slides[0].components.find((c) => c.id === "brand-mark").customVisual;
+// Borrow the mark artwork, not the cover's cell alignment.
+const { alignment: _coverAlignment, ...markVisual } = cover.slides[0].components.find((c) => c.id === "brand-mark").customVisual;
 
 const INK = "theme:ink", MUTED = "theme:muted", ACCENT = "theme:accent", WASH = "theme:wash",
   DIVIDER = "theme:divider", SURFACE = "theme:surface", BG = "theme:background", ON_ACCENT = "theme:on-accent";
@@ -427,7 +429,8 @@ const doc = {
   title: "Introducing Konpeki",
   authoringMode: "default",
   theme: { id: "plex", mode: "paper", typography: "hanken-grotesk" },
-  slides: [p1, p2, p3, p4, p5, p6, p7].map((p) => p.s),
+  // Preserve the original authored layout while emitting the finer grid.
+  slides: [p1, p2, p3, p4, p5, p6, p7].map((p) => refineGrid(p.s)),
 };
 writeFileSync(join(here, "composition.json"), canonicalJSON(doc) + "\n");
 console.log("wrote", join(here, "composition.json"));

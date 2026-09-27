@@ -3950,6 +3950,12 @@
                   "explainer",
                   "gallery"
                 ]
+              },
+              "revision": {
+                "enum": [
+                  1,
+                  2
+                ]
               }
             },
             "required": [

@@ -21,7 +21,7 @@
             "column": 1,
             "row": 1,
             "rows": 7,
-            "span": 11
+            "span": 22
           },
           "content": "Text",
           "id": "text-block-1",
@@ -49,7 +49,7 @@
             "column": 1,
             "row": 18,
             "rows": 44,
-            "span": 7
+            "span": 14
           },
           "id": "diagram-2",
           "intent": "Keep entity owners, two failure modes and retry uncertainty. Browser polling must visibly pass through Gateway and Report API. Request missing source details rather than assigning invented owners.",
@@ -158,10 +158,10 @@
             "treatment": "strong"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 18,
             "rows": 35,
-            "span": 4
+            "span": 8
           },
           "content": "Text",
           "id": "text-block-3",
@@ -193,7 +193,7 @@
             "column": 1,
             "row": 72,
             "rows": 7,
-            "span": 11
+            "span": 22
           },
           "content": "Text",
           "id": "text-block-4",
@@ -287,7 +287,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "slide-1",

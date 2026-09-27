@@ -47,7 +47,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 2,
             "rows": 15
           }
@@ -80,7 +80,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 19,
             "rows": 8
           }
@@ -113,7 +113,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 30,
             "rows": 4
           }
@@ -146,7 +146,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 35,
             "rows": 11
           }
@@ -416,7 +416,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 50,
             "rows": 37
           }
@@ -449,7 +449,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 90,
             "rows": 5
           }
@@ -482,7 +482,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 96,
             "rows": 11
           }
@@ -515,7 +515,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 112,
             "rows": 12
           }
@@ -626,7 +626,8 @@
         "limits"
       ],
       "grid": {
-        "preset": "explainer"
+        "preset": "explainer",
+        "revision": 2
       }
     }
   ]

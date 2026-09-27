@@ -35,7 +35,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 1,
             "rows": 6
           }
@@ -61,7 +61,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 7,
             "rows": 4
           }
@@ -608,7 +608,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 14,
             "rows": 54
           }
@@ -635,7 +635,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 69,
             "rows": 4
           }
@@ -726,7 +726,8 @@
       ],
       "relationships": [],
       "grid": {
-        "preset": "gallery"
+        "preset": "gallery",
+        "revision": 2
       }
     }
   ]

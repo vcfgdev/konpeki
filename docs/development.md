@@ -38,6 +38,7 @@ The CLI commands are:
 konpeki validate composition.json
 konpeki check composition.json
 konpeki render composition.json [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
+konpeki refine-grid composition.json [--output file.json]
 konpeki preview composition.json [--host host] [--port port] [--json]
 ```
 
@@ -45,6 +46,10 @@ Pages are one-based. PDF includes all pages unless one is selected and supports
 mixed dimensions. Scale applies only to PNG. Output uses exclusive creation and
 defaults to the input basename plus extension. `check` returns JSON
 `{ok, diagnostics}` and exits 1 on errors.
+
+`refine-grid` upgrades all pages to grid revision 2 without changing their pixel
+geometry, including aligned groups. It exclusively creates a new JSON file,
+defaulting to `<input-basename>.refined.json`. The input remains untouched.
 
 Bundled fonts currently cover Latin, accents, and symbols; unsupported glyphs
 are diagnostics. Contrast is measured from all solid glyph pixels at 2x and has

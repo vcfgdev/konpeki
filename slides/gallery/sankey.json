@@ -33,7 +33,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 1,
             "rows": 8
           }
@@ -57,7 +57,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 9,
             "rows": 4
           }
@@ -449,7 +449,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 14,
             "rows": 55
           }
@@ -473,7 +473,7 @@
           },
           "area": {
             "column": 1,
-            "span": 12,
+            "span": 24,
             "row": 70,
             "rows": 3
           }
@@ -571,7 +571,8 @@
         "illustrative"
       ],
       "grid": {
-        "preset": "gallery"
+        "preset": "gallery",
+        "revision": 2
       }
     }
   ]

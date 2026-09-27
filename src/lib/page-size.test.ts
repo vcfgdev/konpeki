@@ -33,6 +33,7 @@ test("preset resize preserves authored areas and supports undo/redo", () => {
   const wide = resizePage(original, { width: 1600, height: 600 }, "article");
   assert.notEqual(wide, original);
   assert.equal(wide.grid?.preset, "article");
+  assert.equal(wide.grid?.revision, 2);
   assert.deepEqual(wide.components.map(component => component.area), original.components.map(component => component.area));
   assert.equal(pageSizeIssue(original, { width: 1600, height: 600 }), undefined);
   const square = resizePage(original, { width: 1080, height: 1080 }, "social");
@@ -58,7 +59,7 @@ test("page bounds govern moves, resizes, schema validation and handoff", () => {
   assert.match(compileHandoff(doc), /Surface: 1200×630 pixels; destination: social/);
   assert.match(compileHandoff(doc), /Components choose area \{column, span, row, rows\}/);
   const wire = toComposition(doc);
-  wire.slides[0].components[0].area.column = 5;
+  wire.slides[0].components[0].area.column = 9;
   assert.equal(validateComposition(wire).ok, false);
   assert.ok(pageSizeIssue(initialDraft(true).slides[0], { width: 4096, height: 4096 }));
 });
@@ -69,4 +70,19 @@ test("new pages remain independent and empty", () => {
   assert.deepEqual(next.slides[1].components, []);
   next.slides[1] = resizePage(next.slides[1], { width: 1600, height: 600 });
   assert.deepEqual(next.slides[0], doc.slides[0]);
+});
+
+test("preset switching checks component and group bounds against the page's grid revision", () => {
+  const doc = addComponent(initialDraft(true), "text-block"), page = doc.slides[0];
+  page.components[0].area = { column: 6, span: 3, row: 1, rows: 10 };
+  page.groups = [{ id: "aligned", childIds: [page.components[0].id], area: { column: 5, span: 4, row: 1, rows: 20 }, verticalAlignment: "center" }];
+  const size = { width: 1200, height: 630 }, next = resizePage(page, size);
+  assert.deepEqual(next.grid, { preset: "link", revision: 2 });
+  assert.deepEqual(next.components[0].preferredRect, { x: 753, y: 51, width: 399, height: 80 });
+  assert.equal(validateComposition(toComposition({ ...doc, slides: [next] })).ok, true);
+  page.groups[0].area!.column = 6;
+  assert.ok(pageSizeIssue(page, size), "groups cannot extend beyond column 8");
+  page.groups[0].area!.column = 5;
+  page.grid!.revision = 1;
+  assert.ok(pageSizeIssue(page, size), "the same areas do not fit the original four columns");
 });

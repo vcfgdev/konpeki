@@ -15,7 +15,7 @@ delete slide.properties.innerPadding;
 slide.required = slide.required.map((key: string) => key === "canvas" ? "grid" : key);
 slide.properties.grid = {
   type: "object", additionalProperties: false, required: ["preset"],
-  properties: { preset: { enum: Object.keys(gridPresets) } },
+  properties: { preset: { enum: Object.keys(gridPresets) }, revision: { enum: [1, 2] } },
 };
 const gridInteger = { type: "integer", minimum: 1, maximum: 512 };
 const area = {

@@ -13,14 +13,14 @@ export function pageSizeIssue(slide: CompositionSlide, size: CanvasSize): string
   if (slide.grid) {
     const preset = (Object.keys(gridPresets) as GridPreset[]).find(key => gridPresets[key].width === size.width && gridPresets[key].height === size.height);
     if (!preset) return "Choose a grid preset for this document.";
-    const metrics = gridMetrics({ preset });
+    const grid = { ...slide.grid, preset }, metrics = gridMetrics(grid);
     for (const item of [...slide.components, ...slide.groups]) {
       if (!item.area) continue;
-      const issue = areaIssue({ preset }, item.area);
+      const issue = areaIssue(grid, item.area);
       if (issue) return `${issue}. Ask your agent to recompose; nothing has changed.`;
     }
     for (const component of slide.components) {
-      const next = resolveComponent(toGridComponent(component), { preset });
+      const next = resolveComponent(toGridComponent(component), grid);
       const inset = (next.padding ?? 0) * metrics.baseline * 2;
       if (inset >= next.preferredRect.width || inset >= next.preferredRect.height ||
           (next.kind === "text-block" && next.textStyle!.lineHeight! < 1))
@@ -41,7 +41,7 @@ export function resizePage(slide: CompositionSlide, size: CanvasSize, destinatio
   if (pageSizeIssue(slide, size)) return slide;
   if (slide.grid) {
     const preset = (Object.keys(gridPresets) as GridPreset[]).find(key => gridPresets[key].width === size.width && gridPresets[key].height === size.height)!;
-    return resolveSlide({ ...slide, grid: { preset }, intendedViewingSize: destination, components: slide.components.map(toGridComponent) });
+    return resolveSlide({ ...slide, grid: { ...slide.grid, preset }, intendedViewingSize: destination, components: slide.components.map(toGridComponent) });
   }
   return { ...slide, canvas: { width: size.width, height: size.height }, intendedViewingSize: destination };
 }

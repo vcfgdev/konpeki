@@ -11,7 +11,8 @@
       "id": "github-cover",
       "name": "GitHub repository cover",
       "grid": {
-        "preset": "link"
+        "preset": "link",
+        "revision": 2
       },
       "pageNumber": {
         "style": "none",
@@ -30,7 +31,7 @@
           ],
           "area": {
             "column": 1,
-            "span": 2,
+            "span": 4,
             "row": 23,
             "rows": 11
           },
@@ -56,7 +57,7 @@
           ],
           "area": {
             "column": 1,
-            "span": 2,
+            "span": 4,
             "row": 14,
             "rows": 8
           },
@@ -91,7 +92,7 @@
           ],
           "area": {
             "column": 1,
-            "span": 2,
+            "span": 4,
             "row": 40,
             "rows": 7
           },
@@ -117,7 +118,7 @@
           ],
           "area": {
             "column": 1,
-            "span": 2,
+            "span": 4,
             "row": 47,
             "rows": 6
           },
@@ -141,8 +142,8 @@
             "visual-family-content"
           ],
           "area": {
-            "column": 3,
-            "span": 2,
+            "column": 5,
+            "span": 4,
             "row": "center",
             "rows": 58
           },
@@ -562,7 +563,7 @@
           ],
           "area": {
             "column": 1,
-            "span": 2,
+            "span": 4,
             "row": "center",
             "rows": 66
           },

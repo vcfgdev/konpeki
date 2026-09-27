@@ -170,8 +170,8 @@ test('compiler summarizes explicit order, placement, relationships and only used
   const document = structuredClone(fixtures['architecture-ownership']);
   const handoff = compileHandoff(document);
   assert.match(handoff, /## Deck plan/);
-  assert.match(handoff, /Text block `text-block-1`, column 1, span 11, row 1, rows 7/);
-  assert.match(handoff, /Diagram `diagram-2`, column 1, span 7, row 18, rows 44/);
+  assert.match(handoff, /Text block `text-block-1`, column 1, span 22, row 1, rows 7/);
+  assert.match(handoff, /Diagram `diagram-2`, column 1, span 14, row 18, rows 44/);
   assert.match(handoff, /Reading flow: Text block `text-block-1` → Diagram `diagram-2`/);
   assert.match(handoff, /qualifies \(forward\): Text block `text-block-3` → Diagram `diagram-2` \/ slot `queue-entity` — Preserve retry uncertainty/);
   assert.match(handoff, /Diagram `diagram-2`: `browser` → `gateway` — initial request/);

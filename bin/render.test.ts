@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { PDFDocument } from "pdf-lib";
-import { initialGridDraft } from "../composition/document.ts";
+import { addComponent, initialGridDraft } from "../composition/document.ts";
 import { toComposition } from "../composition/grid.ts";
 import { renderDocument } from "./render.ts";
 
@@ -41,4 +41,32 @@ test("CLI render never overwrites outputs and check emits machine-readable error
   const invalid = cli("check", path);
   assert.equal(invalid.status, 1);
   assert.equal(JSON.parse(invalid.stdout).diagnostics[0].code, "invalid-document");
+});
+
+test("CLI grid upgrade preserves rendered geometry, IDs and input; outputs are exclusive", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "konpeki-refine-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const path = join(directory, "document.json"), output = join(directory, "document.refined.json");
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const page = document.slides[0];
+  delete page.grid.revision;
+  page.components[0].area = { column: 3, span: 5, row: 7, rows: 15 };
+  page.groups = [{ id: "stack", childIds: [page.components[0].id], area: { column: "center", span: 8, row: 1, rows: 78 }, verticalAlignment: "center" }];
+  const source = JSON.stringify(document);
+  await writeFile(path, source);
+  const cli = (...args: string[]) => spawnSync(process.execPath, [new URL("./konpeki.mjs", import.meta.url).pathname, ...args], { encoding: "utf8" });
+  const result = cli("refine-grid", path);
+  assert.equal(result.status, 0, result.stderr);
+  const bytes = await readFile(output, "utf8"), refined = JSON.parse(bytes);
+  assert.deepEqual(refined.slides[0].components[0].area, { column: 5, span: 10, row: 7, rows: 15 });
+  assert.equal(refined.slides[0].groups[0].area.column, "center");
+  assert.equal(refined.slides[0].groups[0].area.span, 16);
+  assert.deepEqual(await renderDocument(refined, { format: "svg" }), await renderDocument(document, { format: "svg" }));
+  assert.equal(await readFile(path, "utf8"), source);
+  assert.equal(cli("refine-grid", path).status, 1);
+  assert.equal(await readFile(output, "utf8"), bytes);
+  assert.equal(cli("refine-grid", path, "--output", path).status, 1);
+  assert.equal(await readFile(path, "utf8"), source);
+  assert.equal(cli("refine-grid", output, "--output", join(directory, "twice.json")).status, 0);
+  assert.equal(await readFile(join(directory, "twice.json"), "utf8"), bytes);
 });

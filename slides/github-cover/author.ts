@@ -2,7 +2,7 @@ import {execFileSync} from 'node:child_process';
 import {writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {assertComposition} from '../../composition/validate.ts';
-import {gridSchema, type GridArea, type GridComponent, type GridDocument, type TypeStep} from '../../composition/grid.ts';
+import {gridSchema, refineGrid, type GridArea, type GridComponent, type GridDocument, type TypeStep} from '../../composition/grid.ts';
 import type {VectorElement} from '../../composition/types.ts';
 
 // Reproduce the existing mark's alpha silhouette as editable vector geometry.
@@ -72,5 +72,7 @@ const document:GridDocument={schema:gridSchema,title:'Konpeki GitHub cover',auth
   groups:[{id:'brand-stack',childIds:['brand-mark','brand','promise','audience'],area:{column:1,span:2,row:'center',rows:66},verticalAlignment:'center'}],
   relationships:[],readingOrder:components.map(c=>({kind:'component',id:c.id})),paintOrder:components.map(c=>c.id),
 }]};
-assertComposition(document);
-writeFileSync(new URL('composition.json',import.meta.url),JSON.stringify(document,null,2)+'\n');
+// Preserve the original authored layout while emitting the finer grid.
+const refined={...document,slides:document.slides.map(refineGrid)};
+assertComposition(refined);
+writeFileSync(new URL('composition.json',import.meta.url),JSON.stringify(refined,null,2)+'\n');

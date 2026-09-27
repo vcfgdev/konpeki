@@ -47,7 +47,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 13,
             "rows": 22
           }
@@ -80,7 +80,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 3,
             "rows": 5
           }
@@ -113,7 +113,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 37,
             "rows": 11
           }
@@ -241,20 +241,36 @@
               }
             ]
           },
-          "area": { "column": 1, "span": 2, "row": 57, "rows": 25 }
+          "area": {
+            "column": 1,
+            "span": 4,
+            "row": 57,
+            "rows": 25
+          }
         },
         {
           "id": "release-review",
           "kind": "diagram",
-          "slotIds": ["release-review-content"],
+          "slotIds": [
+            "release-review-content"
+          ],
           "intent": "Review a highlighted line before export. This document is symbolic, not a screenshot.",
           "appearance": {
-            "type": "process", "selection": "explicit", "border": "none",
-            "colorScheme": "monochrome", "emphasis": "none", "density": "sparse"
+            "type": "process",
+            "selection": "explicit",
+            "border": "none",
+            "colorScheme": "monochrome",
+            "emphasis": "none",
+            "density": "sparse"
           },
           "customVisual": {
             "format": "vector",
-            "viewBox": { "x": 344, "y": 0, "width": 304, "height": 300 },
+            "viewBox": {
+              "x": 344,
+              "y": 0,
+              "width": 304,
+              "height": 300
+            },
             "description": "A symbolic document with a highlighted line, followed by an arrow toward export.",
             "elements": [
               {
@@ -355,20 +371,36 @@
               }
             ]
           },
-          "area": { "column": 3, "span": 2, "row": 57, "rows": 25 }
+          "area": {
+            "column": 5,
+            "span": 4,
+            "row": 57,
+            "rows": 25
+          }
         },
         {
           "id": "release-export",
           "kind": "diagram",
-          "slotIds": ["release-export-content"],
+          "slotIds": [
+            "release-export-content"
+          ],
           "intent": "Export Markdown after review. This document is symbolic, not a screenshot.",
           "appearance": {
-            "type": "process", "selection": "explicit", "border": "none",
-            "colorScheme": "monochrome", "emphasis": "none", "density": "sparse"
+            "type": "process",
+            "selection": "explicit",
+            "border": "none",
+            "colorScheme": "monochrome",
+            "emphasis": "none",
+            "density": "sparse"
           },
           "customVisual": {
             "format": "vector",
-            "viewBox": { "x": 688, "y": 0, "width": 304, "height": 300 },
+            "viewBox": {
+              "x": 688,
+              "y": 0,
+              "width": 304,
+              "height": 300
+            },
             "description": "A symbolic document with an export arrow; no publishing capability is implied.",
             "elements": [
               {
@@ -484,8 +516,8 @@
             ]
           },
           "area": {
-            "column": 5,
-            "span": 2,
+            "column": 9,
+            "span": 4,
             "row": 57,
             "rows": 25
           }
@@ -518,7 +550,7 @@
           },
           "area": {
             "column": 1,
-            "span": 2,
+            "span": 4,
             "row": 85,
             "rows": 9
           }
@@ -550,8 +582,8 @@
             "rule": "none"
           },
           "area": {
-            "column": 3,
-            "span": 2,
+            "column": 5,
+            "span": 4,
             "row": 85,
             "rows": 9
           }
@@ -583,8 +615,8 @@
             "rule": "none"
           },
           "area": {
-            "column": 5,
-            "span": 2,
+            "column": 9,
+            "span": 4,
             "row": 85,
             "rows": 9
           }
@@ -617,7 +649,7 @@
           },
           "area": {
             "column": 1,
-            "span": 6,
+            "span": 12,
             "row": 100,
             "rows": 3
           }
@@ -752,7 +784,8 @@
         "caveat"
       ],
       "grid": {
-        "preset": "portrait"
+        "preset": "portrait",
+        "revision": 2
       }
     }
   ]

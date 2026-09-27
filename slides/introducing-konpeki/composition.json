@@ -10,7 +10,7 @@
             "column": 1,
             "row": 5,
             "rows": 6,
-            "span": 1
+            "span": 2
           },
           "customVisual": {
             "description": "Konpeki blue brush mark",
@@ -46,10 +46,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 2,
+            "column": 3,
             "row": 6,
             "rows": 5,
-            "span": 3
+            "span": 6
           },
           "content": "Konpeki",
           "id": "wordmark",
@@ -75,7 +75,7 @@
             "column": 1,
             "row": 17,
             "rows": 26,
-            "span": 6
+            "span": 12
           },
           "content": "Create clear visuals\nwith your coding agent.",
           "id": "cover-title",
@@ -102,7 +102,7 @@
             "column": 1,
             "row": 47,
             "rows": 12,
-            "span": 5
+            "span": 10
           },
           "content": "Your agent drafts covers, social graphics, visual explanations and presentations. You and your agent edit the same page.",
           "id": "cover-lead",
@@ -119,10 +119,10 @@
         },
         {
           "area": {
-            "column": 7,
+            "column": 13,
             "row": 10,
             "rows": 57,
-            "span": 5
+            "span": 10
           },
           "customVisual": {
             "description": "Four page sizes Konpeki supports: presentation, square post, portrait post and link preview, each sketched with typical components.",
@@ -588,7 +588,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "cover",
@@ -644,7 +645,7 @@
             "column": 1,
             "row": 2,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "Give your agent a brief. It returns an editable page.",
           "id": "flow-title",
@@ -670,7 +671,7 @@
             "column": 1,
             "row": 11,
             "rows": 4,
-            "span": 9
+            "span": 18
           },
           "content": "Konpeki is a skill for your coding agent plus a canvas you both work on.",
           "id": "flow-lead",
@@ -698,7 +699,7 @@
             "column": 1,
             "row": 22,
             "rows": 6,
-            "span": 3
+            "span": 6
           },
           "customVisual": {
             "description": "Step 1: Your brief. Arrow continues to the next step.",
@@ -780,7 +781,7 @@
             "column": 1,
             "row": 30,
             "rows": 4,
-            "span": 3
+            "span": 6
           },
           "content": "Your brief",
           "id": "step1-head",
@@ -806,7 +807,7 @@
             "column": 1,
             "row": 35,
             "rows": 17,
-            "span": 3
+            "span": 6
           },
           "content": "Notes, source material and where the visual will be used.",
           "id": "step1-body",
@@ -831,10 +832,10 @@
             "type": "process"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 22,
             "rows": 6,
-            "span": 3
+            "span": 6
           },
           "customVisual": {
             "description": "Step 2: Your coding agent. Arrow continues to the next step.",
@@ -913,10 +914,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 30,
             "rows": 4,
-            "span": 3
+            "span": 6
           },
           "content": "Your coding agent",
           "id": "step2-head",
@@ -939,10 +940,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 35,
             "rows": 17,
-            "span": 3
+            "span": 6
           },
           "content": "Follows Konpeki's authoring guide and writes composition.json in your workspace.",
           "id": "step2-body",
@@ -967,10 +968,10 @@
             "type": "process"
           },
           "area": {
-            "column": 7,
+            "column": 13,
             "row": 22,
             "rows": 6,
-            "span": 3
+            "span": 6
           },
           "customVisual": {
             "description": "Step 3: Check and render. Arrow continues to the next step.",
@@ -1049,10 +1050,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 7,
+            "column": 13,
             "row": 30,
             "rows": 4,
-            "span": 3
+            "span": 6
           },
           "content": "Check and render",
           "id": "step3-head",
@@ -1075,10 +1076,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 7,
+            "column": 13,
             "row": 35,
             "rows": 17,
-            "span": 3
+            "span": 6
           },
           "content": "The agent runs checks, renders a PNG and repairs problems it finds.",
           "id": "step3-body",
@@ -1103,10 +1104,10 @@
             "type": "process"
           },
           "area": {
-            "column": 10,
+            "column": 19,
             "row": 22,
             "rows": 6,
-            "span": 3
+            "span": 6
           },
           "customVisual": {
             "description": "Step 4: Your page.",
@@ -1161,10 +1162,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 10,
+            "column": 19,
             "row": 30,
             "rows": 4,
-            "span": 3
+            "span": 6
           },
           "content": "Your page",
           "id": "step4-head",
@@ -1187,10 +1188,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 10,
+            "column": 19,
             "row": 35,
             "rows": 17,
-            "span": 3
+            "span": 6
           },
           "content": "Edit it, Present it, or export PNG, SVG, PDF and editable JSON.",
           "id": "step4-body",
@@ -1210,7 +1211,7 @@
             "column": 1,
             "row": 56,
             "rows": 1,
-            "span": 12
+            "span": 24
           },
           "customVisual": {
             "description": "Divider between the main flow and the alternatives below it.",
@@ -1255,7 +1256,7 @@
             "column": 1,
             "row": 59,
             "rows": 4,
-            "span": 5
+            "span": 10
           },
           "content": "Prefer to sketch first?",
           "id": "sketch-head",
@@ -1281,7 +1282,7 @@
             "column": 1,
             "row": 64,
             "rows": 9,
-            "span": 5
+            "span": 10
           },
           "content": "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.",
           "id": "sketch-body",
@@ -1304,10 +1305,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 7,
+            "column": 13,
             "row": 59,
             "rows": 4,
-            "span": 6
+            "span": 12
           },
           "content": "No separate setup step",
           "id": "firstuse-head",
@@ -1330,10 +1331,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 7,
+            "column": 13,
             "row": 64,
             "rows": 9,
-            "span": 6
+            "span": 12
           },
           "content": "With your approval, the skill installs the runtime in a user cache, not in your project.",
           "id": "firstuse-body",
@@ -1485,7 +1486,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "brief-to-page",
@@ -1611,7 +1613,7 @@
             "column": 1,
             "row": 2,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "You and your agent edit the same file.",
           "id": "share-title",
@@ -1637,7 +1639,7 @@
             "column": 1,
             "row": 11,
             "rows": 7,
-            "span": 10
+            "span": 20
           },
           "content": "The page lives in composition.json. The browser canvas\nand your agent both read and write it.",
           "id": "share-lead",
@@ -1665,7 +1667,7 @@
             "column": 1,
             "row": 20,
             "rows": 40,
-            "span": 12
+            "span": 24
           },
           "customVisual": {
             "description": "Browser canvas and coding agent on either side of composition.json. Arrows: canvas saves edits to the file and loads new revisions; agent writes validated revisions and rereads before revising.",
@@ -2213,7 +2215,7 @@
             "column": 1,
             "row": 65,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "A revision hash stops either side from overwriting a newer change.\nWhen your agent updates the file, your previous version stays in Undo.",
           "id": "share-note",
@@ -2260,7 +2262,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "shared-file",
@@ -2311,7 +2314,7 @@
             "column": 1,
             "row": 2,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "Every page is built from five editable components.",
           "id": "comp-title",
@@ -2328,10 +2331,10 @@
         },
         {
           "area": {
-            "column": 2,
+            "column": 3,
             "row": 16,
             "rows": 18,
-            "span": 10
+            "span": 20
           },
           "customVisual": {
             "description": "Five schematic icons: text lines, a small node diagram, a bar chart, a framed picture and a table.",
@@ -2752,10 +2755,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 2,
+            "column": 3,
             "row": 37,
             "rows": 4,
-            "span": 2
+            "span": 4
           },
           "content": "Text block",
           "id": "comp1-head",
@@ -2778,10 +2781,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 2,
+            "column": 3,
             "row": 42,
             "rows": 14,
-            "span": 2
+            "span": 4
           },
           "content": "Headlines, body copy and captions with consistent type roles.",
           "id": "comp1-body",
@@ -2804,10 +2807,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 37,
             "rows": 4,
-            "span": 2
+            "span": 4
           },
           "content": "Diagram",
           "id": "comp2-head",
@@ -2830,10 +2833,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 42,
             "rows": 14,
-            "span": 2
+            "span": 4
           },
           "content": "Nodes and connections for processes, systems and flows.",
           "id": "comp2-body",
@@ -2856,10 +2859,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 6,
+            "column": 11,
             "row": 37,
             "rows": 4,
-            "span": 2
+            "span": 4
           },
           "content": "Chart",
           "id": "comp3-head",
@@ -2882,10 +2885,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 6,
+            "column": 11,
             "row": 42,
             "rows": 14,
-            "span": 2
+            "span": 4
           },
           "content": "Bar, line, Sankey and other forms for the data you supply.",
           "id": "comp3-body",
@@ -2908,10 +2911,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 8,
+            "column": 15,
             "row": 37,
             "rows": 4,
-            "span": 2
+            "span": 4
           },
           "content": "Image",
           "id": "comp4-head",
@@ -2934,10 +2937,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 8,
+            "column": 15,
             "row": 42,
             "rows": 14,
-            "span": 2
+            "span": 4
           },
           "content": "Licensed pictures, brand marks and illustrations.",
           "id": "comp4-body",
@@ -2960,10 +2963,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 10,
+            "column": 19,
             "row": 37,
             "rows": 4,
-            "span": 2
+            "span": 4
           },
           "content": "Table",
           "id": "comp5-head",
@@ -2986,10 +2989,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 10,
+            "column": 19,
             "row": 42,
             "rows": 14,
-            "span": 2
+            "span": 4
           },
           "content": "Rows and columns derived from your content.",
           "id": "comp5-body",
@@ -3015,7 +3018,7 @@
             "column": 1,
             "row": 66,
             "rows": 10,
-            "span": 12
+            "span": 24
           },
           "content": "Diagram, Chart and Table start as structural drafts. Finished artwork\nbecomes editable vector shapes with stable IDs, drawn from your source data,\nso you can select and change any line or label.",
           "id": "comp-note",
@@ -3125,7 +3128,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "components",
@@ -3221,7 +3225,7 @@
             "column": 1,
             "row": 2,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "Point at what to change. Continue in chat.",
           "id": "notes-title",
@@ -3241,7 +3245,7 @@
             "column": 1,
             "row": 17,
             "rows": 47,
-            "span": 6
+            "span": 12
           },
           "customVisual": {
             "description": "Schematic editor: Notes panel with two numbered notes and an Add note button; a page on the canvas with matching pins on the title and a selected chart bar.",
@@ -3654,10 +3658,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 8,
+            "column": 15,
             "row": 17,
             "rows": 4,
-            "span": 1
+            "span": 2
           },
           "content": "1",
           "id": "nstep1-num",
@@ -3680,10 +3684,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 17,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Select a target",
           "id": "nstep1-head",
@@ -3706,10 +3710,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 21,
             "rows": 7,
-            "span": 4
+            "span": 8
           },
           "content": "A page, a component or a single vector shape inside it.",
           "id": "nstep1-body",
@@ -3732,10 +3736,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 8,
+            "column": 15,
             "row": 29,
             "rows": 4,
-            "span": 1
+            "span": 2
           },
           "content": "2",
           "id": "nstep2-num",
@@ -3758,10 +3762,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 29,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Add notes",
           "id": "nstep2-head",
@@ -3784,10 +3788,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 33,
             "rows": 7,
-            "span": 4
+            "span": 8
           },
           "content": "Write what should change. Notes stay attached to their targets beside the file.",
           "id": "nstep2-body",
@@ -3810,10 +3814,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 8,
+            "column": 15,
             "row": 41,
             "rows": 4,
-            "span": 1
+            "span": 2
           },
           "content": "3",
           "id": "nstep3-num",
@@ -3836,10 +3840,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 41,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Continue in chat",
           "id": "nstep3-head",
@@ -3862,10 +3866,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 45,
             "rows": 7,
-            "span": 4
+            "span": 8
           },
           "content": "Ask your agent to read the saved composition and its open notes.",
           "id": "nstep3-body",
@@ -3888,10 +3892,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 8,
+            "column": 15,
             "row": 52,
             "rows": 4,
-            "span": 1
+            "span": 2
           },
           "content": "4",
           "id": "nstep4-num",
@@ -3914,10 +3918,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 52,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Your agent revises",
           "id": "nstep4-head",
@@ -3940,10 +3944,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 57,
             "rows": 7,
-            "span": 4
+            "span": 8
           },
           "content": "It applies the changes, runs checks, renders a PNG and inspects the result.",
           "id": "nstep4-body",
@@ -3969,7 +3973,7 @@
             "column": 1,
             "row": 68,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "Notes need a file-backed preview. They do not start an agent automatically.\nContinue in the same conversation; resolve notes after reviewing the changes.",
           "id": "notes-limit",
@@ -4093,7 +4097,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "notes",
@@ -4199,7 +4204,7 @@
             "column": 1,
             "row": 2,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "Try it in the browser. Keep working with your agent.",
           "id": "where-title",
@@ -4219,7 +4224,7 @@
             "column": 1,
             "row": 16,
             "rows": 43,
-            "span": 12
+            "span": 24
           },
           "customVisual": {
             "description": "Table rules: a heading rule, row separators and a closing rule.",
@@ -4309,10 +4314,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 17,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Browser playground",
           "id": "where-h1",
@@ -4335,10 +4340,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 17,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "With your coding agent",
           "id": "where-h2",
@@ -4364,7 +4369,7 @@
             "column": 1,
             "row": 24,
             "rows": 6,
-            "span": 2
+            "span": 4
           },
           "content": "Start from",
           "id": "where-r1-label",
@@ -4387,10 +4392,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 24,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "An example page, or a blank one",
           "id": "where-r1-browser",
@@ -4413,10 +4418,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 24,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "Your brief and materials",
           "id": "where-r1-agent",
@@ -4442,7 +4447,7 @@
             "column": 1,
             "row": 34,
             "rows": 6,
-            "span": 2
+            "span": 4
           },
           "content": "Saved to",
           "id": "where-r2-label",
@@ -4465,10 +4470,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 34,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "This browser only; no cloud sync",
           "id": "where-r2-browser",
@@ -4491,10 +4496,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 34,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "composition.json in your workspace",
           "id": "where-r2-agent",
@@ -4520,7 +4525,7 @@
             "column": 1,
             "row": 43,
             "rows": 6,
-            "span": 2
+            "span": 4
           },
           "content": "Changes",
           "id": "where-r3-label",
@@ -4543,10 +4548,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 43,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "Edit by hand",
           "id": "where-r3-browser",
@@ -4569,10 +4574,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 43,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "Edit by hand, or ask for changes in chat",
           "id": "where-r3-agent",
@@ -4598,7 +4603,7 @@
             "column": 1,
             "row": 52,
             "rows": 6,
-            "span": 2
+            "span": 4
           },
           "content": "Get it out",
           "id": "where-r4-label",
@@ -4621,10 +4626,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 4,
+            "column": 7,
             "row": 52,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "Download JSON, PNG, SVG or PDF",
           "id": "where-r4-browser",
@@ -4647,10 +4652,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 52,
             "rows": 6,
-            "span": 4
+            "span": 8
           },
           "content": "Render PNG, SVG or PDF; preview is optional",
           "id": "where-r4-agent",
@@ -4676,7 +4681,7 @@
             "column": 1,
             "row": 65,
             "rows": 6,
-            "span": 12
+            "span": 24
           },
           "content": "To switch, download JSON from the playground and give it to your agent.\nThe two copies don't sync afterwards.",
           "id": "where-note",
@@ -4814,7 +4819,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "browser-or-agent",
@@ -4930,7 +4936,7 @@
             "column": 1,
             "row": 2,
             "rows": 8,
-            "span": 12
+            "span": 24
           },
           "content": "Start with one install and a brief.",
           "id": "start-title",
@@ -4950,7 +4956,7 @@
             "column": 1,
             "row": 22,
             "rows": 30,
-            "span": 7
+            "span": 14
           },
           "customVisual": {
             "description": "Background panels for the install command and the example brief.",
@@ -5011,7 +5017,7 @@
             "column": 1,
             "row": 17,
             "rows": 4,
-            "span": 7
+            "span": 14
           },
           "content": "1  Install the skill once",
           "id": "start-s1",
@@ -5037,7 +5043,7 @@
             "column": 1,
             "row": 22,
             "rows": 8,
-            "span": 7
+            "span": 14
           },
           "content": "npx skills add vcfgdev/konpeki -g",
           "id": "start-cmd",
@@ -5064,7 +5070,7 @@
             "column": 1,
             "row": 34,
             "rows": 4,
-            "span": 7
+            "span": 14
           },
           "content": "2  Send your agent a brief",
           "id": "start-s2",
@@ -5090,7 +5096,7 @@
             "column": 1,
             "row": 40,
             "rows": 12,
-            "span": 7
+            "span": 14
           },
           "content": "Use Konpeki to create a one-page explainer of how a browser, API and database work together.",
           "id": "start-brief",
@@ -5117,7 +5123,7 @@
             "column": 1,
             "row": 55,
             "rows": 8,
-            "span": 7
+            "span": 14
           },
           "content": "Your agent writes the file, checks it, renders a PNG and inspects it.\nKeep revising in the same conversation.",
           "id": "start-s2-note",
@@ -5140,10 +5146,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 17,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "You need",
           "id": "need-head",
@@ -5166,10 +5172,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 23,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Node.js 24+ and npm",
           "id": "need-1",
@@ -5192,10 +5198,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 28,
             "rows": 7,
-            "span": 4
+            "span": 8
           },
           "content": "A coding agent that can edit files and run commands",
           "id": "need-2",
@@ -5218,10 +5224,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 37,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Optional: a browser for the editor",
           "id": "need-3",
@@ -5244,10 +5250,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 43,
             "rows": 4,
-            "span": 4
+            "span": 8
           },
           "content": "Want an empty canvas first?",
           "id": "init-head",
@@ -5270,10 +5276,10 @@
             "rule": "none"
           },
           "area": {
-            "column": 9,
+            "column": 17,
             "row": 49,
             "rows": 10,
-            "span": 4
+            "span": 8
           },
           "content": "Ask your agent to open a blank Konpeki file in the editor, without generating artwork.",
           "id": "init-body",
@@ -5383,7 +5389,8 @@
         }
       ],
       "grid": {
-        "preset": "presentation"
+        "preset": "presentation",
+        "revision": 2
       },
       "groups": [],
       "id": "start",

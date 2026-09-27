@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { fileSessionPlugin } from "./session-plugin.ts";
 import { renderDocument, renderFonts } from "./render.ts";
+import { refineGrid } from "../composition/grid.ts";
 import {
   readCompositionFile,
 } from "./session-store.ts";
@@ -18,6 +19,7 @@ function usage() {
   konpeki validate <composition.json>
   konpeki check <composition.json>
   konpeki render <composition.json> [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
+  konpeki refine-grid <composition.json> [--output file.json]
 
 Pages are one-based. PDF includes all pages unless --page is supplied.
 Scale affects PNG only. Outputs must not already exist.`);
@@ -77,6 +79,14 @@ async function validate(input) {
   console.log(`${result.name}: valid (${result.revision})`);
 }
 
+async function refine(input) {
+  const { document } = await readCompositionFile(resolve(input));
+  const refined = { ...document, slides: document.slides.map(refineGrid) };
+  const output = resolve(option("--output", input.replace(/\.json$/i, "") + ".refined.json"));
+  await writeFile(output, JSON.stringify(refined, null, 2) + "\n", { flag: "wx" });
+  console.log(output);
+}
+
 async function render(input) {
   const { document } = await readCompositionFile(resolve(input));
   const format = option("--format", "png"), selected = option("--page");
@@ -108,6 +118,7 @@ if (!command || !input) {
     else if (command === "validate") await validate(input);
     else if (command === "render") await render(input);
     else if (command === "check") await check(input);
+    else if (command === "refine-grid") await refine(input);
     else {
       usage();
       process.exitCode = 1;
