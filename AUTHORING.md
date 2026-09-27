@@ -5,6 +5,11 @@ This file owns design guidance. The brief overrides taste defaults; preserve
 accuracy and readability. Components, specimens and historical studies are
 resources to adapt freely.
 
+For ordinary work, deliver the editable composition and requested exports.
+Read Requirements and Writing tone, plus Authoring mode for new designs; consult
+the remaining sections when the task needs them. Showcase records apply only
+to contributed examples or an explicitly requested reproducibility record.
+
 ## Destination and surface
 
 A single page is a complete creation. The brief may request a social graphic,
@@ -147,9 +152,10 @@ rather than shrinking text to fit; ask for a scope/page-count decision if requir
 content cannot fit legibly. Never silently drop it or add pages.
 
 Apply the mode deck-wide, with page-level variation where content warrants it.
-Record the requested setting (or `unspecified`) and resolved setting in the adaptation
-record in `PROMPT.md`, separately from verbatim user wording. Do not retroactively
-label historical outputs as if they were generated with this parameter.
+For showcase examples, record the requested setting (or `unspecified`) and
+resolved setting in `PROMPT.md`, separately from verbatim user wording. Ordinary
+documents do not need a mode record. Do not retroactively label historical outputs
+as if they were generated with this parameter.
 
 The parameter is usable through the existing authoring workflow, but its
 reliability has not been established by earlier examples. Compare actual renders
@@ -210,20 +216,28 @@ when existing components weaken the explanation, then convert its supported
 primitives to composition vectors. Do not replace the editable composition with
 framework source. No new runtime or template framework is needed.
 
-A completed slide implementation includes runnable source, source notes and
-inspected captures at presentation and review sizes. Check factual fidelity,
+A completed visual includes editable source and inspected requested exports.
+Keep substantial source facts and caveats alongside the document when needed;
+do not require a prompt transcript or a saved review report for ordinary work.
+Inspect renders at the intended viewing size and enlarged where needed. Check factual fidelity,
 readability, clipping and visual relationships, plus coherence across pages and
 any requested variants. Before delivery, inspect each page's reading order and
 apply the [text review](design/review/text.md), including redundant hierarchy.
 Readable, in-bounds text can still repeat the headline unnecessarily. Record
-the page-level evidence and repair findings without waiting for user feedback.
+consequential findings and verification limitations in the delivery response.
 Repair consequential issues and inspect fresh renders
 before delivery. Use [development checks](docs/development.md#verification) for relevant code checks
 and [focused visual review](design/visual-review.md) for applicable review guidance.
 Specimen geometry assertions and aesthetic scores are not design requirements.
 Do not add an aesthetic linter.
 
-For each new example, save `slides/<name>/PROMPT.md` before authoring: the exact
+Report verification limitations and only behavior actually tested. Browser
+images do not establish PDF/PPTX or cross-application fidelity. Inspect requested
+exports separately; if a delivery target is unsupported, explain the limitation.
+
+### Showcase records
+
+For each new contributed example, save `slides/<name>/PROMPT.md` before authoring: the exact
 initial prompt, supplied source material or links, and explicit visual preferences
 (including none). Preserve creative follow-ups accurately and record material
 assumptions and manual edits separately. Exclude private coordination transcripts,
@@ -233,10 +247,6 @@ the example looks and reads as it does, as well as supporting reproduction.
 Mark adaptation prompts and reconstructed history honestly; do not invent an
 original prompt for an inherited specimen. Never commit secrets or private
 material without permission; record any redaction.
-
-Report verification limitations and only behavior actually tested. Browser
-images do not establish PDF/PPTX or cross-application fidelity. Inspect requested
-exports separately; if a delivery target is unsupported, explain the limitation.
 
 ### Explore an uncertain direction
 

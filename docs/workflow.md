@@ -3,6 +3,18 @@
 Konpeki 0.4 uses `konpeki-composition/v2`. Composition JSON is the editable
 source; one owned scene drives canvas display, checking, and every export.
 
+## User workflow
+
+1. Give your coding agent the brief, source material, and intended use.
+2. Review the visual it returns. Ask for revisions in the same conversation,
+   or open the optional canvas to edit directly and leave notes or pins.
+3. Ask the agent to apply your canvas feedback; adding a note does not invoke it.
+4. Keep the editable JSON and use the requested PNG, SVG, or PDF for delivery.
+
+No outline approval, diagram taxonomy, or browser session is required unless
+it helps your task. Ordinary documents need no showcase prompt records. Keep
+substantial sources and caveats with the document so later revisions remain faithful.
+
 ## Agent loop
 
 1. Write or revise the composition IR from the brief and sources.
@@ -24,7 +36,6 @@ and exit behavior, so a separate `check` run is unnecessary when inspecting all
 pages. Preview is optional for agents; PNG inspection remains required.
 
 ```sh
-npm exec --no -- konpeki validate slides/example/composition.json
 npm exec --no -- konpeki inspect slides/example/composition.json
 npm exec --no -- konpeki render slides/example/composition.json --page 1 --format png --scale 2 --output slides/example/page-1.png
 ```
@@ -48,9 +59,26 @@ They persist beside the document, remain out of artwork and exports, and are
 guidance for the next chat revision. Reread the current composition before
 applying them so newer human edits survive.
 
+When applying feedback, read the current notes and pins as well as the composition.
+Use their target IDs rather than guessing from an old screenshot. If a target
+no longer exists or feedback conflicts with a newer edit, report that instead
+of silently applying stale instructions. Review the changed pages and tell the
+user which feedback was addressed and what remains unresolved. This is an agent
+workflow, not an automatic comment-resolution or agent-invocation feature.
+
+## Delivery
+
+Return the editable composition and requested exports, with a preview when useful.
+Inspect all pages with `inspect` and visually review affected renders and requested
+exports before delivery. State remaining warnings and limitations; successful
+machine checks alone do not prove factual correctness or visual quality.
+Recipients can view PNG/SVG/PDF without the authoring runtime, or import the JSON
+into the browser playground to continue editing. A file-session preview URL is
+not a permanent published artifact. Publishing or deployment needs permission.
+
 ## Pages and review
 
-Presets are `presentation`, `square`, `portrait`, `link`, `article`, `explainer`,
+Presets are `presentation`, `square`, `portrait`, `link`, `article`, `a4`, `explainer`,
 and `gallery`. Each owns fixed dimensions, margins, columns, gutters, baseline
 rows, and type steps. Recompose when changing presets; do not stretch content.
 

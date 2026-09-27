@@ -30,8 +30,9 @@ rewriting it:
 node "<installed-skill>/scripts/prepare-document.mjs" "<cli>" "slides/my-visual/composition.json"
 ```
 
-Normal authoring follows a direct loop: write the IR, run `check`, fix, render a
-2x PNG, inspect it, and repeat before delivery. Preview is optional:
+Normal authoring follows a direct loop: write the composition, run `inspect`,
+fix diagnostics, render a 2x PNG, visually inspect it, and repeat before delivery.
+`inspect` includes the checks; a separate `check` run is unnecessary. Preview is optional:
 
 ```sh
 node "<cli>" preview "slides/my-visual/composition.json"
