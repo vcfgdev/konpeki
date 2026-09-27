@@ -39,7 +39,7 @@
     "src/lib/*.ts",
     "src/styles/*.css",
     "src/assets/konpeki-mark.png",
-    "composition/{README.md,check-node.ts,check.ts,compile.ts,document.ts,draft-artwork.ts,draft-icons.json,fonts.ts,grid.ts,lower.ts,pdf.ts,runtime.ts,scene.ts,schema-v2.json,schema-v2.ts,schema.ts,svg.ts,text-layout.ts,theme-tokens.ts,types.ts,validate.ts,vector.ts,visualizations.ts}",
+    "composition/{README.md,check-node.ts,check.ts,compile.ts,document.ts,draft-artwork.ts,draft-icons.json,fonts.ts,grid.ts,inspect.ts,lower.ts,pdf.ts,runtime.ts,scene.ts,schema-v2.json,schema-v2.ts,schema.ts,svg.ts,text-layout.ts,theme-tokens.ts,types.ts,validate.ts,vector.ts,visualizations.ts}",
     "fonts/*.ttf",
     "fonts/manifest.json",
     "fonts/LICENSE-*.txt",

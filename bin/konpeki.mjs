@@ -18,10 +18,11 @@ function usage() {
   konpeki preview <composition.json> [--host <host>] [--port <port>] [--json]
   konpeki validate <composition.json>
   konpeki check <composition.json>
+  konpeki inspect <composition.json> [--page N] [--details]
   konpeki render <composition.json> [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
   konpeki refine-grid <composition.json> [--output file.json]
 
-Pages are one-based. PDF includes all pages unless --page is supplied.
+Pages are one-based. Inspect and PDF include all pages unless --page is supplied.
 Scale affects PNG only. Outputs must not already exist.`);
 }
 
@@ -107,6 +108,27 @@ async function check(input) {
   if (!ok) process.exitCode = 1;
 }
 
+async function inspect(input) {
+  const { document, revision } = await readCompositionFile(resolve(input));
+  const selected = process.argv.includes("--page") ? Number(option("--page")) : undefined;
+  const details = process.argv.includes("--details");
+  if (selected !== undefined && (!Number.isInteger(selected) || selected < 1 || selected > document.slides.length))
+    throw new Error(`Page must be an integer from 1 to ${document.slides.length}.`);
+  const [{ lowerPage }, { inspectPage, summarizePage }, { checkPageNode }, fonts] = await Promise.all([
+    import("../composition/lower.ts"), import("../composition/inspect.ts"), import("../composition/check-node.ts"), renderFonts(),
+  ]);
+  const diagnostics = [];
+  const pages = document.slides.flatMap((page, index) => {
+    if (selected !== undefined && selected !== index + 1) return [];
+    const scene = lowerPage(document, page, fonts);
+    diagnostics.push(...checkPageNode(scene, fonts));
+    return [{ pageNumber: index + 1, ...(details ? inspectPage(page, scene, fonts) : summarizePage(page, scene)) }];
+  });
+  const ok = !diagnostics.some(item => item.severity === "error");
+  console.log(JSON.stringify({ schema: "konpeki-inspection/v1", detail: details ? "full" : "summary", revision, units: "page-pixels", ok, pages, diagnostics }, null, 2));
+  if (!ok) process.exitCode = 1;
+}
+
 const command = process.argv[2];
 const input = process.argv[3];
 if (!command || !input) {
@@ -118,6 +140,7 @@ if (!command || !input) {
     else if (command === "validate") await validate(input);
     else if (command === "render") await render(input);
     else if (command === "check") await check(input);
+    else if (command === "inspect") await inspect(input);
     else if (command === "refine-grid") await refine(input);
     else {
       usage();
@@ -125,6 +148,7 @@ if (!command || !input) {
     }
   } catch (error) {
     if (command === "check") console.log(JSON.stringify({ ok: false, diagnostics: [{ code: "invalid-document", severity: "error", message: error instanceof Error ? error.message : String(error) }] }, null, 2));
+    else if (command === "inspect") console.log(JSON.stringify({ schema: "konpeki-inspection/v1", ok: false, pages: [], diagnostics: [{ code: "inspection-failed", severity: "error", message: error instanceof Error ? error.message : String(error) }] }, null, 2));
     else console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   }

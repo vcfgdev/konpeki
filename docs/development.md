@@ -37,6 +37,7 @@ The CLI commands are:
 ```text
 konpeki validate composition.json
 konpeki check composition.json
+konpeki inspect composition.json [--page N] [--details]
 konpeki render composition.json [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
 konpeki refine-grid composition.json [--output file.json]
 konpeki preview composition.json [--host host] [--port port] [--json]
@@ -46,6 +47,14 @@ Pages are one-based. PDF includes all pages unless one is selected and supports
 mixed dimensions. Scale applies only to PNG. Output uses exclusive creation and
 defaults to the input basename plus extension. `check` returns JSON
 `{ok, diagnostics}` and exits 1 on errors.
+
+`inspect` prints a versioned layout report with the input file's SHA-256 revision,
+component boxes, explicit native text lines, and the same diagnostics as `check`.
+The default is a component-level summary; `--details` adds unrounded geometry,
+baselines, fonts, clips and per-element scene items. Summary boxes round to 0.01 px.
+It lowers each selected page once; inspection and checking read that scene.
+Without `--page` it includes all pages. Errors exit 1 but layout diagnostics do
+not suppress the report. See the [report contract](../composition/README.md#agent-layout-report).
 
 `refine-grid` upgrades all pages to grid revision 2 without changing their pixel
 geometry, including aligned groups. It exclusively creates a new JSON file,

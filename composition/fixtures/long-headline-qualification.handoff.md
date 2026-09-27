@@ -1,6 +1,6 @@
 # Konpeki grid canvas handoff
 
-Compiler: konpeki-composition-compiler/25
+Compiler: konpeki-composition-compiler/26
 
 Return a complete updated konpeki-composition/v2 JSON document. Preserve stable IDs, human-edited areas, content, explicit form choices, topology, reading order and paint order. Re-read the current file before revising it. Render and inspect every affected page at full and review sizes; report overflow rather than shrinking or dropping required content. Never invent facts or data for draft charts and tables.
 
@@ -16,7 +16,7 @@ Horizontal alignment is independent: appearance.alignment start|center|end align
 
 Keep artwork in cell-local editable vectors. Bind all colors to theme roles and font-family to theme:heading-font or theme:body-font. Use scale:<step> for vector font-size. Artwork coordinates stay local; topology records meaning, not a second set of node coordinates. Mark intentional overlapping artwork with layer background or overlay; paintOrder still determines stacking. Preset changes do not silently recompose areas: if columns, rows or text no longer fit, revise the design deliberately.
 
-Preserve element IDs and render every directed, labeled edge exactly once. Labels use x/y baseline positions and start/middle/end anchors; tspans are whole lines with explicit x/y. Do not use transforms, dx, dy or dominant-baseline. Run konpeki check, repair diagnostics by ID, render each affected page with konpeki render, inspect the PNG, then deliver the editable JSON and requested exports. Browser automation is not required.
+Preserve element IDs and render every directed, labeled edge exactly once. Labels use x/y baseline positions and start/middle/end anchors; tspans are whole lines with explicit x/y. Do not use transforms, dx, dy or dominant-baseline. Run konpeki inspect for a revision-bound JSON layout report: compact component boxes, native text lines, artwork counts, group bounds, and the same diagnostics as konpeki check. Use --details for exact geometry, baselines, clips, fonts and individual elements. Optional --page N limits inspection and checks to that page; inspect all pages before delivery. Bounds precede clipping and occlusion. Do not save the derived report as composition JSON. Repair by stable ID, render each affected page with konpeki render, inspect the PNG, then deliver the editable JSON and requested exports. Browser automation is not required.
 
 - Slide 01: presentation, 24 columns, 78 baseline rows; type size/line height in pixels: fine=20/28, caption=24/32, body=28/40, lead=36/46, heading=44/52, title=60/68, display=76/84.
 

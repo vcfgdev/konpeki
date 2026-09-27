@@ -150,6 +150,9 @@ test('compiler canonicalizes object keys, retains array order and needs no autho
   assert.match(before, /render every directed, labeled edge exactly once/);
   assert.match(before, /Keep ordinary text in native Text-block content, not artwork/);
   assert.match(before, /Do not write canvas, innerPadding, preferredRect/);
+  assert.match(before, /Run konpeki inspect for a revision-bound JSON layout report/);
+  assert.match(before, /inspect all pages before delivery/);
+  assert.match(before, /Do not save the derived report as composition JSON/);
   assert.match(before, /Auto chart form .*Compare quantitative values across categories/);
   assert.doesNotMatch(before, /github\.com|Trusted target|AUTHORING\.md/);
 });

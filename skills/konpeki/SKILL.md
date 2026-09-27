@@ -55,16 +55,27 @@ file. It never replaces invalid data.
 Repeat this loop until the requested result is sound:
 
 1. Write the composition IR.
-2. Run `node "<cli>" check "<composition.json>"`.
-3. Fix every error and review warnings in context.
+2. Run `node "<cli>" inspect "<composition.json>"` for the layout report and diagnostics.
+3. Read the component summary; fix errors and review warnings by ID. Use `--page N --details` when exact geometry is needed.
 4. Render each affected page to a new PNG:
    `node "<cli>" render "<composition.json>" --page N --format png --scale 2 --output <file>`.
 5. Inspect the PNG for fidelity, hierarchy, clipping, contrast, relationships,
    and consistency; repair and repeat.
 6. Deliver the composition and requested exports with honest limitations.
 
+`inspect` defaults to compact JSON: the file revision, component IDs and boxes,
+native text lines, artwork counts, aligned groups and all diagnostics. Summary
+boxes round to 0.01 px. `--details` adds exact geometry, authored areas, element
+IDs, baselines, clips and font IDs. Measurements are absolute page pixels at 1x,
+including settled group alignment. `--page N` limits the report and checks to that page;
+inspect all pages before delivery. Bounds precede clipping and occlusion, so
+they are not a claim that all content is visible. Use the report as evidence,
+never as the editable document; reread the source before repair. See the runtime's
+`composition/README.md` for field semantics.
+
 `check` emits `{ "ok", "diagnostics" }`; diagnostic IDs identify the page and,
-when applicable, component and element. It exits 1 when errors exist. Bundled
+when applicable, component and element. Use it when only diagnostics are needed;
+`inspect` already includes the same checks. Both exit 1 when errors exist. Bundled
 fonts cover Latin, accents, and symbols; unsupported glyphs are errors. Contrast
 is measured from all solid glyph pixels at 2x and remains a finite-resolution
 measurement. A scaled-chart warning requires visual review of pixel-unit details;

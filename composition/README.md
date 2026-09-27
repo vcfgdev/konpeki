@@ -134,7 +134,53 @@ alignment never enlarges or removes the member clips to hide overflowing copy.
 Contrast examines all solid glyph pixels at 2x; it remains a finite-resolution
 measurement and excludes effects it cannot establish reliably.
 
+## Agent layout report
+
+`konpeki inspect composition.json [--page N] [--details]` prints JSON to stdout without
+modifying the file or starting a browser. It includes every page by default;
+`--page` is one-based and limits both measurements and diagnostics. The envelope
+is `{schema: "konpeki-inspection/v1", detail, revision, units: "page-pixels", ok, pages,
+diagnostics}`. `revision` is the input bytes' SHA-256, matching file-session
+revisions. Layout errors retain the report and exit 1; warnings alone exit 0.
+Invalid input or arguments produce `ok: false`, empty `pages`, and an
+`inspection-failed` diagnostic, without a revision or measurements.
+
+The default `detail: "summary"` reports page size and grid counts, then one entry
+per component in paint order: ID, kind, settled `box`, native `textLines` (an
+array of regions, each containing its actual line strings), or artwork shape/
+label counts. Drafts carry `draft: true`. Aligned groups report member IDs,
+target boxes and combined bounds. Summary rectangles round to 0.01 px for
+readability; layout and diagnostics are never rounded. All diagnostics and
+their evidence remain present, even for artwork omitted from the summary.
+
+Add `--details` for `detail: "full"` when repairing a particular page. Each page
+then reports its ID, number, size, grid metrics, reading and paint orders:
+
+- Components retain authored `area` and numeric `resolvedArea`, alongside `box`
+  and padded `contentBox` from the scene, including settled group offsets.
+  `draft` and `artworkScale` expose placeholders and fitted artwork.
+- Groups retain member IDs, target `box` and combined content `bounds`.
+  Geometry is null for groups without resolved alignment/painted content.
+- `items` follow paint order. `paintIndex` is zero-based and report-local, not
+  an editable ID. Page, component and vector element IDs locate authored data;
+  generated decorations and draft items may share a component ID, and page
+  numbers have no component ID.
+- Shapes report their tag, page-space `bounds` and `clip`, without vector paths.
+  Text reports its source, layout-origin `box`, `clip`, glyph `inkBounds`, type
+  sizes, color and opacity. Every line includes its exact text, half-open UTF-16
+  `start`/`end` in that item's source, advance-width `box`, absolute `baseline`,
+  `inkBounds`, and actual `fontIds` from the font manifest. Empty lines remain;
+  glyphless lines have null ink bounds. Multicolumn text has one item per region.
+
+All rectangles and baselines are absolute page pixels at 1x, not viewport or
+export pixels. Bounds precede clipping and later paint occlusion; they are not
+visible-pixel bounds. Text ink uses glyph extents; shape/group bounds retain the
+stroke-envelope and arc-approximation limitations described above. Diagnostics
+are the same as `check`, including its finite-resolution contrast caveat. The
+report is derived evidence, not a document to save back. Reread the composition
+before repair, use stable IDs, and still render and inspect the PNG for appearance.
+
 The implementation is in `grid.ts`, `schema-v2.ts`, `validate.ts`, `lower.ts`,
-`scene.ts`, `text-layout.ts`, `check.ts`, `svg.ts`, and `pdf.ts`. Generated
+`scene.ts`, `text-layout.ts`, `inspect.ts`, `check.ts`, `svg.ts`, and `pdf.ts`. Generated
 `draft-icons.json`, `schema-v2.json`, and the font manifest must stay synchronized
 with their sources. Retained React/SVG files are drawing references only.

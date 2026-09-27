@@ -6,17 +6,26 @@ source; one owned scene drives canvas display, checking, and every export.
 ## Agent loop
 
 1. Write or revise the composition IR from the brief and sources.
-2. Run `konpeki check composition.json` and fix errors.
+2. Run `konpeki inspect composition.json`, read the resolved layout and fix errors.
 3. Render each affected page as a 2x PNG and inspect it.
 4. Repair and repeat, then deliver the JSON and requested outputs.
 
+`inspect` prints a compact JSON summary with the file revision, page/component
+IDs, resolved boxes, native text lines, artwork counts, aligned groups and all
+diagnostics. Add `--details` for exact geometry, baselines, clips, font IDs and
+individual vector elements. Use `--page N` to limit both layout and diagnostics.
+Measurements are in page pixels, independent of export scale. Reread the document
+before edits; the report describes one revision, not a replacement document.
+
 `validate` performs structural validation. `check` prints JSON shaped as
 `{ok, diagnostics}` and exits 1 for errors. Diagnostics include page IDs and,
-where relevant, component and element IDs. Preview is optional for agents.
+where relevant, component and element IDs. `inspect` includes the same checks
+and exit behavior, so a separate `check` run is unnecessary when inspecting all
+pages. Preview is optional for agents; PNG inspection remains required.
 
 ```sh
 npm exec --no -- konpeki validate slides/example/composition.json
-npm exec --no -- konpeki check slides/example/composition.json
+npm exec --no -- konpeki inspect slides/example/composition.json
 npm exec --no -- konpeki render slides/example/composition.json --page 1 --format png --scale 2 --output slides/example/page-1.png
 ```
 

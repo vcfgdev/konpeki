@@ -22,7 +22,7 @@ for (const required of [
   "index.html", "vite.config.ts", "src/main.tsx", "src/assets/konpeki-mark.png",
   "public/og.png",
   "composition/README.md", "composition/scene.ts", "composition/fonts.ts",
-  "composition/lower.ts", "composition/text-layout.ts", "composition/svg.ts",
+  "composition/lower.ts", "composition/inspect.ts", "composition/text-layout.ts", "composition/svg.ts",
   "composition/pdf.ts", "composition/check.ts", "composition/check-node.ts",
   "composition/draft-artwork.ts", "composition/draft-icons.json",
   "composition/schema-v2.json", "composition/schema-v2.ts",
