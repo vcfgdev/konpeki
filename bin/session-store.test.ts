@@ -5,6 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { canonicalJSON } from "../composition/compile.ts";
 import { initialDraft } from "../composition/document.ts";
+import { toComposition } from "../composition/grid.ts";
 import {
   readCompositionFile,
   saveCompositionFile,
@@ -15,13 +16,13 @@ test("file sessions save atomically and reject stale revisions", async () => {
   const path = join(directory, "composition.json");
   try {
     const draft = initialDraft(true);
-    await writeFile(path, `${canonicalJSON(draft)}\n`, "utf8");
+    await writeFile(path, `${canonicalJSON(toComposition(draft))}\n`, "utf8");
     const opened = await readCompositionFile(path);
     const changed = { ...opened.document, title: "Human revision" };
     const saved = await saveCompositionFile(path, opened.revision, changed);
     assert.equal((await readCompositionFile(path)).document.title, "Human revision");
     await assert.rejects(
-      saveCompositionFile(path, opened.revision, draft),
+      saveCompositionFile(path, opened.revision, toComposition(draft)),
       (error: Error & { code?: string; revision?: string }) =>
         error.code === "REVISION_CONFLICT" && error.revision === saved.revision,
     );

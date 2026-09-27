@@ -7,7 +7,7 @@ guide, then revised after comparison with the previous bundled deck. See
 claim provenance.
 
 [composition.json](composition.json) is the editable document of record.
-[author.mjs](author.mjs) regenerates it; the screenshots are Chromium captures
+[author.mjs](author.mjs) regenerates it; the images are owned-scene PNG exports
 at exactly 2× the declared page size (3840×2160).
 
 ![Cover](screenshots/page-1.png)
@@ -20,7 +20,7 @@ at exactly 2× the declared page size (3840×2160).
 3. You and your agent edit the same file — browser canvas, `composition.json`
    and agent, with save/load/write/reread arrows.
 4. Every page is built from five editable components.
-5. Point at what to change, then choose Build it — notes, pins and the request loop.
+5. Point at what to change. Continue in chat — notes, pins and agent revisions.
 6. Try it in the browser. Keep working with your agent — playground vs agent table.
 7. Start with one install and a brief.
 
@@ -44,19 +44,19 @@ mise exec -- node bin/konpeki.mjs validate slides/introducing-konpeki/compositio
 
 The Konpeki mark is read from `slides/github-cover/composition.json`.
 
-With `agent-browser` installed and a preview running:
+To check and render without a browser:
 
 ```sh
-mise exec -- node slides/introducing-konpeki/review.mjs "<preview-url-with-session>" /tmp/intro-review
+mise exec -- node bin/konpeki.mjs check slides/introducing-konpeki/composition.json
+mise exec -- node bin/konpeki.mjs render slides/introducing-konpeki/composition.json --page 1 --format png --scale 2 --output /tmp/intro-page-1.png
 ```
 
-It enters Present, checks text overflow and clipped vector text, and saves a
-capture of each page. Separately, all seven pages and the four gallery pages
-passed `scripts/check-grid.mjs` geometry, overflow and overlap checks at
-1920×1080 and 1024×768. It also checks page 2's circle/label alignment and samples
-opaque vector text/fill contrast. This is not a complete contrast audit and does
-not establish Night mode, other palettes, PDF/PPTX or cross-browser rendering,
-blind preference, or first-attempt agent quality.
+Repeat for every page and inspect each PNG. `scripts/check-grid.mjs` checks all
+seven pages and the four gallery pages for glyph overflow, clipping, contrast,
+missing glyphs and draft artwork. `scripts/check-scene-writers.mjs` compares their
+Chromium SVG, resvg PNG and rasterized PDF output. Contrast uses finite 2x
+sampling; neither check establishes aesthetic preference or first-attempt agent
+quality. The retained `review.mjs` targets the pre-scene DOM and is historical.
 
 Known limitations: the Konpeki mark now follows the theme accent rather than a
 fixed brand blue. Page 2 now gives each numbered drawing the same three-column

@@ -1,7 +1,7 @@
 import type { ChartTemplate, DiagramType } from "./visualizations.ts";
 export type { ChartTemplate, DiagramType } from "./visualizations.ts";
 
-export const compositionSchema = "konpeki-composition/v1" as const;
+export const compositionSchema = "konpeki-composition/v2" as const;
 export type CanvasSize = { width: number; height: number };
 export const canvasSize = { width: 1920, height: 1080 } as const;
 export const canvasPadding = {
@@ -83,10 +83,7 @@ type VisualBase = {
   description: string;
   fit?: "contain" | "cover" | "stretch";
 };
-export type CustomVisual = VisualBase & (
-  | { format: "vector"; elements: VectorElement[] }
-  | { format: "svg"; source: string }
-);
+export type CustomVisual = VisualBase & { format: "vector"; elements: VectorElement[] };
 type ComponentBase = {
   id: string;
   preferredRect: Rect;

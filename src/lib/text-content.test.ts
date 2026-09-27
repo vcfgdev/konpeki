@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { initialDraft, parseCompositionJSON } from "./model.ts";
 import { canonicalJSON, compileHandoff } from "../../composition/compile.ts";
 import { validateComposition } from "../../composition/validate.ts";
+import { resolveDocument, toComposition } from "../../composition/grid.ts";
 
 test("native content is independent of agent instructions and round trips", () => {
   const draft = initialDraft();
@@ -12,11 +13,11 @@ test("native content is independent of agent instructions and round trips", () =
   assert.equal(block.content, "Text");
   block.content = "A real headline\nSecond line <script> is plain text";
   block.intent = "Shorten this without changing meaning";
-  block.textStyle = { size: 56, weight: 600, lineHeight: 1.4, font: "heading", color: "accent" };
-  const result = parseCompositionJSON(canonicalJSON(draft));
+  block.textStyle = { ...block.textStyle, step: "title", weight: 600, font: "heading", color: "accent" };
+  const result = parseCompositionJSON(canonicalJSON(toComposition(draft)));
   assert.ok(result.ok);
-  if (result.ok) assert.deepEqual(result.document, draft);
+  if (result.ok) assert.deepEqual(result.document, resolveDocument(toComposition(draft)));
   assert.match(compileHandoff(draft), /Intent is separate agent guidance/);
-  block.textStyle.size = -2;
-  assert.equal(validateComposition(draft).ok, false);
+  block.textStyle.leading = -2;
+  assert.equal(validateComposition(toComposition(draft)).ok, false);
 });

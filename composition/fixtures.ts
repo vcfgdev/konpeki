@@ -15,6 +15,7 @@ function packet(title: string, kind: 'text-block' | 'chart' | 'diagram', instruc
   const slide = draft.slides[0];
   const replacedId = slide.components[1].id;
   body.preferredRect = { ...slide.components[1].preferredRect };
+  body.area = slide.components[1].area;
   slide.components[1] = body;
   slide.contentSlots.splice(1, 1, ...createContentSlots(body));
   slide.contentSlots = slide.contentSlots.map(slot => "targets" in slot ? { ...slot, targets: slot.targets.map(target => target === replacedId ? body.id : target) } : slot);

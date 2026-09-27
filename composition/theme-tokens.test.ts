@@ -4,6 +4,7 @@ import { colorTokens, fontTokens, resolveVectorAttribute, validThemeBinding } fr
 import { initialDraft, parseCompositionJSON } from "./document.ts";
 import { canonicalJSON } from "./compile.ts";
 import { validateComposition } from "./validate.ts";
+import { toComposition } from "./grid.ts";
 import { parseEditableSvg } from "./vector.ts";
 
 test("theme bindings are explicit and restricted to compatible attributes", () => {
@@ -14,31 +15,30 @@ test("theme bindings are explicit and restricted to compatible attributes", () =
   for (const token of fontTokens) assert.ok(validThemeBinding("font-family", `theme:${token}`));
   for (const [name, value] of [["x", "theme:ink"], ["fill", "theme:heading-font"], ["font-family", "theme:accent"], ["fill", "theme:unknown"]])
     assert.equal(validThemeBinding(name, value), false);
-  assert.equal(resolveVectorAttribute("fill", "#007bbb"), "#007bbb");
+  assert.equal(resolveVectorAttribute("fill", "theme:accent"), "var(--vector-accent)");
   assert.equal(resolveVectorAttribute("x", 12), 12);
 });
 
 test("bindings and fixed overrides survive validation and JSON round trips", () => {
   const draft = initialDraft();
-  const visual = parseEditableSvg('<svg viewBox="0 0 100 100"><text x="1" y="20" fill="#007bbb">Literal</text></svg>');
-  draft.slides[0].components[0].customVisual = { ...visual, format: "vector", description: "Mixed linked and fixed artwork" };
-  assert.equal(visual.elements[0].attributes.fill, "#007bbb");
+  const visual = parseEditableSvg('<svg viewBox="0 0 100 100"><text x="1" y="20" fill="theme:accent">Literal</text></svg>');
+  draft.slides[0].components[1].customVisual = { ...visual, format: "vector", description: "Mixed linked and fixed artwork" };
+  assert.equal(visual.elements[0].attributes.fill, "theme:accent");
   visual.elements[0].attributes["font-family"] = "theme:heading-font";
-  assert.ok(validateComposition(draft).ok);
-  const result = parseCompositionJSON(canonicalJSON(draft));
+  assert.ok(validateComposition(toComposition(draft)).ok);
+  const result = parseCompositionJSON(canonicalJSON(toComposition(draft)));
   assert.ok(result.ok);
   if (result.ok) assert.deepEqual(result.document, draft);
   visual.elements[0].attributes.x = "theme:accent";
-  assert.equal(validateComposition(draft).ok, false);
+  assert.equal(validateComposition(toComposition(draft)).ok, false);
   visual.elements[0].attributes.x = 1;
   visual.elements[0].attributes.fill = "theme:unknown";
-  assert.equal(validateComposition(draft).ok, false);
+  assert.equal(validateComposition(toComposition(draft)).ok, false);
 });
 
-test("literal artwork remains fixed without guessing theme roles", () => {
+test("v2 artwork rejects literal colors instead of guessing theme roles", () => {
   const draft = initialDraft();
-  draft.slides[0].components[0].customVisual = { ...parseEditableSvg('<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>'), format: "vector", description: "Fixed artwork" };
-  const result = validateComposition(draft);
-  assert.ok(result.ok);
-  if (result.ok) assert.deepEqual(result.document.slides, draft.slides);
+  draft.slides[0].components[1].customVisual = { ...parseEditableSvg('<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>'), format: "vector", description: "Fixed artwork" };
+  const result = validateComposition(toComposition(draft));
+  assert.equal(result.ok, false);
 });

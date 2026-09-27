@@ -1,7 +1,6 @@
 import {
   canvasPadding,
   canvasSize,
-  compositionSchema,
   type CanvasSize,
   type CompositionComponent,
   type CompositionDocument,
@@ -198,16 +197,24 @@ export function createBlankSlide(index = 1, size: CanvasSize = canvasSize): Comp
   };
 }
 export function initialDraft(empty = false): Draft {
-  return {
-    schema: compositionSchema,
+  const slide = empty ? createBlankSlide() : createStarterSlide();
+  const { canvas: _, innerPadding: __, ...wireSlide } = slide;
+  return resolveDocument({
+    schema: gridSchema,
     title: "Untitled composition",
     theme: { id: "plex", mode: "paper" },
-    slides: [empty ? createBlankSlide() : createStarterSlide()],
-  };
+    slides: [{
+      ...wireSlide,
+      grid: { preset: "presentation" },
+      components: slide.components.map((component) => ({
+        ...toGridComponent(component),
+        area: snapArea({ preset: "presentation" }, component.preferredRect),
+      })),
+    }],
+  });
 }
 export function initialGridDraft(): Draft {
-  const blank = initialDraft(true);
-  return { ...blank, schema: gridSchema, slides: [resolveSlide({ ...blank.slides[0], grid: { preset: "presentation" }, components: [] })] };
+  return initialDraft(true);
 }
 export function validateDraft(draft: Draft) {
   return validateComposition(toComposition(draft));
@@ -280,6 +287,22 @@ function offsetRect(rect: Rect, size: CanvasSize) {
   const x = rect.x + 48 <= maximumX ? rect.x + 48 : Math.max(0, rect.x - 48);
   const y = rect.y + 48 <= maximumY ? rect.y + 48 : Math.max(0, rect.y - 48);
   return { ...rect, x, y };
+}
+function avoidOccupiedArea(area: ReturnType<typeof snapArea>, slide: CompositionSlide) {
+  if (!slide.grid) return area;
+  const occupied = new Set(slide.components.map(component => {
+    const value = component.area!;
+    return `${value.column}:${value.row}`;
+  }));
+  if (!occupied.has(`${area.column}:${area.row}`)) return area;
+  const columns = gridMetrics(slide.grid).columns;
+  for (let distance = 1; distance < columns; distance += 1) {
+    for (const column of [area.column + distance, area.column - distance]) {
+      if (column < 1 || column + area.span - 1 > columns) continue;
+      if (!occupied.has(`${column}:${area.row}`)) return { ...area, column };
+    }
+  }
+  return area;
 }
 export function transformComponentRect(
   component: CompositionComponent,
@@ -354,7 +377,7 @@ export function addComponent(
       const bottom = Math.max(0, ...slide.components.map(c => c.area!.row + c.area!.rows - 1));
       area.row = Math.min(bottom + 3, gridMetrics(slide.grid).rows - area.rows + 1);
     }
-    component = resolveComponent({ ...toGridComponent(component), area }, slide.grid);
+    component = resolveComponent({ ...toGridComponent(component), area: avoidOccupiedArea(area, slide) }, slide.grid);
   }
   const readingOrder = [...slide.readingOrder];
   readingOrder.push({ kind: "component", id: component.id });
@@ -503,12 +526,16 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
   });
   const slotMap = new Map(source.slotIds.map((slotId, index) => [slotId, slotIds[index]]));
   const preferredRect = offsetRect(source.preferredRect, slide.canvas);
-  const component = transformComponentRect(
-    source,
+  let component = transformComponentRect(
+    structuredClone(source),
     source.preferredRect,
     preferredRect,
     slide.grid,
   );
+  if (slide.grid && component.area) component = resolveComponent({
+    ...toGridComponent(component),
+    area: avoidOccupiedArea(component.area, slide),
+  }, slide.grid);
   component.id = componentId;
   component.slotIds = slotIds;
   if ((component.kind === "diagram" || component.kind === "chart") && component.topology)

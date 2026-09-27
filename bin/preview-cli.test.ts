@@ -75,7 +75,7 @@ test("an explicitly occupied port fails cleanly rather than reporting a false re
   assert.equal(process.output(), "");
 });
 
-test("installed preview serves hoisted fonts without exposing neighboring files", async t => {
+test("installed preview serves hoisted fonts and HarfBuzz without exposing neighboring files", async t => {
   const root = await mkdtemp(join(tmpdir(), "konpeki-installed-preview-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const packageRoot = join(root, "konpeki");
@@ -97,8 +97,15 @@ test("installed preview serves hoisted fonts without exposing neighboring files"
   await writeFile(join(root, "private.txt"), "private neighboring file");
   await writeFile(join(packageRoot, ".env"), "PRIVATE=test-fixture");
   await writeFile(join(packageRoot, "composition.json.review.json"), "private review fixture");
+  await writeFile(join(packageRoot, "shaper.js"), 'import "harfbuzzjs";');
   const preview = await launch(t, compositionPath, ["--port", "0"], join(packageRoot, "runtime/konpeki.mjs"));
   const { url } = await preview.ready;
+  const shaper = await (await fetch(new URL("/shaper.js", url))).text();
+  assert.match(shaper, /\/harfbuzzjs\/dist\/index\.mjs/, "prebundling must not relocate HarfBuzz away from its WASM");
+  const wasmPath = fileURLToPath(new URL("harfbuzz.wasm", import.meta.resolve("harfbuzzjs")));
+  const wasm = await fetch(new URL(`/@fs${wasmPath}`, url));
+  assert.equal(wasm.status, 200);
+  assert.deepEqual(Buffer.from(await wasm.arrayBuffer()), await readFile(wasmPath), "serve the companion WASM from the hoisted dependency");
   for (const font of ["ibm-plex-sans", "ibm-plex-serif", "noto-sans", "hanken-grotesk"]) {
     for (const weight of [400, 500, 600]) {
       const path = fileURLToPath(import.meta.resolve(`@fontsource/${font}/files/${font}-latin-${weight}-normal.woff2`));

@@ -195,19 +195,6 @@ const customVisual = {
       },
       ["format", "elements", "viewBox", "description"],
     ),
-    object(
-      {
-        format: { const: "svg" },
-        source: {
-          type: "string",
-          minLength: 1,
-          maxLength: 500000,
-          pattern: "^\\s*<svg(?:\\s|>)",
-        },
-        ...visualBase,
-      },
-      ["format", "source", "viewBox", "description"],
-    ),
   ],
 };
 const topology = object({
@@ -308,9 +295,10 @@ const components = componentKinds.map((kind) => {
       }
     : component;
 });
-export const schema = {
+/** Shared semantic schema vocabulary. The public wire schema is schema-v2.ts. */
+export const compositionVocabulary = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
-  $id: "https://vcfgdev.github.io/konpeki/composition/v1/schema.json",
+  $id: "https://vcfgdev.github.io/konpeki/composition/v2/vocabulary.json",
   title: compositionSchema,
   ...object(
     {

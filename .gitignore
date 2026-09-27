@@ -1,6 +1,8 @@
 dist/
 runtime/
 node_modules/
+fonts/*.ttf
+fonts/LICENSE-*.txt
 .amp/in/
 .amp/portals/
 .DS_Store

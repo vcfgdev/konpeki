@@ -2,7 +2,8 @@ import {
   readCompositionFile,
   saveCompositionFile,
 } from "./session-store.ts";
-import { addRevisionNote, removeRevisionNote, readReview, writeBuildRequest, finishBuildRequest } from "./review-store.ts";
+import { addRevisionNote, removeRevisionNote, readReview, resolveRevisionNote } from "./review-store.ts";
+import { renderDocument } from "./render.ts";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 
@@ -48,11 +49,9 @@ function errorResponse(error: unknown) {
 export function fileSessionPlugin({
   compositionPath,
   token,
-  onBuildRequest,
 }: {
   compositionPath: string;
   token: string;
-  onBuildRequest?: (result: Awaited<ReturnType<typeof writeBuildRequest>>) => void;
 }): Plugin {
   return {
     name: "konpeki-file-session",
@@ -90,15 +89,21 @@ export function fileSessionPlugin({
             ));
             return;
           }
-          if (url.pathname === `${route}/build` && request.method === "POST") {
+          if (url.pathname === `${route}/export` && request.method === "POST") {
             const body = await readJSON(request);
-            if (typeof body.instruction !== "string" || !body.instruction.trim()) {
-              sendJSON(response, 400, { error: "Describe what the agent should build." });
+            const current = await readCompositionFile(compositionPath);
+            if (body.revision !== current.revision) {
+              sendJSON(response, 409, { error: "The composition changed; save or reload before exporting.", revision: current.revision });
               return;
             }
-            const result = await writeBuildRequest(compositionPath, body);
-            onBuildRequest?.(result);
-            sendJSON(response, 201, result);
+            if (!["png", "svg", "pdf"].includes(body.format) || !Number.isInteger(body.page) || body.page < 1 || body.page > current.document.slides.length ||
+                !Number.isFinite(body.scale) || body.scale <= 0 || body.scale > 8) {
+              sendJSON(response, 400, { error: "Invalid export format, page or scale." });
+              return;
+            }
+            const result = await renderDocument(current.document, { format: body.format, page: body.format === "pdf" ? undefined : body.page, scale: body.scale });
+            response.writeHead(200, { "content-type": result.contentType, "cache-control": "no-store" });
+            response.end(result.bytes);
             return;
           }
           if (url.pathname === `${route}/notes` && request.method === "POST") {
@@ -111,9 +116,9 @@ export function fileSessionPlugin({
             sendJSON(response, 200, await removeRevisionNote(compositionPath, body.id));
             return;
           }
-          if (url.pathname === `${route}/cancel` && request.method === "POST") {
+          if (url.pathname === `${route}/notes/resolve` && request.method === "POST") {
             const body = await readJSON(request);
-            sendJSON(response, 200, await finishBuildRequest(compositionPath, body.id, "failed", "Cancelled by user. Stop the agent before starting another request."));
+            sendJSON(response, 200, await resolveRevisionNote(compositionPath, body.id));
             return;
           }
           sendJSON(response, 404, { error: "Unknown file-session endpoint." });

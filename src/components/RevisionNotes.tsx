@@ -1,15 +1,16 @@
 import { useState } from "react";
 import type { CompositionDocument } from "../../composition/runtime.ts";
 import { componentInstanceLabel } from "../lib/model.ts";
-import { activeRequest, type ReviewState, type ReviewTarget } from "../lib/review.ts";
+import type { ReviewState, ReviewTarget } from "../lib/review.ts";
 
-export function RevisionNotes({ document, target, review, disabled, onAdd, onRemove, onSelect, onNotice }: {
+export function RevisionNotes({ document, target, review, disabled, onAdd, onRemove, onResolve, onSelect, onNotice }: {
   document: CompositionDocument;
   target: ReviewTarget;
   review: ReviewState;
   disabled: boolean;
   onAdd: (target: ReviewTarget, text: string) => Promise<void>;
   onRemove: (id: string) => Promise<void>;
+  onResolve: (id: string) => Promise<void>;
   onSelect: (target: ReviewTarget) => void;
   onNotice: (message: string) => void;
 }) {
@@ -49,7 +50,8 @@ export function RevisionNotes({ document, target, review, disabled, onAdd, onRem
     {pending.length > 0 && <ol className="revision-note-list">{pending.map((note, i) => <li key={note.id} id={`note-${note.id}`}>
       <button type="button" className="revision-note-target" onClick={() => onSelect(note)}><span>{i + 1}</span>{label(note)}</button>
       <p>{note.text}</p>
-      <button type="button" className="revision-note-remove" disabled={disabled || saving || activeRequest(review.request)} aria-label={`Remove note ${i + 1}`} onClick={() => { void run(() => onRemove(note.id)); }}>Remove</button>
+      <button type="button" className="revision-note-resolve" disabled={disabled || saving} aria-label={`Resolve note ${i + 1}`} onClick={() => { void run(() => onResolve(note.id)); }}>Resolve</button>
+      <button type="button" className="revision-note-remove" disabled={disabled || saving} aria-label={`Remove note ${i + 1}`} onClick={() => { void run(() => onRemove(note.id)); }}>Remove</button>
     </li>)}</ol>}
   </section>;
 }

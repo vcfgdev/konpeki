@@ -3,18 +3,19 @@ import { readFile, rename, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import lockfile from "proper-lockfile";
 import type { WireDocument as CompositionDocument } from "../composition/grid.ts";
-import { activeRequest, emptyReview, type BuildRequest, type ReviewState, type ReviewTarget } from "../src/lib/review.ts";
+import { emptyReview, type ReviewState, type ReviewTarget } from "../src/lib/review.ts";
 import { readCompositionFile } from "./session-store.ts";
 
 export const reviewFileFor = (path: string) => `${resolve(path)}.review.json`;
-const conflict = (message: string) => Object.assign(new Error(message), { code: "REVISION_CONFLICT" });
 const invalid = (message: string) => Object.assign(new Error(message), { code: "INVALID_REVIEW" });
 
 export async function readReview(path: string): Promise<ReviewState> {
   try {
     const state = JSON.parse(await readFile(reviewFileFor(path), "utf8"));
     if (state.schema !== "konpeki-review/v1") throw invalid("Unsupported revision-note format.");
-    return state;
+    // Build requests were stored in this sidecar by older releases. Deliberately
+    // project only the durable note state so legacy protocol data is ignored.
+    return { schema: state.schema, version: state.version, notes: state.notes };
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return emptyReview();
     throw error;
@@ -51,7 +52,6 @@ function validateTarget(document: CompositionDocument, target: ReviewTarget) {
 export async function addRevisionNote(path: string, target: ReviewTarget, text: string) {
   if (typeof text !== "string" || !text.trim() || text.length > 4000) throw invalid("Write a revision note of 1–4000 characters.");
   return mutate(path, async state => {
-    if (activeRequest(state.request)) throw conflict("Wait for the current request before adding notes.");
     validateTarget((await readCompositionFile(path)).document, target);
     state.notes.push({ id: randomUUID(), slideId: target.slideId, ...(target.componentId ? { componentId: target.componentId } : {}), ...(target.elementId ? { elementId: target.elementId } : {}), text: text.trim(), resolved: false });
   });
@@ -59,53 +59,14 @@ export async function addRevisionNote(path: string, target: ReviewTarget, text: 
 
 export async function removeRevisionNote(path: string, id: string) {
   return mutate(path, state => {
-    if (activeRequest(state.request)) throw conflict("Wait for the current request before removing notes.");
     state.notes = state.notes.filter(note => note.id !== id);
   });
 }
 
-export async function writeBuildRequest(path: string, request: ReviewTarget & { revision: string; instruction: string }) {
-  return mutate(path, async state => {
-    if (activeRequest(state.request)) throw conflict("A build request is already waiting or working.");
-    const current = await readCompositionFile(path);
-    if (current.revision !== request.revision) throw conflict("Save the latest composition before requesting a build.");
-    validateTarget(current.document, request);
-    const notes = state.notes.filter(note => !note.resolved);
-    for (const note of notes) validateTarget(current.document, note);
-    if (typeof request.instruction !== "string" || !request.instruction.trim()) throw invalid("Describe what the agent should build.");
-    state.request = {
-      schema: "konpeki-build-request/v2", id: randomUUID(), compositionPath: resolve(path),
-      revision: current.revision, instruction: request.instruction.trim(), slideId: request.slideId,
-      ...(request.componentId ? { componentId: request.componentId } : {}),
-      ...(request.elementId ? { elementId: request.elementId } : {}),
-      notes, status: "submitted",
-    };
-  });
-}
-
-export async function claimBuildRequest(path: string): Promise<BuildRequest | undefined> {
-  if ((await readReview(path)).request?.status !== "submitted") return;
-  let claimed: BuildRequest | undefined;
-  await mutate(path, state => {
-    if (state.request?.status !== "submitted") return;
-    state.request.status = "working";
-    claimed = state.request;
-  });
-  return claimed;
-}
-
-export async function finishBuildRequest(path: string, id: string, status: string, message?: string) {
-  if (!["done", "needs-clarification", "failed"].includes(status)) throw invalid("Status must be done, needs-clarification or failed.");
-  if (status !== "done" && !message?.trim()) throw invalid("Explain what failed or needs clarification.");
-  return mutate(path, async state => {
-    if (state.request?.id !== id || !activeRequest(state.request)) throw conflict("This request is no longer active.");
-    if (status === "done" && state.request.status !== "working") throw conflict("Claim the request with konpeki wait before completing it.");
-    if (status === "done") {
-      state.request.resultRevision = (await readCompositionFile(path)).revision;
-      const completed = new Set(state.request.notes.map(note => note.id));
-      state.notes = state.notes.map(note => completed.has(note.id) ? { ...note, resolved: true } : note);
-    }
-    state.request.status = status as BuildRequest["status"];
-    state.request.message = message?.trim();
+export async function resolveRevisionNote(path: string, id: string) {
+  return mutate(path, state => {
+    const note = state.notes.find(candidate => candidate.id === id);
+    if (!note) throw invalid("The revision note no longer exists.");
+    note.resolved = true;
   });
 }

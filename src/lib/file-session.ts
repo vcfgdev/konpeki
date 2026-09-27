@@ -63,28 +63,12 @@ export function saveFileSession(
   });
 }
 
-export function sendBuildRequest(
-  token: string,
-  requestBody: {
-    revision: string;
-    instruction: string;
-    slideId: string;
-    componentId?: string;
-    elementId?: string;
-  },
-) {
-  return request<ReviewState>(token, "/build", {
-    method: "POST",
-    body: JSON.stringify(requestBody),
-  });
-}
-
 export function addNote(token: string, target: ReviewTarget, text: string) {
   return request<ReviewState>(token, "/notes", { method: "POST", body: JSON.stringify({ ...target, text }) });
 }
 export function removeNote(token: string, id: string) {
   return request<ReviewState>(token, "/notes", { method: "DELETE", body: JSON.stringify({ id }) });
 }
-export function cancelRequest(token: string, id: string) {
-  return request<ReviewState>(token, "/cancel", { method: "POST", body: JSON.stringify({ id }) });
+export function resolveNote(token: string, id: string) {
+  return request<ReviewState>(token, "/notes/resolve", { method: "POST", body: JSON.stringify({ id }) });
 }

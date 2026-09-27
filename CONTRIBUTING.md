@@ -15,9 +15,9 @@ strengthen the shared human-agent canvas are welcome.
 
 ## Development
 
-Follow [docs/development.md](docs/development.md) to install the pinned Node.js and
-pnpm toolchain. Keep changes scoped and preserve existing composition compatibility
-unless a contract change has been agreed in advance.
+Follow [docs/development.md](docs/development.md) to install the pinned Node.js,
+pnpm, and uv toolchain and generate the fonts. Keep changes scoped and preserve
+existing composition compatibility unless a contract change has been agreed in advance.
 
 Before opening a pull request, run:
 

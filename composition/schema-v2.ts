@@ -1,11 +1,11 @@
-import { schema as v1 } from "./schema.ts";
+import { compositionVocabulary } from "./schema.ts";
 import { gridPresets, gridSchema, typeSteps } from "./grid.ts";
 import { colorTokens, fontTokens } from "./theme-tokens.ts";
 
-// Reuse the semantic vocabulary without ever mutating the published v1 schema.
-// JSON-schema nodes are heterogeneous; this clone is deliberately data, not a
-// second hand-maintained copy of every component and topology definition.
-const schema: any = structuredClone(v1);
+const literalVectorAttribute = { oneOf: [{ type: "string", maxLength: 10000, pattern: "^(?!theme:|scale:)" }, { type: "number" }] };
+
+// Materialize the sole public contract from the shared semantic vocabulary.
+const schema: any = structuredClone(compositionVocabulary);
 schema.$id = "https://vcfgdev.github.io/konpeki/composition/v2/schema.json";
 schema.title = gridSchema;
 schema.properties.schema.const = gridSchema;
@@ -37,8 +37,26 @@ for (const component of slide.properties.components.items.oneOf) {
   const visual = component.properties.customVisual.oneOf[0];
   component.properties.customVisual = visual; // v2 artwork is editable, theme-bound vectors only.
   const attributes = visual.properties.elements.items.properties.attributes;
+  const geometry = ["x", "y", "x1", "y1", "x2", "y2", "width", "height", "rx", "ry", "cx", "cy", "r", "d", "points", "fill-opacity", "stroke-width", "stroke-opacity", "stroke-linecap", "stroke-linejoin", "stroke-dasharray", "opacity", "vector-effect"];
+  attributes.properties = Object.fromEntries(geometry.map(name => [name, literalVectorAttribute]));
+  attributes.additionalProperties = false;
   for (const name of ["fill", "stroke", "color"]) attributes.properties[name] = { enum: ["none", "transparent", "currentColor", ...colorTokens.map(t => `theme:${t}`)] };
   attributes.properties["font-family"] = { enum: fontTokens.map(t => `theme:${t}`) };
   attributes.properties["font-size"] = { enum: typeSteps.map(t => `scale:${t}`) };
+  attributes.properties["text-anchor"] = { enum: ["start", "middle", "end"] };
+  attributes.properties["font-weight"] = { enum: [400, 500, 600, "400", "500", "600"] };
+  attributes.properties["font-style"] = { enum: ["normal", "italic"] };
+  visual.properties.elements.items.allOf = [
+    {
+      if: { properties: { kind: { enum: ["text", "tspan"] } } },
+      then: { properties: { attributes: { propertyNames: { enum: ["x", "y", "text-anchor", "fill", "font-family", "font-size", "font-weight", "font-style"] } } } },
+    },
+    // Group opacity is an offscreen composite, not inherited per-shape alpha.
+    // Until the scene supports composite groups, reject it rather than flatten it.
+    {
+      if: { properties: { kind: { const: "g" } } },
+      then: { properties: { attributes: { not: { required: ["opacity"] } } } },
+    },
+  ];
 }
 export { schema as schemaV2 };

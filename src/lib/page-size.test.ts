@@ -3,13 +3,15 @@ import assert from "node:assert/strict";
 import { addComponent, addSlide, duplicateComponent, initialDraft, parseCompositionJSON, snapRect, snapResizeRect } from "./model.ts";
 import { pagePresets, pageSizeIssue, resizePage } from "./page-size.ts";
 import { validateComposition } from "../../composition/validate.ts";
+import { resolveDocument, toComposition, toGridComponent } from "../../composition/grid.ts";
 import { canonicalJSON, compileHandoff } from "../../composition/compile.ts";
 import { commitHistory, createHistory, undoHistory, redoHistory } from "./history.ts";
 
-test("presets and custom pages support all five kinds, duplication, and JSON round trips", () => {
-  for (const size of [...pagePresets, { width: 256, height: 256 }, { width: 4096, height: 4096 }]) {
+test("presets support all five kinds, duplication, and JSON round trips", () => {
+  for (const size of pagePresets) {
     let doc = initialDraft(true);
     doc.slides[0] = resizePage(doc.slides[0], size);
+    assert.deepEqual(doc.slides[0].canvas, { width: size.width, height: size.height });
     assert.deepEqual(doc.slides[0].components, []);
     for (const kind of ["text-block", "diagram", "chart", "image", "table"] as const) {
       doc = addComponent(doc, kind, { x: size.width, y: size.height });
@@ -18,21 +20,24 @@ test("presets and custom pages support all five kinds, duplication, and JSON rou
       doc = duplicateComponent(doc, component.id);
     }
     assert.equal(doc.slides[0].components.length, 10);
-    assert.equal(validateComposition(doc).ok, true);
-    const parsed = parseCompositionJSON(canonicalJSON(doc));
+    assert.equal(validateComposition(toComposition(doc)).ok, true);
+    const parsed = parseCompositionJSON(canonicalJSON(toComposition(doc)));
     assert.ok(parsed.ok);
-    if (parsed.ok) assert.deepEqual(parsed.document, doc);
+    if (parsed.ok) assert.deepEqual(parsed.document, resolveDocument(toComposition(doc)));
   }
 });
 
-test("resize never transforms content or silently clips it, and supports undo/redo", () => {
+test("preset resize preserves authored areas and supports undo/redo", () => {
   const doc = initialDraft(true);
   const original = addComponent(doc, "text-block").slides[0];
   const wide = resizePage(original, { width: 1600, height: 600 }, "article");
-  assert.equal(wide, original); // default text rectangle extends to y=700
-  assert.match(pageSizeIssue(original, { width: 1600, height: 600 })!, /Nothing has changed/);
+  assert.notEqual(wide, original);
+  assert.equal(wide.grid?.preset, "article");
+  assert.deepEqual(wide.components.map(component => component.area), original.components.map(component => component.area));
+  assert.equal(pageSizeIssue(original, { width: 1600, height: 600 }), undefined);
   const square = resizePage(original, { width: 1080, height: 1080 }, "social");
-  assert.deepEqual(square.components, original.components);
+  assert.deepEqual(square.components.map(toGridComponent), original.components.map(toGridComponent));
+  assert.notDeepEqual(square.components[0].preferredRect, original.components[0].preferredRect);
   assert.deepEqual(original.canvas, { width: 1920, height: 1080 });
   const history = commitHistory(createHistory(original), square);
   assert.deepEqual(undoHistory(history).present, original);
@@ -51,12 +56,11 @@ test("page bounds govern moves, resizes, schema validation and handoff", () => {
   doc.slides[0] = resizePage(doc.slides[0], bounds, "social");
   doc = addComponent(doc, "text-block");
   assert.match(compileHandoff(doc), /Surface: 1200×630 pixels; destination: social/);
-  assert.match(compileHandoff(doc), /Sketching is optional/);
-  doc.slides[0].components[0].preferredRect.x = 1200;
-  assert.equal(validateComposition(doc).ok, false);
-  doc = initialDraft(true);
-  doc.slides[0].canvas.width = 4097;
-  assert.equal(validateComposition(doc).ok, false);
+  assert.match(compileHandoff(doc), /Components choose area \{column, span, row, rows\}/);
+  const wire = toComposition(doc);
+  wire.slides[0].components[0].area.column = 5;
+  assert.equal(validateComposition(wire).ok, false);
+  assert.ok(pageSizeIssue(initialDraft(true).slides[0], { width: 4096, height: 4096 }));
 });
 
 test("new pages remain independent and empty", () => {

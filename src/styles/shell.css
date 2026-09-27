@@ -254,54 +254,6 @@
 .editor-content {
   display: contents;
 }
-.is-building .canvas {
-  opacity: 0.18;
-  filter: none;
-}
-.build-loading {
-  z-index: 45;
-  pointer-events: none;
-}
-.build-loading-card {
-  pointer-events: auto;
-  display: grid;
-  gap: 10px;
-  width: min(320px, 100%);
-  padding: 24px;
-  border: 1px solid var(--ui-border);
-  border-radius: 16px;
-  background: var(--ui-surface);
-  box-shadow: var(--ui-shadow);
-  text-align: center;
-}
-.build-loading-card button {
-  min-height: 40px;
-  border-radius: 8px;
-}
-.build-loading-card strong {
-  font-size: 14px;
-  font-weight: 500;
-}
-.build-loading-card span {
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--ui-muted);
-}
-.build-nebula {
-  position: relative;
-  width: 88px;
-  height: 88px;
-  margin: -4px auto 4px;
-}
-.build-nebula::before {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border-radius: 50%;
-  background: conic-gradient(from 45deg, #77d3ed70, #b994dc60, #729fec50, #77d3ed70);
-  filter: blur(10px);
-  animation: orb-turn 12s linear infinite reverse;
-}
 .slide-wrap {
   width: 100%;
   max-width: min(1200px, calc((100vh - 270px) * var(--page-ratio)));

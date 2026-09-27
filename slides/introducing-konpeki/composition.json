@@ -972,7 +972,7 @@
             "span": 3
           },
           "customVisual": {
-            "description": "Step 3: Canvas preview. Arrow continues to the next step.",
+            "description": "Step 3: Check and render. Arrow continues to the next step.",
             "elements": [
               {
                 "attributes": {
@@ -1053,7 +1053,7 @@
             "rows": 4,
             "span": 3
           },
-          "content": "Canvas preview",
+          "content": "Check and render",
           "id": "step3-head",
           "kind": "text-block",
           "slotIds": [
@@ -1079,7 +1079,7 @@
             "rows": 17,
             "span": 3
           },
-          "content": "The agent opens the page, inspects the render and repairs problems it finds.",
+          "content": "The agent runs checks, renders a PNG and repairs problems it finds.",
           "id": "step3-body",
           "kind": "text-block",
           "slotIds": [
@@ -1191,7 +1191,7 @@
             "rows": 17,
             "span": 3
           },
-          "content": "Edit it directly, Present it, export PNG or download the editable JSON.",
+          "content": "Edit it, Present it, or export PNG, SVG, PDF and editable JSON.",
           "id": "step4-body",
           "kind": "text-block",
           "slotIds": [
@@ -1282,7 +1282,7 @@
             "rows": 9,
             "span": 5
           },
-          "content": "In the editor your agent opened, add a component, describe its intent, then choose Build it. Your agent drafts from your layout.",
+          "content": "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.",
           "id": "sketch-body",
           "kind": "text-block",
           "slotIds": [
@@ -1334,7 +1334,7 @@
             "rows": 9,
             "span": 6
           },
-          "content": "On first use the skill installs the Konpeki runtime in a user cache, not in your project.",
+          "content": "With your approval, the skill installs the runtime in a user cache, not in your project.",
           "id": "firstuse-body",
           "kind": "text-block",
           "slotIds": [
@@ -1407,21 +1407,21 @@
         },
         {
           "id": "flow-step-3-slot",
-          "instruction": "Step 3: Canvas preview. Arrow continues to the next step.",
+          "instruction": "Step 3: Check and render. Arrow continues to the next step.",
           "label": "flow-step-3",
           "required": true,
           "role": "process-step"
         },
         {
           "id": "step3-head-slot",
-          "instruction": "Canvas preview",
+          "instruction": "Check and render",
           "label": "step3-head",
           "required": true,
           "role": "process-step"
         },
         {
           "id": "step3-body-slot",
-          "instruction": "The agent opens the page, inspects the render and repairs problems it finds.",
+          "instruction": "The agent runs checks, renders a PNG and repairs problems it finds.",
           "label": "step3-body",
           "required": true,
           "role": "process-step"
@@ -1442,7 +1442,7 @@
         },
         {
           "id": "step4-body-slot",
-          "instruction": "Edit it directly, Present it, export PNG or download the editable JSON.",
+          "instruction": "Edit it, Present it, or export PNG, SVG, PDF and editable JSON.",
           "label": "step4-body",
           "required": true,
           "role": "process-step"
@@ -1463,7 +1463,7 @@
         },
         {
           "id": "sketch-body-slot",
-          "instruction": "In the editor your agent opened, add a component, describe its intent, then choose Build it. Your agent drafts from your layout.",
+          "instruction": "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.",
           "label": "sketch-body",
           "required": true,
           "role": "body"
@@ -1477,7 +1477,7 @@
         },
         {
           "id": "firstuse-body-slot",
-          "instruction": "On first use the skill installs the Konpeki runtime in a user cache, not in your project.",
+          "instruction": "With your approval, the skill installs the runtime in a user cache, not in your project.",
           "label": "firstuse-body",
           "required": true,
           "role": "body"
@@ -1635,7 +1635,7 @@
           "area": {
             "column": 1,
             "row": 11,
-            "rows": 6,
+            "rows": 7,
             "span": 10
           },
           "content": "The page lives in composition.json. The browser canvas\nand your agent both read and write it.",
@@ -3222,7 +3222,7 @@
             "rows": 8,
             "span": 12
           },
-          "content": "Point at what to change, then choose Build it.",
+          "content": "Point at what to change. Continue in chat.",
           "id": "notes-title",
           "kind": "text-block",
           "slotIds": [
@@ -3243,7 +3243,7 @@
             "span": 6
           },
           "customVisual": {
-            "description": "Schematic editor: Notes panel with two numbered notes and a Build it button; a page on the canvas with matching pins on the title and a selected chart bar.",
+            "description": "Schematic editor: Notes panel with two numbered notes and an Add note button; a page on the canvas with matching pins on the title and a selected chart bar.",
             "elements": [
               {
                 "attributes": {
@@ -3444,7 +3444,7 @@
                 },
                 "id": "ui-build-t",
                 "kind": "text",
-                "text": "Build it"
+                "text": "Add note"
               },
               {
                 "attributes": {
@@ -3627,7 +3627,7 @@
                 },
                 "id": "ui-canvas-cap2",
                 "kind": "text",
-                "text": "Present or PNG exports."
+                "text": "Present or exported artwork."
               }
             ],
             "fit": "contain",
@@ -3788,7 +3788,7 @@
             "rows": 7,
             "span": 4
           },
-          "content": "Write what should change. Add notes to several targets before sending.",
+          "content": "Write what should change. Notes stay attached to their targets beside the file.",
           "id": "nstep2-body",
           "kind": "text-block",
           "slotIds": [
@@ -3840,7 +3840,7 @@
             "rows": 4,
             "span": 4
           },
-          "content": "Choose Build it",
+          "content": "Continue in chat",
           "id": "nstep3-head",
           "kind": "text-block",
           "slotIds": [
@@ -3866,7 +3866,7 @@
             "rows": 7,
             "span": 4
           },
-          "content": "The saved revision and every open note go to your agent as one request.",
+          "content": "Ask your agent to read the saved composition and its open notes.",
           "id": "nstep3-body",
           "kind": "text-block",
           "slotIds": [
@@ -3944,7 +3944,7 @@
             "rows": 7,
             "span": 4
           },
-          "content": "It applies each note to its target, checks the render, then marks the request finished.",
+          "content": "It applies the changes, runs checks, renders a PNG and inspects the result.",
           "id": "nstep4-body",
           "kind": "text-block",
           "slotIds": [
@@ -3970,7 +3970,7 @@
             "rows": 8,
             "span": 12
           },
-          "content": "Notes and Build it need a preview your agent opened from a file.\nBuild it cannot wake an idle agent; use Copy prompt to hand over the request.",
+          "content": "Notes need a file-backed preview. They do not start an agent automatically.\nContinue in the same conversation; resolve notes after reviewing the changes.",
           "id": "notes-limit",
           "kind": "text-block",
           "slotIds": [
@@ -3987,14 +3987,14 @@
       "contentSlots": [
         {
           "id": "notes-title-slot",
-          "instruction": "Point at what to change, then choose Build it.",
+          "instruction": "Point at what to change. Continue in chat.",
           "label": "notes-title",
           "required": true,
           "role": "takeaway"
         },
         {
           "id": "notes-ui-slot",
-          "instruction": "Schematic editor: Notes panel with two numbered notes and a Build it button; a page on the canvas with matching pins on the title and a selected chart bar.",
+          "instruction": "Schematic editor: Notes panel with two numbered notes and an Add note button; a page on the canvas with matching pins on the title and a selected chart bar.",
           "label": "notes-ui",
           "required": true,
           "role": "image"
@@ -4036,7 +4036,7 @@
         },
         {
           "id": "nstep2-body-slot",
-          "instruction": "Write what should change. Add notes to several targets before sending.",
+          "instruction": "Write what should change. Notes stay attached to their targets beside the file.",
           "label": "nstep2-body",
           "required": true,
           "role": "process-step"
@@ -4050,14 +4050,14 @@
         },
         {
           "id": "nstep3-head-slot",
-          "instruction": "Choose Build it",
+          "instruction": "Continue in chat",
           "label": "nstep3-head",
           "required": true,
           "role": "process-step"
         },
         {
           "id": "nstep3-body-slot",
-          "instruction": "The saved revision and every open note go to your agent as one request.",
+          "instruction": "Ask your agent to read the saved composition and its open notes.",
           "label": "nstep3-body",
           "required": true,
           "role": "process-step"
@@ -4078,14 +4078,14 @@
         },
         {
           "id": "nstep4-body-slot",
-          "instruction": "It applies each note to its target, checks the render, then marks the request finished.",
+          "instruction": "It applies the changes, runs checks, renders a PNG and inspects the result.",
           "label": "nstep4-body",
           "required": true,
           "role": "process-step"
         },
         {
           "id": "notes-limit-slot",
-          "instruction": "Notes and Build it need a preview your agent opened from a file.\nBuild it cannot wake an idle agent; use Copy prompt to hand over the request.",
+          "instruction": "Notes need a file-backed preview. They do not start an agent automatically.\nContinue in the same conversation; resolve notes after reviewing the changes.",
           "label": "notes-limit",
           "required": true,
           "role": "body"
@@ -4573,7 +4573,7 @@
             "rows": 6,
             "span": 4
           },
-          "content": "Edit by hand, or send notes with Build it",
+          "content": "Edit by hand, or ask for changes in chat",
           "id": "where-r3-agent",
           "kind": "text-block",
           "slotIds": [
@@ -4625,7 +4625,7 @@
             "rows": 6,
             "span": 4
           },
-          "content": "Download JSON, export PNG or Present",
+          "content": "Download JSON, PNG, SVG or PDF",
           "id": "where-r4-browser",
           "kind": "text-block",
           "slotIds": [
@@ -4651,7 +4651,7 @@
             "rows": 6,
             "span": 4
           },
-          "content": "Export PNG or Present; the file is already saved",
+          "content": "Render PNG, SVG or PDF; preview is optional",
           "id": "where-r4-agent",
           "kind": "text-block",
           "slotIds": [
@@ -4778,7 +4778,7 @@
         },
         {
           "id": "where-r3-agent-slot",
-          "instruction": "Edit by hand, or send notes with Build it",
+          "instruction": "Edit by hand, or ask for changes in chat",
           "label": "where-r3-agent",
           "required": true,
           "role": "comparison-item"
@@ -4792,14 +4792,14 @@
         },
         {
           "id": "where-r4-browser-slot",
-          "instruction": "Download JSON, export PNG or Present",
+          "instruction": "Download JSON, PNG, SVG or PDF",
           "label": "where-r4-browser",
           "required": true,
           "role": "comparison-item"
         },
         {
           "id": "where-r4-agent-slot",
-          "instruction": "Export PNG or Present; the file is already saved",
+          "instruction": "Render PNG, SVG or PDF; preview is optional",
           "label": "where-r4-agent",
           "required": true,
           "role": "comparison-item"
@@ -5118,7 +5118,7 @@
             "rows": 8,
             "span": 7
           },
-          "content": "Your agent prepares the runtime, writes the file, opens the canvas\nand checks the result. Keep revising in the same conversation.",
+          "content": "Your agent writes the file, checks it, renders a PNG and inspects it.\nKeep revising in the same conversation.",
           "id": "start-s2-note",
           "kind": "text-block",
           "slotIds": [
@@ -5222,7 +5222,7 @@
             "rows": 4,
             "span": 4
           },
-          "content": "A browser",
+          "content": "Optional: a browser for the editor",
           "id": "need-3",
           "kind": "text-block",
           "slotIds": [
@@ -5274,7 +5274,7 @@
             "rows": 10,
             "span": 4
           },
-          "content": "Ask your agent for Konpeki init. It opens a blank page in the editor without generating anything.",
+          "content": "Ask your agent to open a blank Konpeki file in the editor, without generating artwork.",
           "id": "init-body",
           "kind": "text-block",
           "slotIds": [
@@ -5333,7 +5333,7 @@
         },
         {
           "id": "start-s2-note-slot",
-          "instruction": "Your agent prepares the runtime, writes the file, opens the canvas\nand checks the result. Keep revising in the same conversation.",
+          "instruction": "Your agent writes the file, checks it, renders a PNG and inspects it.\nKeep revising in the same conversation.",
           "label": "start-s2-note",
           "required": true,
           "role": "body"
@@ -5361,7 +5361,7 @@
         },
         {
           "id": "need-3-slot",
-          "instruction": "A browser",
+          "instruction": "Optional: a browser for the editor",
           "label": "need-3",
           "required": true,
           "role": "body"
@@ -5375,7 +5375,7 @@
         },
         {
           "id": "init-body-slot",
-          "instruction": "Ask your agent for Konpeki init. It opens a blank page in the editor without generating anything.",
+          "instruction": "Ask your agent to open a blank Konpeki file in the editor, without generating artwork.",
           "label": "init-body",
           "required": true,
           "role": "body"

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import type { CompositionComponent } from "../../composition/types.ts";
 import { componentLabels } from "../lib/model.ts";
+import type { ExportFormat } from "../lib/export-scene.ts";
 import mark from "../assets/konpeki-mark.png";
-import { BuildOrb } from "./BuildOrb.tsx";
 
 const dockItems: {
   kind: CompositionComponent["kind"];
@@ -61,13 +61,10 @@ export function WorkspaceChrome({
   selectedKind,
   onTitle,
   onEditEnd,
-  onExportPNG,
+  onExport,
   exporting,
   onPresent,
   fileStatus,
-  building,
-  buildState,
-  onBuild,
   browserTools,
   onSelectTool,
   onComponentTool,
@@ -84,13 +81,10 @@ export function WorkspaceChrome({
   selectedKind?: CompositionComponent["kind"];
   onTitle: (title: string, mergeKey?: string) => void;
   onEditEnd: () => void;
-  onExportPNG: () => void;
+  onExport: (format: ExportFormat) => void;
   exporting: boolean;
   onPresent: () => void;
   fileStatus?: "loading" | "saved" | "saving" | "conflict" | "error";
-  building: boolean;
-  buildState?: "ready" | "working";
-  onBuild?: () => void;
   browserTools?: {
     example: boolean;
     saveMessage: string;
@@ -103,6 +97,7 @@ export function WorkspaceChrome({
   onComponentTool: (kind: CompositionComponent["kind"]) => void;
 }) {
   const browserMenu = useRef<HTMLDetailsElement>(null);
+  const exportMenu = useRef<HTMLDetailsElement>(null);
   const [browserMenuOpen, setBrowserMenuOpen] = useState(false);
   const importInput = useRef<HTMLInputElement>(null);
   function closeBrowserMenu(restoreFocus = true) {
@@ -112,12 +107,18 @@ export function WorkspaceChrome({
     if (restoreFocus) menu.querySelector("summary")?.focus();
   }
   useEffect(() => {
-    if (leftCollapsed) closeBrowserMenu(false);
+    if (leftCollapsed) {
+      closeBrowserMenu(false);
+      if (exportMenu.current) exportMenu.current.open = false;
+    }
   }, [leftCollapsed]);
   useEffect(() => {
     function dismissOutside(event: Event) {
       if (event.target instanceof Node && !browserMenu.current?.contains(event.target)) {
         closeBrowserMenu(false);
+      }
+      if (event.target instanceof Node && exportMenu.current && !exportMenu.current.contains(event.target)) {
+        exportMenu.current.open = false;
       }
     }
     document.addEventListener("pointerdown", dismissOutside);
@@ -140,7 +141,6 @@ export function WorkspaceChrome({
             aria-describedby={titleError ? "title-error" : undefined}
             name="composition-title"
             autoComplete="off"
-            disabled={building}
             value={title}
             onChange={(event) => onTitle(event.target.value, "title")}
             onBlur={onEditEnd}
@@ -174,25 +174,36 @@ export function WorkspaceChrome({
         </button>
       </header>
 
-      <div className="editor-content" inert={building} aria-busy={building}>
+      <div className="editor-content">
         {children}
       </div>
 
       <div className="action-island" aria-label="Document actions" inert={leftCollapsed}>
-        <button
-          type="button"
-          className="icon-only"
-          aria-label="Export PNG"
-          title="Export active page as PNG"
-          disabled={exporting || building}
-          onClick={onExportPNG}
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="4" y="4" width="16" height="12" rx="2" />
-            <path d="m7 14 3.5-4 3 3 2-2 2.5 3M12 16v5m-3-3 3 3 3-3" />
-          </svg>
-        </button>
-        <button type="button" className="icon-only" aria-label="Present" title="Present" onClick={onPresent} disabled={building}>
+        <details className="browser-menu export-menu" ref={exportMenu} onKeyDown={event => {
+          if (event.key === "Escape") {
+            event.preventDefault(); event.stopPropagation();
+            event.currentTarget.open = false;
+            event.currentTarget.querySelector("summary")?.focus();
+          }
+        }}>
+          <summary className="icon-only" aria-label="Export" title="Export" aria-disabled={exporting}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="4" width="16" height="12" rx="2" />
+              <path d="m7 14 3.5-4 3 3 2-2 2.5 3M12 16v5m-3-3 3 3 3-3" />
+            </svg>
+          </summary>
+          <div className="browser-menu-popover" aria-label="Export formats">
+            {(["png", "svg", "pdf"] as const).map(format => (
+              <button key={format} type="button" disabled={exporting} onClick={() => {
+                if (exportMenu.current) exportMenu.current.open = false;
+                onExport(format);
+              }}>
+                Export {format.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </details>
+        <button type="button" className="icon-only" aria-label="Present" title="Present" onClick={onPresent}>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="4" width="18" height="12" rx="2" />
             <path d="M12 16v5m-4 0h8M10 7l5 3-5 3Z" />
@@ -272,22 +283,10 @@ export function WorkspaceChrome({
             </div>
           </details>
         )}
-        {onBuild && (
-          <button
-            type="button"
-            className={`primary build-button ${building ? "building" : ""}`}
-            disabled={fileStatus !== "saved" || building}
-            aria-busy={building}
-            onClick={onBuild}
-          >
-            <BuildOrb active={building} />
-            <span className="build-label">{buildState === "ready" ? "Request ready" : buildState === "working" ? "Agent working" : "Build it"}</span>
-          </button>
-        )}
       </div>
       </div>
 
-      <nav className="component-dock" aria-label="Canvas tools" inert={building}>
+      <nav className="component-dock" aria-label="Canvas tools">
         <button
           type="button"
           className={!selectedKind ? "active" : ""}

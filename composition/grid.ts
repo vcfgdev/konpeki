@@ -1,9 +1,9 @@
-import type * as V1 from "./types.ts";
+import type * as Contract from "./types.ts";
 
 export const gridSchema = "konpeki-composition/v2" as const;
 export const typeSteps = ["fine", "caption", "body", "lead", "heading", "title", "display"] as const;
 export type TypeStep = typeof typeSteps[number];
-export const roleSteps: Record<V1.TextRole, TypeStep> = {
+export const roleSteps: Record<Contract.TextRole, TypeStep> = {
   title: "title", subtitle: "lead", body: "body", caption: "caption", footnote: "fine",
 };
 
@@ -12,45 +12,42 @@ export const roleSteps: Record<V1.TextRole, TypeStep> = {
 // Type sizes and default line heights are hand-tuned in page pixels. Leading
 // need not consume a whole layout row; explicit overrides still use baseline units.
 export const gridPresets = {
-  presentation: { width: 1920, height: 1080, columns: 12, gutter: 24, margin: 72, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [24, 32, 36, 44, 52, 68, 84] },
+  presentation: { width: 1920, height: 1080, columns: 12, gutter: 24, margin: 72, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [28, 32, 40, 46, 52, 68, 84] },
   portrait: { width: 1080, height: 1350, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76], lineHeights: [24, 28, 36, 44, 52, 68, 84] },
   link: { width: 1200, height: 630, columns: 4, gutter: 24, margin: 48, baseline: 8, scale: [16, 20, 24, 30, 40, 52, 64], lineHeights: [20, 24, 32, 36, 48, 60, 72] },
   square: { width: 1080, height: 1080, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76], lineHeights: [24, 28, 36, 44, 52, 68, 84] },
   article: { width: 1600, height: 600, columns: 8, gutter: 24, margin: 48, baseline: 8, scale: [18, 22, 28, 34, 44, 56, 72], lineHeights: [24, 28, 36, 44, 52, 64, 80] },
   // The original gallery briefs specify these two additional destinations.
-  explainer: { width: 1200, height: 1600, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [24, 32, 36, 44, 52, 68, 84] },
+  explainer: { width: 1200, height: 1600, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [28, 32, 40, 46, 52, 68, 84] },
   gallery: { width: 1600, height: 1000, columns: 12, gutter: 24, margin: 64, baseline: 12, scale: [20, 24, 28, 34, 44, 56, 72], lineHeights: [24, 32, 36, 44, 52, 64, 80] },
 } as const;
 export type GridPreset = keyof typeof gridPresets;
 export type PageGrid = { preset: GridPreset };
 export type GridArea = { column: number; span: number; row: number; rows: number };
 export type GridPlacement = { area: GridArea; layer?: "background" | "overlay"; padding?: number };
-type OnGrid<C> = C extends V1.CompositionComponent
-  ? Omit<C, "preferredRect" | "textStyle"> & GridPlacement &
-    (C extends V1.TextBlockComponent ? { textStyle?: Omit<NonNullable<C["textStyle"]>, "size" | "lineHeight"> & { step?: TypeStep; leading?: number } } : {})
+type OnGrid<C> = C extends Contract.CompositionComponent
+  ? Omit<C, "preferredRect" | "textStyle" | "customVisual"> & GridPlacement &
+    { customVisual?: Extract<Contract.CustomVisual, { format: "vector" }> } &
+    (C extends Contract.TextBlockComponent ? { textStyle?: Omit<NonNullable<C["textStyle"]>, "size" | "lineHeight"> & { step?: TypeStep; leading?: number } } : {})
   : never;
-export type GridComponent = OnGrid<V1.CompositionComponent>;
-export type GridSlide = Omit<V1.CompositionSlide, "canvas" | "innerPadding" | "components"> & {
+export type GridComponent = OnGrid<Contract.CompositionComponent>;
+export type GridSlide = Omit<Contract.CompositionSlide, "canvas" | "innerPadding" | "components"> & {
   grid: PageGrid;
   components: GridComponent[];
 };
-export type GridDocument = Omit<V1.CompositionDocument, "schema" | "slides"> & {
-  schema: typeof gridSchema;
-  slides: GridSlide[];
-};
-export type WireDocument = V1.CompositionDocument | GridDocument;
+export type GridDocument = Omit<Contract.CompositionDocument, "slides"> & { slides: GridSlide[] };
+export type WireDocument = GridDocument;
 
 // Derived geometry exists only in memory for selection, thumbnails and legacy
-// drawing code. CSS Grid owns v2 layout; toComposition removes derived fields.
-export type ResolvedComponent = V1.CompositionComponent & Partial<GridPlacement> & {
-  textStyle?: V1.TextBlockComponent["textStyle"] & { step?: TypeStep; leading?: number };
+// drawing code. The scene owns layout; toComposition removes derived fields.
+export type ResolvedComponent = Contract.CompositionComponent & Partial<GridPlacement> & {
+  textStyle?: Contract.TextBlockComponent["textStyle"] & { step?: TypeStep; leading?: number };
 };
-export type ResolvedSlide = Omit<V1.CompositionSlide, "components"> & {
+export type ResolvedSlide = Omit<Contract.CompositionSlide, "components"> & {
   grid?: PageGrid;
   components: ResolvedComponent[];
 };
-export type ResolvedDocument = Omit<V1.CompositionDocument, "schema" | "slides"> & {
-  schema: WireDocument["schema"];
+export type ResolvedDocument = Omit<Contract.CompositionDocument, "slides"> & {
   slides: ResolvedSlide[];
 };
 
@@ -62,7 +59,7 @@ export function gridMetrics(grid: PageGrid) {
 export function typeSize(grid: PageGrid, step: TypeStep) {
   return gridPresets[grid.preset].scale[typeSteps.indexOf(step)];
 }
-export function areaRect(grid: PageGrid, area: GridArea): V1.Rect {
+export function areaRect(grid: PageGrid, area: GridArea): Contract.Rect {
   const p = gridMetrics(grid);
   return {
     x: p.margin + (area.column - 1) * (p.columnWidth + p.gutter),
@@ -71,7 +68,7 @@ export function areaRect(grid: PageGrid, area: GridArea): V1.Rect {
     height: area.rows * p.baseline,
   };
 }
-export function snapArea(grid: PageGrid, rect: V1.Rect): GridArea {
+export function snapArea(grid: PageGrid, rect: Contract.Rect): GridArea {
   const p = gridMetrics(grid);
   const clamp = (n: number, max: number) => Math.max(1, Math.min(max, Math.round(n)));
   const span = clamp((rect.width + p.gutter) / (p.columnWidth + p.gutter), p.columns);
@@ -100,7 +97,6 @@ export function resolveSlide(slide: GridSlide): ResolvedSlide {
   return { ...slide, canvas: { width: p.width, height: p.height }, innerPadding: { top: p.margin, right: p.margin, bottom: p.margin, left: p.margin }, components: slide.components.map(c => resolveComponent(c, slide.grid)) };
 }
 export function resolveDocument(document: WireDocument): ResolvedDocument {
-  if (document.schema !== gridSchema) return document;
   return { ...document, slides: document.slides.map(resolveSlide) };
 }
 export function toGridComponent(component: ResolvedComponent): GridComponent {
@@ -113,7 +109,6 @@ export function toGridComponent(component: ResolvedComponent): GridComponent {
   return rest as GridComponent;
 }
 export function toComposition(document: ResolvedDocument): WireDocument {
-  if (document.schema !== gridSchema) return document as V1.CompositionDocument;
   return { ...document, schema: gridSchema, slides: document.slides.map(({ canvas: _, innerPadding: __, ...slide }) => ({
     ...slide, grid: slide.grid!, components: slide.components.map(toGridComponent),
   })) };

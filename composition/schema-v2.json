@@ -172,20 +172,61 @@
                         "elements": {
                           "items": {
                             "additionalProperties": false,
+                            "allOf": [
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "enum": [
+                                        "text",
+                                        "tspan"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "propertyNames": {
+                                        "enum": [
+                                          "x",
+                                          "y",
+                                          "text-anchor",
+                                          "fill",
+                                          "font-family",
+                                          "font-size",
+                                          "font-weight",
+                                          "font-style"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "const": "g"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "not": {
+                                        "required": [
+                                          "opacity"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
                             "properties": {
                               "attributes": {
-                                "additionalProperties": {
-                                  "oneOf": [
-                                    {
-                                      "maxLength": 10000,
-                                      "pattern": "^(?!theme:)",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "number"
-                                    }
-                                  ]
-                                },
+                                "additionalProperties": false,
                                 "maxProperties": 40,
                                 "properties": {
                                   "color": {
@@ -203,6 +244,42 @@
                                       "theme:wash"
                                     ]
                                   },
+                                  "cx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "cy": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "d": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "fill": {
                                     "enum": [
                                       "none",
@@ -216,6 +293,18 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "fill-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   },
                                   "font-family": {
@@ -235,6 +324,94 @@
                                       "scale:display"
                                     ]
                                   },
+                                  "font-style": {
+                                    "enum": [
+                                      "normal",
+                                      "italic"
+                                    ]
+                                  },
+                                  "font-weight": {
+                                    "enum": [
+                                      400,
+                                      500,
+                                      600,
+                                      "400",
+                                      "500",
+                                      "600"
+                                    ]
+                                  },
+                                  "height": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "points": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "r": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "rx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "ry": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "stroke": {
                                     "enum": [
                                       "none",
@@ -248,6 +425,169 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "stroke-dasharray": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linecap": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linejoin": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "text-anchor": {
+                                    "enum": [
+                                      "start",
+                                      "middle",
+                                      "end"
+                                    ]
+                                  },
+                                  "vector-effect": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   }
                                 },
@@ -575,20 +915,61 @@
                         "elements": {
                           "items": {
                             "additionalProperties": false,
+                            "allOf": [
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "enum": [
+                                        "text",
+                                        "tspan"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "propertyNames": {
+                                        "enum": [
+                                          "x",
+                                          "y",
+                                          "text-anchor",
+                                          "fill",
+                                          "font-family",
+                                          "font-size",
+                                          "font-weight",
+                                          "font-style"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "const": "g"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "not": {
+                                        "required": [
+                                          "opacity"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
                             "properties": {
                               "attributes": {
-                                "additionalProperties": {
-                                  "oneOf": [
-                                    {
-                                      "maxLength": 10000,
-                                      "pattern": "^(?!theme:)",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "number"
-                                    }
-                                  ]
-                                },
+                                "additionalProperties": false,
                                 "maxProperties": 40,
                                 "properties": {
                                   "color": {
@@ -606,6 +987,42 @@
                                       "theme:wash"
                                     ]
                                   },
+                                  "cx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "cy": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "d": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "fill": {
                                     "enum": [
                                       "none",
@@ -619,6 +1036,18 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "fill-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   },
                                   "font-family": {
@@ -638,6 +1067,94 @@
                                       "scale:display"
                                     ]
                                   },
+                                  "font-style": {
+                                    "enum": [
+                                      "normal",
+                                      "italic"
+                                    ]
+                                  },
+                                  "font-weight": {
+                                    "enum": [
+                                      400,
+                                      500,
+                                      600,
+                                      "400",
+                                      "500",
+                                      "600"
+                                    ]
+                                  },
+                                  "height": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "points": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "r": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "rx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "ry": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "stroke": {
                                     "enum": [
                                       "none",
@@ -651,6 +1168,169 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "stroke-dasharray": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linecap": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linejoin": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "text-anchor": {
+                                    "enum": [
+                                      "start",
+                                      "middle",
+                                      "end"
+                                    ]
+                                  },
+                                  "vector-effect": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   }
                                 },
@@ -1068,20 +1748,61 @@
                         "elements": {
                           "items": {
                             "additionalProperties": false,
+                            "allOf": [
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "enum": [
+                                        "text",
+                                        "tspan"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "propertyNames": {
+                                        "enum": [
+                                          "x",
+                                          "y",
+                                          "text-anchor",
+                                          "fill",
+                                          "font-family",
+                                          "font-size",
+                                          "font-weight",
+                                          "font-style"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "const": "g"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "not": {
+                                        "required": [
+                                          "opacity"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
                             "properties": {
                               "attributes": {
-                                "additionalProperties": {
-                                  "oneOf": [
-                                    {
-                                      "maxLength": 10000,
-                                      "pattern": "^(?!theme:)",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "number"
-                                    }
-                                  ]
-                                },
+                                "additionalProperties": false,
                                 "maxProperties": 40,
                                 "properties": {
                                   "color": {
@@ -1099,6 +1820,42 @@
                                       "theme:wash"
                                     ]
                                   },
+                                  "cx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "cy": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "d": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "fill": {
                                     "enum": [
                                       "none",
@@ -1112,6 +1869,18 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "fill-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   },
                                   "font-family": {
@@ -1131,6 +1900,94 @@
                                       "scale:display"
                                     ]
                                   },
+                                  "font-style": {
+                                    "enum": [
+                                      "normal",
+                                      "italic"
+                                    ]
+                                  },
+                                  "font-weight": {
+                                    "enum": [
+                                      400,
+                                      500,
+                                      600,
+                                      "400",
+                                      "500",
+                                      "600"
+                                    ]
+                                  },
+                                  "height": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "points": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "r": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "rx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "ry": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "stroke": {
                                     "enum": [
                                       "none",
@@ -1144,6 +2001,169 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "stroke-dasharray": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linecap": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linejoin": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "text-anchor": {
+                                    "enum": [
+                                      "start",
+                                      "middle",
+                                      "end"
+                                    ]
+                                  },
+                                  "vector-effect": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   }
                                 },
@@ -1496,20 +2516,61 @@
                         "elements": {
                           "items": {
                             "additionalProperties": false,
+                            "allOf": [
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "enum": [
+                                        "text",
+                                        "tspan"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "propertyNames": {
+                                        "enum": [
+                                          "x",
+                                          "y",
+                                          "text-anchor",
+                                          "fill",
+                                          "font-family",
+                                          "font-size",
+                                          "font-weight",
+                                          "font-style"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "const": "g"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "not": {
+                                        "required": [
+                                          "opacity"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
                             "properties": {
                               "attributes": {
-                                "additionalProperties": {
-                                  "oneOf": [
-                                    {
-                                      "maxLength": 10000,
-                                      "pattern": "^(?!theme:)",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "number"
-                                    }
-                                  ]
-                                },
+                                "additionalProperties": false,
                                 "maxProperties": 40,
                                 "properties": {
                                   "color": {
@@ -1527,6 +2588,42 @@
                                       "theme:wash"
                                     ]
                                   },
+                                  "cx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "cy": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "d": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "fill": {
                                     "enum": [
                                       "none",
@@ -1540,6 +2637,18 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "fill-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   },
                                   "font-family": {
@@ -1559,6 +2668,94 @@
                                       "scale:display"
                                     ]
                                   },
+                                  "font-style": {
+                                    "enum": [
+                                      "normal",
+                                      "italic"
+                                    ]
+                                  },
+                                  "font-weight": {
+                                    "enum": [
+                                      400,
+                                      500,
+                                      600,
+                                      "400",
+                                      "500",
+                                      "600"
+                                    ]
+                                  },
+                                  "height": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "points": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "r": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "rx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "ry": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "stroke": {
                                     "enum": [
                                       "none",
@@ -1572,6 +2769,169 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "stroke-dasharray": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linecap": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linejoin": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "text-anchor": {
+                                    "enum": [
+                                      "start",
+                                      "middle",
+                                      "end"
+                                    ]
+                                  },
+                                  "vector-effect": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   }
                                 },
@@ -1803,20 +3163,61 @@
                         "elements": {
                           "items": {
                             "additionalProperties": false,
+                            "allOf": [
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "enum": [
+                                        "text",
+                                        "tspan"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "propertyNames": {
+                                        "enum": [
+                                          "x",
+                                          "y",
+                                          "text-anchor",
+                                          "fill",
+                                          "font-family",
+                                          "font-size",
+                                          "font-weight",
+                                          "font-style"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "properties": {
+                                    "kind": {
+                                      "const": "g"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "properties": {
+                                    "attributes": {
+                                      "not": {
+                                        "required": [
+                                          "opacity"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ],
                             "properties": {
                               "attributes": {
-                                "additionalProperties": {
-                                  "oneOf": [
-                                    {
-                                      "maxLength": 10000,
-                                      "pattern": "^(?!theme:)",
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "number"
-                                    }
-                                  ]
-                                },
+                                "additionalProperties": false,
                                 "maxProperties": 40,
                                 "properties": {
                                   "color": {
@@ -1834,6 +3235,42 @@
                                       "theme:wash"
                                     ]
                                   },
+                                  "cx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "cy": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "d": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "fill": {
                                     "enum": [
                                       "none",
@@ -1847,6 +3284,18 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "fill-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   },
                                   "font-family": {
@@ -1866,6 +3315,94 @@
                                       "scale:display"
                                     ]
                                   },
+                                  "font-style": {
+                                    "enum": [
+                                      "normal",
+                                      "italic"
+                                    ]
+                                  },
+                                  "font-weight": {
+                                    "enum": [
+                                      400,
+                                      500,
+                                      600,
+                                      "400",
+                                      "500",
+                                      "600"
+                                    ]
+                                  },
+                                  "height": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "points": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "r": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "rx": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "ry": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
                                   "stroke": {
                                     "enum": [
                                       "none",
@@ -1879,6 +3416,169 @@
                                       "theme:accent",
                                       "theme:on-accent",
                                       "theme:wash"
+                                    ]
+                                  },
+                                  "stroke-dasharray": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linecap": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-linejoin": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-opacity": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "stroke-width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "text-anchor": {
+                                    "enum": [
+                                      "start",
+                                      "middle",
+                                      "end"
+                                    ]
+                                  },
+                                  "vector-effect": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "width": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "x2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y1": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
+                                    ]
+                                  },
+                                  "y2": {
+                                    "oneOf": [
+                                      {
+                                        "maxLength": 10000,
+                                        "pattern": "^(?!theme:|scale:)",
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "number"
+                                      }
                                     ]
                                   }
                                 },

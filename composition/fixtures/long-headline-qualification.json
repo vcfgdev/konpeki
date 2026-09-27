@@ -1,12 +1,8 @@
 {
-  "schema": "konpeki-composition/v1",
+  "schema": "konpeki-composition/v2",
   "slides": [
     {
       "audience": "Decision makers",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -21,24 +17,22 @@
             "titleStyle": "prominent",
             "treatment": "plain"
           },
+          "area": {
+            "column": 1,
+            "row": 1,
+            "rows": 7,
+            "span": 11
+          },
           "content": "Text",
           "id": "text-block-1",
           "intent": "State the decision or takeaway.",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 88,
-            "width": 1696,
-            "x": 112,
-            "y": 72
-          },
           "slotIds": [
             "text-block-1-content"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 36,
             "weight": 400
           }
         },
@@ -53,15 +47,15 @@
             "selection": "auto",
             "template": "grouped-bar"
           },
+          "area": {
+            "column": 1,
+            "row": 18,
+            "rows": 44,
+            "span": 7
+          },
           "id": "chart-2",
           "intent": "Fictional Atlas: control median 420 ms / 60 runs; candidate median 310 ms / 55 observed runs. Five consecutive missing runs are not zero. Fixed staging workload, not peak production. Source AR-27, 8 September 2026.",
           "kind": "chart",
-          "preferredRect": {
-            "height": 530,
-            "width": 1080,
-            "x": 112,
-            "y": 280
-          },
           "slotIds": [
             "chart-2-content"
           ]
@@ -79,24 +73,22 @@
             "titleStyle": "plain",
             "treatment": "strong"
           },
+          "area": {
+            "column": 9,
+            "row": 18,
+            "rows": 35,
+            "span": 4
+          },
           "content": "Text",
           "id": "text-block-3",
           "intent": "Explain the implication or recommended action.",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 420,
-            "width": 560,
-            "x": 1248,
-            "y": 280
-          },
           "slotIds": [
             "text-block-3-content"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 36,
             "weight": 400
           }
         },
@@ -113,24 +105,22 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
+          "area": {
+            "column": 1,
+            "row": 72,
+            "rows": 7,
+            "span": 11
+          },
           "content": "Text",
           "id": "text-block-4",
           "intent": "Add the source, scope, and any important caveat.",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 88,
-            "width": 1696,
-            "x": 112,
-            "y": 992
-          },
           "slotIds": [
             "text-block-4-content"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 36,
             "weight": 400
           }
         }
@@ -170,14 +160,11 @@
           ]
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "slide-1",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "Slide 01",
       "pageNumber": {

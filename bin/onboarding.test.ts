@@ -9,12 +9,13 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { initialDraft } from "../composition/document.ts";
+import { toComposition } from "../composition/grid.ts";
 import { validateComposition } from "../composition/validate.ts";
 
 const skill = new URL("../skills/konpeki/", import.meta.url);
 const cli = fileURLToPath(new URL("./konpeki.mjs", import.meta.url));
 
-async function fixture(path: string, version = "0.3.1") {
+async function fixture(path: string, version = "0.4.0") {
   for (const file of ["AGENTS.md", "AUTHORING.md", "composition/README.md", "design/README.md", "docs/workflow.md"]) {
     await mkdir(dirname(join(path, file)), { recursive: true });
     await writeFile(join(path, file), "fixture\n");
@@ -22,7 +23,7 @@ async function fixture(path: string, version = "0.3.1") {
   await mkdir(join(path, "runtime"), { recursive: true });
   await writeFile(join(path, "runtime/konpeki.mjs"), `
     import { readFileSync } from "node:fs";
-    if (process.argv[2] !== "validate" || JSON.parse(readFileSync(process.argv[3])).schema !== "konpeki-composition/v1") process.exit(1);
+    if (process.argv[2] !== "validate" || JSON.parse(readFileSync(process.argv[3])).schema !== "konpeki-composition/v2") process.exit(1);
     console.log("fixture validation passed");
   `);
   await writeFile(join(path, "package.json"), JSON.stringify({ name: "konpeki", version, bin: { konpeki: "runtime/konpeki.mjs" } }));
@@ -58,9 +59,9 @@ test("a copied skill resolves pinned runtimes without touching project files", a
   await mkdir(join(checkout, "bin"));
   await writeFile(join(checkout, "bin/konpeki.mjs"), 'import "missing-dependency";');
   assert.equal(run().status, 1, "a dependency-free checkout is not a usable runtime");
-  const cachedRoot = join(cache, "konpeki/0.3.1/node_modules/konpeki");
+  const cachedRoot = join(cache, "konpeki/0.4.0/node_modules/konpeki");
   await fixture(cachedRoot);
-  assert.deepEqual(JSON.parse(run().stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.3.1" });
+  assert.deepEqual(JSON.parse(run().stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.4.0" });
   const installedRoot = join(workspace, "node_modules/konpeki");
   await fixture(installedRoot);
   assert.equal(JSON.parse(run("--install").stdout).root, installedRoot, "reuse beats installation, including with --install");
@@ -102,8 +103,8 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
     if (request.url === "/konpeki") {
       response.setHeader("Content-Type", "application/json");
       response.end(JSON.stringify({
-        name: "konpeki", "dist-tags": { latest: "0.3.1" },
-        versions: { "0.3.1": { name: "konpeki", version: "0.3.1", bin: { konpeki: "runtime/konpeki.mjs" }, dist: { tarball: `${registryURL}/konpeki.tgz` } } },
+        name: "konpeki", "dist-tags": { latest: "0.4.0" },
+        versions: { "0.4.0": { name: "konpeki", version: "0.4.0", bin: { konpeki: "runtime/konpeki.mjs" }, dist: { tarball: `${registryURL}/konpeki.tgz` } } },
       }));
     } else if (request.url === "/konpeki.tgz") {
       downloads++;
@@ -126,8 +127,8 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
       npm_config_userconfig: join(root, "empty-npmrc"),
     },
   });
-  const cachedRoot = join(workspace, "nested cache/konpeki/0.3.1/node_modules/konpeki");
-  assert.deepEqual(JSON.parse(installed.stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.3.1" });
+  const cachedRoot = join(workspace, "nested cache/konpeki/0.4.0/node_modules/konpeki");
+  assert.deepEqual(JSON.parse(installed.stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.4.0" });
   assert.equal(downloads, 1, "exercise a real npm install against the disposable registry");
   assert.equal(await readFile(join(workspace, "package.json"), "utf8"), manifest);
   assert.equal(await readFile(join(workspace, "package-lock.json"), "utf8"), lock);
@@ -152,7 +153,7 @@ test("plugin packages the canonical skill with creation-first prompts", async ()
 
 test("the portable init template matches the editor's canonical blank document", async () => {
   const blank = JSON.parse(await readFile(new URL("assets/blank.json", skill), "utf8"));
-  assert.deepEqual(blank, initialDraft(true), "update the portable template when the blank-document contract changes");
+  assert.deepEqual(blank, toComposition(initialDraft(true)), "update the portable template when the blank-document contract changes");
   assert.equal(validateComposition(blank).ok, true);
   assert.equal(blank.slides.length, 1);
   assert.deepEqual(blank.slides[0].components, []);

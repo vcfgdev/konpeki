@@ -1,5 +1,4 @@
 import { Ajv2020 } from "ajv/dist/2020.js";
-import { schema } from "./schema.ts";
 import { schemaV2 } from "./schema-v2.ts";
 import { gridSchema, gridMetrics, resolveDocument, type WireDocument } from "./grid.ts";
 import { vectorAttributeNames } from "./vector.ts";
@@ -10,15 +9,14 @@ export type ValidationResult =
   | { ok: true; document: WireDocument }
   | { ok: false; issues: ValidationIssue[] };
 const ajv = new Ajv2020({ allErrors: true, strict: false });
-const structuralV1 = ajv.compile<WireDocument>(schema);
 const structuralV2 = ajv.compile<WireDocument>(schemaV2);
 export function validateComposition(input: unknown): ValidationResult {
-  const structural = input && typeof input === "object" && "schema" in input && input.schema === gridSchema
-    ? structuralV2 : structuralV1;
-  if (!structural(input))
+  if (!input || typeof input !== "object" || !("schema" in input) || input.schema !== gridSchema)
+    return { ok: false, issues: [{ path: "/schema", message: `must be ${gridSchema}` }] };
+  if (!structuralV2(input))
     return {
       ok: false,
-      issues: (structural.errors ?? []).map((error) => ({
+      issues: (structuralV2.errors ?? []).map((error) => ({
         path: error.instancePath,
         message: error.message ?? "Invalid value",
       })),
@@ -82,31 +80,7 @@ export function validateComposition(input: unknown): ValidationResult {
     assigned.push(...component.slotIds);
     for (const id of component.slotIds)
       if (!slots.has(id)) fail(path, `Unknown slot: ${id}`);
-    if (component.customVisual) {
-      if (component.customVisual.format === "svg") {
-        const source = component.customVisual.source;
-        if (
-          /<script\b|<foreignObject\b|<\?xml-stylesheet\b|<!DOCTYPE\b|\son[a-z]+\s*=|(?:href|src)\s*=\s*["'](?!data:|#)|url\(\s*["']?(?!data:|#)/i.test(
-            source,
-          )
-        )
-          fail(path, "Custom SVG must be self-contained and cannot include scripts, foreign objects, event handlers, document declarations, or external resources");
-        const sourceViewBox = source
-          .match(/<svg\b[^>]*\bviewBox\s*=\s*(["'])([^"']+)\1/i)?.[2]
-          ?.trim()
-          .split(/[\s,]+/)
-          .map(Number);
-        const declaredViewBox = component.customVisual.viewBox;
-        if (
-          sourceViewBox?.length !== 4 ||
-          sourceViewBox.some((value) => !Number.isFinite(value)) ||
-          sourceViewBox[0] !== declaredViewBox.x ||
-          sourceViewBox[1] !== declaredViewBox.y ||
-          sourceViewBox[2] !== declaredViewBox.width ||
-          sourceViewBox[3] !== declaredViewBox.height
-        )
-          fail(path, "Custom SVG root viewBox must match the declared local viewport");
-      } else {
+    if (component.customVisual?.format === "vector") {
         const known = new Set<string>();
         const kinds = new Map(component.customVisual.elements.map((element) => [element.id, element.kind]));
         for (const element of component.customVisual.elements) {
@@ -119,6 +93,8 @@ export function validateComposition(input: unknown): ValidationResult {
             fail(path, "Vector children require a group or a text/tspan parent for tspans");
           if (element.kind === "tspan" && parentKind !== "text" && parentKind !== "tspan")
             fail(path, "Vector tspans require a text or tspan parent");
+          if (element.kind === "tspan" && (parentKind !== "text" || element.text === undefined || element.attributes.x === undefined || element.attributes.y === undefined))
+            fail(path, "Vector tspans must be explicit whole lines with text, x, y, and a text parent");
           if (element.text !== undefined && element.kind !== "text" && element.kind !== "tspan")
             fail(path, "Only vector text and tspans may contain text");
           known.add(element.id);
@@ -131,7 +107,6 @@ export function validateComposition(input: unknown): ValidationResult {
               fail(path, `Unsafe vector attribute value: ${name}`);
           }
         }
-      }
     }
     if (component.kind === "chart" && component.topology && component.appearance.template !== "sankey")
       fail(path, "Only Sankey charts may define topology");

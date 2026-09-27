@@ -230,6 +230,17 @@
   transition: transform 180ms ease-out;
 }
 
+.export-menu .browser-menu-popover {
+  left: 0;
+  width: 176px;
+  gap: 4px;
+  padding: 8px;
+}
+
+.export-menu[open] > summary svg {
+  transform: none;
+}
+
 @starting-style {
   .browser-menu[open]::details-content {
     opacity: 0;
@@ -319,88 +330,11 @@
   color: var(--ui-muted);
 }
 
-.action-island .build-button {
-  position: relative;
-  overflow: hidden;
-  justify-content: center;
-  flex: none;
-  padding-inline: 9px;
-  white-space: nowrap;
-}
-
-.build-button .build-label {
-  min-width: 11ch;
-  text-align: left;
-}
-
-.action-island button.build-button.building {
-  background: white;
-  color: #2449aa;
-  opacity: 1;
-  cursor: wait;
-}
-
-.build-button.building .build-label {
-  background: linear-gradient(110deg, #155e75 10%, #2449aa 30%, #a82d62 45%, #87bdeb 50%, #7535a5 55%, #155e75 80%);
-  background-size: 250% 100%;
-  background-clip: text;
-  color: transparent;
-  animation: build-colors 3s linear infinite;
-}
-
-.build-orb circle {
-  fill: currentColor;
-  stroke: none;
-  transform: translate(var(--x), var(--y));
-}
-.build-orb.active circle {
-  animation: orb-shape 8s ease-in-out infinite;
-}
-.build-orb.nebula {
-  width: 100%;
-  height: 100%;
-  color: #4265ad;
-  transform: rotate(-18deg);
-}
-.build-orb.nebula circle {
-  animation: orb-sphere 12s ease-in-out infinite;
-  animation-delay: var(--phase);
-}
-.build-orb.nebula circle:nth-child(3n) { fill: #9772bb; }
-.build-orb.nebula circle:nth-child(3n + 1) { fill: #198faa; }
-
-@keyframes orb-shape {
-  0%, 10%, 100% { transform: translate(var(--x), var(--y)); }
-  25%, 35% { transform: translate(var(--tx), var(--ty)); }
-  50%, 60% { transform: translate(var(--sx), var(--sy)); }
-  75%, 85% { transform: translate(var(--hx), var(--hy)); }
-}
-@keyframes orb-sphere {
-  0%, 100% { transform: translate(var(--radius), var(--y)); opacity: 0.5; }
-  25% { transform: translate(0, var(--y)); opacity: 1; }
-  50% { transform: translate(calc(-1 * var(--radius)), var(--y)); opacity: 0.5; }
-  75% { transform: translate(0, var(--y)); opacity: 0.15; }
-}
-@keyframes orb-turn {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes build-colors {
-  to { background-position: 150% 0; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .browser-menu::details-content {
     transition: none !important;
   }
 
-  .build-button.building .build-label,
-  .build-orb.active circle,
-  .build-orb.nebula circle,
-  .build-orb.nebula,
-  .build-nebula::before {
-    animation: none;
-  }
 }
 
 .action-island button svg {
@@ -412,11 +346,6 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.7;
-}
-
-.action-island .build-button .build-orb {
-  width: 20px;
-  height: 20px;
 }
 
 .component-dock {

@@ -1,0 +1,3541 @@
+exports[`architecture/architecture: deterministic scene snapshot 1`] = `
+{
+  "digest": "de0bd80bd06ff651faf09f14944f60d504f8371ab5a06263dc4dd0dafe0d1d12",
+  "size": [
+    1600,
+    1000
+  ],
+  "text": [
+    {
+      "componentId": "headline",
+      "box": {
+        "x": 64,
+        "y": 64,
+        "width": 1472,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Orders stay consistent; fulfillment stays independent",
+          "x": 0,
+          "baseline": 42.5,
+          "width": 1080.8600000000001
+        }
+      ]
+    },
+    {
+      "componentId": "context",
+      "box": {
+        "x": 64,
+        "y": 136,
+        "width": 1472,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Illustrative • Harbor Market / logical service architecture",
+          "x": 0,
+          "baseline": 25,
+          "width": 602.4959999999998
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-2",
+      "box": {
+        "x": 504.4727272727273,
+        "y": 241.14545454545453,
+        "width": 410.424,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "ORDER PLATFORM · Commerce team",
+          "x": 0,
+          "baseline": 25,
+          "width": 410.424
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-4",
+      "box": {
+        "x": 116.65454545454548,
+        "y": 409.4636363636364,
+        "width": 132.97199999999998,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Storefront",
+          "x": 0,
+          "baseline": 28.5,
+          "width": 132.97199999999998
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-5",
+      "box": {
+        "x": 116.65454545454548,
+        "y": 455.77272727272725,
+        "width": 194.17999999999998,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Captures buyer intent",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 194.17999999999998
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-6",
+      "box": {
+        "x": 116.65454545454548,
+        "y": 485.22727272727275,
+        "width": 172.34000000000003,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Shows order status",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 172.34000000000003
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-8",
+      "box": {
+        "x": 548.6545454545455,
+        "y": 409.4636363636364,
+        "width": 173.87999999999997,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Order service",
+          "x": 0,
+          "baseline": 28.5,
+          "width": 173.87999999999997
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-9",
+      "box": {
+        "x": 548.6545454545455,
+        "y": 455.77272727272725,
+        "width": 182.64,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Owns order lifecycle",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 182.64
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-10",
+      "box": {
+        "x": 548.6545454545455,
+        "y": 485.22727272727275,
+        "width": 186.80000000000004,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Validates commands",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 186.80000000000004
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-12",
+      "box": {
+        "x": 1118.1090909090908,
+        "y": 311.28181818181815,
+        "width": 163.212,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Order ledger",
+          "x": 0,
+          "baseline": 28.5,
+          "width": 163.212
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-13",
+      "box": {
+        "x": 1118.1090909090908,
+        "y": 357.5909090909091,
+        "width": 151.67999999999998,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "System of record",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 151.67999999999998
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-14",
+      "box": {
+        "x": 1118.1090909090908,
+        "y": 387.0454545454545,
+        "width": 207.82,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Order + outbox commit",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 207.82
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-16",
+      "box": {
+        "x": 1118.1090909090908,
+        "y": 527.2818181818182,
+        "width": 171.64000000000001,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Event stream",
+          "x": 0,
+          "baseline": 28.5,
+          "width": 171.64000000000001
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-17",
+      "box": {
+        "x": 1118.1090909090908,
+        "y": 573.590909090909,
+        "width": 191.32,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "OrderPlaced contract",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 191.32
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-18",
+      "box": {
+        "x": 1118.1090909090908,
+        "y": 603.0454545454545,
+        "width": 175.41999999999996,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Replayable delivery",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 175.41999999999996
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-20",
+      "box": {
+        "x": 548.6545454545455,
+        "y": 713.8272727272728,
+        "width": 141.288,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Fulfillment",
+          "x": 0,
+          "baseline": 28.5,
+          "width": 141.288
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-21",
+      "box": {
+        "x": 548.6545454545455,
+        "y": 760.1363636363636,
+        "width": 151.94,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Warehouse team",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 151.94
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-22",
+      "box": {
+        "x": 548.6545454545455,
+        "y": 789.5909090909091,
+        "width": 190.95999999999998,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Owns pick + dispatch",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 190.95999999999998
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-25",
+      "box": {
+        "x": 405.3090909090909,
+        "y": 404.71818181818185,
+        "width": 62.2,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "HTTPS",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 62.2
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-28",
+      "box": {
+        "x": 952.1818181818182,
+        "y": 327.1545454545454,
+        "width": 71.8,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Commit",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 71.8
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-31",
+      "box": {
+        "x": 1278.1454545454544,
+        "y": 463.6272727272727,
+        "width": 116.72,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Outbox relay",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 116.72
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-34",
+      "box": {
+        "x": 877.5636363636364,
+        "y": 784.6818181818181,
+        "width": 114.60000000000002,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "OrderPlaced",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 114.60000000000002
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-35",
+      "box": {
+        "x": 93.09090909090912,
+        "y": 636.8181818181818,
+        "width": 259.77599999999995,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "One authoritative order",
+          "x": 0,
+          "baseline": 25,
+          "width": 259.77599999999995
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-36",
+      "box": {
+        "x": 93.09090909090912,
+        "y": 681.590909090909,
+        "width": 263.08,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "Fulfillment consumes events;",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 263.08
+        }
+      ]
+    },
+    {
+      "componentId": "system",
+      "elementId": "v-37",
+      "box": {
+        "x": 93.09090909090912,
+        "y": 713.0090909090909,
+        "width": 246.99999999999997,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "it cannot mutate the ledger.",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 246.99999999999997
+        }
+      ]
+    },
+    {
+      "componentId": "caveat",
+      "box": {
+        "x": 64,
+        "y": 880,
+        "width": 1472,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Boundary = product ownership, not infrastructure.",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 448.72
+        },
+        {
+          "text": "Arrows show request or event direction.",
+          "x": 0,
+          "baseline": 43.5,
+          "width": 356.79999999999995
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`explainer/explainer: deterministic scene snapshot 1`] = `
+{
+  "digest": "a000d4d7d38e5ef79747106e2b0e8588c8bf0d6eff912ac7604d82bc04950867",
+  "size": [
+    1200,
+    1600
+  ],
+  "text": [
+    {
+      "componentId": "headline",
+      "box": {
+        "x": 60,
+        "y": 72,
+        "width": 1080,
+        "height": 180
+      },
+      "lines": [
+        {
+          "text": "A stale save must not",
+          "x": 0,
+          "baseline": 56.5,
+          "width": 592.6199999999999
+        },
+        {
+          "text": "erase a newer edit.",
+          "x": 0,
+          "baseline": 124.5,
+          "width": 529.86
+        }
+      ]
+    },
+    {
+      "componentId": "setup",
+      "box": {
+        "x": 60,
+        "y": 276,
+        "width": 1080,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "In fictional Folio, Leena and Omar both read document 42:",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 731.0239999999998
+        },
+        {
+          "text": "“Launch notes”, revision 7. Then each changes the title.",
+          "x": 0,
+          "baseline": 70.5,
+          "width": 694.6239999999998
+        }
+      ]
+    },
+    {
+      "componentId": "mechanism-title",
+      "box": {
+        "x": 60,
+        "y": 408,
+        "width": 1080,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Check the revision and write in one atomic update.",
+          "x": 0,
+          "baseline": 36.5,
+          "width": 841.824
+        }
+      ]
+    },
+    {
+      "componentId": "mechanism",
+      "box": {
+        "x": 60,
+        "y": 468,
+        "width": 1080,
+        "height": 132
+      },
+      "lines": [
+        {
+          "text": "Match document ID + expected revision, write the title, increment the",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 870.6879999999994
+        },
+        {
+          "text": "revision. Success means one row changed. Every title writer must use",
+          "x": 0,
+          "baseline": 70.5,
+          "width": 869.6799999999994
+        },
+        {
+          "text": "this contract; never reuse a revision, even after restoration.",
+          "x": 0,
+          "baseline": 110.5,
+          "width": 738.1359999999999
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "person-0",
+      "box": {
+        "x": 93.71945701357461,
+        "y": 670.7398190045249,
+        "width": 216.97199999999998,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "Leena saves first",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 216.97199999999998
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "title-0",
+      "box": {
+        "x": 93.71945701357461,
+        "y": 721.9705882352941,
+        "width": 236.57200000000003,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "“Launch checklist”",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 236.57200000000003
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "expects-0",
+      "box": {
+        "x": 93.71945701357461,
+        "y": 776.6923076923076,
+        "width": 194.30399999999997,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "expects revision 7",
+          "x": 0,
+          "baseline": 25,
+          "width": 194.30399999999997
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "rows-0",
+      "box": {
+        "x": 696.4343891402714,
+        "y": 670.7398190045249,
+        "width": 189.78400000000005,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "1 row changed",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 189.78400000000005
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "stored-title-0",
+      "box": {
+        "x": 696.4343891402714,
+        "y": 721.9705882352941,
+        "width": 236.57200000000003,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "“Launch checklist”",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 236.57200000000003
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "stored-revision-0",
+      "box": {
+        "x": 696.4343891402714,
+        "y": 776.6923076923076,
+        "width": 208.368,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Stored at revision 8",
+          "x": 0,
+          "baseline": 25,
+          "width": 208.368
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "person-1",
+      "box": {
+        "x": 93.71945701357461,
+        "y": 895.7533936651583,
+        "width": 215.46000000000004,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "Omar saves next",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 215.46000000000004
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "title-1",
+      "box": {
+        "x": 93.71945701357461,
+        "y": 946.9841628959276,
+        "width": 203.30800000000002,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "“Release notes”",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 203.30800000000002
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "expects-1",
+      "box": {
+        "x": 93.71945701357461,
+        "y": 1001.7058823529412,
+        "width": 194.30399999999997,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "expects revision 7",
+          "x": 0,
+          "baseline": 25,
+          "width": 194.30399999999997
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "rows-1",
+      "box": {
+        "x": 696.4343891402714,
+        "y": 895.7533936651583,
+        "width": 345.0160000000001,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "0 rows · HTTP 409 Conflict",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 345.0160000000001
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "stored-title-1",
+      "box": {
+        "x": 696.4343891402714,
+        "y": 946.9841628959276,
+        "width": 236.57200000000003,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "“Launch checklist”",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 236.57200000000003
+        }
+      ]
+    },
+    {
+      "componentId": "two-saves",
+      "elementId": "stored-revision-1",
+      "box": {
+        "x": 696.4343891402714,
+        "y": 1001.7058823529412,
+        "width": 293.616,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Revision 8 stays untouched",
+          "x": 0,
+          "baseline": 25,
+          "width": 293.616
+        }
+      ]
+    },
+    {
+      "componentId": "recovery-title",
+      "box": {
+        "x": 60,
+        "y": 1128,
+        "width": 1080,
+        "height": 60
+      },
+      "lines": [
+        {
+          "text": "After the conflict, show both versions.",
+          "x": 0,
+          "baseline": 36.5,
+          "width": 632.5560000000002
+        }
+      ]
+    },
+    {
+      "componentId": "recovery",
+      "box": {
+        "x": 60,
+        "y": 1200,
+        "width": 1080,
+        "height": 132
+      },
+      "lines": [
+        {
+          "text": "Fetch revision 8. Let Omar keep Leena’s title, revise it, or deliberately",
+          "x": 0,
+          "baseline": 30.5,
+          "width": 861.8679999999995
+        },
+        {
+          "text": "replace it. Any new save uses the fetched revision and can conflict",
+          "x": 0,
+          "baseline": 70.5,
+          "width": 826.9799999999997
+        },
+        {
+          "text": "again. Never silently retry Omar’s stale title with a newer revision.",
+          "x": 0,
+          "baseline": 110.5,
+          "width": 820.8759999999995
+        }
+      ]
+    },
+    {
+      "componentId": "limits",
+      "box": {
+        "x": 60,
+        "y": 1392,
+        "width": 1080,
+        "height": 144
+      },
+      "lines": [
+        {
+          "text": "Why atomic? Separate checks can both pass before either write.",
+          "x": 0,
+          "baseline": 25,
+          "width": 686.7599999999999
+        },
+        {
+          "text": "Scope: one document; no deletion. This does not merge edits or make",
+          "x": 0,
+          "baseline": 57,
+          "width": 749.6160000000001
+        },
+        {
+          "text": "multi-document changes atomic. A lost success response can look like",
+          "x": 0,
+          "baseline": 89,
+          "width": 757.9440000000001
+        },
+        {
+          "text": "a later conflict: revision checks alone do not deduplicate requests.",
+          "x": 0,
+          "baseline": 121,
+          "width": 710.1119999999999
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
+{
+  "digest": "a6d174fe78be2e21f582efbf5a088a90d696e0b027f22e68e7137e7ae3a4a792",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "flow-title",
+      "box": {
+        "x": 72,
+        "y": 84,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Give your agent a brief. It returns an editable page.",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 1373.4000000000003
+        }
+      ]
+    },
+    {
+      "componentId": "flow-lead",
+      "box": {
+        "x": 72,
+        "y": 192,
+        "width": 1326,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Konpeki is a skill for your coding agent plus a canvas you both work on.",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 891.9959999999994
+        }
+      ]
+    },
+    {
+      "componentId": "flow-diagram",
+      "elementId": "flow-n0-num",
+      "box": {
+        "x": 96.16,
+        "y": 340.242,
+        "width": 15.68,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "1",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 15.68
+        }
+      ]
+    },
+    {
+      "componentId": "step1-head",
+      "box": {
+        "x": 72,
+        "y": 420,
+        "width": 426,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Your brief",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 160.81199999999998
+        }
+      ]
+    },
+    {
+      "componentId": "step1-body",
+      "box": {
+        "x": 72,
+        "y": 480,
+        "width": 426,
+        "height": 204
+      },
+      "lines": [
+        {
+          "text": "Notes, source material and where ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 427.53199999999987
+        },
+        {
+          "text": "the visual will be used.",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 281.596
+        }
+      ]
+    },
+    {
+      "componentId": "flow-step-2",
+      "elementId": "flow-n1-num",
+      "box": {
+        "x": 546.16,
+        "y": 340.242,
+        "width": 15.68,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "2",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 15.68
+        }
+      ]
+    },
+    {
+      "componentId": "step2-head",
+      "box": {
+        "x": 522,
+        "y": 420,
+        "width": 426,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Your coding agent",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 292.03200000000004
+        }
+      ]
+    },
+    {
+      "componentId": "step2-body",
+      "box": {
+        "x": 522,
+        "y": 480,
+        "width": 426,
+        "height": 204
+      },
+      "lines": [
+        {
+          "text": "Follows Konpeki's authoring guide ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 431.1439999999998
+        },
+        {
+          "text": "and writes composition.json in ",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 385.0839999999999
+        },
+        {
+          "text": "your workspace.",
+          "x": 0,
+          "baseline": 109.75800000000001,
+          "width": 208.796
+        }
+      ]
+    },
+    {
+      "componentId": "flow-step-3",
+      "elementId": "flow-n2-num",
+      "box": {
+        "x": 996.16,
+        "y": 340.242,
+        "width": 15.68,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "3",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 15.68
+        }
+      ]
+    },
+    {
+      "componentId": "step3-head",
+      "box": {
+        "x": 972,
+        "y": 420,
+        "width": 426,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Check and render",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 292.104
+        }
+      ]
+    },
+    {
+      "componentId": "step3-body",
+      "box": {
+        "x": 972,
+        "y": 480,
+        "width": 426,
+        "height": 204
+      },
+      "lines": [
+        {
+          "text": "The agent runs checks, renders a ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 421.20399999999995
+        },
+        {
+          "text": "PNG and repairs problems it ",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 360.472
+        },
+        {
+          "text": "finds.",
+          "x": 0,
+          "baseline": 109.75800000000001,
+          "width": 65.884
+        }
+      ]
+    },
+    {
+      "componentId": "flow-step-4",
+      "elementId": "flow-n3-num",
+      "box": {
+        "x": 1446.16,
+        "y": 340.242,
+        "width": 15.68,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "4",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 15.68
+        }
+      ]
+    },
+    {
+      "componentId": "step4-head",
+      "box": {
+        "x": 1422,
+        "y": 420,
+        "width": 426,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Your page",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 162.72
+        }
+      ]
+    },
+    {
+      "componentId": "step4-body",
+      "box": {
+        "x": 1422,
+        "y": 480,
+        "width": 426,
+        "height": 204
+      },
+      "lines": [
+        {
+          "text": "Edit it, Present it, or export PNG, ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 411.82399999999996
+        },
+        {
+          "text": "SVG, PDF and editable JSON.",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 365.68000000000006
+        }
+      ]
+    },
+    {
+      "componentId": "sketch-head",
+      "box": {
+        "x": 72,
+        "y": 768,
+        "width": 726,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Prefer to sketch first?",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 272.41200000000003
+        }
+      ]
+    },
+    {
+      "componentId": "sketch-body",
+      "box": {
+        "x": 72,
+        "y": 828,
+        "width": 726,
+        "height": 108
+      },
+      "lines": [
+        {
+          "text": "In a file-backed preview, add a component and describe its intent. ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 709.032
+        },
+        {
+          "text": "Ask your agent in chat to draft from that saved layout.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 579.168
+        }
+      ]
+    },
+    {
+      "componentId": "firstuse-head",
+      "box": {
+        "x": 972,
+        "y": 768,
+        "width": 876,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "No separate setup step",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 293.048
+        }
+      ]
+    },
+    {
+      "componentId": "firstuse-body",
+      "box": {
+        "x": 972,
+        "y": 828,
+        "width": 876,
+        "height": 108
+      },
+      "lines": [
+        {
+          "text": "With your approval, the skill installs the runtime in a user cache, not in your ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 812.9760000000001
+        },
+        {
+          "text": "project.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 81.912
+        }
+      ]
+    },
+    {
+      "box": {
+        "x": 1248,
+        "y": 1036.24,
+        "width": 560.0000006399999,
+        "height": 20
+      },
+      "lines": [
+        {
+          "text": "02",
+          "x": 537.60000064,
+          "baseline": 16.97,
+          "width": 22.400000000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/browser-or-agent: deterministic scene snapshot 1`] = `
+{
+  "digest": "cd7151c63b5d93cd5d4dfd3670f7a0e1ecf2421977727b9a4c4210a4ff77fab4",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "where-title",
+      "box": {
+        "x": 72,
+        "y": 84,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Try it in the browser. Keep working with your agent.",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 1388.58
+        }
+      ]
+    },
+    {
+      "componentId": "where-h1",
+      "box": {
+        "x": 522,
+        "y": 264,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Browser playground",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 327.31200000000007
+        }
+      ]
+    },
+    {
+      "componentId": "where-h2",
+      "box": {
+        "x": 1272,
+        "y": 264,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "With your coding agent",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 377.35200000000003
+        }
+      ]
+    },
+    {
+      "componentId": "where-r1-label",
+      "box": {
+        "x": 72,
+        "y": 348,
+        "width": 276,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Start from",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 129.864
+        }
+      ]
+    },
+    {
+      "componentId": "where-r1-browser",
+      "box": {
+        "x": 522,
+        "y": 348,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "An example page, or a blank one",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 409.4719999999999
+        }
+      ]
+    },
+    {
+      "componentId": "where-r1-agent",
+      "box": {
+        "x": 1272,
+        "y": 348,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Your brief and materials",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 300.88800000000003
+        }
+      ]
+    },
+    {
+      "componentId": "where-r2-label",
+      "box": {
+        "x": 72,
+        "y": 468,
+        "width": 276,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Saved to",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 109.76
+        }
+      ]
+    },
+    {
+      "componentId": "where-r2-browser",
+      "box": {
+        "x": 522,
+        "y": 468,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "This browser only; no cloud sync",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 410.1719999999999
+        }
+      ]
+    },
+    {
+      "componentId": "where-r2-agent",
+      "box": {
+        "x": 1272,
+        "y": 468,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "composition.json in your workspace",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 449.37200000000007
+        }
+      ]
+    },
+    {
+      "componentId": "where-r3-label",
+      "box": {
+        "x": 72,
+        "y": 576,
+        "width": 276,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Changes",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 108.948
+        }
+      ]
+    },
+    {
+      "componentId": "where-r3-browser",
+      "box": {
+        "x": 522,
+        "y": 576,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Edit by hand",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 156.01600000000002
+        }
+      ]
+    },
+    {
+      "componentId": "where-r3-agent",
+      "box": {
+        "x": 1272,
+        "y": 576,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Edit by hand, or ask for changes in chat",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 492.1839999999999
+        }
+      ]
+    },
+    {
+      "componentId": "where-r4-label",
+      "box": {
+        "x": 72,
+        "y": 684,
+        "width": 276,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Get it out",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 118.83200000000001
+        }
+      ]
+    },
+    {
+      "componentId": "where-r4-browser",
+      "box": {
+        "x": 522,
+        "y": 684,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Download JSON, PNG, SVG or PDF",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 433.384
+        }
+      ]
+    },
+    {
+      "componentId": "where-r4-agent",
+      "box": {
+        "x": 1272,
+        "y": 684,
+        "width": 576,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "Render PNG, SVG or PDF; preview is optional",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 560.1119999999999
+        }
+      ]
+    },
+    {
+      "componentId": "where-note",
+      "box": {
+        "x": 72,
+        "y": 840,
+        "width": 1776,
+        "height": 72
+      },
+      "lines": [
+        {
+          "text": "To switch, download JSON from the playground and give it to your agent.",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 780.7200000000003
+        },
+        {
+          "text": "The two copies don't sync afterwards.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 407.1360000000001
+        }
+      ]
+    },
+    {
+      "box": {
+        "x": 1248,
+        "y": 1036.24,
+        "width": 560.0000006399999,
+        "height": 20
+      },
+      "lines": [
+        {
+          "text": "06",
+          "x": 537.60000064,
+          "baseline": 16.97,
+          "width": 22.400000000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/components: deterministic scene snapshot 1`] = `
+{
+  "digest": "e7f872ec7fa7b011a277ee9e8054809e833f7b8d95ef31dd2fe6ba92cc46a4c6",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "comp-title",
+      "box": {
+        "x": 72,
+        "y": 84,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Every page is built from five editable components.",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 1349.1600000000005
+        }
+      ]
+    },
+    {
+      "componentId": "comp1-head",
+      "box": {
+        "x": 222,
+        "y": 504,
+        "width": 276,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Text block",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 168.26399999999995
+        }
+      ]
+    },
+    {
+      "componentId": "comp1-body",
+      "box": {
+        "x": 222,
+        "y": 564,
+        "width": 276,
+        "height": 168
+      },
+      "lines": [
+        {
+          "text": "Headlines, body copy ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 237.312
+        },
+        {
+          "text": "and captions with ",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 195.16800000000006
+        },
+        {
+          "text": "consistent type roles.",
+          "x": 0,
+          "baseline": 88.364,
+          "width": 229.48800000000003
+        }
+      ]
+    },
+    {
+      "componentId": "comp2-head",
+      "box": {
+        "x": 522,
+        "y": 504,
+        "width": 276,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Diagram",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 135.72
+        }
+      ]
+    },
+    {
+      "componentId": "comp2-body",
+      "box": {
+        "x": 522,
+        "y": 564,
+        "width": 276,
+        "height": 168
+      },
+      "lines": [
+        {
+          "text": "Nodes and connections ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 257.20799999999997
+        },
+        {
+          "text": "for processes, systems ",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 251.52
+        },
+        {
+          "text": "and flows.",
+          "x": 0,
+          "baseline": 88.364,
+          "width": 108.31200000000001
+        }
+      ]
+    },
+    {
+      "componentId": "comp3-head",
+      "box": {
+        "x": 822,
+        "y": 504,
+        "width": 276,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Chart",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 93.276
+        }
+      ]
+    },
+    {
+      "componentId": "comp3-body",
+      "box": {
+        "x": 822,
+        "y": 564,
+        "width": 276,
+        "height": 168
+      },
+      "lines": [
+        {
+          "text": "Bar, line, Sankey and ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 227.49600000000007
+        },
+        {
+          "text": "other forms for the data ",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 264.672
+        },
+        {
+          "text": "you supply.",
+          "x": 0,
+          "baseline": 88.364,
+          "width": 122.592
+        }
+      ]
+    },
+    {
+      "componentId": "comp4-head",
+      "box": {
+        "x": 1122,
+        "y": 504,
+        "width": 276,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Image",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 96.83999999999999
+        }
+      ]
+    },
+    {
+      "componentId": "comp4-body",
+      "box": {
+        "x": 1122,
+        "y": 564,
+        "width": 276,
+        "height": 168
+      },
+      "lines": [
+        {
+          "text": "Licensed pictures, brand ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 269.064
+        },
+        {
+          "text": "marks and illustrations.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 250.32000000000002
+        }
+      ]
+    },
+    {
+      "componentId": "comp5-head",
+      "box": {
+        "x": 1422,
+        "y": 504,
+        "width": 276,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Table",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 87.588
+        }
+      ]
+    },
+    {
+      "componentId": "comp5-body",
+      "box": {
+        "x": 1422,
+        "y": 564,
+        "width": 276,
+        "height": 168
+      },
+      "lines": [
+        {
+          "text": "Rows and columns ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 205.75200000000004
+        },
+        {
+          "text": "derived from your ",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 199.94400000000005
+        },
+        {
+          "text": "content.",
+          "x": 0,
+          "baseline": 88.364,
+          "width": 87.62400000000001
+        }
+      ]
+    },
+    {
+      "componentId": "comp-note",
+      "box": {
+        "x": 72,
+        "y": 852,
+        "width": 1776,
+        "height": 120
+      },
+      "lines": [
+        {
+          "text": "Diagram, Chart and Table start as structural drafts. Finished artwork",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 857.4159999999998
+        },
+        {
+          "text": "becomes editable vector shapes with stable IDs, drawn from your source data,",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 982.6319999999997
+        },
+        {
+          "text": "so you can select and change any line or label.",
+          "x": 0,
+          "baseline": 109.75800000000001,
+          "width": 581.4759999999999
+        }
+      ]
+    },
+    {
+      "box": {
+        "x": 1248,
+        "y": 1036.24,
+        "width": 560.0000006399999,
+        "height": 20
+      },
+      "lines": [
+        {
+          "text": "04",
+          "x": 537.60000064,
+          "baseline": 16.97,
+          "width": 22.400000000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/cover: deterministic scene snapshot 1`] = `
+{
+  "digest": "7983e9753dec5cd519754b13108d6654828d40a66a3f36d1b6d75e9235928e0e",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "wordmark",
+      "box": {
+        "x": 222,
+        "y": 132,
+        "width": 426,
+        "height": 60
+      },
+      "lines": [
+        {
+          "text": "Konpeki",
+          "x": 0,
+          "baseline": 41.334,
+          "width": 161.43599999999998
+        }
+      ]
+    },
+    {
+      "componentId": "cover-title",
+      "box": {
+        "x": 72,
+        "y": 264,
+        "width": 876,
+        "height": 312
+      },
+      "lines": [
+        {
+          "text": "Create clear visuals",
+          "x": 0,
+          "baseline": 68.486,
+          "width": 682.7080000000002
+        },
+        {
+          "text": "with your coding agent.",
+          "x": 0,
+          "baseline": 152.486,
+          "width": 798.152
+        }
+      ]
+    },
+    {
+      "componentId": "cover-lead",
+      "box": {
+        "x": 72,
+        "y": 624,
+        "width": 726,
+        "height": 144
+      },
+      "lines": [
+        {
+          "text": "Your agent drafts covers, social graphics, visual ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 600.6279999999998
+        },
+        {
+          "text": "explanations and presentations. You and your agent edit ",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 709.3799999999998
+        },
+        {
+          "text": "the same page.",
+          "x": 0,
+          "baseline": 109.75800000000001,
+          "width": 188.804
+        }
+      ]
+    },
+    {
+      "componentId": "page-family",
+      "elementId": "fam-pres-label",
+      "box": {
+        "x": 972,
+        "y": 463.49243564356436,
+        "width": 261.88800000000003,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Presentation 1920×1080",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 261.88800000000003
+        }
+      ]
+    },
+    {
+      "componentId": "page-family",
+      "elementId": "fam-sq-label",
+      "box": {
+        "x": 1457.19801980198,
+        "y": 463.49243564356436,
+        "width": 129.528,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Square post",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 129.528
+        }
+      ]
+    },
+    {
+      "componentId": "page-family",
+      "elementId": "fam-pt-label",
+      "box": {
+        "x": 972,
+        "y": 808.5221386138613,
+        "width": 134.4,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Portrait post",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 134.4
+        }
+      ]
+    },
+    {
+      "componentId": "page-family",
+      "elementId": "fam-og-label",
+      "box": {
+        "x": 1211.9034653465346,
+        "y": 808.5221386138613,
+        "width": 247.94400000000002,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Link preview 1200×630",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 247.94400000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/notes: deterministic scene snapshot 1`] = `
+{
+  "digest": "55028bd934db85a916566c9f31ff25926a8fa2ebe86e4f3e2e3bd1cf8a9d6c51",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "notes-title",
+      "box": {
+        "x": 72,
+        "y": 84,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Point at what to change. Continue in chat.",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 1123.2000000000003
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-tab",
+      "box": {
+        "x": 105.12857142857145,
+        "y": 287.9788571428572,
+        "width": 62.736000000000004,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Notes",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 62.736000000000004
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-note1-n",
+      "box": {
+        "x": 117.65714285714287,
+        "y": 369.92999999999995,
+        "width": 11.200000000000001,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "1",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 11.200000000000001
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-note2-n",
+      "box": {
+        "x": 117.65714285714287,
+        "y": 480.7157142857143,
+        "width": 11.200000000000001,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "2",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 11.200000000000001
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-build-t",
+      "box": {
+        "x": 153.70542857142857,
+        "y": 759.3217142857143,
+        "width": 98.23200000000001,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Add note",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 98.23200000000001
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-pin1-n",
+      "box": {
+        "x": 665.5428571428571,
+        "y": 370.9371428571428,
+        "width": 11.200000000000001,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "1",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 11.200000000000001
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-pin2-n",
+      "box": {
+        "x": 846.8285714285714,
+        "y": 431.36571428571426,
+        "width": 11.200000000000001,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "2",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 11.200000000000001
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-canvas-cap",
+      "box": {
+        "x": 369,
+        "y": 690.2014285714286,
+        "width": 274.69999999999993,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "Pins and notes never appear in",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 274.69999999999993
+        }
+      ]
+    },
+    {
+      "componentId": "notes-ui",
+      "elementId": "ui-canvas-cap2",
+      "box": {
+        "x": 369,
+        "y": 720.4157142857143,
+        "width": 260.40000000000003,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "Present or exported artwork.",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 260.40000000000003
+        }
+      ]
+    },
+    {
+      "componentId": "nstep1-num",
+      "box": {
+        "x": 1122,
+        "y": 264,
+        "width": 126,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "1",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 20.16
+        }
+      ]
+    },
+    {
+      "componentId": "nstep1-head",
+      "box": {
+        "x": 1272,
+        "y": 264,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Select a target",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 184.26800000000003
+        }
+      ]
+    },
+    {
+      "componentId": "nstep1-body",
+      "box": {
+        "x": 1272,
+        "y": 312,
+        "width": 576,
+        "height": 84
+      },
+      "lines": [
+        {
+          "text": "A page, a component or a single vector shape inside ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 564.168
+        },
+        {
+          "text": "it.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 19.488
+        }
+      ]
+    },
+    {
+      "componentId": "nstep2-num",
+      "box": {
+        "x": 1122,
+        "y": 408,
+        "width": 126,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "2",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 20.16
+        }
+      ]
+    },
+    {
+      "componentId": "nstep2-head",
+      "box": {
+        "x": 1272,
+        "y": 408,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Add notes",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 127.792
+        }
+      ]
+    },
+    {
+      "componentId": "nstep2-body",
+      "box": {
+        "x": 1272,
+        "y": 456,
+        "width": 576,
+        "height": 84
+      },
+      "lines": [
+        {
+          "text": "Write what should change. Notes stay attached to ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 538.7759999999998
+        },
+        {
+          "text": "their targets beside the file.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 292.05600000000004
+        }
+      ]
+    },
+    {
+      "componentId": "nstep3-num",
+      "box": {
+        "x": 1122,
+        "y": 552,
+        "width": 126,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "3",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 20.16
+        }
+      ]
+    },
+    {
+      "componentId": "nstep3-head",
+      "box": {
+        "x": 1272,
+        "y": 552,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Continue in chat",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 207.228
+        }
+      ]
+    },
+    {
+      "componentId": "nstep3-body",
+      "box": {
+        "x": 1272,
+        "y": 600,
+        "width": 576,
+        "height": 84
+      },
+      "lines": [
+        {
+          "text": "Ask your agent to read the saved composition and its ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 575.352
+        },
+        {
+          "text": "open notes.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 125.04
+        }
+      ]
+    },
+    {
+      "componentId": "nstep4-num",
+      "box": {
+        "x": 1122,
+        "y": 684,
+        "width": 126,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "4",
+          "x": 0,
+          "baseline": 35.546,
+          "width": 20.16
+        }
+      ]
+    },
+    {
+      "componentId": "nstep4-head",
+      "box": {
+        "x": 1272,
+        "y": 684,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Your agent revises",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 232.20399999999995
+        }
+      ]
+    },
+    {
+      "componentId": "nstep4-body",
+      "box": {
+        "x": 1272,
+        "y": 744,
+        "width": 576,
+        "height": 84
+      },
+      "lines": [
+        {
+          "text": "It applies the changes, runs checks, renders a PNG ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 546.696
+        },
+        {
+          "text": "and inspects the result.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 248.83200000000008
+        }
+      ]
+    },
+    {
+      "componentId": "notes-limit",
+      "box": {
+        "x": 72,
+        "y": 876,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Notes need a file-backed preview. They do not start an agent automatically.",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 807.9120000000004
+        },
+        {
+          "text": "Continue in the same conversation; resolve notes after reviewing the changes.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 832.7520000000002
+        }
+      ]
+    },
+    {
+      "box": {
+        "x": 1248,
+        "y": 1036.24,
+        "width": 560.0000006399999,
+        "height": 20
+      },
+      "lines": [
+        {
+          "text": "05",
+          "x": 537.60000064,
+          "baseline": 16.97,
+          "width": 22.400000000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/shared-file: deterministic scene snapshot 1`] = `
+{
+  "digest": "42bf47cdd0abbe55879a083e3fd611f6ea42f32fe0310204dc5d6eba68d9e735",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "share-title",
+      "box": {
+        "x": 72,
+        "y": 84,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "You and your agent edit the same file.",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 1014.9000000000002
+        }
+      ]
+    },
+    {
+      "componentId": "share-lead",
+      "box": {
+        "x": 72,
+        "y": 192,
+        "width": 1476,
+        "height": 84
+      },
+      "lines": [
+        {
+          "text": "The page lives in composition.json. The browser canvas",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 692.1599999999996
+        },
+        {
+          "text": "and your agent both read and write it.",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 471.65999999999985
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-canvas-h",
+      "box": {
+        "x": 112,
+        "y": 300.242,
+        "width": 200.45199999999997,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "Browser canvas",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 200.45199999999997
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-canvas-c1",
+      "box": {
+        "x": 152,
+        "y": 665.636,
+        "width": 275.42400000000004,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Edit text, move and resize",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 275.42400000000004
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-canvas-c2",
+      "box": {
+        "x": 152,
+        "y": 697.636,
+        "width": 301.728,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "components, undo and redo",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 301.728
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-file-brace",
+      "box": {
+        "x": 936.12,
+        "y": 535.09,
+        "width": 47.76,
+        "height": 68
+      },
+      "lines": [
+        {
+          "text": "{ }",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 47.76
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-file-name",
+      "box": {
+        "x": 868.668,
+        "y": 689.636,
+        "width": 182.66400000000002,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "composition.json",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 182.66400000000002
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-agent-h",
+      "box": {
+        "x": 1338,
+        "y": 300.242,
+        "width": 166.65600000000003,
+        "height": 40
+      },
+      "lines": [
+        {
+          "text": "Coding agent",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 166.65600000000003
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-agent-cmd",
+      "box": {
+        "x": 1366,
+        "y": 413.03,
+        "width": 302.46,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "konpeki validate composition.json",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 302.46
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-agent-c1",
+      "box": {
+        "x": 1366,
+        "y": 665.636,
+        "width": 296.1840000000001,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Rereads the file, keeps your",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 296.1840000000001
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-agent-c2",
+      "box": {
+        "x": 1366,
+        "y": 697.636,
+        "width": 266.1120000000001,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "edits and component IDs",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 266.1120000000001
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-save-l",
+      "box": {
+        "x": 632.35,
+        "y": 471.03,
+        "width": 187.30000000000004,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "Saves each valid edit",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 187.30000000000004
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-load-l",
+      "box": {
+        "x": 636.4,
+        "y": 623.03,
+        "width": 179.20000000000002,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "Loads new revisions",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 179.20000000000002
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-write-l",
+      "box": {
+        "x": 1078.99,
+        "y": 471.03,
+        "width": 230.02,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "Writes validated revisions",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 230.02
+        }
+      ]
+    },
+    {
+      "componentId": "share-diagram",
+      "elementId": "share-read-l",
+      "box": {
+        "x": 1089.11,
+        "y": 623.03,
+        "width": 209.78,
+        "height": 28
+      },
+      "lines": [
+        {
+          "text": "Rereads before revising",
+          "x": 0,
+          "baseline": 20.97,
+          "width": 209.78
+        }
+      ]
+    },
+    {
+      "componentId": "share-note",
+      "box": {
+        "x": 72,
+        "y": 840,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "A revision hash stops either side from overwriting a newer change.",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 710.2800000000003
+        },
+        {
+          "text": "When your agent updates the file, your previous version stays in Undo.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 753.648
+        }
+      ]
+    },
+    {
+      "box": {
+        "x": 1248,
+        "y": 1036.24,
+        "width": 560.0000006399999,
+        "height": 20
+      },
+      "lines": [
+        {
+          "text": "03",
+          "x": 537.60000064,
+          "baseline": 16.97,
+          "width": 22.400000000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`intro/start: deterministic scene snapshot 1`] = `
+{
+  "digest": "44c6b4edb3160eb46d080b88c633806609a88e6678d2794f262f479942314c55",
+  "size": [
+    1920,
+    1080
+  ],
+  "text": [
+    {
+      "componentId": "start-title",
+      "box": {
+        "x": 72,
+        "y": 84,
+        "width": 1776,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Start with one install and a brief.",
+          "x": 0,
+          "baseline": 54.910000000000004,
+          "width": 877.5600000000001
+        }
+      ]
+    },
+    {
+      "componentId": "start-s1",
+      "box": {
+        "x": 72,
+        "y": 264,
+        "width": 1026,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "1  Install the skill once",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 281.65200000000004
+        }
+      ]
+    },
+    {
+      "componentId": "start-cmd",
+      "box": {
+        "x": 96,
+        "y": 348,
+        "width": 978,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "npx skills add vcfgdev/konpeki -g",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 416.948
+        }
+      ]
+    },
+    {
+      "componentId": "start-s2",
+      "box": {
+        "x": 72,
+        "y": 468,
+        "width": 1026,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "2  Send your agent a brief",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 325.22
+        }
+      ]
+    },
+    {
+      "componentId": "start-brief",
+      "box": {
+        "x": 96,
+        "y": 564,
+        "width": 978,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Use Konpeki to create a one-page explainer of how a browser, API and ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 885.0239999999995
+        },
+        {
+          "text": "database work together.",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 304.276
+        }
+      ]
+    },
+    {
+      "componentId": "start-s2-note",
+      "box": {
+        "x": 72,
+        "y": 720,
+        "width": 1026,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Your agent writes the file, checks it, renders a PNG and inspects it.",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 706.68
+        },
+        {
+          "text": "Keep revising in the same conversation.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 422.08799999999997
+        }
+      ]
+    },
+    {
+      "componentId": "need-head",
+      "box": {
+        "x": 1272,
+        "y": 264,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "You need",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 116.116
+        }
+      ]
+    },
+    {
+      "componentId": "need-1",
+      "box": {
+        "x": 1272,
+        "y": 336,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Node.js 24+ and npm",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 263.53600000000006
+        }
+      ]
+    },
+    {
+      "componentId": "need-2",
+      "box": {
+        "x": 1272,
+        "y": 396,
+        "width": 576,
+        "height": 84
+      },
+      "lines": [
+        {
+          "text": "A coding agent that can edit files and run ",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 517.0479999999998
+        },
+        {
+          "text": "commands",
+          "x": 0,
+          "baseline": 69.75800000000001,
+          "width": 137.06
+        }
+      ]
+    },
+    {
+      "componentId": "need-3",
+      "box": {
+        "x": 1272,
+        "y": 504,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Optional: a browser for the editor",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 420.3919999999999
+        }
+      ]
+    },
+    {
+      "componentId": "init-head",
+      "box": {
+        "x": 1272,
+        "y": 576,
+        "width": 576,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Want an empty canvas first?",
+          "x": 0,
+          "baseline": 29.758000000000003,
+          "width": 358.8759999999999
+        }
+      ]
+    },
+    {
+      "componentId": "init-body",
+      "box": {
+        "x": 1272,
+        "y": 648,
+        "width": 576,
+        "height": 120
+      },
+      "lines": [
+        {
+          "text": "Ask your agent to open a blank Konpeki file in the ",
+          "x": 0,
+          "baseline": 24.364,
+          "width": 535.8720000000001
+        },
+        {
+          "text": "editor, without generating artwork.",
+          "x": 0,
+          "baseline": 56.364000000000004,
+          "width": 371.448
+        }
+      ]
+    },
+    {
+      "box": {
+        "x": 1248,
+        "y": 1036.24,
+        "width": 560.0000006399999,
+        "height": 20
+      },
+      "lines": [
+        {
+          "text": "07",
+          "x": 537.60000064,
+          "baseline": 16.97,
+          "width": 22.400000000000002
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`release/release: deterministic scene snapshot 1`] = `
+{
+  "digest": "9ac0cb071f010b6fcd494f277374ae70864db5017bb204ca9ccd9475c76bb48d",
+  "size": [
+    1080,
+    1350
+  ],
+  "text": [
+    {
+      "componentId": "headline",
+      "box": {
+        "x": 60,
+        "y": 204,
+        "width": 960,
+        "height": 264
+      },
+      "lines": [
+        {
+          "text": "Review the release",
+          "x": 0,
+          "baseline": 68.486,
+          "width": 642.58
+        },
+        {
+          "text": "before you publish.",
+          "x": 0,
+          "baseline": 152.486,
+          "width": 654.7400000000001
+        }
+      ]
+    },
+    {
+      "componentId": "product",
+      "box": {
+        "x": 60,
+        "y": 84,
+        "width": 960,
+        "height": 60
+      },
+      "lines": [
+        {
+          "text": "Clearpath 0.4",
+          "x": 0,
+          "baseline": 33.849000000000004,
+          "width": 208.11399999999998
+        }
+      ]
+    },
+    {
+      "componentId": "support",
+      "box": {
+        "x": 60,
+        "y": 492,
+        "width": 960,
+        "height": 132
+      },
+      "lines": [
+        {
+          "text": "Preview release notes. Review the wording.",
+          "x": 0,
+          "baseline": 33.849000000000004,
+          "width": 651.576
+        },
+        {
+          "text": "Export Markdown when you’re ready.",
+          "x": 0,
+          "baseline": 77.849,
+          "width": 571.5400000000001
+        }
+      ]
+    },
+    {
+      "componentId": "step-1",
+      "box": {
+        "x": 60,
+        "y": 1068,
+        "width": 304,
+        "height": 108
+      },
+      "lines": [
+        {
+          "text": "Preview",
+          "x": 0,
+          "baseline": 33.849000000000004,
+          "width": 119.57800000000002
+        },
+        {
+          "text": "release notes.",
+          "x": 0,
+          "baseline": 77.849,
+          "width": 212.87400000000005
+        }
+      ]
+    },
+    {
+      "componentId": "step-2",
+      "box": {
+        "x": 388,
+        "y": 1068,
+        "width": 304,
+        "height": 108
+      },
+      "lines": [
+        {
+          "text": "Review",
+          "x": 0,
+          "baseline": 33.849000000000004,
+          "width": 107.304
+        },
+        {
+          "text": "the wording.",
+          "x": 0,
+          "baseline": 77.849,
+          "width": 188.36
+        }
+      ]
+    },
+    {
+      "componentId": "step-3",
+      "box": {
+        "x": 716,
+        "y": 1068,
+        "width": 304,
+        "height": 108
+      },
+      "lines": [
+        {
+          "text": "Export",
+          "x": 0,
+          "baseline": 33.849000000000004,
+          "width": 103.156
+        },
+        {
+          "text": "Markdown.",
+          "x": 0,
+          "baseline": 77.849,
+          "width": 170.306
+        }
+      ]
+    },
+    {
+      "componentId": "caveat",
+      "box": {
+        "x": 60,
+        "y": 1248,
+        "width": 960,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Fictional product · illustrative example",
+          "x": 0,
+          "baseline": 21.667,
+          "width": 378.532
+        }
+      ]
+    }
+  ]
+}
+`;
+
+exports[`sankey/sankey: deterministic scene snapshot 1`] = `
+{
+  "digest": "8f1d40623a00a00871bb6abdd1d5b4886839bf47ad55ca84dbc28368b92f4343",
+  "size": [
+    1600,
+    1000
+  ],
+  "text": [
+    {
+      "componentId": "title",
+      "box": {
+        "x": 64,
+        "y": 64,
+        "width": 1472,
+        "height": 96
+      },
+      "lines": [
+        {
+          "text": "Most trial users activate — 40% become paid",
+          "x": 0,
+          "baseline": 42.5,
+          "width": 910.6680000000001
+        }
+      ]
+    },
+    {
+      "componentId": "subtitle",
+      "box": {
+        "x": 64,
+        "y": 160,
+        "width": 1472,
+        "height": 48
+      },
+      "lines": [
+        {
+          "text": "Trial acquisition → activation → outcome • 1,000 fictional users",
+          "x": 0,
+          "baseline": 28.5,
+          "width": 796.2639999999992
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "flow-value-0",
+      "box": {
+        "x": 477.33150684931513,
+        "y": 446.3424657534247,
+        "width": 43.2,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "700",
+          "x": 0,
+          "baseline": 25,
+          "width": 43.2
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "flow-value-1",
+      "box": {
+        "x": 477.33150684931513,
+        "y": 645.2465753424658,
+        "width": 43.2,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "300",
+          "x": 0,
+          "baseline": 25,
+          "width": 43.2
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "flow-value-2",
+      "box": {
+        "x": 979.1123287671234,
+        "y": 374.013698630137,
+        "width": 43.2,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "400",
+          "x": 0,
+          "baseline": 25,
+          "width": 43.2
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "flow-value-3",
+      "box": {
+        "x": 979.1123287671234,
+        "y": 518.6712328767123,
+        "width": 43.2,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "300",
+          "x": 0,
+          "baseline": 25,
+          "width": 43.2
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "flow-value-4",
+      "box": {
+        "x": 979.1123287671234,
+        "y": 663.3287671232877,
+        "width": 43.2,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "300",
+          "x": 0,
+          "baseline": 25,
+          "width": 43.2
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "node-label-trial",
+      "box": {
+        "x": 239.45205479452062,
+        "y": 314.3424657534247,
+        "width": 123.55200000000002,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Trial · 1000",
+          "x": 0,
+          "baseline": 25,
+          "width": 123.55200000000002
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "node-label-active",
+      "box": {
+        "x": 654.6803287671233,
+        "y": 278.17808219178085,
+        "width": 164.06400000000002,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Activated · 700",
+          "x": 0,
+          "baseline": 25,
+          "width": 164.06400000000002
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "node-label-inactive",
+      "box": {
+        "x": 633.7163287671234,
+        "y": 572.9178082191781,
+        "width": 205.992,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Not activated · 300",
+          "x": 0,
+          "baseline": 25,
+          "width": 205.992
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "node-label-paid",
+      "box": {
+        "x": 1188.317698630137,
+        "y": 278.17808219178085,
+        "width": 109.39200000000002,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Paid · 400",
+          "x": 0,
+          "baseline": 25,
+          "width": 109.39200000000002
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "node-label-free",
+      "box": {
+        "x": 1187.849698630137,
+        "y": 464.42465753424653,
+        "width": 110.32800000000002,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Free · 300",
+          "x": 0,
+          "baseline": 25,
+          "width": 110.32800000000002
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "node-label-lost",
+      "box": {
+        "x": 1191.257698630137,
+        "y": 609.0821917808219,
+        "width": 103.51200000000001,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Left · 300",
+          "x": 0,
+          "baseline": 25,
+          "width": 103.51200000000001
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "stage-1",
+      "box": {
+        "x": 239.45205479452062,
+        "y": 241.1849315068493,
+        "width": 127.48,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "ACQUISITION",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 127.48
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "stage-2",
+      "box": {
+        "x": 679.3523287671234,
+        "y": 241.1849315068493,
+        "width": 114.71999999999998,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "ACTIVATION",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 114.71999999999998
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "stage-3",
+      "box": {
+        "x": 1205.564794520548,
+        "y": 241.1849315068493,
+        "width": 92.97999999999999,
+        "height": 24
+      },
+      "lines": [
+        {
+          "text": "OUTCOME",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 92.97999999999999
+        }
+      ]
+    },
+    {
+      "componentId": "chart",
+      "elementId": "scale-note",
+      "box": {
+        "x": 239.45205479452062,
+        "y": 791.7123287671233,
+        "width": 851.1839999999999,
+        "height": 32
+      },
+      "lines": [
+        {
+          "text": "Ribbon thickness encodes users. All splits conserve users; no unrecorded exits.",
+          "x": 0,
+          "baseline": 25,
+          "width": 851.1839999999999
+        }
+      ]
+    },
+    {
+      "componentId": "illustrative",
+      "box": {
+        "x": 64,
+        "y": 892,
+        "width": 1472,
+        "height": 36
+      },
+      "lines": [
+        {
+          "text": "Illustrative data — fictional scenario, not observed results.",
+          "x": 0,
+          "baseline": 19.5,
+          "width": 519.0400000000003
+        }
+      ]
+    }
+  ]
+}
+`;

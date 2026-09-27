@@ -2,16 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { canonicalJSON } from "../../composition/compile.ts";
 import { validateDraft as validateComposition } from "../../composition/document.ts";
 import type { Draft } from "./model.ts";
-import { activeRequest, emptyReview, type ReviewState, type ReviewTarget } from "./review.ts";
+import { emptyReview, type ReviewState, type ReviewTarget } from "./review.ts";
 import {
   addNote,
   removeNote,
-  cancelRequest,
+  resolveNote,
   FileSessionError,
   fileSessionToken,
   loadFileSession,
   saveFileSession,
-  sendBuildRequest,
 } from "./file-session.ts";
 
 export type FileStatus = "loading" | "saved" | "saving" | "conflict" | "error";
@@ -30,11 +29,9 @@ export function useFileSession(
 ) {
   const token = fileSessionToken();
   const [status, setStatus] = useState<FileStatus>(enabled ? "loading" : "saved");
-  const [building, setBuilding] = useState(false);
   const [review, setReview] = useState<ReviewState>(emptyReview);
   const reviewRef = useRef(review);
-  const buildPending = useRef(false);
-  const submittingBuild = useRef(false);
+  const submittingNote = useRef(false);
   const loading = useRef(false);
   const loadGeneration = useRef(0);
   const callbacksRef = useRef(callbacks);
@@ -70,11 +67,11 @@ export function useFileSession(
     if (!enabled || !token) return;
     let cancelled = false;
     const timer = window.setInterval(() => {
-      if (!state.current.ready || loading.current || state.current.drain || submittingBuild.current) return;
+      if (!state.current.ready || loading.current || state.current.drain || submittingNote.current) return;
       const revision = state.current.revision;
       const generation = loadGeneration.current;
       void loadFileSession(token).then((remote) => {
-        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingBuild.current || revision !== state.current.revision) return;
+        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingNote.current || revision !== state.current.revision) return;
         receiveReview(remote.review);
         if (canonicalJSON(draftRef.current) === state.current.savedJSON) {
           setStatus("saved");
@@ -94,7 +91,7 @@ export function useFileSession(
         setStatus("saved");
         callbacksRef.current.onExternalChange(remote.document);
       }).catch((error) => {
-        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingBuild.current || revision !== state.current.revision) return;
+        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingNote.current || revision !== state.current.revision) return;
         setStatus("error");
         callbacksRef.current.onError(`Could not load the latest file. ${error instanceof Error ? error.message : "Check the local file service."}`);
       });
@@ -105,31 +102,24 @@ export function useFileSession(
     };
   }, [enabled, token]);
 
-  function finishBuild() {
-    buildPending.current = false;
-    setBuilding(false);
-  }
-
   function receiveReview(next: ReviewState) {
     if (next.version < reviewRef.current.version) return;
     reviewRef.current = next;
     setReview(next);
-    buildPending.current = activeRequest(next.request);
-    setBuilding(buildPending.current);
   }
 
   async function noteAction(action: () => Promise<ReviewState>, saveFirst = false) {
     if (loading.current || !state.current.ready) throw new Error("Wait for the file to open before submitting.");
-    if (submittingBuild.current) throw new Error("Wait for the current save before submitting.");
-    submittingBuild.current = true;
+    if (submittingNote.current) throw new Error("Wait for the current note to finish saving.");
+    submittingNote.current = true;
     try {
       if (saveFirst && !await save(draftRef.current)) throw new Error("Save the composition before adding a note.");
       receiveReview(await action());
-    } finally { submittingBuild.current = false; }
+    } finally { submittingNote.current = false; }
   }
 
   function save(next: Draft): Promise<string | undefined> {
-    if (!token || loading.current || !state.current.ready || activeRequest(reviewRef.current.request)) return Promise.resolve(undefined);
+    if (!token || loading.current || !state.current.ready) return Promise.resolve(undefined);
     if (!validateComposition(next).ok) return Promise.resolve(undefined);
     const serialized = canonicalJSON(next);
     if (serialized === state.current.savedJSON && !state.current.drain)
@@ -174,41 +164,8 @@ export function useFileSession(
     }
   }
 
-  async function build(
-    instruction: string,
-    slideId: string,
-    componentId?: string,
-    elementId?: string,
-  ) {
-    if (!token || loading.current || !state.current.ready || buildPending.current) return false;
-    if (submittingBuild.current) throw new Error("Wait for your note to finish saving before building.");
-    buildPending.current = true;
-    submittingBuild.current = true;
-    setBuilding(true);
-    try {
-      const revision = await save(draftRef.current);
-      if (!revision) {
-        finishBuild();
-        return false;
-      }
-      receiveReview(await sendBuildRequest(token, {
-        revision,
-        instruction,
-        slideId,
-        ...(componentId ? { componentId } : {}),
-        ...(elementId ? { elementId } : {}),
-      }));
-      return true;
-    } catch (error) {
-      finishBuild();
-      throw error;
-    } finally {
-      submittingBuild.current = false;
-    }
-  }
-
   async function reload() {
-    if (!token || loading.current || state.current.drain || submittingBuild.current) return;
+    if (!token || loading.current || state.current.drain || submittingNote.current) return;
     loading.current = true;
     const generation = ++loadGeneration.current;
     const requestedJSON = canonicalJSON(draftRef.current);
@@ -237,13 +194,13 @@ export function useFileSession(
   }
 
   return {
-    status, build, building, review,
+    status, review,
     opening: status === "loading",
     ready: state.current.ready,
     reload,
-    retry: () => state.current.ready && !activeRequest(reviewRef.current.request) ? save(draftRef.current) : reload(),
+    retry: () => state.current.ready ? save(draftRef.current) : reload(),
     addNote: (target: ReviewTarget, text: string) => noteAction(() => addNote(token!, target, text), true),
     removeNote: (id: string) => noteAction(() => removeNote(token!, id)),
-    cancel: () => noteAction(() => cancelRequest(token!, reviewRef.current.request!.id)),
+    resolveNote: (id: string) => noteAction(() => resolveNote(token!, id)),
   };
 }

@@ -5,7 +5,6 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Ajv2020 } from "ajv/dist/2020.js";
-import { schema } from "./schema.ts";
 import { schemaV2 } from "./schema-v2.ts";
 import { assertComposition, validateComposition } from "./validate.ts";
 import { canonicalJSON, compileHandoff } from "./compile.ts";
@@ -17,17 +16,15 @@ import { composerPalette } from "../src/lib/theme.ts";
 import { contrastRatio } from "../lib/contrast.ts";
 
 function fixture(): GridDocument {
-  const document = toComposition(addComponent(initialGridDraft(), "text-block")) as GridDocument;
+  const document = toComposition(addComponent(initialDraft(true), "text-block")) as GridDocument;
   document.slides[0].components[0].area = { column: 3, span: 4, row: 9, rows: 11 };
   return document;
 }
 
-test("v1 stays immutable; v2 has its own public generated schema and rejects pixels", () => {
-  assert.equal(canonicalJSON(schema) + "\n", readFileSync(new URL("./schema.json", import.meta.url), "utf8"));
+test("v2 is the sole public generated schema and rejects pixels", () => {
   assert.equal(canonicalJSON(schemaV2) + "\n", readFileSync(new URL("./schema-v2.json", import.meta.url), "utf8"));
   const old = initialDraft();
-  assert.equal(assertComposition(old), old);
-  assert.equal(resolveDocument(assertComposition(old)), old);
+  assert.deepEqual(resolveDocument(assertComposition(toComposition(old))), old);
   const structural = new Ajv2020({ strict: false }).compile(schemaV2);
   assert.equal(structural(fixture()), true);
   for (const mutate of [
@@ -73,7 +70,7 @@ test("type follows role and preset, explicit steps override; leading and padding
   assert.deepEqual(toComposition(resolveDocument(document)), document, "role-default text needs no stored derived style");
   c.area.column = 1;
   for (const [preset, step, size, height] of [
-    ["presentation", "fine", 20, 24], ["presentation", "caption", 24, 32],
+    ["presentation", "fine", 20, 28], ["presentation", "caption", 24, 32],
     ["portrait", "display", 76, 84], ["link", "title", 52, 60],
   ] as const) {
     document.slides[0].grid.preset = preset;

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import { randomBytes } from "node:crypto";
 import { dirname, resolve } from "node:path";
+import { writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { fileSessionPlugin } from "./session-plugin.ts";
+import { renderDocument, renderFonts } from "./render.ts";
 import {
   readCompositionFile,
 } from "./session-store.ts";
-import { claimBuildRequest, finishBuildRequest, readReview } from "./review-store.ts";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -15,9 +16,11 @@ function usage() {
   console.error(`Usage:
   konpeki preview <composition.json> [--host <host>] [--port <port>] [--json]
   konpeki validate <composition.json>
-  konpeki wait <composition.json>
-  konpeki request <composition.json>
-  konpeki finish <composition.json> <request-id> [--status done|needs-clarification|failed] [--message <text>]`);
+  konpeki check <composition.json>
+  konpeki render <composition.json> [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
+
+Pages are one-based. PDF includes all pages unless --page is supplied.
+Scale affects PNG only. Outputs must not already exist.`);
 }
 
 function option(name, fallback) {
@@ -42,23 +45,14 @@ async function preview(input) {
       host, port, strictPort: process.argv.includes("--port"),
       fs: { allow: [
         root,
-        // npm hoists fonts outside this package. Allow their assets, not the
+        // npm hoists dependencies outside this package. Allow their assets, not the
         // surrounding user's workspace; session-plugin retains fs.deny rules.
+        dirname(fileURLToPath(import.meta.resolve("harfbuzzjs"))),
         ...["ibm-plex-sans", "ibm-plex-serif", "noto-sans", "hanken-grotesk"]
           .map(font => dirname(fileURLToPath(import.meta.resolve(`@fontsource/${font}/package.json`)))),
       ] },
     },
-    plugins: [fileSessionPlugin({
-      compositionPath,
-      token,
-      onBuildRequest: ({ request }) => {
-        if (!request) return;
-        console.error(`\nBuild requested for ${request.compositionPath}`);
-        console.error(`Revision: ${request.revision}`);
-        console.error(`Instruction: ${request.instruction}`);
-        console.error(`Run: konpeki wait ${JSON.stringify(request.compositionPath)}\n`);
-      },
-    })],
+    plugins: [fileSessionPlugin({ compositionPath, token })],
   });
   try {
     await server.listen();
@@ -74,7 +68,7 @@ async function preview(input) {
   else {
     console.log(`Konpeki is editing ${compositionPath}`);
     console.log(url);
-    console.log(`Waiting for edits and Build it requests. Press Ctrl+C to stop.`);
+    console.log(`Waiting for edits. Press Ctrl+C to stop.`);
   }
 }
 
@@ -83,16 +77,24 @@ async function validate(input) {
   console.log(`${result.name}: valid (${result.revision})`);
 }
 
-async function waitForRequest(input) {
-  console.error(`Waiting for a Build it request for ${resolve(input)}…`);
-  for (;;) {
-    const request = await claimBuildRequest(resolve(input));
-    if (request) {
-      console.log(JSON.stringify(request, null, 2));
-      return;
-    }
-    await new Promise((resolveWait) => setTimeout(resolveWait, 250));
-  }
+async function render(input) {
+  const { document } = await readCompositionFile(resolve(input));
+  const format = option("--format", "png"), selected = option("--page");
+  const result = await renderDocument(document, { format, page: selected === undefined ? undefined : Number(selected), scale: Number(option("--scale", "2")) });
+  const output = resolve(option("--output", input.replace(/\.json$/i, "") + (selected ? `-page-${selected}` : "") + `.${format}`));
+  await writeFile(output, result.bytes, { flag: "wx" });
+  console.log(output);
+}
+
+async function check(input) {
+  const { document } = await readCompositionFile(resolve(input));
+  const [{ lowerPage }, { checkPageNode }, fonts] = await Promise.all([
+    import("../composition/lower.ts"), import("../composition/check-node.ts"), renderFonts(),
+  ]);
+  const diagnostics = document.slides.flatMap(page => checkPageNode(lowerPage(document, page, fonts), fonts));
+  const ok = !diagnostics.some(item => item.severity === "error");
+  console.log(JSON.stringify({ ok, diagnostics }, null, 2));
+  if (!ok) process.exitCode = 1;
 }
 
 const command = process.argv[2];
@@ -104,19 +106,15 @@ if (!command || !input) {
   try {
     if (command === "preview") await preview(input);
     else if (command === "validate") await validate(input);
-    else if (command === "wait") await waitForRequest(input);
-    else if (command === "request") console.log(JSON.stringify((await readReview(input)).request ?? null, null, 2));
-    else if (command === "finish") {
-      if (!process.argv[4]) throw new Error("Provide the request ID returned by konpeki wait.");
-      const result = await finishBuildRequest(input, process.argv[4], option("--status", "done"), option("--message"));
-      console.log(JSON.stringify(result.request, null, 2));
-    }
+    else if (command === "render") await render(input);
+    else if (command === "check") await check(input);
     else {
       usage();
       process.exitCode = 1;
     }
   } catch (error) {
-    console.error(error instanceof Error ? error.message : error);
+    if (command === "check") console.log(JSON.stringify({ ok: false, diagnostics: [{ code: "invalid-document", severity: "error", message: error instanceof Error ? error.message : String(error) }] }, null, 2));
+    else console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   }
 }

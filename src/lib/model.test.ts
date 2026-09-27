@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { canonicalJSON } from "../../composition/compile.ts";
-import { toComposition } from "../../composition/grid.ts";
+import { gridMetrics, resolveDocument, toComposition } from "../../composition/grid.ts";
 import { fixtures } from "../../composition/fixtures.ts";
 import { canvasPadding } from "../../composition/types.ts";
 import { validateComposition } from "../../composition/validate.ts";
@@ -21,7 +21,6 @@ import {
   serializeDraft,
   snapRect,
   snapResizeRect,
-  transformComponentRect,
 } from "./model.ts";
 import {
   clearStoredDraft,
@@ -50,9 +49,9 @@ test("starter geometry has independent bands and a complete source slot", () => 
   const slide = firstSlide(draft);
   assert.deepEqual(
     slide.components.map((component) => component.preferredRect.y),
-    [72, 280, 280, 992],
+    [72, 276, 276, 924],
   );
-  assert.deepEqual(slide.innerPadding, canvasPadding);
+  assert.deepEqual(slide.innerPadding, { top: 72, right: 72, bottom: 72, left: 72 });
   assert.ok(
     slide.components.every(
       (component) =>
@@ -62,7 +61,7 @@ test("starter geometry has independent bands and a complete source slot", () => 
   );
   const headline = slide.components[0];
   const footnote = slide.components[3];
-  assert.equal(headline.preferredRect.height, 88);
+  assert.equal(headline.preferredRect.height, 84);
   assert.deepEqual(
     {
       x: headline.preferredRect.x,
@@ -80,7 +79,7 @@ test("starter geometry has independent bands and a complete source slot", () => 
   );
   assert.equal(
     footnote.preferredRect.y + footnote.preferredRect.height,
-    1080,
+    1008,
   );
   assert.deepEqual(slide.contentSlots.at(-1), {
     id: "text-block-4-content",
@@ -90,38 +89,7 @@ test("starter geometry has independent bands and a complete source slot", () => 
     role: "source",
     targets: ["text-block-1", "chart-2", "text-block-3"],
   });
-  assert.equal(validateComposition(draft).ok, true);
-});
-
-test("the custom visual example is valid and opt-in", () => {
-  assert.equal(exampleDraft(null), undefined);
-  assert.equal(exampleDraft("unknown"), undefined);
-  const draft = exampleDraft("custom-visual");
-  assert.ok(draft);
-  assert.equal(validateComposition(draft).ok, true);
-  assert.equal(draft.slides[0].components[1].customVisual?.format, "vector");
-});
-
-test("a migrated React page is one lossless full-slide custom visual", () => {
-  const draft = exampleDraft("react-page-migration");
-  assert.ok(draft);
-  const component = draft.slides[0].components[0];
-  assert.deepEqual(component.preferredRect, {
-    x: 0,
-    y: 0,
-    width: 1920,
-    height: 1080,
-  });
-  assert.equal(component.customVisual?.format, "vector");
-  if (component.customVisual?.format !== "vector") return;
-  assert.ok(component.customVisual.elements.length > 10);
-  const reopened = parseCompositionJSON(canonicalJSON(draft));
-  assert.equal(reopened.ok, true);
-  if (!reopened.ok) return;
-  assert.deepEqual(
-    reopened.document.slides[0].components[0].customVisual,
-    component.customVisual,
-  );
+  assert.equal(validateComposition(toComposition(draft)).ok, true);
 });
 
 test("slide addition creates an independent valid slide in deck order", () => {
@@ -151,7 +119,7 @@ test("slide addition creates an independent valid slide in deck order", () => {
     true,
   );
   changed.title = "Deck";
-  assert.equal(validateComposition(changed).ok, true);
+  assert.equal(validateComposition(toComposition(changed)).ok, true);
 
   const invalid = initialDraft();
   invalid.slides[0].components = [];
@@ -162,7 +130,7 @@ test("slide removal preserves order and refuses to remove the final slide", () =
   const deck = addSlide(addSlide(initialDraft()).draft).draft;
   const next = removeSlide(deck, "slide-2");
   assert.deepEqual(next.slides.map((slide) => slide.id), ["slide-1", "slide-3"]);
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
   const single = initialDraft();
   assert.equal(removeSlide(single, "slide-1"), single);
 });
@@ -306,11 +274,11 @@ test("title and footnote are text roles rather than singleton component kinds", 
   const removed = removeComponent(draft, "text-block-1");
   assert.notEqual(removed, draft);
   assert.equal(componentRemovalIssue(draft, "text-block-1"), undefined);
-  assert.equal(validateComposition(removed).ok, true);
+  assert.equal(validateComposition(toComposition(removed)).ok, true);
   const restored = addComponent(removed, "text-block");
   assert.notEqual(restored, removed);
   assert.equal(firstSlide(restored).components.at(-1)?.kind, "text-block");
-  assert.equal(validateComposition(restored).ok, true);
+  assert.equal(validateComposition(toComposition(restored)).ok, true);
 });
 
 test("the final component can be removed to leave a valid empty slide", () => {
@@ -328,7 +296,7 @@ test("the final component can be removed to leave a valid empty slide", () => {
   assert.deepEqual(firstSlide(empty).components, []);
   assert.deepEqual(firstSlide(empty).readingOrder, []);
   assert.deepEqual(firstSlide(empty).paintOrder, []);
-  assert.equal(validateComposition(empty).ok, true);
+  assert.equal(validateComposition(toComposition(empty)).ok, true);
 });
 
 test("paint order can be reordered independently and rejects incomplete orders", () => {
@@ -338,7 +306,7 @@ test("paint order can be reordered independently and rejects incomplete orders",
   assert.deepEqual(firstSlide(next).paintOrder, reversed);
   assert.deepEqual(firstSlide(next).readingOrder, firstSlide(draft).readingOrder);
   assert.equal(reorderPaintOrder(next, reversed.slice(1)), next);
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
 });
 
 test("page number remains a slide setting when footnote text is removed", () => {
@@ -346,7 +314,7 @@ test("page number remains a slide setting when footnote text is removed", () => 
   firstSlide(draft).pageNumber = { style: "01/02", color: "accent" };
   const next = removeComponent(draft, "text-block-4");
   assert.deepEqual(firstSlide(next).pageNumber, { style: "01/02", color: "accent" });
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
 });
 
 test("addition preserves scoped sources and deletion updates structural references", () => {
@@ -382,7 +350,7 @@ test("addition preserves scoped sources and deletion updates structural referenc
     nextSlide.contentSlots.some((slot) => slot.id === diagram.slotIds[0]),
     false,
   );
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
   assert.equal(slide.relationships.length, 1, "history input is immutable");
 });
 
@@ -393,18 +361,18 @@ test("deletion refuses to orphan a preserved source target", () => {
   source.targets = ["chart-2"];
   assert.match(componentRemovalIssue(draft, "chart-2") ?? "", /only targets/);
   assert.equal(removeComponent(draft, "chart-2"), draft);
-  assert.equal(validateComposition(draft).ok, true);
+  assert.equal(validateComposition(toComposition(draft)).ok, true);
 });
 
 test("deletion retains slots that are shared with a surviving component", () => {
   const draft = initialDraft();
   const emphasis = firstSlide(draft).components.find((component) => component.id === "text-block-3")!;
   emphasis.slotIds.push("chart-2-content");
-  assert.equal(validateComposition(draft).ok, true);
+  assert.equal(validateComposition(toComposition(draft)).ok, true);
   const next = removeComponent(draft, "chart-2");
   assert.notEqual(next, draft);
   assert.ok(firstSlide(next).contentSlots.some((slot) => slot.id === "chart-2-content"));
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
 });
 
 test("duplicate creates fresh component and slot identities with remapped topology", () => {
@@ -422,30 +390,17 @@ test("duplicate creates fresh component and slot identities with remapped topolo
     throw new Error("Duplicated topology missing");
   if (source.kind !== "diagram" || !source.topology)
     throw new Error("Source topology missing");
-  source.topology.nodes[0].preferredRect = { x: 160, y: 320, width: 120, height: 80 };
-  const withGeometry = duplicateComponent(draft, source.id);
-  const geometryCopy = withGeometry.slides[0].components.find(
-    (component) => component.id !== source.id && component.kind === "diagram",
-  );
-  if (geometryCopy?.kind !== "diagram" || !geometryCopy.topology)
-    throw new Error("Duplicated topology geometry missing");
-  assert.deepEqual(geometryCopy.topology.nodes[0].preferredRect, {
-    x: 208,
-    y: 368,
-    width: 120,
-    height: 80,
-  });
   assert.deepEqual(
     copy.topology.nodes.map((node) => node.slotId),
     copy.slotIds,
   );
-  assert.equal(validateComposition(next).ok, true);
-  assert.equal(validateComposition(draft).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
+  assert.equal(validateComposition(toComposition(draft)).ok, true);
 });
 
-test("moving and resizing a diagram transforms its explicit node geometry", () => {
-  const source = structuredClone(fixtures["branching-process-return"])
-    .slides[0].components.find((component) => component.kind === "diagram")!;
+test("derived diagram node geometry is rejected rather than authored or transformed", () => {
+  const document = structuredClone(fixtures["branching-process-return"]);
+  const source = document.slides[0].components.find((component) => component.kind === "diagram")!;
   if (source.kind !== "diagram" || !source.topology)
     throw new Error("Topology missing");
   source.preferredRect = { x: 100, y: 200, width: 800, height: 400 };
@@ -455,25 +410,7 @@ test("moving and resizing a diagram transforms its explicit node geometry", () =
     width: 160,
     height: 80,
   };
-  const transformed = transformComponentRect(
-    source,
-    source.preferredRect,
-    { x: 300, y: 100, width: 400, height: 800 },
-  );
-  if (transformed.kind !== "diagram" || !transformed.topology)
-    throw new Error("Transformed topology missing");
-  assert.deepEqual(transformed.topology.nodes[0].preferredRect, {
-    x: 340,
-    y: 180,
-    width: 80,
-    height: 160,
-  });
-  assert.deepEqual(source.topology.nodes[0].preferredRect, {
-    x: 180,
-    y: 240,
-    width: 160,
-    height: 80,
-  });
+  assert.equal(validateComposition(toComposition(document)).ok, false);
 });
 
 test("duplicate placement and labels distinguish repeated components", () => {
@@ -481,12 +418,10 @@ test("duplicate placement and labels distinguish repeated components", () => {
   const visuals = firstSlide(next).components.filter(
     (component) => component.kind === "chart",
   );
-  assert.deepEqual(visuals[1].preferredRect, {
-    x: 160,
-    y: 328,
-    width: 1080,
-    height: 530,
-  });
+  assert.notDeepEqual(visuals[1].area, visuals[0].area);
+  const metrics = gridMetrics(firstSlide(next).grid!);
+  assert.equal(visuals[1].preferredRect.x, metrics.margin + (visuals[1].area!.column - 1) * (metrics.columnWidth + metrics.gutter));
+  assert.equal(visuals[1].preferredRect.y, metrics.margin + (visuals[1].area!.row - 1) * metrics.baseline);
   assert.deepEqual(
     visuals.map((component) =>
       componentInstanceLabel(firstSlide(next).components, component.id),
@@ -502,15 +437,9 @@ test("repeated additions offset from the latest component", () => {
     (component) =>
       component.kind === "text-block" && component.appearance.role === "body",
   );
-  assert.deepEqual(
-    blocks.map((component) => component.preferredRect),
-    [
-      { x: 1248, y: 280, width: 560, height: 420 },
-      { x: 1296, y: 328, width: 560, height: 420 },
-      { x: 1344, y: 376, width: 560, height: 420 },
-    ],
-  );
-  assert.equal(validateComposition(second).ok, true);
+  assert.equal(new Set(blocks.map(component => `${component.area!.column}:${component.area!.row}`)).size, blocks.length);
+  assert.ok(blocks.every(component => component.area!.row + component.area!.rows - 1 <= 78), "new blocks remain inside the bounded page");
+  assert.equal(validateComposition(toComposition(second)).ok, true);
 });
 
 test("duplicating a grouped component preserves group-based reading order", () => {
@@ -531,7 +460,7 @@ test("duplicating a grouped component preserves group-based reading order", () =
     "text-block-3-copy",
   ]);
   assert.deepEqual(firstSlide(next).readingOrder, slide.readingOrder);
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
 });
 
 test("duplicating a grouped component preserves direct reading-order representation", () => {
@@ -545,7 +474,7 @@ test("duplicating a grouped component preserves direct reading-order representat
     firstSlide(next).readingOrder.map((entry) => entry.id),
     ["text-block-1", "chart-2", "text-block-3", "text-block-3-copy", "text-block-4"],
   );
-  assert.equal(validateComposition(next).ok, true);
+  assert.equal(validateComposition(toComposition(next)).ok, true);
 });
 
 test("composition JSON import/export is canonical and lossless", () => {
@@ -554,20 +483,19 @@ test("composition JSON import/export is canonical and lossless", () => {
   ).draft;
   document.slides[1].name = "Decision";
   document.slides[0].components[1].customVisual = {
-    format: "svg",
-    source: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><circle cx="160" cy="90" r="72"/></svg>',
+    format: "vector",
+    elements: [{ id: "circle", kind: "circle", attributes: { cx: 160, cy: 90, r: 72, fill: "theme:accent" } }],
     viewBox: { x: 0, y: 0, width: 320, height: 180 },
     description: "A custom circular decision visual.",
-    fit: "contain",
   };
-  const raw = canonicalJSON(document);
+  const raw = canonicalJSON(toComposition(document));
   const parsed = parseCompositionJSON(raw);
   assert.equal(parsed.ok, true);
   if (!parsed.ok) return;
-  assert.equal(canonicalJSON(parsed.document), raw);
+  assert.equal(canonicalJSON(toComposition(parsed.document)), raw);
   const stored = parseStoredDraft(serializeDraft(parsed.document));
   assert.equal(stored.ok, true);
-  if (stored.ok) assert.equal(canonicalJSON(stored.draft), raw);
+  if (stored.ok) assert.equal(canonicalJSON(toComposition(stored.draft)), raw);
   assert.equal(parseCompositionJSON("{broken").ok, false);
   assert.equal(parseCompositionJSON(canonicalJSON({ ...document, schema: "v2" })).ok, false);
 });
@@ -593,7 +521,7 @@ test("stored drafts reject missing and null titles but preserve unfinished strin
   }
   for (const title of ["", "   "]) {
     const document = { ...current, title };
-    const result = parseStoredDraft(JSON.stringify({ version: 2, document }));
+    const result = parseStoredDraft(JSON.stringify({ version: 2, document: toComposition(document) }));
     assert.equal(result.ok, true);
     if (result.ok) assert.equal(result.draft.title, title);
   }

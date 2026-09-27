@@ -32,7 +32,7 @@ const AREAS = {
     "firstuse-head": area(7, 6, 59, 4), "firstuse-body": area(7, 6, 64, 9),
   },
   "shared-file": {
-    "share-title": area(1, 12, 2, 8), "share-lead": area(1, 10, 11, 6),
+    "share-title": area(1, 12, 2, 8), "share-lead": area(1, 10, 11, 7),
     "share-diagram": area(1, 12, 20, 40), "share-note": area(1, 12, 65, 8),
   },
   components: {
@@ -201,8 +201,8 @@ p2.add(text("flow-lead", "Konpeki is a skill for your coding agent plus a canvas
 const steps2 = [
   ["Your brief", "Notes, source material and where the visual will be used."],
   ["Your coding agent", "Follows Konpeki's authoring guide and writes composition.json in your workspace."],
-  ["Canvas preview", "The agent opens the page, inspects the render and repairs problems it finds."],
-  ["Your page", "Edit it directly, Present it, export PNG or download the editable JSON."],
+  ["Check and render", "The agent runs checks, renders a PNG and repairs problems it finds."],
+  ["Your page", "Edit it, Present it, or export PNG, SVG, PDF and editable JSON."],
 ];
 {
   steps2.forEach(([h, d], i) => {
@@ -225,9 +225,9 @@ const steps2 = [
   p2.add(vector("flow-divider", "image", 1776, 2, "Divider between the main flow and the alternatives below it.", v.els), "image");
 }
 p2.add(text("sketch-head", "Prefer to sketch first?", "body", { weight: 600, font: "heading" }));
-p2.add(text("sketch-body", "In the editor your agent opened, add a component, describe its intent, then choose Build it. Your agent drafts from your layout.", "caption", { color: "muted" }));
+p2.add(text("sketch-body", "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.", "caption", { color: "muted" }));
 p2.add(text("firstuse-head", "No separate setup step", "body", { weight: 600, font: "heading" }));
-p2.add(text("firstuse-body", "On first use the skill installs the Konpeki runtime in a user cache, not in your project.", "caption", { color: "muted" }));
+p2.add(text("firstuse-body", "With your approval, the skill installs the runtime in a user cache, not in your project.", "caption", { color: "muted" }));
 
 // ---------- 3. Same file ----------
 const p3 = page("shared-file", "One shared file", "Can I edit what the agent made?");
@@ -330,9 +330,9 @@ const comps = [
 }
 p4.add(text("comp-note", "Diagram, Chart and Table start as structural drafts. Finished artwork\nbecomes editable vector shapes with stable IDs, drawn from your source data,\nso you can select and change any line or label.", "body", {}, "body"));
 
-// ---------- 5. Notes and Build it ----------
+// ---------- 5. Notes and chat revisions ----------
 const p5 = page("notes", "Revision notes", "How do I ask for changes?");
-p5.add(title("notes-title", "Point at what to change, then choose Build it."), "takeaway");
+p5.add(title("notes-title", "Point at what to change. Continue in chat."), "takeaway");
 {
   const v = V("ui");
   v.rect("win", 0, 0, 860, 560, { rx: 12, fill: SURFACE, stroke: DIVIDER, "stroke-width": 2 });
@@ -347,7 +347,7 @@ p5.add(title("notes-title", "Point at what to change, then choose Build it."), "
     bar(v, `note${n}-l2`, 36, y + 56, 170, 10);
   });
   v.rect("build", 20, 480, 210, 56, { rx: 8, fill: ACCENT });
-  v.text("build-t", 125, 516, "Build it", { "font-size": "scale:caption", "font-weight": 600, fill: ON_ACCENT, "text-anchor": "middle", "font-family": HEAD });
+  v.text("build-t", 125, 516, "Add note", { "font-size": "scale:caption", "font-weight": 600, fill: ON_ACCENT, "text-anchor": "middle", "font-family": HEAD });
   // page on canvas
   const px = 290, py = 90, pw = 530, ph = 298;
   v.rect("page", px, py, pw, ph, { fill: BG, stroke: DIVIDER, "stroke-width": 1.5 });
@@ -361,21 +361,21 @@ p5.add(title("notes-title", "Point at what to change, then choose Build it."), "
     v.text(`pin${n}-n`, x, y + 7, String(n), { "font-size": "scale:fine", "font-weight": 600, fill: ON_ACCENT, "text-anchor": "middle" });
   });
   v.text("canvas-cap", px, py + ph + 56, "Pins and notes never appear in", { "font-size": "scale:fine", fill: MUTED });
-  v.text("canvas-cap2", px, py + ph + 86, "Present or PNG exports.", { "font-size": "scale:fine", fill: MUTED });
-  p5.add(vector("notes-ui", "image", 860, 560, "Schematic editor: Notes panel with two numbered notes and a Build it button; a page on the canvas with matching pins on the title and a selected chart bar.", v.els), "image");
+  v.text("canvas-cap2", px, py + ph + 86, "Present or exported artwork.", { "font-size": "scale:fine", fill: MUTED });
+  p5.add(vector("notes-ui", "image", 860, 560, "Schematic editor: Notes panel with two numbered notes and an Add note button; a page on the canvas with matching pins on the title and a selected chart bar.", v.els), "image");
 }
 const steps5 = [
   ["Select a target", "A page, a component or a single vector shape inside it."],
-  ["Add notes", "Write what should change. Add notes to several targets before sending."],
-  ["Choose Build it", "The saved revision and every open note go to your agent as one request."],
-  ["Your agent revises", "It applies each note to its target, checks the render, then marks the request finished."],
+  ["Add notes", "Write what should change. Notes stay attached to their targets beside the file."],
+  ["Continue in chat", "Ask your agent to read the saved composition and its open notes."],
+  ["Your agent revises", "It applies the changes, runs checks, renders a PNG and inspects the result."],
 ];
 steps5.forEach(([h, d], i) => {
   p5.add(text(`nstep${i + 1}-num`, String(i + 1), "lead", { weight: 600, color: "accent", font: "heading" }), "process-step");
   p5.add(text(`nstep${i + 1}-head`, h, "body", { weight: 600, font: "heading" }), "process-step");
   p5.add(text(`nstep${i + 1}-body`, d, "caption", { color: "muted" }), "process-step");
 });
-p5.add(text("notes-limit", "Notes and Build it need a preview your agent opened from a file.\nBuild it cannot wake an idle agent; use Copy prompt to hand over the request.", "caption", { color: "muted" }, "caption"));
+p5.add(text("notes-limit", "Notes need a file-backed preview. They do not start an agent automatically.\nContinue in the same conversation; resolve notes after reviewing the changes.", "caption", { color: "muted" }, "caption"));
 
 // ---------- 6. Browser or agent ----------
 const p6 = page("browser-or-agent", "Browser or agent", "Where should I start, and where is my work saved?");
@@ -384,8 +384,8 @@ p6.add(title("where-title", "Try it in the browser. Keep working with your agent
   const rows = [
     ["Start from", "An example page, or a blank one", "Your brief and materials"],
     ["Saved to", "This browser only; no cloud sync", "composition.json in your workspace"],
-    ["Changes", "Edit by hand", "Edit by hand, or send notes with Build it"],
-    ["Get it out", "Download JSON, export PNG or Present", "Export PNG or Present; the file is already saved"],
+    ["Changes", "Edit by hand", "Edit by hand, or ask for changes in chat"],
+    ["Get it out", "Download JSON, PNG, SVG or PDF", "Render PNG, SVG or PDF; preview is optional"],
   ];
   const headH = 70, rowH = 112;
   const v = V("where");
@@ -415,12 +415,12 @@ p7.add(text("start-s1", "1  Install the skill once", "body", { weight: 600, font
 p7.add(text("start-cmd", "npx skills add vcfgdev/konpeki -g", "body"), "process-step");
 p7.add(text("start-s2", "2  Send your agent a brief", "body", { weight: 600, font: "heading" }), "process-step");
 p7.add(text("start-brief", "Use Konpeki to create a one-page explainer of how a browser, API and database work together.", "body"), "process-step");
-p7.add(text("start-s2-note", "Your agent prepares the runtime, writes the file, opens the canvas\nand checks the result. Keep revising in the same conversation.", "caption", { color: "muted" }), "body");
+p7.add(text("start-s2-note", "Your agent writes the file, checks it, renders a PNG and inspects it.\nKeep revising in the same conversation.", "caption", { color: "muted" }), "body");
 p7.add(text("need-head", "You need", "body", { weight: 600, font: "heading" }));
-["Node.js 24+ and npm", "A coding agent that can edit files and run commands", "A browser"]
+["Node.js 24+ and npm", "A coding agent that can edit files and run commands", "Optional: a browser for the editor"]
   .forEach((content, i) => p7.add(text(`need-${i + 1}`, content, "body")));
 p7.add(text("init-head", "Want an empty canvas first?", "body", { weight: 600, font: "heading" }));
-p7.add(text("init-body", "Ask your agent for Konpeki init. It opens a blank page in the editor without generating anything.", "caption", { color: "muted" }));
+p7.add(text("init-body", "Ask your agent to open a blank Konpeki file in the editor, without generating artwork.", "caption", { color: "muted" }));
 
 const doc = {
   schema: "konpeki-composition/v2",

@@ -29,5 +29,22 @@ test("review sidecars are API-only, including temporary and /@fs/ paths", async 
   assert.equal((await fetch(`${base}/__konpeki/session`)).status, 403);
   const response = await fetch(`${base}/__konpeki/session`, { headers: { "x-konpeki-session": "test-token" } });
   assert.equal(response.status, 200);
-  assert.equal((await response.json()).review.notes[0].text, "Private feedback");
+  const session = await response.json();
+  assert.equal(session.review.notes[0].text, "Private feedback");
+  const headers = { "x-konpeki-session": "test-token", "content-type": "application/json" };
+  const exportBody = { revision: session.revision, format: "svg", page: 2, scale: 2 };
+  assert.equal((await fetch(`${base}/__konpeki/session/export`, { method: "POST", body: JSON.stringify(exportBody) })).status, 403);
+  assert.equal((await fetch(`${base}/__konpeki/session/export`, { method: "POST", headers, body: JSON.stringify({ ...exportBody, revision: "stale" }) })).status, 409);
+  assert.equal((await fetch(`${base}/__konpeki/session/export`, { method: "POST", headers, body: JSON.stringify({ ...exportBody, page: 0 }) })).status, 400);
+  const exported = await fetch(`${base}/__konpeki/session/export`, { method: "POST", headers, body: JSON.stringify(exportBody) });
+  assert.equal(exported.status, 200);
+  assert.equal(exported.headers.get("content-type"), "image/svg+xml");
+  assert.match(await exported.text(), /aria-label="brief-to-page"/);
+  for (const endpoint of ["build", "cancel"])
+    assert.equal((await fetch(`${base}/__konpeki/session/${endpoint}`, { method: "POST", headers, body: "{}" })).status, 404);
+  const resolved = await fetch(`${base}/__konpeki/session/notes/resolve`, {
+    method: "POST", headers, body: JSON.stringify({ id: session.review.notes[0].id }),
+  });
+  assert.equal(resolved.status, 200);
+  assert.equal((await resolved.json()).notes[0].resolved, true);
 });

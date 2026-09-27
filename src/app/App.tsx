@@ -37,7 +37,6 @@ import {
 import { canonicalJSON } from "../../composition/compile.ts";
 import { diagramDefinition } from "../../composition/visualizations.ts";
 import { Canvas } from "../components/Canvas.tsx";
-import { BuildOrb } from "../components/BuildOrb.tsx";
 import { LeftPanel, type LeftPanelView } from "../components/LeftPanel.tsx";
 import { Presentation } from "../components/Presentation.tsx";
 import {
@@ -47,7 +46,7 @@ import {
 import { WorkspaceChrome } from "../components/WorkspaceChrome.tsx";
 import { FeedbackNotice } from "../components/ui.tsx";
 import { exampleDraft } from "../lib/examples.ts";
-import { exportPagePNG } from "../lib/export-png.ts";
+import { exportComposition, exportFileSession, type ExportFormat } from "../lib/export-scene.ts";
 import { fileSessionToken } from "../lib/file-session.ts";
 import { useFileSession } from "../lib/use-file-session.ts";
 import { RevisionNotes } from "../components/RevisionNotes.tsx";
@@ -134,12 +133,7 @@ export function App() {
     focusAfterHistory.current = false;
     const frame = requestAnimationFrame(() => {
       const target = history.present.selected
-        ? [...document.querySelectorAll<HTMLElement>("[data-component]")]
-            .find(
-              (element) =>
-                element.dataset.component === history.present.selected,
-            )
-            ?.querySelector<HTMLElement>(".component-surface")
+        ? document.querySelector<HTMLElement>(`.component-hit[data-component="${CSS.escape(history.present.selected)}"]`)
         : document.querySelector<HTMLElement>("#canvas-stage");
       target?.focus();
     });
@@ -185,7 +179,7 @@ export function App() {
   }, []);
   useEffect(() => {
     function keydown(event: KeyboardEvent) {
-      if (presenting || fileLocked || fileSession.building) return;
+      if (presenting || fileLocked) return;
       const modifier = event.metaKey || event.ctrlKey;
       const target = event.target;
       const editable =
@@ -242,7 +236,7 @@ export function App() {
     }
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [draft, presenting, selected, vectorSelection, fileSession.building, fileLocked]);
+  }, [draft, presenting, selected, vectorSelection, fileLocked]);
   function showNotice(message: string, tone: "neutral" | "error" = "neutral") {
     if (!message) setToastPaused(false);
     setNotice(message ? { message: message.replace(/\.$/, ""), tone } : undefined);
@@ -469,22 +463,6 @@ export function App() {
     }
     if (target.id) requestAnimationFrame(() => document.getElementById(`note-${target.id}`)?.scrollIntoView({ block: "nearest" }));
   }
-  async function requestBuild() {
-    try {
-      const instruction = fileSession.review.notes.some(note => !note.resolved)
-        ? "Apply the attached revision notes to their named targets. Preserve unrelated human edits. Validate and inspect the result, then acknowledge this request with konpeki finish."
-        : selected
-        ? "Review the selected component in context and build it from the current saved composition."
-        : "Review the current slides and build them from the current saved composition.";
-      const requested = await fileSession.build(instruction, slide.id, selected, vectorSelection?.componentId === selected ? vectorSelection?.elementId : undefined);
-      if (requested) {
-        setNotice(undefined);
-        setToastPaused(false);
-      }
-    } catch (requestError) {
-      showNotice(requestError instanceof Error ? requestError.message : "Could not send the build request.", "error");
-    }
-  }
   async function openComposition(file: File) {
     let raw = "";
     try {
@@ -519,25 +497,30 @@ export function App() {
     selectComponent();
     setPresenting(true);
   }
-  async function downloadPNG() {
-    const source = document.querySelector<HTMLElement>(".workspace .canvas");
-    if (!source) return;
+  async function downloadExport(format: ExportFormat) {
     setExportBusy(true);
-    showNotice("Exporting page…");
+    showNotice(`Exporting ${format.toUpperCase()}…`);
     try {
-      const blob = await exportPagePNG(source, slide.canvas);
+      let blob: Blob;
+      if (sessionToken) {
+        const current = await fetch("/__konpeki/session", { headers: { "x-konpeki-session": sessionToken } });
+        if (!current.ok) throw new Error("Could not read the current file revision.");
+        const { revision } = await current.json() as { revision: string };
+        blob = await exportFileSession(sessionToken, format, draft.slides.indexOf(slide) + 1, revision);
+      } else {
+        blob = await exportComposition(toComposition(draft), format, draft.slides.indexOf(slide), 2);
+      }
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${slide.name.replace(/[^a-z0-9_-]+/gi, "-") || "konpeki-page"}.png`;
+      const base = format === "pdf" ? draft.title : slide.name;
+      link.download = `${base.replace(/[^a-z0-9_-]+/gi, "-") || "konpeki"}.${format}`;
       link.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showNotice(
-        `PNG exported at ${slide.canvas.width} × ${slide.canvas.height}.`,
-      );
+      showNotice(`${format.toUpperCase()} exported.`);
     } catch (exportError) {
       showNotice(
-        `Could not export PNG: ${exportError instanceof Error ? exportError.message : "Unknown error"}`,
+        `Could not export ${format.toUpperCase()}: ${exportError instanceof Error ? exportError.message : "Unknown error"}`,
         "error",
       );
     } finally {
@@ -609,9 +592,6 @@ export function App() {
     ? `Changes are not saved: ${validation.issues[0]?.path || "document"} ${validation.issues[0]?.message || "is invalid"}. Undo the edit or correct this value.`
     : error;
   const selectedComponent = slide.components.find((c) => c.id === selected);
-  const buildState = fileSession.building
-    ? fileSession.review.request?.status === "working" ? "working" : "ready"
-    : undefined;
   function useComponentTool(kind: CompositionComponent["kind"]) {
     add(kind);
   }
@@ -639,7 +619,7 @@ export function App() {
         </> : null}
       </FeedbackNotice>
       <div
-        className={`workspace ${fileSession.building ? "is-building" : ""} ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
+        className={`workspace ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
         aria-hidden={presenting || undefined}
         inert={presenting || fileLocked || undefined}
         aria-busy={fileSession.opening || undefined}
@@ -649,7 +629,7 @@ export function App() {
           event.dataTransfer.dropEffect = "copy";
         }}
         onDrop={(event) => {
-          if (fileLocked || fileSession.building) {
+          if (fileLocked) {
             event.preventDefault();
             return;
           }
@@ -671,13 +651,10 @@ export function App() {
             setTitleError(false);
           }}
           onEditEnd={finishEdit}
-          onExportPNG={() => { void downloadPNG(); }}
+          onExport={(format) => { void downloadExport(format); }}
           exporting={exportBusy}
           onPresent={present}
           fileStatus={loaded.fileSession ? fileSession.status : undefined}
-          building={fileSession.building}
-          buildState={buildState}
-          onBuild={loaded.fileSession ? () => { void requestBuild(); } : undefined}
           browserTools={loaded.fileSession ? undefined : {
             example: Boolean(loaded.exampleName),
             saveMessage: browserSaveMessage,
@@ -697,9 +674,10 @@ export function App() {
             document={draft}
             target={{ slideId: slide.id, ...(selected ? { componentId: selected } : {}), ...(vectorSelection?.componentId === selected && vectorSelection?.elementId ? { elementId: vectorSelection.elementId } : {}) }}
             review={fileSession.review}
-            disabled={fileSession.building || fileSession.status !== "saved"}
+            disabled={fileSession.status !== "saved"}
             onAdd={fileSession.addNote}
             onRemove={fileSession.removeNote}
+            onResolve={fileSession.resolveNote}
             onSelect={selectNoteTarget}
             onNotice={(message) => showNotice(message, "error")}
           />}
@@ -710,7 +688,7 @@ export function App() {
           onRemoveSlide={removeExistingSlide}
         />
         </WorkspaceChrome>
-        <div className="editor-content" inert={fileSession.building} aria-busy={fileSession.building}>
+        <div className="editor-content">
         <Canvas
           key={slide.id}
           revisionNotes={fileSession.review.notes.filter(note => !note.resolved)}
@@ -807,29 +785,6 @@ export function App() {
           onEditEnd={finishEdit}
         />
         </div>
-        {fileSession.building && (
-          <div className="stage build-loading" role="status" aria-live="polite">
-            <div className="build-loading-card">
-              <div className="build-nebula"><BuildOrb active nebula /></div>
-              {buildState === "working" ? <>
-                <strong>Agent working</strong>
-                <span>Updating this composition. Editing resumes when the request finishes.</span>
-              </> : <>
-                <strong>Request ready</strong>
-                <span>Copy the handoff prompt to ask your coding agent to apply these changes.</span>
-                <button type="button" className="primary" onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText("Pick up my pending Konpeki request and apply the changes.");
-                    showNotice("Prompt copied");
-                  } catch {
-                    showNotice("Could not copy. Ask your coding agent to pick up your pending Konpeki request", "error");
-                  }
-                }}>Copy prompt</button>
-              </>}
-              <button type="button" onClick={() => { void fileSession.cancel().catch(error => showNotice(error.message, "error")); }}>Cancel request</button>
-            </div>
-          </div>
-        )}
       </div>
       {presenting && (
         <Presentation

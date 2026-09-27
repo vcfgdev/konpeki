@@ -7,13 +7,13 @@ Give your coding agent notes, source material and a brief. Konpeki provides the
 canvas, design guidance, typography and semantic components for the intended
 format and dimensions.
 
-People and agents edit the same composition. Export a page as PNG, download its
-editable JSON, or use **Present** for a chrome-free presentation.
+People and agents edit the same v2 composition. The owned scene drives preview,
+checks, PNG/SVG/PDF output, and **Present**.
 
 ## Use with your agent
 
-Requires **Node.js 24+**, npm, a coding agent that can edit files and run commands,
-and a browser.
+Requires **Node.js 24+**, npm, and a coding agent that can edit files and run
+commands. A browser is optional for human editing and presentation.
 
 Install once, choosing your agent when prompted:
 
@@ -26,28 +26,25 @@ Start a new conversation or reload your agent's skills. **Send this to your agen
 > Use Konpeki to create a one-page explainer of how a browser, API and database work together.
 
 Replace the example with your own brief and materials. Your agent prepares the
-runtime, creates editable JSON in your workspace, opens the canvas and checks the
-result. No clone or separate `init` step. First use may require installation and
-browser permissions; remote workspaces need authenticated preview forwarding.
+runtime, creates editable JSON in your workspace, checks it, renders a 2x PNG,
+and inspects the result. A browser preview is optional. First use may require
+installation permission.
 
-Keep revisions in the same conversation. Canvas notes use **Build it** and its
-copyable handoff unless an agent listener is active; the button cannot wake an
-idle agent. See [setup details and optional commands](SETUP.md) for other install
-methods, or give that guide's [raw URL](https://raw.githubusercontent.com/vcfgdev/konpeki/main/SETUP.md)
-to your agent with your brief.
+Keep revisions in the same conversation. Optional canvas notes and pins remain
+attached to the revision-checked file session for the next agent edit. See
+[setup details](SETUP.md) for other install methods.
 
 ## Try the editor in your browser
 
 [Open the editable Konpeki example](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
 
 The browser-only playground lets you edit an example or start blank, keep a local
-working copy, import/download editable JSON, export PNG and present. It requires
+working copy, import/download editable JSON, export PNG/SVG/PDF and present. It requires
 no account or AI service. Browser-local data is not cloud backup; download JSON
 to keep or move your work. Continue with your coding agent using that file.
 
-The [GitHub Pages playground](docs/development.md#github-pages) does not connect
-to an agent or expose **Build it**. The agent-led workflow above is the route
-from a prompt to a finished visual.
+The playground does not connect to an agent. The agent-led workflow above is the
+route from a prompt to a checked and visually inspected composition.
 
 ## Showcase
 

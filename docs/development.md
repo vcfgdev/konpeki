@@ -1,223 +1,69 @@
 # Development
 
-Clone `https://github.com/vcfgdev/konpeki.git` with the required repository access.
-Use [mise](https://mise.jdx.dev/getting-started.html) to install the Node.js and
-pnpm versions pinned in `mise.toml`. On macOS, install mise with `brew install mise`.
-From the repository root:
+Use the Node.js, pnpm, and uv versions pinned by `mise.toml`:
 
 ```sh
 mise trust
 mise install
 mise exec -- pnpm install --frozen-lockfile
+mise exec -- pnpm fonts:generate
 ```
 
-Mise manages the toolchain; pnpm manages dependencies through `pnpm-lock.yaml`.
-Run the commands below from that repository root with an activated mise shell,
-or prefix them with `mise exec --` (for example, `mise exec -- pnpm test`).
-No global Node.js or pnpm installation is required. npm for packing and publishing
-comes with the pinned Node.js; use `mise exec -- npm pack` to select it explicitly.
+Run repository commands through `mise exec --` unless the environment is already
+active. Do not install tools globally. `pnpm dev` starts the editor; `pnpm build`
+builds the static playground. Preview sessions are local capability-bearing file
+editors; public hosting contains no file session, account, cloud sync, or AI.
 
-Development and regression checks require a repository checkout, not an npm
-tarball, which excludes tests and review scripts.
+`fonts:generate` converts the pinned Fontsource WOFF2s to TTFs and copies their
+licenses. uv manages the Python 3.11+ conversion environment using the committed
+`scripts/generate-fonts.py.lock`. Generated TTFs and license copies are ignored by
+Git; the generator verifies every font's bytes and metrics against the committed
+`fonts/manifest.json` before writing assets. A mismatch fails rather than updating
+the manifest. `dev`, `test`, `build`, `konpeki`, `check:package`, and `npm pack`
+also run generation, so they work from a fresh checkout. Installed users receive
+the generated fonts and licenses and need neither Python nor uv.
 
-## Development server and demo hosting
+## Owned scene
 
-```sh
-pnpm dev
+v2 composition JSON is lowered to one scene containing resolved geometry,
+HarfBuzz glyph positions, clipping, and paint order. The React canvas renders
+that scene's SVG. Node PNG rasterizes the same SVG with resvg. Browser PNG uses a
+canvas to rasterize it. PDF writes the same geometry and embeds selectable font
+subsets. The file-session export endpoint delegates to these writers and checks
+the supplied document revision.
+
+The CLI commands are:
+
+```text
+konpeki validate composition.json
+konpeki check composition.json
+konpeki render composition.json [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
+konpeki preview composition.json [--host host] [--port port] [--json]
 ```
 
-For a production preview, run `pnpm build` then `pnpm preview`. The build produces
-a static site in `dist` for a root or subdirectory. Use
-`?example=introducing-konpeki` or `?example=custom-visual` to open a bundled editable
-example. Each example has an isolated browser-local working copy that survives
-reload. The Demo Mode menu supports JSON import/download, starting blank and
-resetting the example. These actions never replace another example or the normal
-local draft. Invalid stored data remains untouched until an explicit reset.
+Pages are one-based. PDF includes all pages unless one is selected and supports
+mixed dimensions. Scale applies only to PNG. Output uses exclusive creation and
+defaults to the input basename plus extension. `check` returns JSON
+`{ok, diagnostics}` and exits 1 on errors.
 
-Deploy only the static `dist` output for the public playground, not a file-session
-server. Imported documents stay in that browser; there is no account, cloud sync,
-AI generation or Build/notes handoff in standalone mode. Downloaded JSON can be
-opened in a file-backed session with a coding agent. Browser storage is not a
-backup. Hosting shares bundled examples, not private drafts or an AI service.
-No deployment is automatic. In a remote environment, expose a review server
-through its authenticated preview mechanism, not a loopback address.
+Bundled fonts currently cover Latin, accents, and symbols; unsupported glyphs
+are diagnostics. Contrast is measured from all solid glyph pixels at 2x and has
+a finite-resolution caveat. Scaled chart artwork only triggers review of
+pixel-unit details; it does not prove captions. Type leading comes from explicit
+per-preset tables unless a valid baseline-unit override is authored.
 
-The source CLI's `preview` chooses the next available port if its default is
-occupied. An explicit `--port <number>` fails rather than silently changing the
-requested port; `--port 0` asks the OS for a free port. `--json` prints one readiness
-record with `type`, `compositionPath` and the exact session-bearing `url` after
-listening. Treat that URL as a capability, not public logging data. This is a
-startup signal, not proof that the browser loaded the right composition.
+## Packaging
 
-### GitHub Pages
+`skills/konpeki` is the canonical portable skill. Its runtime pin, `plugin.json`,
+and `package.json` move together at 0.4.0. The npm allowlist includes the scene,
+font, layout, draft, check, and PDF modules; generated draft icons; the font
+manifest, 26 TTFs and licenses; the linebreak declaration; and every split CLI
+runtime chunk. Obsolete v1 schema output, migration preview asset, and old PNG
+export module are excluded.
 
-The public playground is hosted at
-[vcfgdev.github.io/konpeki](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
-The example query opens the introduction; the root URL opens the ordinary local
-draft. Each visitor's edits stay in their own browser, not in the deployed site.
-
-`.github/workflows/pages.yml` deploys only when explicitly dispatched on `main`:
-
-```sh
-gh workflow run pages.yml --repo vcfgdev/konpeki --ref main
-```
-
-The workflow uses the pinned mise/pnpm toolchain, runs typecheck and tests, builds
-with the Pages base path, and uploads only `dist`. The deployment job publishes
-that artifact to the `github-pages` environment. Repository **Settings → Pages →
-Source** must be **GitHub Actions**. Ordinary pushes run CI but do not redeploy;
-package releases remain separate. Inspect the public example after deployment,
-including reload, fonts, editing, JSON download and Present.
-
-Existing example working copies survive deployments. Download any edits before
-choosing **Demo Mode → Reset example** to load a newly published example.
-
-## Skill and plugin packaging
-
-`skills/konpeki/` is the canonical portable skill. The repo's
-`.agents/skills/konpeki` symlink enables local discovery without a second
-copy. The root Agent Plugins `plugin.json` and repo marketplace expose the same
-skill to compatible Codex clients; no MCP, hook or hosted AI is involved. Review
-native-client installation separately from the npm smoke test.
-
-The skill dispatches `init` (open only) and `generate` (create/revise, including
-implicit setup). These are agent modes, not CLI subcommands. Its portable
-`scripts/prepare-document.mjs` validates through the resolved CLI and exclusively
-creates a blank file, or validates an existing file without rewriting it. The
-bundled `assets/blank.json` matches `initialDraft(true)` in
-`composition/document.ts`; onboarding tests enforce that contract. Keep scripts
-and assets when copying the skill. No TypeScript import from `node_modules` is
-needed, so a copied skill also supports the existing published runtime.
-
-Its `scripts/ensure-runtime.mjs` pins the release runtime. It performs
-no installation without `--install`, and never updates project dependencies.
-When preparing a new release, deliberately update its pin and the plugin version
-together with the package version after testing the target runtime. The current
-pin is 0.3.1; local CLI/playground changes do not republish that npm version.
-The published skill blank and that pinned runtime remain v1-compatible until the
-next release; do not present them as v2-capable or change their files as part of
-local v2 documentation work.
-
-## Implementation reference
-
-- `src/` contains the shared canvas application for editing and presentation.
-  The [versioned composition contract](../composition/README.md) preserves
-  content, relationships and visual intent across human and agent revisions.
-- `composition/grid.ts`, `schema-v2.ts`, `validate.ts` and `compile.ts`, together
-  with `src/components/Canvas.tsx`, define the v2 grid contract. v1 remains an
-  immutable supported schema. New browser documents use v2 fixed presets,
-  baseline rows and named type steps; preset changes require deliberate
-  recomposition rather than an automatic layout pass.
-- `bin/` contains the file-session CLI and its revision-checked persistence.
-- [AUTHORING.md](../AUTHORING.md) owns design defaults, factual fidelity and review.
-  [Design resources](../design/README.md) provide palettes, themes and semantic
-  patterns; these are choices, not mandatory layouts.
-- `lib/text.tsx` supplies measured `Text` and `Paragraphs` with string or rich-text
-  runs. Overset content is flagged, not automatically shrunk or hidden. Await
-  `fontsReady` from `lib/typeface.ts` before measuring.
-- `lib/slide.tsx` supplies specimen `Panel`, `Relationship` and 1920×1080 `Sheet`
-  components. `Panel` shares one heading/body size; `Relationship` is a short
-  directional glyph. Convert their SVG output to composition vectors for the canvas.
-- `lib/layouts.ts` supplies fixed-gutter regions, not a content-fitting solver.
-- Retained React chart references use Nivo `Bar`, `Line` and `Sankey` with
-  `chartDefaults(palette)` from `lib/charts.ts` spread before chart-specific props.
-  Keep data, dimensions, scales and semantic colors in the deck. Use explicit
-  label colors and `linkBlendMode="normal"` for Sankey.
-
-### React/SVG drawing references
-
-The retained `slides/*/index.tsx` files are presentation-runtime-independent
-drawing references. They are checked as source but are not discovered as routes
-or executed by a second presentation runtime. New decks use composition JSON;
-a trusted build may render React to SVG, then convert supported elements into
-the owning component's editable vector payload.
-
-To migrate the retained architecture reference into the shared canvas:
-
-```sh
-pnpm example:migrate-page slides/architecture/index.tsx all /tmp/architecture-composition.json
-```
-
-Drag the resulting JSON onto the canvas, edit its vectors, and use **Present**.
-Replace `all` with a zero-based page index for one page. This command executes
-trusted local React source; never use it on untrusted JSX. It rejects unsupported
-SVG elements rather than silently flattening them. Review converted typography
-and geometry in the browser; conversion is not a fidelity guarantee.
-The bundled `?example=react-page-migration` preview uses the same format.
-Its working copy autosaves in that browser. Download JSON or use a file-backed
-session to retain edits outside browser storage.
-
-## Package contents
-
-`package.json` explicitly allowlists the npm payload: the source-based Vite
-runtime and file-session CLI, authoring guidance and design resources, and named
-curated examples with editable source and prompts. New example directories are
-not included automatically. Gallery screenshots, tests, research fixtures,
-browser review scripts, original branding assets, lockfiles and UI build output
-stay in the repository.
-
-`npm pack` builds the JavaScript CLI in `runtime/` automatically because Node
-cannot load its TypeScript source from inside `node_modules`. That generated
-CLI is included in the package.
-
-Run `pnpm check:package` before preparing a release. It checks npm's file selection,
-required resources, excluded development files and relative imports. For an
-installation smoke test, use `npm pack --pack-destination <temporary-dir>`, install
-the tarball in an empty project, then run its `konpeki validate` and `konpeki preview`
-commands against a composition outside the installed package. Do not publish
-until that isolated preview works. Publish the tested tarball rather than
-rebuilding during publication. Packing locally does not publish anything.
-
-## Tag releases
-
-`.github/workflows/publish.yml` stages releases on bare version tags such as `0.2.1`
-(no `v` prefix). The tag must equal `package.json`'s version.
-The workflow installs the mise toolchain and frozen dependencies, runs typecheck,
-tests, build and package checks, then installs a tarball in an isolated directory
-to validate a composition and build the packaged canvas. It stages that same
-tarball for maintainer approval; it does not publish directly. Browser review
-remains a pre-release responsibility.
-
-Before the first tag release, configure **Trusted publishing → GitHub Actions**
-in the `konpeki` package settings on npmjs.com:
-
-- Organization or user: `vcfgdev`
-- Repository: `konpeki`
-- Workflow filename: `publish.yml`
-- Environment name: leave empty
-- Leave **Allow npm publish** unchecked (staged publishing only)
-
-The workflow uses GitHub-hosted runners and OIDC (`id-token: write`); no npm
-token secret is needed. Staged publishing requires npm 11.15.0 or newer and
-Node 22.14.0 or newer; the pinned toolchain meets both requirements.
-npm generates provenance automatically for public repositories;
-private repositories do not receive provenance.
-
-After updating the package version, completing release checks and pushing the
-release commit, explicitly create and push its matching tag:
-
-```sh
-VERSION=0.2.1
-git tag "$VERSION"
-git push origin "$VERSION"
-```
-
-Replace `0.2.1` with the version in `package.json`. Published versions cannot be
-republished. Pushing a matching tag submits the tested package to npm's staging
-area. After the workflow succeeds, review the release in npmjs.com's **Staged
-Packages** tab and click **Approve**, completing 2FA to publish it. Alternatively,
-use an authenticated local CLI:
-
-```sh
-mise exec -- npm stage list konpeki
-mise exec -- npm stage view <stage-id>
-mise exec -- npm stage approve <stage-id>
-```
-
-Approval makes the version public. Reject an incorrect staged release instead
-of approving it (`npm stage reject <stage-id>`).
-
-## Verification
+`npm pack` generates and verifies the fonts, then runs `scripts/build-cli.mjs`;
+dynamic imports may produce multiple files under `runtime/`, all of which are
+package resources. Run:
 
 ```sh
 pnpm check
@@ -226,97 +72,81 @@ pnpm build
 pnpm check:package
 ```
 
+The package check validates npm's file selection and relative imports. An
+isolated tarball install should additionally exercise validate, check, all three
+render formats, and preview. Do not infer rendering fidelity from a browser
+screenshot or a structural test.
+
+Retained React/SVG examples remain supported drawing references, not a second
+runtime. Do not present the retained trusted-source conversion helper as a v1
+document migrator. Never publish, push, deploy, or tag without explicit permission.
+
+## Verification
+
+The test suite requires Poppler (`pdftotext`, `pdftoppm`) and ImageMagick
+(`compare`). On Debian/Ubuntu install `poppler-utils imagemagick`. These are test
+dependencies only; end users need no browser, Poppler, or ImageMagick to render.
+The full writer harness additionally uses ImageMagick 7's `magick` command.
+
 With the dev server running and `agent-browser` installed:
 
 ```sh
-node scripts/check-canvas.mjs http://localhost:4318 .amp/in/artifacts
-node scripts/check-pages.mjs http://localhost:4318 .amp/in/artifacts/pages
+node scripts/check-text-layout.mjs
+node scripts/check-scene-writers.mjs
+node scripts/check-grid-editing.mjs http://localhost:4318 /tmp/konpeki-editing
+node scripts/check-notes.mjs /tmp/konpeki-notes
+node scripts/check-grid.mjs /tmp/konpeki-gallery
 ```
 
-For the Build it lifecycle, `node scripts/check-build.mjs` starts its own
-disposable file session. It checks pending requests, agent refresh, failure
-recovery and reduced motion, and captures the affected states. Add an output
-directory and `--record` to also record the animation.
+Inspect the captured editor, presentation, night, and export states. Assertions
+do not establish visual correctness. `check-grid` uses the scene checks and
+renders all 11 pages without a browser; chart scale is a review warning.
 
-`node scripts/check-notes.mjs` checks page/vector note scopes, draft isolation,
-reload persistence, CLI claim/finish, clarification and cancellation in a disposable
-file-backed browser session. It accepts a screenshot directory as its first argument.
+The original 3,719-case layout harness was not supplied. The reconstructed
+45-case corpus is regression coverage, not a replacement for that acceptance
+dataset. All 94 native blocks retain their captured Chromium line breaks, and
+79 artwork labels retain their captured baselines within 0.5 px. The 11 scene
+snapshots include every item, target ID, glyph, fit and clip.
 
-`node scripts/check-feedback.mjs <output-directory>` checks invalid numeric input,
-blank-canvas commits, page renaming, stable panel geometry, native/vector overflow targets,
-note-save recovery, and file-save/conflict recovery with delayed opens and stale polls
-in a disposable session with injected service failures. It
-also checks notification exits, interrupted re-entry, inert hidden controls and reduced
-motion, and records screenshots and measurements. Run with `--before` on a baseline checkout
-to record the same failure states without asserting the revised behavior.
+The font baseline check independently measures 78 Chromium positions. Nine
+known cases differ by 0.58–0.76 px: all six Noto Sans faces at 20 px, Symbols 2 at
+44/76 px, and Symbols at 76 px. These are explicit exceptions, not a global
+tolerance increase. Blink's `FontMetrics::AscentDescentWithHacks` rounds ascent
+and descent to integer pixels; `CalculateLeadingSpace` floors ascent-side
+half-leading. Konpeki intentionally retains fractional OpenType metrics. The
+manifest records OS/2 typo metrics when `USE_TYPO_METRICS` is set, otherwise hhea.
 
-These checks exercise all five component kinds, empty slides, JSON round trips,
-vector editing/history and fitted line dragging. They capture editor and
-presentation states at two sizes; inspect the images because assertions alone
-do not establish visual correctness.
+`check-scene-writers` compares Chromium SVG rasterization, resvg PNG and Poppler
+PDF rasterization at 2x, with raw and blurred RMSE limits for raster edge
+coverage. It also checks extracted PDF characters per page. These pixel limits
+are regression alarms, not proof that only antialiasing can differ; inspect the
+pairs when a writer changes. `--keep` retains the comparison output.
 
-Documentation changes need link and instruction checks. Deck changes need
-typecheck, build, relevant fixture checks and actual visual inspection. Shared
-component, theme or dependency changes also need the full test suite and
-representative affected decks. A build can report a large-framework-chunk advisory.
+Regenerate bundled resources with `pnpm composition:generate`,
+`pnpm fonts:generate`, and `node scripts/generate-draft-icons.mjs`. For an
+intentional font or converter update, update the dependency locks, run
+`pnpm fonts:generate --update-manifest`, review the manifest diff, and rerun the
+text and writer conformance checks. Commit the manifest and locks, not the
+generated fonts or license copies. resvg is pinned to 2.5.0: 2.6.2 can panic or
+exhaust memory on cropped, offscreen clipped groups used by the paint-aware
+contrast check.
 
-For v2 gallery and introduction pages, `scripts/check-grid.mjs` checks geometry,
-leading, overflow and unmarked overlap at both 1920×1080 and 1024×768. It checks
-the release/intro flow drawings against their label columns, samples opaque text
-against underlying fills within each vector, and warns when chart artwork scales
-away from 1:1. Contrast sampling excludes translucent stacks and cross-component
-backgrounds; it is not a complete contrast audit. `*-page-2x.png` captures use
-exactly twice the page dimensions, independently of the review viewport.
-Passing these checks does not establish aesthetic preference, blind-review
-preference or first-attempt agent quality; inspect the rendered pages as well.
+## Release and playground deployment
 
-`scripts/check-grid-editing.mjs <preview-url> <output-directory>` exercises pointer
-drag/resize, keyboard nudges, undo/redo, padded text, transformed SVG type, theme
-changes, browser storage, JSON/PNG export and v1 free placement. An optional third
-argument names the readiness JSON from `konpeki preview <disposable-file> --json`
-for a real file/agent round trip. That disposable document must be titled
-`Disposable grid session`; the test replaces it. Never pass a person's document.
+The portable skill, plugin and package versions move together. After checks and
+an isolated tarball preview succeed, push the release commit to `main` and its
+matching bare version tag (for example `0.4.0`), only with authorization.
+`.github/workflows/publish.yml` tests and packs that revision, smoke-tests all
+export formats, and stages the tested tarball with `npm stage publish`.
 
-`scripts/evaluate-grid.mjs <preview-url> <output-directory> [v1-git-ref]` compares
-the five source documents and tests all 33 preset-only variants. Its default
-baseline is the pre-port Git revision; fetch full history if needed. Results after
-the artwork alignment repairs use minified UTF-8 JSON bytes, not the plan's
-pretty-printed file sizes:
+Trusted publishing on npm must name `vcfgdev/konpeki`, workflow `publish.yml`,
+with no environment and **Allow npm publish** unchecked. The workflow uses OIDC,
+not an npm token. Staging is not publication: a maintainer must approve the
+release in npm's **Staged Packages** tab and complete 2FA. Published versions
+cannot be replaced. Reject an incorrect stage rather than approving it.
 
-| Document | v1 bytes | v2 bytes | v1 explicit sizes | v2 named steps used |
-| --- | ---: | ---: | ---: | ---: |
-| Architecture | 10,267 | 10,268 | 7 | 4 |
-| Sankey | 7,741 | 7,928 | 5 | 4 |
-| Release | 10,016 | 11,100 | 5 | 3 |
-| Explainer | 11,444 | 11,325 | 7 | 4 |
-| Introduction | 75,649 | 75,606 | 18 | 7 |
-
-All 94 native text blocks and 79 vector labels use scale steps. The baseline's
-union is 28 explicit sizes (native plus vector attributes), not the plan's quoted
-20; the port uses seven named steps. Source size is now 1.0% larger overall:
-giving each repeated drawing its own aligned component costs metadata. The first
-port's 1.8% reduction did not survive those fidelity repairs. These ports do not
-measure first-attempt agent validity or blind preference. The line-length
-estimate flags no gallery text and two intro notes
-(76/77 characters); it is advisory, excludes artwork labels, and is not a font
-measurement or a reason to shorten necessary evidence automatically.
-
-Ten preset-only variants pass bounds/overflow checks: architecture and Sankey at
-presentation, release at portrait, and all seven intro pages at presentation.
-The other 23 require recomposition. Inspection also shows that the valid release
-portrait retains loose spacing: a bounds pass is not a taste judgment. Fixed
-rows and the proposed 12/6/4 destination columns remain an initial design choice,
-not proof of automatic cross-destination layout. Full-bleed, data-driven chart/
-table rendering, topology layout and alternative export renderers are deferred.
-
-Render affected pages at presentation and review sizes after fonts load. Inspect
-text, clipping, relationships, contrast and cross-page consistency. Repair issues
-and inspect fresh captures. Keep browser checks scoped to factual and layout
-contracts, not universal taste. Record untested outputs and limitations with
-the example; screenshots do not prove PDF/PPTX or cross-application fidelity.
-
-When adding examples, preserve the exact creative requests, editable source,
-source facts and reviewed images as described in [AUTHORING.md](../AUTHORING.md).
-Examples demonstrate capabilities; there is no separate benchmark suite or
-aesthetic score. Check font language subsets and license notices when
-redistributing assets; dependencies retain their own licenses.
+The public playground at [vcfgdev.github.io/konpeki](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki)
+deploys only when `pages.yml` is explicitly dispatched on `main`. Package
+release and ordinary pushes do not deploy it. Deploy only static `dist`, never
+a capability-bearing file-session server. Existing browser working copies
+survive deployment; download edits before resetting an example.
