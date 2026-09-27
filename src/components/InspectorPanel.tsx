@@ -10,7 +10,8 @@ import {
   type ThemeId,
   type TypographyId,
   type VectorElement,
-} from "../../composition/types.ts";
+} from "../../composition/runtime.ts";
+import { gridMetrics, roleSteps, typeSteps, type TypeStep } from "../../composition/grid.ts";
 import {
   chartDefinitions,
   chartTemplates,
@@ -445,6 +446,7 @@ export function InspectorPanel({
       </section>
     );
   const rect = component.preferredRect;
+  const grid = slide.grid ? gridMetrics(slide.grid) : undefined;
   const appearance = component.appearance as Record<string, string> | undefined;
   const defaults = defaultAppearance(component.kind);
   const previewPalette = composerPalette(draft.theme?.id ?? "plex", draft.theme?.mode ?? "paper");
@@ -505,14 +507,20 @@ export function InspectorPanel({
         <Field label="Text"><textarea name="text-content" value={component.content ?? ""}
           onChange={(event) => onComponent({ ...component, content: event.target.value }, `content:${component.id}`)} onBlur={onEditEnd} /></Field>
         <div className="text-typography-fields">
-        <NumberField label="Font size" min={8} max={240} value={component.textStyle?.size ?? 36}
-          onCommit={size => onComponent({ ...component, textStyle: { ...component.textStyle, size } }, `font:${component.id}`)} onEditEnd={onEditEnd} />
+        {grid ? <Select label="Type step" value={component.textStyle?.step ?? "role"} options={["role", ...typeSteps]}
+          optionLabels={{ role: `Role default (${roleSteps[component.appearance.role]})` }}
+          onChange={step => onComponent({ ...component, textStyle: { ...component.textStyle, step: step === "role" ? undefined : step as TypeStep, leading: undefined } })} />
+          : <NumberField label="Font size" min={8} max={240} value={component.textStyle?.size ?? 36}
+            onCommit={size => onComponent({ ...component, textStyle: { ...component.textStyle, size } }, `font:${component.id}`)} onEditEnd={onEditEnd} />}
         <Select label="Text color" value={component.textStyle?.color ?? "ink"} options={["ink", "muted", "accent"]}
           onChange={(color) => onComponent({ ...component, textStyle: { ...component.textStyle, color: color as "ink" | "muted" | "accent" } })} />
         <Select label="Font weight" value={String(component.textStyle?.weight ?? 400)} options={["400", "500", "600"]}
           onChange={(weight) => onComponent({ ...component, textStyle: { ...component.textStyle, weight: Number(weight) as 400 | 500 | 600 } })} />
-        <NumberField label="Line height" min={1} max={3} step={0.1} value={component.textStyle?.lineHeight ?? 1.4}
-          onCommit={lineHeight => onComponent({ ...component, textStyle: { ...component.textStyle, lineHeight } }, `leading:${component.id}`)} onEditEnd={onEditEnd} />
+        {grid ? <NumberField label="Leading" unit="rows" min={Math.ceil(component.textStyle!.size! / grid.baseline)} max={32}
+          value={component.textStyle?.leading ?? Math.ceil(component.textStyle!.size! * 1.25 / grid.baseline)}
+          onCommit={leading => onComponent({ ...component, textStyle: { ...component.textStyle, leading } }, `leading:${component.id}`)} onEditEnd={onEditEnd} />
+          : <NumberField label="Line height" min={1} max={3} step={0.1} value={component.textStyle?.lineHeight ?? 1.4}
+            onCommit={lineHeight => onComponent({ ...component, textStyle: { ...component.textStyle, lineHeight } }, `leading:${component.id}`)} onEditEnd={onEditEnd} />}
         </div>
       </>}
       <Field label={component.kind === "diagram" || component.kind === "chart" ? "What should this explain?" : "Content intent"}>
@@ -549,15 +557,21 @@ export function InspectorPanel({
         }}
       />}
       <fieldset>
-        <legend>Position & size</legend>
+        <legend>{grid ? "Grid area" : "Position & size"}</legend>
         <div className="geometry">
-          {(["x", "y", "width", "height"] as const).map((key) => (
+          {grid && component.area ? (["column", "span", "row", "rows"] as const).map(key => (
+            <NumberField key={key} name={key} label={humanize(key)} value={component.area![key]} min={1}
+              max={key === "column" ? grid.columns - component.area!.span + 1 : key === "span" ? grid.columns - component.area!.column + 1 : key === "row" ? grid.rows - component.area!.rows + 1 : grid.rows - component.area!.row + 1}
+              onCommit={value => onComponent({ ...component, area: { ...component.area!, [key]: value } }, `geometry:${component.id}`)} onEditEnd={onEditEnd} />
+          )) : (["x", "y", "width", "height"] as const).map((key) => (
             <NumberField key={key} name={key} label={humanize(key)} unit="px" value={rect[key]}
               min={key === "width" ? Math.min(180, rect.width, slide.canvas.width - rect.x) : key === "height" ? Math.min(72, rect.height, slide.canvas.height - rect.y) : 0}
               max={key === "x" ? slide.canvas.width - rect.width : key === "y" ? slide.canvas.height - rect.height : key === "width" ? slide.canvas.width - rect.x : slide.canvas.height - rect.y}
               onCommit={value => geometry(key, value)} onEditEnd={onEditEnd} />
           ))}
         </div>
+        {grid && <NumberField label="Padding" unit="rows" min={0} max={Math.max(0, Math.min(24, Math.ceil(Math.min(rect.width, rect.height) / grid.baseline / 2) - 1))} value={component.padding ?? 0}
+          onCommit={padding => onComponent({ ...component, padding })} onEditEnd={onEditEnd} />}
       </fieldset>
       {component.customVisual && (
         <fieldset className="custom-visual-summary">

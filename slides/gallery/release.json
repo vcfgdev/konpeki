@@ -1,5 +1,5 @@
 {
-  "schema": "konpeki-composition/v1",
+  "schema": "konpeki-composition/v2",
   "title": "Clearpath 0.4 — release announcement",
   "authoringMode": "default",
   "theme": {
@@ -11,16 +11,6 @@
     {
       "id": "release",
       "name": "Clearpath 0.4 — release announcement",
-      "canvas": {
-        "width": 1080,
-        "height": 1350
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 72,
-        "bottom": 72,
-        "left": 72
-      },
       "intendedViewingSize": "social",
       "audience": "Small software teams reviewing release notes",
       "question": "What does Clearpath 0.4 help me do?",
@@ -32,23 +22,16 @@
         {
           "id": "headline",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 202,
-            "width": 936,
-            "height": 260
-          },
           "slotIds": [
             "headline-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Review the release\nbefore you publish.",
           "textStyle": {
-            "size": 90,
             "weight": 600,
             "color": "ink",
-            "lineHeight": 1.06,
-            "font": "heading"
+            "font": "heading",
+            "step": "display"
           },
           "appearance": {
             "role": "title",
@@ -61,28 +44,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 13,
+            "rows": 22
           }
         },
         {
           "id": "product",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 88,
-            "width": 936,
-            "height": 56
-          },
           "slotIds": [
             "product-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Clearpath 0.4",
           "textStyle": {
-            "size": 38,
             "weight": 500,
             "color": "accent",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -95,28 +77,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 3,
+            "rows": 5
           }
         },
         {
           "id": "support",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 490,
-            "width": 936,
-            "height": 132
-          },
           "slotIds": [
             "support-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Preview release notes. Review the wording.\nExport Markdown when you’re ready.",
           "textStyle": {
-            "size": 39,
             "weight": 400,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -129,17 +110,17 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 37,
+            "rows": 11
           }
         },
         {
           "id": "release-steps",
           "kind": "diagram",
-          "preferredRect": {
-            "x": 72,
-            "y": 730,
-            "width": 936,
-            "height": 300
-          },
           "slotIds": [
             "release-steps-content"
           ],
@@ -465,28 +446,27 @@
                 }
               }
             ]
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 57,
+            "rows": 25
           }
         },
         {
           "id": "step-1",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 1062,
-            "width": 248,
-            "height": 104
-          },
           "slotIds": [
             "step-1-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Preview\nrelease notes.",
           "textStyle": {
-            "size": 34,
             "weight": 500,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -499,28 +479,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 2,
+            "row": 85,
+            "rows": 9
           }
         },
         {
           "id": "step-2",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 416,
-            "y": 1062,
-            "width": 248,
-            "height": 104
-          },
           "slotIds": [
             "step-2-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Review\nthe wording.",
           "textStyle": {
-            "size": 34,
             "weight": 500,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -533,28 +512,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 3,
+            "span": 2,
+            "row": 85,
+            "rows": 9
           }
         },
         {
           "id": "step-3",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 760,
-            "y": 1062,
-            "width": 248,
-            "height": 104
-          },
           "slotIds": [
             "step-3-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Export\nMarkdown.",
           "textStyle": {
-            "size": 34,
             "weight": 500,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -567,28 +545,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 5,
+            "span": 2,
+            "row": 85,
+            "rows": 9
           }
         },
         {
           "id": "caveat",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 1250,
-            "width": 936,
-            "height": 40
-          },
           "slotIds": [
             "caveat-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Fictional product · illustrative example",
           "textStyle": {
-            "size": 25,
             "weight": 400,
             "color": "muted",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "caption"
           },
           "appearance": {
             "role": "body",
@@ -601,6 +578,12 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 100,
+            "rows": 3
           }
         }
       ],
@@ -707,7 +690,10 @@
         "step-2",
         "step-3",
         "caveat"
-      ]
+      ],
+      "grid": {
+        "preset": "portrait"
+      }
     }
   ]
 }

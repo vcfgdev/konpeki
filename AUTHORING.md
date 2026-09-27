@@ -15,6 +15,12 @@ do not assume 16:9 or invent extra pages. Record the destination in
 For another aspect ratio, recompose deliberately rather than stretching artwork,
 silently cropping evidence or shrinking essential text. Each page can have its own size.
 
+New browser-authored documents use the v2 grid presets: `presentation`,
+`portrait`, `link`, `square`, `article`, `explainer` and `gallery`. Place each
+component with an explicit one-based `area` (`column`, `span`, `row`, `rows`).
+Preset changes never recompose a page; adapt areas and copy deliberately. Baseline
+rows are fixed, so more content does not make a component grow.
+
 Return finished, inspected output by default. Do not require people to sketch,
 choose component types or approve an outline unless they ask for that checkpoint.
 Treat supplied sketches as partial direction and preserve deliberate human edits.
@@ -27,6 +33,10 @@ The slide-oriented guidance below also applies to single visual pages where rele
 - Keep all essential content readable at the intended viewing size. Check
   captions and sources as carefully as body text. Do not hide overflow, truncate
   required copy or automatically shrink text to fit.
+- In v2, use the seven named type steps (`fine`, `caption`, `body`, `lead`,
+  `heading`, `title`, `display`) rather than arbitrary sizes. Role defaults may be
+  overridden with `textStyle.step`; padding and leading use baseline units.
+  Render-check fixed-height text after copy, font, padding or leading changes.
 - Represent relationships honestly: correct arrow directions, clear label/value
   associations, appropriate chart scales and zero baselines for amount bars.
   Do not rely on color alone to distinguish meanings.
@@ -40,6 +50,10 @@ The slide-oriented guidance below also applies to single visual pages where rele
   outer geometry and stable IDs for its internal lines, shapes, paths and text.
   React may generate SVG in a trusted build step, but convert supported SVG
   primitives into the vector tree rather than making React a second deck source.
+- For v2 vectors, bind colors and fonts to theme roles and use `scale:<step>` for
+  vector font sizes. Keep geometry local to its component. Mark intentional
+  overlap with `layer`, while treating `paintOrder` as authoritative stacking.
+  Do not claim the grid automatically lays out topology or recomposes presets.
 
 ## Writing tone
 

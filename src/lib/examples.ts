@@ -1,4 +1,5 @@
 import { validateComposition } from "../../composition/validate.ts";
+import { resolveDocument } from "../../composition/grid.ts";
 import { parseEditableSvg } from "../../composition/vector.ts";
 import { initialDraft, type Draft } from "./model.ts";
 import migratedReactPage from "./examples/react-page-migration.json" with { type: "json" };
@@ -10,12 +11,12 @@ export function exampleDraft(name: string | null): Draft | undefined {
   if (name === "introducing-konpeki") {
     const validation = validateComposition(introducingKonpeki);
     if (!validation.ok) throw new Error("Invalid Konpeki introduction deck");
-    return validation.document;
+    return resolveDocument(validation.document);
   }
   if (name === "react-page-migration") {
     const validation = validateComposition(migratedReactPage);
     if (!validation.ok) throw new Error("Invalid migrated React page example");
-    return validation.document;
+    return resolveDocument(validation.document);
   }
   if (name !== "custom-visual") return undefined;
   const draft = initialDraft();
@@ -38,5 +39,5 @@ export function exampleDraft(name: string | null): Draft | undefined {
     "Double-click the diagram, then select a line, shape, path, or text element to revise it.";
   const validation = validateComposition(draft);
   if (!validation.ok) throw new Error("Invalid bundled example composition");
-  return validation.document;
+  return resolveDocument(validation.document);
 }

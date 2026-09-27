@@ -1,5 +1,5 @@
 import {
-  initialDraft,
+  initialGridDraft,
   parseStoredDraft,
   serializeDraft,
   type Draft,
@@ -46,7 +46,7 @@ function persistStoredDraft(key: string, draft: Draft) {
 export function loadDraft(): LoadedDraft {
   return loadStoredDraft(
     storageKey,
-    initialDraft(true),
+    initialGridDraft(),
     "Saved data could not be read. It has not been changed. Reset saved draft to recover.",
   );
 }

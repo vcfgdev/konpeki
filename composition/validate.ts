@@ -1,20 +1,20 @@
 import { Ajv2020 } from "ajv/dist/2020.js";
 import { schema } from "./schema.ts";
-import {
-  type CompositionDocument,
-} from "./types.ts";
+import { schemaV2 } from "./schema-v2.ts";
+import { gridSchema, gridMetrics, resolveDocument, type WireDocument } from "./grid.ts";
 import { vectorAttributeNames } from "./vector.ts";
 import { validThemeBinding } from "./theme-tokens.ts";
 
 export type ValidationIssue = { path: string; message: string };
 export type ValidationResult =
-  | { ok: true; document: CompositionDocument }
+  | { ok: true; document: WireDocument }
   | { ok: false; issues: ValidationIssue[] };
-const structural = new Ajv2020({
-  allErrors: true,
-  strict: false,
-}).compile<CompositionDocument>(schema);
+const ajv = new Ajv2020({ allErrors: true, strict: false });
+const structuralV1 = ajv.compile<WireDocument>(schema);
+const structuralV2 = ajv.compile<WireDocument>(schemaV2);
 export function validateComposition(input: unknown): ValidationResult {
+  const structural = input && typeof input === "object" && "schema" in input && input.schema === gridSchema
+    ? structuralV2 : structuralV1;
   if (!structural(input))
     return {
       ok: false,
@@ -23,7 +23,7 @@ export function validateComposition(input: unknown): ValidationResult {
         message: error.message ?? "Invalid value",
       })),
     };
-  const candidate = input;
+  const candidate = resolveDocument(input);
   const issues: ValidationIssue[] = [];
   const fail = (path: string, message: string) =>
     issues.push({ path, message });
@@ -37,6 +37,20 @@ export function validateComposition(input: unknown): ValidationResult {
   candidate.slides.forEach((slide, slideIndex) => {
     const base = `/slides/${slideIndex}`;
     const padding = slide.innerPadding;
+    if (slide.grid) {
+      const metrics = gridMetrics(slide.grid);
+      for (const [index, component] of slide.components.entries()) {
+        const a = component.area!;
+        const path = `${base}/components/${index}`;
+        if (a.column + a.span - 1 > metrics.columns || a.row + a.rows - 1 > metrics.rows)
+          fail(`${path}/area`, "Area exceeds grid; recompose for this destination");
+        const inset = (component.padding ?? 0) * metrics.baseline * 2;
+        if (inset >= component.preferredRect.width || inset >= component.preferredRect.height)
+          fail(`${path}/padding`, "Padding leaves no component content area");
+        if (component.kind === "text-block" && component.textStyle!.lineHeight! < 1)
+          fail(`${path}/textStyle/leading`, "Leading must be at least the type size");
+      }
+    }
     if (padding && (padding.left + padding.right >= slide.canvas.width || padding.top + padding.bottom >= slide.canvas.height))
       fail(`${base}/innerPadding`, "Padding leaves no page content area");
     const components = new Map(slide.components.map((item) => [item.id, item]));
@@ -214,7 +228,7 @@ export function validateComposition(input: unknown): ValidationResult {
     ? { ok: false, issues }
     : { ok: true, document: input };
 }
-export function assertComposition(input: unknown): CompositionDocument {
+export function assertComposition(input: unknown): WireDocument {
   const result = validateComposition(input);
   if (!result.ok)
     throw new Error(

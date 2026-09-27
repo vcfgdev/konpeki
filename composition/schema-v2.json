@@ -1,0 +1,2415 @@
+{
+  "$id": "https://vcfgdev.github.io/konpeki/composition/v2/schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authoringMode": {
+      "enum": [
+        "default",
+        "dynamic"
+      ],
+      "type": "string"
+    },
+    "schema": {
+      "const": "konpeki-composition/v2"
+    },
+    "slides": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "audience": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "components": {
+            "items": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "appearance": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "alignment": {
+                          "enum": [
+                            "start",
+                            "center",
+                            "end"
+                          ],
+                          "type": "string"
+                        },
+                        "border": {
+                          "enum": [
+                            "none",
+                            "outline",
+                            "filled"
+                          ],
+                          "type": "string"
+                        },
+                        "layout": {
+                          "enum": [
+                            "single",
+                            "two-column",
+                            "three-column",
+                            "two-plus-two",
+                            "four-column",
+                            "one-plus-three",
+                            "three-plus-one"
+                          ],
+                          "type": "string"
+                        },
+                        "logicalOrder": {
+                          "enum": [
+                            "none",
+                            "parallel",
+                            "progressive",
+                            "cyclical",
+                            "general-to-specific",
+                            "hierarchical"
+                          ],
+                          "type": "string"
+                        },
+                        "orientation": {
+                          "enum": [
+                            "horizontal",
+                            "vertical"
+                          ],
+                          "type": "string"
+                        },
+                        "purpose": {
+                          "enum": [
+                            "narrative",
+                            "comparison",
+                            "emphasis"
+                          ],
+                          "type": "string"
+                        },
+                        "role": {
+                          "enum": [
+                            "title",
+                            "subtitle",
+                            "body",
+                            "caption",
+                            "footnote"
+                          ],
+                          "type": "string"
+                        },
+                        "rule": {
+                          "enum": [
+                            "none",
+                            "top",
+                            "bottom"
+                          ],
+                          "type": "string"
+                        },
+                        "titleStyle": {
+                          "enum": [
+                            "plain",
+                            "prominent"
+                          ],
+                          "type": "string"
+                        },
+                        "treatment": {
+                          "enum": [
+                            "plain",
+                            "subtle",
+                            "strong"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "role"
+                      ],
+                      "type": "object"
+                    },
+                    "area": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "column": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "row": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "rows": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "span": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "column",
+                        "span",
+                        "row",
+                        "rows"
+                      ],
+                      "type": "object"
+                    },
+                    "content": {
+                      "maxLength": 50000,
+                      "type": "string"
+                    },
+                    "customVisual": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "maxLength": 1000,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "elements": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "attributes": {
+                                "additionalProperties": {
+                                  "oneOf": [
+                                    {
+                                      "maxLength": 10000,
+                                      "pattern": "^(?!theme:)",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                },
+                                "maxProperties": 40,
+                                "properties": {
+                                  "color": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "fill": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "font-family": {
+                                    "enum": [
+                                      "theme:heading-font",
+                                      "theme:body-font"
+                                    ]
+                                  },
+                                  "font-size": {
+                                    "enum": [
+                                      "scale:fine",
+                                      "scale:caption",
+                                      "scale:body",
+                                      "scale:lead",
+                                      "scale:heading",
+                                      "scale:title",
+                                      "scale:display"
+                                    ]
+                                  },
+                                  "stroke": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "g",
+                                  "rect",
+                                  "circle",
+                                  "ellipse",
+                                  "line",
+                                  "polyline",
+                                  "polygon",
+                                  "path",
+                                  "text",
+                                  "tspan"
+                                ],
+                                "type": "string"
+                              },
+                              "parentId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "text": {
+                                "maxLength": 10000,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "attributes"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 2000,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "fit": {
+                          "enum": [
+                            "contain",
+                            "cover",
+                            "stretch"
+                          ],
+                          "type": "string"
+                        },
+                        "format": {
+                          "const": "vector"
+                        },
+                        "viewBox": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "height": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "width": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "format",
+                        "elements",
+                        "viewBox",
+                        "description"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "intent": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "text-block"
+                    },
+                    "layer": {
+                      "enum": [
+                        "background",
+                        "overlay"
+                      ]
+                    },
+                    "padding": {
+                      "maximum": 24,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "slotIds": {
+                      "items": {
+                        "minLength": 1,
+                        "pattern": "\\S",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "textStyle": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "color": {
+                          "enum": [
+                            "ink",
+                            "muted",
+                            "accent"
+                          ],
+                          "type": "string"
+                        },
+                        "font": {
+                          "enum": [
+                            "heading",
+                            "body"
+                          ],
+                          "type": "string"
+                        },
+                        "leading": {
+                          "maximum": 32,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "step": {
+                          "enum": [
+                            "fine",
+                            "caption",
+                            "body",
+                            "lead",
+                            "heading",
+                            "title",
+                            "display"
+                          ]
+                        },
+                        "weight": {
+                          "enum": [
+                            400,
+                            500,
+                            600
+                          ]
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "area",
+                    "slotIds",
+                    "appearance"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "allOf": [
+                    {
+                      "if": {
+                        "required": [
+                          "topology"
+                        ]
+                      },
+                      "then": {
+                        "properties": {
+                          "appearance": {
+                            "properties": {
+                              "template": {
+                                "const": "sankey"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "properties": {
+                    "appearance": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "border": {
+                          "enum": [
+                            "none",
+                            "outline",
+                            "filled"
+                          ],
+                          "type": "string"
+                        },
+                        "colorScheme": {
+                          "enum": [
+                            "monochrome",
+                            "accent-with-muted-context",
+                            "categorical",
+                            "sequential",
+                            "status"
+                          ],
+                          "type": "string"
+                        },
+                        "density": {
+                          "enum": [
+                            "sparse",
+                            "standard"
+                          ],
+                          "type": "string"
+                        },
+                        "emphasis": {
+                          "enum": [
+                            "none",
+                            "primary",
+                            "latest-series",
+                            "exception"
+                          ],
+                          "type": "string"
+                        },
+                        "legend": {
+                          "enum": [
+                            "none",
+                            "top",
+                            "right",
+                            "bottom"
+                          ],
+                          "type": "string"
+                        },
+                        "orientation": {
+                          "enum": [
+                            "horizontal",
+                            "vertical"
+                          ],
+                          "type": "string"
+                        },
+                        "selection": {
+                          "enum": [
+                            "auto",
+                            "explicit"
+                          ],
+                          "type": "string"
+                        },
+                        "template": {
+                          "enum": [
+                            "grouped-bar",
+                            "line",
+                            "pie",
+                            "annotated-detail",
+                            "radar",
+                            "treemap",
+                            "scatter",
+                            "sankey"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "template"
+                      ],
+                      "type": "object"
+                    },
+                    "area": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "column": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "row": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "rows": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "span": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "column",
+                        "span",
+                        "row",
+                        "rows"
+                      ],
+                      "type": "object"
+                    },
+                    "customVisual": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "maxLength": 1000,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "elements": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "attributes": {
+                                "additionalProperties": {
+                                  "oneOf": [
+                                    {
+                                      "maxLength": 10000,
+                                      "pattern": "^(?!theme:)",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                },
+                                "maxProperties": 40,
+                                "properties": {
+                                  "color": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "fill": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "font-family": {
+                                    "enum": [
+                                      "theme:heading-font",
+                                      "theme:body-font"
+                                    ]
+                                  },
+                                  "font-size": {
+                                    "enum": [
+                                      "scale:fine",
+                                      "scale:caption",
+                                      "scale:body",
+                                      "scale:lead",
+                                      "scale:heading",
+                                      "scale:title",
+                                      "scale:display"
+                                    ]
+                                  },
+                                  "stroke": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "g",
+                                  "rect",
+                                  "circle",
+                                  "ellipse",
+                                  "line",
+                                  "polyline",
+                                  "polygon",
+                                  "path",
+                                  "text",
+                                  "tspan"
+                                ],
+                                "type": "string"
+                              },
+                              "parentId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "text": {
+                                "maxLength": 10000,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "attributes"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 2000,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "fit": {
+                          "enum": [
+                            "contain",
+                            "cover",
+                            "stretch"
+                          ],
+                          "type": "string"
+                        },
+                        "format": {
+                          "const": "vector"
+                        },
+                        "viewBox": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "height": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "width": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "format",
+                        "elements",
+                        "viewBox",
+                        "description"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "intent": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "chart"
+                    },
+                    "layer": {
+                      "enum": [
+                        "background",
+                        "overlay"
+                      ]
+                    },
+                    "padding": {
+                      "maximum": 24,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "slotIds": {
+                      "items": {
+                        "minLength": 1,
+                        "pattern": "\\S",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "topology": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "edges": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "label": {
+                                "maxLength": 120,
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "to": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 48,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "kind": {
+                          "const": "explicit"
+                        },
+                        "nodes": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "primitive": {
+                                "oneOf": [
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "color": {
+                                        "enum": [
+                                          "ink",
+                                          "muted",
+                                          "accent"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "fill": {
+                                        "enum": [
+                                          "none",
+                                          "solid",
+                                          "wash"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "const": "shape"
+                                      },
+                                      "shape": {
+                                        "enum": [
+                                          "rectangle",
+                                          "rounded-rectangle",
+                                          "circle",
+                                          "line"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "kind",
+                                      "shape"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "color": {
+                                        "enum": [
+                                          "ink",
+                                          "muted",
+                                          "accent"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "const": "icon"
+                                      },
+                                      "name": {
+                                        "minLength": 1,
+                                        "pattern": "\\S",
+                                        "type": "string"
+                                      },
+                                      "style": {
+                                        "enum": [
+                                          "outline",
+                                          "filled"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "kind"
+                                    ],
+                                    "type": "object"
+                                  }
+                                ]
+                              },
+                              "slotId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "visible": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "slotId"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 24,
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "nodes",
+                        "edges"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "area",
+                    "slotIds",
+                    "appearance"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "appearance": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "border": {
+                          "enum": [
+                            "none",
+                            "outline",
+                            "filled"
+                          ],
+                          "type": "string"
+                        },
+                        "colorScheme": {
+                          "enum": [
+                            "monochrome",
+                            "accent-with-muted-context",
+                            "categorical",
+                            "sequential",
+                            "status"
+                          ],
+                          "type": "string"
+                        },
+                        "density": {
+                          "enum": [
+                            "sparse",
+                            "standard"
+                          ],
+                          "type": "string"
+                        },
+                        "emphasis": {
+                          "enum": [
+                            "none",
+                            "primary",
+                            "latest-series",
+                            "exception"
+                          ],
+                          "type": "string"
+                        },
+                        "selection": {
+                          "enum": [
+                            "auto",
+                            "explicit"
+                          ],
+                          "type": "string"
+                        },
+                        "type": {
+                          "enum": [
+                            "architecture",
+                            "it-current-state",
+                            "high-level",
+                            "deployment",
+                            "flowchart",
+                            "sequence",
+                            "state-machine",
+                            "swimlane",
+                            "process",
+                            "data-flow",
+                            "dp-integration",
+                            "er-data-model",
+                            "medallion",
+                            "dp-security-matrix",
+                            "dependency-graph",
+                            "uml-class",
+                            "database-schema",
+                            "nested",
+                            "tree",
+                            "org-chart",
+                            "layer-stack",
+                            "pyramid-funnel",
+                            "timeline",
+                            "gantt",
+                            "kanban",
+                            "user-journey",
+                            "story-map",
+                            "quadrant",
+                            "loop-flywheel",
+                            "venn",
+                            "fishbone",
+                            "wardley-map"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ],
+                      "type": "object"
+                    },
+                    "area": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "column": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "row": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "rows": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "span": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "column",
+                        "span",
+                        "row",
+                        "rows"
+                      ],
+                      "type": "object"
+                    },
+                    "customVisual": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "maxLength": 1000,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "elements": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "attributes": {
+                                "additionalProperties": {
+                                  "oneOf": [
+                                    {
+                                      "maxLength": 10000,
+                                      "pattern": "^(?!theme:)",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                },
+                                "maxProperties": 40,
+                                "properties": {
+                                  "color": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "fill": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "font-family": {
+                                    "enum": [
+                                      "theme:heading-font",
+                                      "theme:body-font"
+                                    ]
+                                  },
+                                  "font-size": {
+                                    "enum": [
+                                      "scale:fine",
+                                      "scale:caption",
+                                      "scale:body",
+                                      "scale:lead",
+                                      "scale:heading",
+                                      "scale:title",
+                                      "scale:display"
+                                    ]
+                                  },
+                                  "stroke": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "g",
+                                  "rect",
+                                  "circle",
+                                  "ellipse",
+                                  "line",
+                                  "polyline",
+                                  "polygon",
+                                  "path",
+                                  "text",
+                                  "tspan"
+                                ],
+                                "type": "string"
+                              },
+                              "parentId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "text": {
+                                "maxLength": 10000,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "attributes"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 2000,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "fit": {
+                          "enum": [
+                            "contain",
+                            "cover",
+                            "stretch"
+                          ],
+                          "type": "string"
+                        },
+                        "format": {
+                          "const": "vector"
+                        },
+                        "viewBox": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "height": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "width": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "format",
+                        "elements",
+                        "viewBox",
+                        "description"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "intent": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "diagram"
+                    },
+                    "layer": {
+                      "enum": [
+                        "background",
+                        "overlay"
+                      ]
+                    },
+                    "padding": {
+                      "maximum": 24,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "slotIds": {
+                      "items": {
+                        "minLength": 1,
+                        "pattern": "\\S",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "topology": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "edges": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "from": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "label": {
+                                "maxLength": 120,
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "to": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "from",
+                              "to"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 48,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "kind": {
+                          "const": "explicit"
+                        },
+                        "nodes": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "primitive": {
+                                "oneOf": [
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "color": {
+                                        "enum": [
+                                          "ink",
+                                          "muted",
+                                          "accent"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "fill": {
+                                        "enum": [
+                                          "none",
+                                          "solid",
+                                          "wash"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "const": "shape"
+                                      },
+                                      "shape": {
+                                        "enum": [
+                                          "rectangle",
+                                          "rounded-rectangle",
+                                          "circle",
+                                          "line"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "kind",
+                                      "shape"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "color": {
+                                        "enum": [
+                                          "ink",
+                                          "muted",
+                                          "accent"
+                                        ],
+                                        "type": "string"
+                                      },
+                                      "kind": {
+                                        "const": "icon"
+                                      },
+                                      "name": {
+                                        "minLength": 1,
+                                        "pattern": "\\S",
+                                        "type": "string"
+                                      },
+                                      "style": {
+                                        "enum": [
+                                          "outline",
+                                          "filled"
+                                        ],
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "kind"
+                                    ],
+                                    "type": "object"
+                                  }
+                                ]
+                              },
+                              "slotId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "visible": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "slotId"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 24,
+                          "minItems": 1,
+                          "type": "array"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "nodes",
+                        "edges"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "area",
+                    "slotIds",
+                    "appearance"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "appearance": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "border": {
+                          "enum": [
+                            "none",
+                            "outline",
+                            "filled"
+                          ],
+                          "type": "string"
+                        },
+                        "fit": {
+                          "enum": [
+                            "cover",
+                            "contain"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "area": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "column": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "row": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "rows": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "span": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "column",
+                        "span",
+                        "row",
+                        "rows"
+                      ],
+                      "type": "object"
+                    },
+                    "customVisual": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "maxLength": 1000,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "elements": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "attributes": {
+                                "additionalProperties": {
+                                  "oneOf": [
+                                    {
+                                      "maxLength": 10000,
+                                      "pattern": "^(?!theme:)",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                },
+                                "maxProperties": 40,
+                                "properties": {
+                                  "color": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "fill": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "font-family": {
+                                    "enum": [
+                                      "theme:heading-font",
+                                      "theme:body-font"
+                                    ]
+                                  },
+                                  "font-size": {
+                                    "enum": [
+                                      "scale:fine",
+                                      "scale:caption",
+                                      "scale:body",
+                                      "scale:lead",
+                                      "scale:heading",
+                                      "scale:title",
+                                      "scale:display"
+                                    ]
+                                  },
+                                  "stroke": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "g",
+                                  "rect",
+                                  "circle",
+                                  "ellipse",
+                                  "line",
+                                  "polyline",
+                                  "polygon",
+                                  "path",
+                                  "text",
+                                  "tspan"
+                                ],
+                                "type": "string"
+                              },
+                              "parentId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "text": {
+                                "maxLength": 10000,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "attributes"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 2000,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "fit": {
+                          "enum": [
+                            "contain",
+                            "cover",
+                            "stretch"
+                          ],
+                          "type": "string"
+                        },
+                        "format": {
+                          "const": "vector"
+                        },
+                        "viewBox": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "height": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "width": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "format",
+                        "elements",
+                        "viewBox",
+                        "description"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "intent": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "image"
+                    },
+                    "layer": {
+                      "enum": [
+                        "background",
+                        "overlay"
+                      ]
+                    },
+                    "padding": {
+                      "maximum": 24,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "slotIds": {
+                      "items": {
+                        "minLength": 1,
+                        "pattern": "\\S",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array",
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "area",
+                    "slotIds"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "appearance": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "border": {
+                          "enum": [
+                            "none",
+                            "outline",
+                            "filled"
+                          ],
+                          "type": "string"
+                        },
+                        "colorScheme": {
+                          "enum": [
+                            "monochrome",
+                            "accent-with-muted-context",
+                            "categorical",
+                            "sequential",
+                            "status"
+                          ],
+                          "type": "string"
+                        },
+                        "density": {
+                          "enum": [
+                            "sparse",
+                            "standard"
+                          ],
+                          "type": "string"
+                        },
+                        "grid": {
+                          "enum": [
+                            "none",
+                            "rows",
+                            "all"
+                          ],
+                          "type": "string"
+                        },
+                        "header": {
+                          "enum": [
+                            "row",
+                            "none",
+                            "column",
+                            "both"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "area": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "column": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "row": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "rows": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "span": {
+                          "maximum": 512,
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "column",
+                        "span",
+                        "row",
+                        "rows"
+                      ],
+                      "type": "object"
+                    },
+                    "customVisual": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "description": {
+                          "maxLength": 1000,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "elements": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "attributes": {
+                                "additionalProperties": {
+                                  "oneOf": [
+                                    {
+                                      "maxLength": 10000,
+                                      "pattern": "^(?!theme:)",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "number"
+                                    }
+                                  ]
+                                },
+                                "maxProperties": 40,
+                                "properties": {
+                                  "color": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "fill": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  },
+                                  "font-family": {
+                                    "enum": [
+                                      "theme:heading-font",
+                                      "theme:body-font"
+                                    ]
+                                  },
+                                  "font-size": {
+                                    "enum": [
+                                      "scale:fine",
+                                      "scale:caption",
+                                      "scale:body",
+                                      "scale:lead",
+                                      "scale:heading",
+                                      "scale:title",
+                                      "scale:display"
+                                    ]
+                                  },
+                                  "stroke": {
+                                    "enum": [
+                                      "none",
+                                      "transparent",
+                                      "currentColor",
+                                      "theme:ink",
+                                      "theme:muted",
+                                      "theme:background",
+                                      "theme:surface",
+                                      "theme:divider",
+                                      "theme:accent",
+                                      "theme:on-accent",
+                                      "theme:wash"
+                                    ]
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "id": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "kind": {
+                                "enum": [
+                                  "g",
+                                  "rect",
+                                  "circle",
+                                  "ellipse",
+                                  "line",
+                                  "polyline",
+                                  "polygon",
+                                  "path",
+                                  "text",
+                                  "tspan"
+                                ],
+                                "type": "string"
+                              },
+                              "parentId": {
+                                "minLength": 1,
+                                "pattern": "\\S",
+                                "type": "string"
+                              },
+                              "text": {
+                                "maxLength": 10000,
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "kind",
+                              "attributes"
+                            ],
+                            "type": "object"
+                          },
+                          "maxItems": 2000,
+                          "minItems": 0,
+                          "type": "array"
+                        },
+                        "fit": {
+                          "enum": [
+                            "contain",
+                            "cover",
+                            "stretch"
+                          ],
+                          "type": "string"
+                        },
+                        "format": {
+                          "const": "vector"
+                        },
+                        "viewBox": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "height": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "width": {
+                              "exclusiveMinimum": 0,
+                              "maximum": 100000,
+                              "type": "number"
+                            },
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "x",
+                            "y",
+                            "width",
+                            "height"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "format",
+                        "elements",
+                        "viewBox",
+                        "description"
+                      ],
+                      "type": "object"
+                    },
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "intent": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "const": "table"
+                    },
+                    "layer": {
+                      "enum": [
+                        "background",
+                        "overlay"
+                      ]
+                    },
+                    "padding": {
+                      "maximum": 24,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "slotIds": {
+                      "items": {
+                        "minLength": 1,
+                        "pattern": "\\S",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array",
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "area",
+                    "slotIds"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "minItems": 0,
+            "type": "array"
+          },
+          "contentSlots": {
+            "items": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "instruction": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "label": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "role": {
+                      "enum": [
+                        "takeaway",
+                        "body",
+                        "evidence",
+                        "comparison-item",
+                        "process-step",
+                        "entity",
+                        "image",
+                        "table"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label",
+                    "required",
+                    "instruction",
+                    "role"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "instruction": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "label": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "required": {
+                      "type": "boolean"
+                    },
+                    "role": {
+                      "enum": [
+                        "qualification",
+                        "source"
+                      ],
+                      "type": "string"
+                    },
+                    "targets": {
+                      "items": {
+                        "minLength": 1,
+                        "pattern": "\\S",
+                        "type": "string"
+                      },
+                      "minItems": 1,
+                      "type": "array",
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label",
+                    "required",
+                    "instruction",
+                    "role",
+                    "targets"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "minItems": 0,
+            "type": "array"
+          },
+          "grid": {
+            "additionalProperties": false,
+            "properties": {
+              "preset": {
+                "enum": [
+                  "presentation",
+                  "portrait",
+                  "link",
+                  "square",
+                  "article",
+                  "explainer",
+                  "gallery"
+                ]
+              }
+            },
+            "required": [
+              "preset"
+            ],
+            "type": "object"
+          },
+          "groups": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "childIds": {
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "\\S",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "childIds"
+              ],
+              "type": "object"
+            },
+            "minItems": 0,
+            "type": "array"
+          },
+          "id": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "intendedViewingSize": {
+            "enum": [
+              "presentation",
+              "social",
+              "article",
+              "custom"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "pageNumber": {
+            "additionalProperties": false,
+            "properties": {
+              "color": {
+                "enum": [
+                  "ink",
+                  "muted",
+                  "accent"
+                ],
+                "type": "string"
+              },
+              "style": {
+                "enum": [
+                  "none",
+                  "01",
+                  "01/02"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "style",
+              "color"
+            ],
+            "type": "object"
+          },
+          "paintOrder": {
+            "items": {
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            "minItems": 0,
+            "type": "array",
+            "uniqueItems": true
+          },
+          "question": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "readingOrder": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "component",
+                    "group"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "id"
+              ],
+              "type": "object"
+            },
+            "minItems": 0,
+            "type": "array",
+            "uniqueItems": true
+          },
+          "relationships": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "direction": {
+                  "enum": [
+                    "forward",
+                    "bidirectional",
+                    "undirected"
+                  ],
+                  "type": "string"
+                },
+                "from": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "nodeId": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "slotId": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeId"
+                  ],
+                  "type": "object"
+                },
+                "id": {
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "flows-to",
+                    "qualifies",
+                    "compares-with",
+                    "depends-on",
+                    "connects-to"
+                  ],
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "to": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "nodeId": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "slotId": {
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "nodeId"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "id",
+                "kind",
+                "direction",
+                "from",
+                "to"
+              ],
+              "type": "object"
+            },
+            "minItems": 0,
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "grid",
+          "audience",
+          "question",
+          "intendedViewingSize",
+          "contentSlots",
+          "components",
+          "groups",
+          "readingOrder",
+          "paintOrder",
+          "relationships"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "theme": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "enum": [
+            "plex",
+            "precision",
+            "editorial",
+            "blue-cyan",
+            "orange-coral",
+            "yellow",
+            "green",
+            "graphite"
+          ],
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "paper",
+            "night"
+          ],
+          "type": "string"
+        },
+        "typography": {
+          "enum": [
+            "plex-sans",
+            "noto-sans",
+            "plex-serif",
+            "hanken-grotesk"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "mode"
+      ],
+      "type": "object"
+    },
+    "title": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "title",
+    "slides"
+  ],
+  "title": "konpeki-composition/v2",
+  "type": "object"
+}

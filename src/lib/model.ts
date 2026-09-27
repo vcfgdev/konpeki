@@ -5,7 +5,7 @@ import {
   type CompositionComponent,
   type CompositionSlide,
   type Rect,
-} from "../../composition/types.ts";
+} from "../../composition/runtime.ts";
 import { componentLabels } from "../../composition/document.ts";
 
 export * from "../../composition/document.ts";

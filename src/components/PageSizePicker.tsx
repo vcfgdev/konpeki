@@ -1,4 +1,4 @@
-import type { CompositionSlide } from "../../composition/types.ts";
+import type { CompositionSlide } from "../../composition/runtime.ts";
 import { pagePresets, pageSizeIssue, resizePage } from "../lib/page-size.ts";
 
 export function PageSizePicker({ slide, onChange }: { slide: CompositionSlide; onChange: (slide: CompositionSlide) => void }) {

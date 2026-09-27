@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CompositionComponent } from "../../composition/types.ts";
-import { validateComposition } from "../../composition/validate.ts";
+import type { CompositionComponent } from "../../composition/runtime.ts";
+import { validateDraft as validateComposition, initialGridDraft } from "../../composition/document.ts";
+import { resolveDocument, toComposition } from "../../composition/grid.ts";
 import { removeVectorElement } from "../../composition/vector.ts";
 import {
   addComponent,
@@ -262,7 +263,7 @@ export function App() {
       commitHistory(
         current,
         {
-          draft: next,
+          draft: resolveDocument(toComposition(next)),
           selected: Object.hasOwn(options, "selected")
             ? options.selected
             : current.present.selected,
@@ -345,6 +346,7 @@ export function App() {
           component,
           previous.preferredRect,
           component.preferredRect,
+          slide.grid,
         )
       : component;
     const diagramTypeChanged =
@@ -548,7 +550,7 @@ export function App() {
       showNotice("Fix the composition before downloading JSON.", "error");
       return;
     }
-    const blob = new Blob([canonicalJSON(draft)], { type: "application/json" });
+    const blob = new Blob([canonicalJSON(toComposition(draft))], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -561,7 +563,7 @@ export function App() {
     if (!window.confirm(
       "Start with a blank composition? You can undo this replacement until you reload.",
     )) return;
-    const next = initialDraft(true);
+    const next = initialGridDraft();
     focusAfterHistory.current = true;
     updateDraft(next, {
       activeSlideId: next.slides[0].id,
@@ -580,7 +582,7 @@ export function App() {
       else clearStoredDraft();
       const next = loaded.exampleName
         ? structuredClone(exampleDraft(loaded.exampleName)!)
-        : initialDraft(true);
+        : initialGridDraft();
       setHistory(
         createHistory({ draft: next, activeSlideId: next.slides[0].id }),
       );
@@ -744,7 +746,7 @@ export function App() {
             const nextSlide = getSlide(next, slide.id);
             const copy = nextSlide.components.find(candidate => !slide.components.some(existing => existing.id === candidate.id));
             if (!copy) return;
-            const moved = transformComponentRect(copy, copy.preferredRect, rect);
+            const moved = transformComponentRect(copy, copy.preferredRect, rect, slide.grid);
             nextSlide.components = nextSlide.components.map(candidate => candidate.id === copy.id ? moved : candidate);
             setVectorSelection(undefined);
             updateDraft(next, { selected: moved.id, mergeKey: `geometry:${moved.id}` });

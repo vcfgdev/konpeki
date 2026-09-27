@@ -40,7 +40,7 @@
     "src/lib/examples/react-page-migration.json",
     "src/styles/*.css",
     "src/assets/konpeki-mark.png",
-    "composition/{README.md,compile.ts,document.ts,schema.json,schema.ts,theme-tokens.ts,types.ts,validate.ts,vector.ts,visualizations.ts}",
+    "composition/{README.md,compile.ts,document.ts,grid.ts,runtime.ts,schema.json,schema.ts,schema-v2.json,schema-v2.ts,theme-tokens.ts,types.ts,validate.ts,vector.ts,visualizations.ts}",
     "design/*.md",
     "design/{palettes,themes}/*.{md,ts}",
     "design/review/*.md",

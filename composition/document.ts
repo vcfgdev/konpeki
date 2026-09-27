@@ -8,7 +8,8 @@ import {
   type CompositionSlide,
   type ContentSlot,
   type Rect,
-} from "./types.ts";
+} from "./runtime.ts";
+import { gridSchema, gridMetrics, resolveDocument, resolveSlide, resolveComponent, snapArea, toComposition, toGridComponent, type PageGrid } from "./grid.ts";
 import { validateComposition } from "./validate.ts";
 import { appearanceOptions } from "./schema.ts";
 import { diagramDefinition } from "./visualizations.ts";
@@ -204,6 +205,13 @@ export function initialDraft(empty = false): Draft {
     slides: [empty ? createBlankSlide() : createStarterSlide()],
   };
 }
+export function initialGridDraft(): Draft {
+  const blank = initialDraft(true);
+  return { ...blank, schema: gridSchema, slides: [resolveSlide({ ...blank.slides[0], grid: { preset: "presentation" }, components: [] })] };
+}
+export function validateDraft(draft: Draft) {
+  return validateComposition(toComposition(draft));
+}
 export function getSlide(draft: Draft, id = draft.slides[0]?.id) {
   const slide = draft.slides.find((item) => item.id === id);
   if (!slide) throw new Error(`Unknown slide: ${id}`);
@@ -213,7 +221,9 @@ export function addSlide(draft: Draft): { draft: Draft; slideId: string } {
   const used = new Set(draft.slides.map((slide) => slide.id));
   let index = draft.slides.length + 1;
   while (used.has(`slide-${index}`)) index += 1;
-  const slide = createBlankSlide(index);
+  const blank = createBlankSlide(index);
+  const slide = draft.schema === gridSchema
+    ? resolveSlide({ ...blank, grid: draft.slides[0].grid!, components: [] }) : blank;
   const next = { ...draft, slides: [...draft.slides, slide] };
   const validated = validMutation(draft, next);
   if (validated === draft) return { draft, slideId: "" };
@@ -275,7 +285,9 @@ export function transformComponentRect(
   component: CompositionComponent,
   previousRect: Rect,
   nextRect: Rect,
+  grid?: PageGrid,
 ): CompositionComponent {
+  if (grid) return resolveComponent({ ...toGridComponent(component), area: snapArea(grid, nextRect) }, grid);
   const next = structuredClone(component);
   next.preferredRect = { ...nextRect };
   if ((next.kind !== "diagram" && next.kind !== "chart") || !next.topology) return next;
@@ -299,7 +311,7 @@ function validMutation(draft: Draft, next: Draft) {
   const candidate = next.title.trim()
     ? next
     : { ...next, title: "Untitled composition" };
-  return validateComposition(candidate).ok ? next : draft;
+  return validateDraft(candidate).ok ? next : draft;
 }
 export function addComponent(
   draft: Draft,
@@ -325,7 +337,7 @@ export function addComponent(
     usedIds.has(`${kind}-${index}-content`)
   )
     index += 1;
-  const component = createComponent(kind, index, at, slide.canvas);
+  let component = createComponent(kind, index, at, slide.canvas);
   const previous = [...slide.components]
     .reverse()
     .find((item) =>
@@ -336,6 +348,14 @@ export function addComponent(
     );
   if (!at && previous)
     component.preferredRect = offsetRect(previous.preferredRect, slide.canvas);
+  if (slide.grid) {
+    const area = snapArea(slide.grid, component.preferredRect);
+    if (!at) {
+      const bottom = Math.max(0, ...slide.components.map(c => c.area!.row + c.area!.rows - 1));
+      area.row = Math.min(bottom + 3, gridMetrics(slide.grid).rows - area.rows + 1);
+    }
+    component = resolveComponent({ ...toGridComponent(component), area }, slide.grid);
+  }
   const readingOrder = [...slide.readingOrder];
   readingOrder.push({ kind: "component", id: component.id });
   const contentSlots = [
@@ -487,6 +507,7 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
     source,
     source.preferredRect,
     preferredRect,
+    slide.grid,
   );
   component.id = componentId;
   component.slotIds = slotIds;
@@ -560,7 +581,7 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
   return validMutation(draft, next);
 }
 export function serializeDraft(draft: Draft) {
-  return JSON.stringify({ version: 2, document: draft });
+  return JSON.stringify({ version: 2, document: toComposition(draft) });
 }
 export function parseStoredDraft(raw: string): StoredDraftResult {
   try {
@@ -576,7 +597,7 @@ export function parseStoredDraft(raw: string): StoredDraftResult {
       if (!result.ok) return { ok: false };
       return {
         ok: true,
-        draft: { ...result.document, title: document.title },
+        draft: { ...resolveDocument(result.document), title: document.title },
       };
     }
     return { ok: false };
@@ -588,7 +609,7 @@ export function parseCompositionJSON(raw: string): ParsedComposition {
   try {
     const input: unknown = JSON.parse(raw);
     const result = validateComposition(input);
-    if (result.ok) return { ok: true, document: result.document };
+    if (result.ok) return { ok: true, document: resolveDocument(result.document) };
     const issue = result.issues[0];
     return {
       ok: false,

@@ -1,5 +1,5 @@
 import { createComponent, createContentSlots, initialDraft } from "./document.ts";
-import type { CompositionDocument, ExplicitTopology } from './types.ts';
+import type { CompositionDocument, ExplicitTopology } from './runtime.ts';
 import { diagramDefinition } from './visualizations.ts';
 
 // Reconstructed contract exercises, not recovered historical pilot outputs.

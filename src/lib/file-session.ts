@@ -1,4 +1,6 @@
-import type { CompositionDocument } from "../../composition/types.ts";
+import type { CompositionDocument } from "../../composition/runtime.ts";
+import { resolveDocument, toComposition, type WireDocument } from "../../composition/grid.ts";
+import { assertComposition } from "../../composition/validate.ts";
 import type { ReviewState, ReviewTarget } from "./review.ts";
 
 export type FileSessionDocument = {
@@ -45,8 +47,9 @@ async function request<T>(
   return body;
 }
 
-export function loadFileSession(token: string) {
-  return request<FileSessionDocument>(token);
+export async function loadFileSession(token: string): Promise<FileSessionDocument> {
+  const session = await request<Omit<FileSessionDocument, "document"> & { document: WireDocument }>(token);
+  return { ...session, document: resolveDocument(assertComposition(session.document)) };
 }
 
 export function saveFileSession(
@@ -56,7 +59,7 @@ export function saveFileSession(
 ) {
   return request<{ revision: string }>(token, "", {
     method: "PUT",
-    body: JSON.stringify({ revision, document }),
+    body: JSON.stringify({ revision, document: toComposition(document) }),
   });
 }
 

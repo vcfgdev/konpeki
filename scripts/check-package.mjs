@@ -21,6 +21,8 @@ for (const required of [
   "index.html", "vite.config.ts", "src/main.tsx", "src/assets/konpeki-mark.png",
   "public/og.png",
   "composition/schema.json", "composition/README.md",
+  "composition/schema-v2.json", "composition/schema-v2.ts",
+  "composition/grid.ts", "composition/runtime.ts",
   "scripts/migrate-react-page.ts", "slides/README.md",
   "slides/drawing-references.md", "slides/github-cover/composition.json",
   "slides/introducing-konpeki/composition.json",

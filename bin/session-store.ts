@@ -2,8 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { readFile, rename, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { canonicalJSON } from "../composition/compile.ts";
-import { validateComposition } from "../composition/validate.ts";
-import { parseCompositionJSON } from "../composition/document.ts";
+import { assertComposition, validateComposition } from "../composition/validate.ts";
 
 export function revisionFor(value: string) {
   return createHash("sha256").update(value).digest("hex");
@@ -11,10 +10,9 @@ export function revisionFor(value: string) {
 
 export async function readCompositionFile(compositionPath: string) {
   const raw = await readFile(compositionPath, "utf8");
-  const parsed = parseCompositionJSON(raw);
-  if (!parsed.ok) throw new Error(parsed.message);
+  const document = assertComposition(JSON.parse(raw));
   return {
-    document: parsed.document,
+    document,
     revision: revisionFor(raw),
     name: basename(compositionPath),
   };

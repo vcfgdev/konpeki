@@ -14,17 +14,25 @@ step; opening the editor does not start a review listener.
 
 ## Documents and exports
 
-New documents live in `slides/<name>/composition.json`, with `PROMPT.md`, source
-notes and reviewed images alongside. Keep the editable composition under version
-control. The canvas is the source of truth for editing and presentation; download
+New browser documents use `konpeki-composition/v2`. Keep file-backed documents in
+`slides/<name>/composition.json`, with `PROMPT.md`, source notes and reviewed
+images alongside. Browser-local drafts stay in browser storage until exported.
+Keep the editable composition under version control. The canvas is the source of
+truth for editing and presentation; download
 its JSON for handoff and drag returned JSON onto the canvas to continue.
 
-One page is a complete creation. Presets cover Presentation (1920×1080), Square
-post (1080×1080), Portrait post (1080×1350), Link preview / OG (1200×630), and
-Article header (1600×600). The document contract supports 256–4096 pixels per side.
-Pages in one document may use different sizes. Changing size never stretches
-content and is refused when existing components would fall outside the page.
-Recompose for a new aspect ratio instead of stretching or cropping.
+One page is a complete creation. v2 presets are `presentation` (1920×1080),
+`square` (1080×1080), `portrait` (1080×1350), `link` (1200×630), `article`
+(1600×600), `explainer` (1200×1600) and `gallery` (1600×1000). Each fixes its
+dimensions, margins, columns, gutters, baseline rows and seven-step type scale.
+Components use one-based grid areas; padding and leading use baseline units.
+Changing a preset never stretches or automatically recomposes content. Revise
+areas and check fixed-height text at the destination size.
+
+v1 documents remain valid and use their authored canvas, inner padding and pixel
+rectangles. The currently published skill blank and pinned release runtime remain
+on v1 compatibility until release; use a v2-capable repository runtime for new v2
+documents rather than assuming the published runtime supports them.
 
 **Export PNG** saves the active page at its declared dimensions without editor
 controls. JSON remains the editable source; PNG is an image. Fresh documents and

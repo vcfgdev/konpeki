@@ -94,12 +94,20 @@ no installation without `--install`, and never updates project dependencies.
 When preparing a new release, deliberately update its pin and the plugin version
 together with the package version after testing the target runtime. The current
 pin is 0.3.1; local CLI/playground changes do not republish that npm version.
+The published skill blank and that pinned runtime remain v1-compatible until the
+next release; do not present them as v2-capable or change their files as part of
+local v2 documentation work.
 
 ## Implementation reference
 
 - `src/` contains the shared canvas application for editing and presentation.
   The [versioned composition contract](../composition/README.md) preserves
   content, relationships and visual intent across human and agent revisions.
+- `composition/grid.ts`, `schema-v2.ts`, `validate.ts` and `compile.ts`, together
+  with `src/components/Canvas.tsx`, define the v2 grid contract. v1 remains an
+  immutable supported schema. New browser documents use v2 fixed presets,
+  baseline rows and named type steps; preset changes require deliberate
+  recomposition rather than an automatic layout pass.
 - `bin/` contains the file-session CLI and its revision-checked persistence.
 - [AUTHORING.md](../AUTHORING.md) owns design defaults, factual fidelity and review.
   [Design resources](../design/README.md) provide palettes, themes and semantic
@@ -251,6 +259,47 @@ Documentation changes need link and instruction checks. Deck changes need
 typecheck, build, relevant fixture checks and actual visual inspection. Shared
 component, theme or dependency changes also need the full test suite and
 representative affected decks. A build can report a large-framework-chunk advisory.
+
+For v2 gallery and introduction pages, `scripts/check-grid.mjs` checks geometry,
+overflow and unmarked overlap at both 1920×1080 and 1024×768. Passing these checks
+does not establish aesthetic preference, blind-review preference or first-attempt
+agent quality; inspect the rendered pages as well.
+
+`scripts/check-grid-editing.mjs <preview-url> <output-directory>` exercises pointer
+drag/resize, keyboard nudges, undo/redo, padded text, transformed SVG type, theme
+changes, browser storage, JSON/PNG export and v1 free placement. An optional third
+argument names the readiness JSON from `konpeki preview <disposable-file> --json`
+for a real file/agent round trip. That disposable document must be titled
+`Disposable grid session`; the test replaces it. Never pass a person's document.
+
+`scripts/evaluate-grid.mjs <preview-url> <output-directory> [v1-git-ref]` compares
+the five source documents and tests all 33 preset-only variants. Its default
+baseline is the pre-port Git revision; fetch full history if needed. Initial
+results use minified UTF-8 JSON bytes, not the plan's pretty-printed file sizes:
+
+| Document | v1 bytes | v2 bytes | v1 explicit sizes | v2 named steps used |
+| --- | ---: | ---: | ---: | ---: |
+| Architecture | 10,267 | 10,268 | 7 | 4 |
+| Sankey | 7,741 | 7,925 | 5 | 4 |
+| Release | 10,016 | 9,768 | 5 | 3 |
+| Explainer | 11,444 | 11,325 | 7 | 4 |
+| Introduction | 75,649 | 73,726 | 18 | 7 |
+
+All 94 native text blocks and 79 vector labels use scale steps. The baseline's
+union is 28 explicit sizes (native plus vector attributes), not the plan's quoted
+20; the port uses seven named steps. Source size falls 1.8% overall, but not in
+every document. These ports do not measure first-attempt agent validity or blind
+preference. The line-length estimate flags no gallery text and two intro notes
+(76/77 characters); it is advisory, excludes artwork labels, and is not a font
+measurement or a reason to shorten necessary evidence automatically.
+
+Ten preset-only variants pass bounds/overflow checks: architecture and Sankey at
+presentation, release at portrait, and all seven intro pages at presentation.
+The other 23 require recomposition. Inspection also shows that the valid release
+portrait retains loose spacing: a bounds pass is not a taste judgment. Fixed
+rows and the proposed 12/6/4 destination columns remain an initial design choice,
+not proof of automatic cross-destination layout. Full-bleed, data-driven chart/
+table rendering, topology layout and alternative export renderers are deferred.
 
 Render affected pages at presentation and review sizes after fonts load. Inspect
 text, clipping, relationships, contrast and cross-page consistency. Repair issues

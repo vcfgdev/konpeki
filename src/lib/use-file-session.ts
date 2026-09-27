@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { canonicalJSON } from "../../composition/compile.ts";
-import { validateComposition } from "../../composition/validate.ts";
+import { validateDraft as validateComposition } from "../../composition/document.ts";
 import type { Draft } from "./model.ts";
 import { activeRequest, emptyReview, type ReviewState, type ReviewTarget } from "./review.ts";
 import {

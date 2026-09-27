@@ -20,6 +20,25 @@
 .canvas {
   font-family: var(--vector-body-font);
 }
+.component-free {
+  display: contents;
+}
+.component-grid {
+  position: absolute;
+  display: grid;
+  align-content: start;
+  pointer-events: none;
+}
+.component-grid > .slide-component {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  pointer-events: auto;
+}
+.component-grid > .border-none {
+  border: 0;
+}
 .slide-component {
   position: absolute;
   background: var(--slide-bg);
@@ -253,6 +272,9 @@
 .kind-text-block:not(.custom-visual) .component-surface {
   padding: 0;
   justify-content: flex-start;
+}
+.canvas .component-grid > .slide-component > .component-surface {
+  padding: var(--grid-padding, 0);
 }
 .text-block-content {
   white-space: pre-wrap;

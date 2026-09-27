@@ -25,7 +25,11 @@ export function VectorOverflowWarning({ slide, theme, onSelect }: {
         }
         document.querySelectorAll<HTMLElement>(".stage .text-block-content").forEach((text) => {
           const surface = text.parentElement;
-          if (surface && (text.scrollHeight > surface.clientHeight + 1 || text.scrollWidth > surface.clientWidth + 1)) add(text);
+          if (!surface) return;
+          const style = getComputedStyle(surface);
+          const height = surface.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+          const width = surface.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+          if (text.scrollHeight > height + 1 || text.scrollWidth > width + 1) add(text);
         });
         document.querySelectorAll<SVGSVGElement>(".stage .custom-vector-art").forEach((svg) => {
           const root = svg.getScreenCTM();

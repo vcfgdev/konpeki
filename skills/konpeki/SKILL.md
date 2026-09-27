@@ -104,6 +104,23 @@ For revisions, reread the current file first. Preserve unrelated content,
 component/vector IDs and human-edited geometry. Honor explicit chart or diagram
 choices. Recompose for a new aspect ratio instead of stretching or cropping.
 
+Use `konpeki-composition/v2` for new visuals when the resolved runtime's contract
+supports it. Choose `grid.preset` and one-based integer component areas
+`{ column, span, row, rows }`; do not compute or store page/component pixel
+rectangles. Choose `textStyle.step` from `fine`, `caption`, `body`, `lead`,
+`heading`, `title`, `display`, or let the text role supply its default. Padding
+and leading use baseline units. Artwork coordinates stay local to its cell;
+bind colors/fonts to theme roles and vector font sizes to `scale:<step>`.
+Rows have fixed heights: inspect overflow rather than shrinking required copy.
+Changing a preset does not automatically recompose the page.
+
+Preserve an existing document's schema unless migration is requested. The
+portable init blank and pinned npm 0.3.1 runtime use v1 pixel placement; they
+are not v2-capable merely because this skill describes v2. Follow the resolved
+runtime's contract, and validate with its CLI before opening the preview.
+For a requested v2 document, use a v2-capable runtime rather than silently
+falling back to v1 or changing only the schema identifier.
+
 Prefer native text and semantic components. When standard drafts cannot express
 the visual, use editable vectors inside their owning component. Reuse
 `<root>/design/README.md` and reference examples as needed.

@@ -1,5 +1,6 @@
 import {
   createElement,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -10,7 +11,8 @@ import {
   type CompositionComponent,
   type Rect,
   type VectorElement,
-} from "../../composition/types.ts";
+} from "../../composition/runtime.ts";
+import { areaRect, gridMetrics, snapArea, typeSize, type PageGrid, type TypeStep } from "../../composition/grid.ts";
 import { tableStyleForAppearance } from "../../composition/schema.ts";
 import { diagramDefinition } from "../../composition/visualizations.ts";
 import {
@@ -520,6 +522,7 @@ function vectorProps(attributes: VectorElement["attributes"]) {
 
 function EditableVectorVisual({
   component,
+  grid,
   interactive,
   active,
   selectedElementId,
@@ -528,6 +531,7 @@ function EditableVectorVisual({
   onEditEnd,
 }: {
   component: CompositionComponent;
+  grid?: PageGrid;
   interactive: boolean;
   active: boolean;
   selectedElementId?: string;
@@ -539,6 +543,30 @@ function EditableVectorVisual({
   if (!visual || visual.format !== "vector") return null;
   const vectorVisual = visual;
   const svg = useRef<SVGSVGElement>(null);
+  useLayoutEffect(() => {
+    if (!svg.current) return;
+    const nodes = new Map([...svg.current.querySelectorAll<SVGTextContentElement>("text, tspan")]
+      .map(node => [node.dataset.vectorElement, node]));
+    if (!grid) {
+      for (const node of nodes.values()) node.style.removeProperty("font-size");
+      return;
+    }
+    const pageScale = svg.current.closest(".canvas")!.getBoundingClientRect().width / gridMetrics(grid).width;
+    const steps = new Map<string, TypeStep>();
+    for (const element of vectorVisual.elements) {
+      const named = element.attributes["font-size"];
+      const step = typeof named === "string" && named.startsWith("scale:")
+        ? named.slice(6) as TypeStep : steps.get(element.parentId ?? "") ?? "caption";
+      steps.set(element.id, step);
+      if (element.kind !== "text" && element.kind !== "tspan") continue;
+      const node = nodes.get(element.id)!;
+      // Let SVG resolve fit, padding and nested transforms. Keep the named type
+      // height in page units rather than scaling it with the artwork viewport.
+      const matrix = node.getScreenCTM();
+      const scale = matrix && Math.hypot(matrix.c, matrix.d);
+      if (scale && pageScale) node.style.fontSize = `${typeSize(grid, step) * pageScale / scale}px`;
+    }
+  }, [component, grid, vectorVisual]);
   const gesture = useRef<{
     id: string;
     endpoint: "start" | "end";
@@ -552,10 +580,18 @@ function EditableVectorVisual({
   }
   function renderElement(element: VectorElement): React.ReactNode {
     const nested = (children.get(element.id) ?? []).map(renderElement);
+    const attributes = { ...element.attributes };
+    if (grid && typeof attributes["font-size"] === "string" && attributes["font-size"].startsWith("scale:")) {
+      const inset = (component.padding ?? 0) * gridMetrics(grid).baseline * 2;
+      const scaleX = (component.preferredRect.width - inset) / visual!.viewBox.width;
+      const scaleY = (component.preferredRect.height - inset) / visual!.viewBox.height;
+      const scale = visual!.fit === "cover" ? Math.max(scaleX, scaleY) : visual!.fit === "stretch" ? scaleY : Math.min(scaleX, scaleY);
+      attributes["font-size"] = typeSize(grid, attributes["font-size"].slice(6) as TypeStep) / scale;
+    }
     return createElement(
       element.kind,
       {
-        ...vectorProps(element.attributes),
+        ...vectorProps(attributes),
         key: element.id,
         "data-vector-element": element.id,
         className: selectedElementId === element.id ? "vector-element selected" : "vector-element",
@@ -604,6 +640,7 @@ function EditableVectorVisual({
     <svg
       ref={svg}
       className={`custom-vector-art ${active ? "editing" : ""}`}
+      style={grid ? { fill: "var(--slide-ink)", fontFamily: "var(--vector-body-font)" } : undefined}
       viewBox={`${vectorVisual.viewBox.x} ${vectorVisual.viewBox.y} ${vectorVisual.viewBox.width} ${vectorVisual.viewBox.height}`}
       preserveAspectRatio={preserveAspectRatio}
       role="img"
@@ -681,6 +718,7 @@ export function Canvas({
 }) {
   const interactive = mode === "edit";
   const slide = getSlide(draft, activeSlideId);
+  const grid = slide.grid ? gridMetrics(slide.grid) : undefined;
   const page = String(draft.slides.indexOf(slide) + 1).padStart(2, "0");
   const pageTotal = String(draft.slides.length).padStart(2, "0");
   const canvas = useRef<HTMLDivElement>(null);
@@ -730,7 +768,9 @@ export function Canvas({
     const others = slide.components
       .filter((c) => c.id !== active.id)
       .map((c) => c.preferredRect);
-    const result = active.corner
+    const result = slide.grid
+      ? { rect: areaRect(slide.grid, snapArea(slide.grid, rect)), guides: [] }
+      : active.corner
       ? snapResizeRect(rect, others, 14, {
           left: active.corner.endsWith("w"),
           top: active.corner.startsWith("n"),
@@ -882,6 +922,15 @@ export function Canvas({
             });
           }}
         >
+          <div className={grid ? "component-grid" : "component-free"} style={grid ? {
+            top: `${grid.margin * 100 / slide.canvas.height}%`,
+            left: `${grid.margin * 100 / slide.canvas.width}%`,
+            right: `${grid.margin * 100 / slide.canvas.width}%`,
+            height: `${grid.rows * grid.baseline * 100 / slide.canvas.height}%`,
+            gridTemplateColumns: `repeat(${grid.columns}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${grid.rows}, minmax(0, 1fr))`,
+            columnGap: `${grid.gutter * 100 / slide.canvas.width}cqw`,
+          } : undefined}>
           {slide.readingOrder
             .flatMap((entry) => entry.kind === "component"
               ? [entry.id]
@@ -900,10 +949,16 @@ export function Canvas({
               const style = {
                 ...componentColors(component, palette),
                 zIndex: slide.paintOrder.indexOf(component.id),
-                left: `${r.x * 100 / slide.canvas.width}%`,
-                top: `${r.y * 100 / slide.canvas.height}%`,
-                width: `${r.width * 100 / slide.canvas.width}%`,
-                height: `${r.height * 100 / slide.canvas.height}%`,
+                ...(component.area && grid ? {
+                  gridColumn: `${component.area.column} / span ${component.area.span}`,
+                  gridRow: `${component.area.row} / span ${component.area.rows}`,
+                  "--grid-padding": `${(component.padding ?? 0) * grid.baseline * 100 / slide.canvas.width}cqw`,
+                } : {
+                  left: `${r.x * 100 / slide.canvas.width}%`,
+                  top: `${r.y * 100 / slide.canvas.height}%`,
+                  width: `${r.width * 100 / slide.canvas.width}%`,
+                  height: `${r.height * 100 / slide.canvas.height}%`,
+                }),
                 textAlign:
                   a?.alignment === "end"
                     ? "right"
@@ -970,16 +1025,16 @@ export function Canvas({
                           x:
                             r.x +
                             (e.key === "ArrowRight"
-                              ? 10
+                              ? grid ? grid.columnWidth + grid.gutter : 10
                               : e.key === "ArrowLeft"
-                                ? -10
+                                ? grid ? -grid.columnWidth - grid.gutter : -10
                                 : 0),
                           y:
                             r.y +
                             (e.key === "ArrowDown"
-                              ? 10
+                              ? grid?.baseline ?? 10
                               : e.key === "ArrowUp"
-                                ? -10
+                                ? -(grid?.baseline ?? 10)
                                 : 0),
                         },
                         [],
@@ -1008,6 +1063,7 @@ export function Canvas({
                     {component.customVisual?.format === "vector" ? (
                       <EditableVectorVisual
                         component={component}
+                        grid={slide.grid}
                         interactive={interactive}
                         active={vectorSelection?.componentId === component.id}
                         selectedElementId={
@@ -1113,15 +1169,15 @@ export function Canvas({
                           e.stopPropagation();
                           const dx =
                             e.key === "ArrowRight"
-                              ? 10
+                              ? grid ? grid.columnWidth + grid.gutter : 10
                               : e.key === "ArrowLeft"
-                                ? -10
+                                ? grid ? -grid.columnWidth - grid.gutter : -10
                                 : 0;
                           const dy =
                             e.key === "ArrowDown"
-                              ? 10
+                              ? grid?.baseline ?? 10
                               : e.key === "ArrowUp"
-                                ? -10
+                                ? -(grid?.baseline ?? 10)
                                 : 0;
                           const next = snapResizeRect(
                             resizeFromCorner(r, dx, dy, corner),
@@ -1150,6 +1206,7 @@ export function Canvas({
                 </div>
               );
             })}
+          </div>
           {interactive && revisionNotes.map((note, index) => {
             if (note.slideId !== slide.id || note.resolved) return null;
             const component = slide.components.find(c => c.id === note.componentId);
@@ -1165,6 +1222,7 @@ export function Canvas({
           {slide.pageNumber?.style !== "none" && (
             <span
               className={`slide-page-number color-${slide.pageNumber?.color ?? "muted"}`}
+              style={slide.grid ? { fontSize: `${typeSize(slide.grid, "fine") * 100 / slide.canvas.width}cqw` } : undefined}
               aria-label="Page number"
             >
               {slide.pageNumber?.style === "01/02"

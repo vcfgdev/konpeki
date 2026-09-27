@@ -1,5 +1,5 @@
 {
-  "schema": "konpeki-composition/v1",
+  "schema": "konpeki-composition/v2",
   "title": "Folio — preventing a stale overwrite",
   "authoringMode": "default",
   "theme": {
@@ -11,16 +11,6 @@
     {
       "id": "explainer",
       "name": "Folio — preventing a stale overwrite",
-      "canvas": {
-        "width": 1200,
-        "height": 1600
-      },
-      "innerPadding": {
-        "top": 72,
-        "right": 72,
-        "bottom": 72,
-        "left": 72
-      },
       "intendedViewingSize": "article",
       "audience": "Junior backend engineers familiar with HTTP and database updates",
       "question": "How does an atomic revision check prevent a silent lost update?",
@@ -32,23 +22,16 @@
         {
           "id": "headline",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 72,
-            "width": 1056,
-            "height": 184
-          },
           "slotIds": [
             "headline-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "A stale save must not\nerase a newer edit.",
           "textStyle": {
-            "size": 68,
             "weight": 600,
             "color": "ink",
-            "lineHeight": 1.1,
-            "font": "heading"
+            "font": "heading",
+            "step": "title"
           },
           "appearance": {
             "role": "title",
@@ -61,28 +44,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 2,
+            "rows": 15
           }
         },
         {
           "id": "setup",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 272,
-            "width": 1056,
-            "height": 100
-          },
           "slotIds": [
             "setup-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "In fictional Folio, Leena and Omar both read document 42:\n“Launch notes”, revision 7. Then each changes the title.",
           "textStyle": {
-            "size": 31,
             "weight": 400,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "body"
           },
           "appearance": {
             "role": "body",
@@ -95,28 +77,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 19,
+            "rows": 8
           }
         },
         {
           "id": "mechanism-title",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 403,
-            "width": 1056,
-            "height": 48
-          },
           "slotIds": [
             "mechanism-title-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Check the revision and write in one atomic update.",
           "textStyle": {
-            "size": 33,
             "weight": 600,
             "color": "accent",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -129,28 +110,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 30,
+            "rows": 4
           }
         },
         {
           "id": "mechanism",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 463,
-            "width": 1056,
-            "height": 134
-          },
           "slotIds": [
             "mechanism-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Match document ID + expected revision, write the title, increment the\nrevision. Success means one row changed. Every title writer must use\nthis contract; never reuse a revision, even after restoration.",
           "textStyle": {
-            "size": 28,
             "weight": 400,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "body"
           },
           "appearance": {
             "role": "body",
@@ -163,17 +143,17 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 35,
+            "rows": 11
           }
         },
         {
           "id": "two-saves",
           "kind": "diagram",
-          "preferredRect": {
-            "x": 72,
-            "y": 644,
-            "width": 1056,
-            "height": 442
-          },
           "slotIds": [
             "two-saves-content"
           ],
@@ -232,7 +212,7 @@
                   "x": 24,
                   "y": 53,
                   "font-family": "theme:body-font",
-                  "font-size": 29,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "fill": "theme:ink"
                 }
@@ -245,7 +225,7 @@
                   "x": 24,
                   "y": 104,
                   "font-family": "theme:body-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 400,
                   "fill": "theme:ink"
                 }
@@ -258,7 +238,7 @@
                   "x": 24,
                   "y": 153,
                   "font-family": "theme:body-font",
-                  "font-size": 25,
+                  "font-size": "scale:caption",
                   "font-weight": 400,
                   "fill": "theme:muted"
                 }
@@ -283,7 +263,7 @@
                   "x": 624,
                   "y": 53,
                   "font-family": "theme:body-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "fill": "theme:accent"
                 }
@@ -296,7 +276,7 @@
                   "x": 624,
                   "y": 104,
                   "font-family": "theme:body-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 400,
                   "fill": "theme:ink"
                 }
@@ -309,7 +289,7 @@
                   "x": 624,
                   "y": 153,
                   "font-family": "theme:body-font",
-                  "font-size": 25,
+                  "font-size": "scale:caption",
                   "font-weight": 400,
                   "fill": "theme:muted"
                 }
@@ -350,7 +330,7 @@
                   "x": 24,
                   "y": 277,
                   "font-family": "theme:body-font",
-                  "font-size": 29,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "fill": "theme:ink"
                 }
@@ -363,7 +343,7 @@
                   "x": 24,
                   "y": 328,
                   "font-family": "theme:body-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 400,
                   "fill": "theme:ink"
                 }
@@ -376,7 +356,7 @@
                   "x": 24,
                   "y": 377,
                   "font-family": "theme:body-font",
-                  "font-size": 25,
+                  "font-size": "scale:caption",
                   "font-weight": 400,
                   "fill": "theme:muted"
                 }
@@ -401,7 +381,7 @@
                   "x": 624,
                   "y": 277,
                   "font-family": "theme:body-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "fill": "theme:ink"
                 }
@@ -414,7 +394,7 @@
                   "x": 624,
                   "y": 328,
                   "font-family": "theme:body-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 400,
                   "fill": "theme:ink"
                 }
@@ -427,34 +407,33 @@
                   "x": 624,
                   "y": 377,
                   "font-family": "theme:body-font",
-                  "font-size": 25,
+                  "font-size": "scale:caption",
                   "font-weight": 400,
                   "fill": "theme:muted"
                 }
               }
             ]
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 50,
+            "rows": 37
           }
         },
         {
           "id": "recovery-title",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 1130,
-            "width": 1056,
-            "height": 55
-          },
           "slotIds": [
             "recovery-title-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "After the conflict, show both versions.",
           "textStyle": {
-            "size": 36,
             "weight": 600,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "lead"
           },
           "appearance": {
             "role": "body",
@@ -467,28 +446,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 90,
+            "rows": 5
           }
         },
         {
           "id": "recovery",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 1203,
-            "width": 1056,
-            "height": 134
-          },
           "slotIds": [
             "recovery-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Fetch revision 8. Let Omar keep Leena’s title, revise it, or deliberately\nreplace it. Any new save uses the fetched revision and can conflict\nagain. Never silently retry Omar’s stale title with a newer revision.",
           "textStyle": {
-            "size": 28,
             "weight": 400,
             "color": "ink",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "body"
           },
           "appearance": {
             "role": "body",
@@ -501,28 +479,27 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 96,
+            "rows": 11
           }
         },
         {
           "id": "limits",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 72,
-            "y": 1400,
-            "width": 1056,
-            "height": 140
-          },
           "slotIds": [
             "limits-content"
           ],
           "intent": "Explain the supporting idea in concise language.",
           "content": "Why atomic? Separate checks can both pass before either write.\nScope: one document; no deletion. This does not merge edits or make\nmulti-document changes atomic. A lost success response can look like\na later conflict: revision checks alone do not deduplicate requests.",
           "textStyle": {
-            "size": 25,
             "weight": 400,
             "color": "muted",
-            "lineHeight": 1.25,
-            "font": "body"
+            "font": "body",
+            "step": "caption"
           },
           "appearance": {
             "role": "body",
@@ -535,6 +512,12 @@
             "logicalOrder": "none",
             "titleStyle": "plain",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 6,
+            "row": 112,
+            "rows": 12
           }
         }
       ],
@@ -641,7 +624,10 @@
         "recovery-title",
         "recovery",
         "limits"
-      ]
+      ],
+      "grid": {
+        "preset": "explainer"
+      }
     }
   ]
 }

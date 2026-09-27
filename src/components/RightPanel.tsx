@@ -2,7 +2,7 @@ import { useState } from "react";
 import type {
   CompositionComponent,
   CompositionSlide,
-} from "../../composition/types.ts";
+} from "../../composition/runtime.ts";
 import { componentInstanceLabel, type Draft } from "../lib/model.ts";
 import { InspectorPanel } from "./InspectorPanel.tsx";
 import { VectorOverflowWarning } from "./VectorOverflowWarning.tsx";

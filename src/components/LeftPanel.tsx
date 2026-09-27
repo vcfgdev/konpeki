@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type {
   CompositionSlide,
   ThemeMode,
-} from "../../composition/types.ts";
+} from "../../composition/runtime.ts";
 import type { Draft } from "../lib/model.ts";
 
 export type LeftPanelView = "pages" | "notes";

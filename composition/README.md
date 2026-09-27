@@ -1,25 +1,23 @@
 # Composition contract
 
-`konpeki-composition/v1` describes one or more bounded visual pages
-shared by a person and coding agent. It is a visual intent contract, while the
-Konpeki canvas is its editor and presentation preview. Component rectangles are
-preferences; factual fidelity and readable
-required content win. Every component supports an outer border treatment whose
-default is `none`; rules/dividers are separate appearance parameters. Editor
-guides never enter the contract. The contract is tool-agnostic: no Konpeki
-package, repository checkout, or separate authoring kit is required.
+Konpeki supports two composition schemas for bounded visual pages shared by a
+person and coding agent. `konpeki-composition/v2` is the grid contract used by
+new browser documents. `konpeki-composition/v1` remains supported and immutable;
+its free-positioned details are retained below as legacy behavior. The composition
+is a visual intent contract, while the Konpeki canvas is its editor and
+presentation preview. Factual fidelity and readable required content win.
 
-Schema identifiers are immutable compatibility boundaries. This is the first
-public contract, so current exports use v1 and unknown versions are rejected.
-The JSON Schema `$id` and deterministic compiler version are versioned with this
-contract.
+Schema identifiers are immutable compatibility boundaries and unknown versions
+are rejected. v2 has its own JSON Schema and handoff behavior; it does not mutate
+the v1 schema. The existing published skill blank and pinned release runtime still
+use v1 compatibility until a v2-capable release is published.
 
-The contract has five semantic component kinds: Text block, Diagram, Chart,
-Image and Table. Any component can own optional self-contained SVG or structured
-vector artwork. Structured lines, shapes, paths and text have stable IDs,
-editable attributes and parent relationships. Opaque SVG remains a supported
-fallback. The composition is authoritative for both outer geometry and editable
-vector internals.
+Both contracts have five semantic component kinds: Text block, Diagram, Chart,
+Image and Table. Structured lines, shapes, paths and text have stable IDs,
+editable attributes and parent relationships. v1 components may own structured
+vectors or self-contained SVG; opaque SVG remains its supported fallback. v2
+components use theme-bound structured vectors only. The composition is
+authoritative for both outer geometry and editable vector internals.
 
 Diagram and Chart `appearance.selection` controls form choice: `auto` delegates
 selection to the agent; `explicit` makes the diagram type or chart template
@@ -30,6 +28,73 @@ requirement, not a runtime permission barrier against arbitrary external file ed
 The form picker remains available for finished vectors and opaque SVG as well as
 drafts. Changing the requirement preserves existing artwork; it does not redraw it.
 Sankey topology cannot be discarded by selecting another template, even in Auto.
+
+## Grid contract (v2)
+
+Each page selects one fixed preset in `grid.preset`: `presentation`, `portrait`,
+`link`, `square`, `article`, `explainer` or `gallery`. A preset fixes the page
+dimensions, margins, columns, gutters, baseline and seven-step type scale. It also
+fixes the finite baseline-row count; rows do not grow to fit content. Changing a
+preset does not stretch, crop or recompose the page. Revise areas and content
+deliberately when the new grid does not fit.
+
+| Preset | Page size | Columns × rows | Baseline |
+| --- | --- | --- | --- |
+| `presentation` | 1920×1080 | 12 × 78 | 12 px |
+| `portrait` | 1080×1350 | 6 × 102 | 12 px |
+| `link` | 1200×630 | 4 × 66 | 8 px |
+| `square` | 1080×1080 | 6 × 80 | 12 px |
+| `article` | 1600×600 | 8 × 63 | 8 px |
+| `explainer` | 1200×1600 | 6 × 123 | 12 px |
+| `gallery` | 1600×1000 | 12 × 72 | 12 px |
+
+These are provisional destination choices, not results of a blind authoring
+comparison. Rows use the available height inside the margins, rounded down to
+whole baseline units. See `grid.ts` for margins, gutters and type sizes.
+
+Every component has a one-based `area` with `column`, `span`, `row` and `rows`.
+These authored values are authoritative; the canvas derives placement with CSS
+Grid. Do not write v1 `canvas`, `innerPadding` or `preferredRect` fields in v2.
+There is no automatic layout or topology solver. Topology records semantic nodes
+and edges, not a second set of v2 node coordinates.
+
+The seven hand-tuned text steps, from smallest to largest, are `fine`, `caption`,
+`body`, `lead`, `heading`, `title` and `display`. Role defaults are footnote→fine,
+caption→caption, body→body, subtitle→lead and title→title. `textStyle.step`
+overrides that default. Each preset maps the named steps to its own pixel sizes;
+authors do not write `textStyle.size` or `textStyle.lineHeight`. Optional
+`textStyle.leading` is a positive number of baseline units. By default, leading
+is 1.25 times the type size rounded up to a whole baseline. Component `padding`
+is likewise measured in baseline units on every side and must leave a positive
+content area. Fixed-height text still requires rendered overflow checks.
+
+v2 custom artwork is structured vector data only. Colors must use theme roles,
+font families must use `theme:heading-font` or `theme:body-font`, and vector text
+uses `font-size: "scale:<step>"`. Omitted vector sizes inherit the parent's step,
+defaulting to `caption`; omitted fill and font inherit theme ink and body font.
+The browser's SVG transform matrix keeps type height at the named page size,
+including padded cells and nested transforms. Avoid nonuniform scaling or
+`fit: "stretch"` for text-bearing artwork: these still distort glyph proportions.
+Vector coordinates remain local to the owning component.
+Mark components that intentionally overlap with `layer: "background"`
+or `layer: "overlay"`; this documents intent but does not choose stacking.
+`paintOrder` remains the authoritative back-to-front order.
+
+The current examples need background layers for rules/panels and local vector
+geometry for artwork. They need no off-grid component rectangles. Full-bleed
+placement outside preset margins is not supported in this iteration. Charts and
+tables still use the existing semantic drafts or authored artwork; data-driven
+rendering and automatic topology layout remain separate decisions.
+
+The implementation source is `grid.ts`, `schema-v2.ts`, `validate.ts`,
+`compile.ts` and the canvas renderer. `schema-v2.ts` derives shared semantic
+vocabulary from a clone of v1 rather than changing v1. Validation rejects areas
+outside the preset grid, padding that consumes the content area, and leading
+smaller than the type size. The handoff reports the selected preset and its exact
+scale and requires deliberate recomposition rather than implying an automatic
+one.
+
+## Legacy free-positioned contract (v1)
 
 Each page's `canvas.width` and `canvas.height` are integers from 256 to 4096.
 `innerPadding` is nonnegative and must leave a content area. Component rectangles
@@ -48,7 +113,7 @@ should not use custom visuals. Layout and purpose metadata remains agent guidanc
 rather than displayed copy. Use separate Text blocks when independently positioned
 copy is needed.
 
-### Theme-linked vector styles
+### Legacy theme-linked vector styles
 
 `fill`, `stroke`, and `color` accept `theme:ink`, `theme:muted`,
 `theme:background`, `theme:surface`, `theme:divider`, `theme:accent`,
@@ -77,13 +142,13 @@ vector inspector, enter a theme binding (suggestions are provided) to link a
 style, or a literal to fix it. Theme changes do not resize or reflow vectors:
 review text bounds after changing typography, and revise geometry explicitly.
 
-New Konpeki documents define 112-unit left/right, 72-unit top, and zero bottom
+Legacy v1 documents created by the v1 blank define 112-unit left/right, 72-unit top, and zero bottom
 `innerPadding`. The title bottom divider and footnote top divider use the same
 inner width by default; the zero bottom value lets footer components use the same
 placement rule as other components while ending at the page edge. Documents
 created before this field remain valid and preserve their original geometry.
 
-- `types.ts` defines the TypeScript API. `schema.ts` owns the constrained
+- For v1, `types.ts` defines the TypeScript API and `schema.ts` owns the constrained
   vocabulary and generates `schema.json` (JSON Schema draft 2020-12).
 - `validateComposition(unknown)` returns `{ ok, document }` or `{ ok, issues }`.
   `assertComposition` throws on invalid input. The runtime uses the public schema

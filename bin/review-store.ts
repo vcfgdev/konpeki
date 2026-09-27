@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { readFile, rename, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import lockfile from "proper-lockfile";
-import type { CompositionDocument } from "../composition/types.ts";
+import type { WireDocument as CompositionDocument } from "../composition/grid.ts";
 import { activeRequest, emptyReview, type BuildRequest, type ReviewState, type ReviewTarget } from "../src/lib/review.ts";
 import { readCompositionFile } from "./session-store.ts";
 

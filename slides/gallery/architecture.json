@@ -1,5 +1,5 @@
 {
-  "schema": "konpeki-composition/v1",
+  "schema": "konpeki-composition/v2",
   "title": "Orders stay consistent; fulfillment stays independent",
   "authoringMode": "default",
   "theme": {
@@ -10,16 +10,6 @@
     {
       "id": "architecture",
       "name": "architecture",
-      "canvas": {
-        "width": 1600,
-        "height": 1000
-      },
-      "innerPadding": {
-        "top": 64,
-        "right": 80,
-        "bottom": 40,
-        "left": 80
-      },
       "audience": "Systems and operations reviewers",
       "question": "Where do order responsibilities and integration contracts belong?",
       "intendedViewingSize": "presentation",
@@ -27,66 +17,58 @@
         {
           "id": "headline",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 80,
-            "y": 64,
-            "width": 1440,
-            "height": 75.89999999999999
-          },
           "slotIds": [
             "headline"
           ],
           "content": "Orders stay consistent; fulfillment stays independent",
           "textStyle": {
-            "size": 46,
             "weight": 600,
-            "lineHeight": 1.3,
             "color": "ink",
-            "font": "body"
+            "font": "body",
+            "step": "heading"
           },
           "appearance": {
             "role": "title",
             "alignment": "start",
             "border": "none",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 12,
+            "row": 1,
+            "rows": 6
           }
         },
         {
           "id": "context",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 80,
-            "y": 140,
-            "width": 1440,
-            "height": 42.9
-          },
           "slotIds": [
             "context"
           ],
           "content": "Illustrative • Harbor Market / logical service architecture",
           "textStyle": {
-            "size": 26,
             "weight": 400,
-            "lineHeight": 1.3,
             "color": "muted",
-            "font": "body"
+            "font": "body",
+            "step": "caption"
           },
           "appearance": {
             "role": "subtitle",
             "alignment": "start",
             "border": "none",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 12,
+            "row": 7,
+            "rows": 4
           }
         },
         {
           "id": "system",
           "kind": "diagram",
-          "preferredRect": {
-            "x": 80,
-            "y": 220,
-            "width": 1440,
-            "height": 660
-          },
           "slotIds": [
             "shop",
             "api",
@@ -106,53 +88,23 @@
             "nodes": [
               {
                 "id": "shop",
-                "slotId": "shop",
-                "preferredRect": {
-                  "x": 80,
-                  "y": 400,
-                  "width": 290,
-                  "height": 145
-                }
+                "slotId": "shop"
               },
               {
                 "id": "api",
-                "slotId": "api",
-                "preferredRect": {
-                  "x": 520,
-                  "y": 400,
-                  "width": 320,
-                  "height": 145
-                }
+                "slotId": "api"
               },
               {
                 "id": "ledger",
-                "slotId": "ledger",
-                "preferredRect": {
-                  "x": 1100,
-                  "y": 300,
-                  "width": 330,
-                  "height": 145
-                }
+                "slotId": "ledger"
               },
               {
                 "id": "events",
-                "slotId": "events",
-                "preferredRect": {
-                  "x": 1100,
-                  "y": 520,
-                  "width": 330,
-                  "height": 145
-                }
+                "slotId": "events"
               },
               {
                 "id": "warehouse",
-                "slotId": "warehouse",
-                "preferredRect": {
-                  "x": 520,
-                  "y": 710,
-                  "width": 320,
-                  "height": 140
-                }
+                "slotId": "warehouse"
               }
             ],
             "edges": [
@@ -198,8 +150,8 @@
                   "width": 1010,
                   "height": 455,
                   "rx": 12,
-                  "fill": "#F2F7FD",
-                  "stroke": "#C5D6E9",
+                  "fill": "theme:wash",
+                  "stroke": "theme:divider",
                   "stroke-width": 2
                 }
               },
@@ -209,8 +161,8 @@
                 "attributes": {
                   "x": 419,
                   "y": 47,
-                  "fill": "#2463CC",
-                  "font-size": 23,
+                  "fill": "theme:accent",
+                  "font-size": "scale:caption",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -225,8 +177,8 @@
                   "width": 290,
                   "height": 145,
                   "rx": 12,
-                  "fill": "white",
-                  "stroke": "#C5D6E9",
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
                   "stroke-width": 2
                 }
               },
@@ -236,8 +188,8 @@
                 "attributes": {
                   "x": 24,
                   "y": 222,
-                  "fill": "#142C48",
-                  "font-size": 28,
+                  "fill": "theme:ink",
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -249,8 +201,8 @@
                 "attributes": {
                   "x": 24,
                   "y": 260,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -262,8 +214,8 @@
                 "attributes": {
                   "x": 24,
                   "y": 290,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -278,8 +230,8 @@
                   "width": 320,
                   "height": 145,
                   "rx": 12,
-                  "fill": "#F2F7FD",
-                  "stroke": "#2463CC",
+                  "fill": "theme:wash",
+                  "stroke": "theme:accent",
                   "stroke-width": 2
                 }
               },
@@ -289,8 +241,8 @@
                 "attributes": {
                   "x": 464,
                   "y": 222,
-                  "fill": "#142C48",
-                  "font-size": 28,
+                  "fill": "theme:ink",
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -302,8 +254,8 @@
                 "attributes": {
                   "x": 464,
                   "y": 260,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -315,8 +267,8 @@
                 "attributes": {
                   "x": 464,
                   "y": 290,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -331,8 +283,8 @@
                   "width": 330,
                   "height": 145,
                   "rx": 12,
-                  "fill": "white",
-                  "stroke": "#C5D6E9",
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
                   "stroke-width": 2
                 }
               },
@@ -342,8 +294,8 @@
                 "attributes": {
                   "x": 1044,
                   "y": 122,
-                  "fill": "#142C48",
-                  "font-size": 28,
+                  "fill": "theme:ink",
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -355,8 +307,8 @@
                 "attributes": {
                   "x": 1044,
                   "y": 160,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -368,8 +320,8 @@
                 "attributes": {
                   "x": 1044,
                   "y": 190,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -384,8 +336,8 @@
                   "width": 330,
                   "height": 145,
                   "rx": 12,
-                  "fill": "white",
-                  "stroke": "#C5D6E9",
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
                   "stroke-width": 2
                 }
               },
@@ -395,8 +347,8 @@
                 "attributes": {
                   "x": 1044,
                   "y": 342,
-                  "fill": "#142C48",
-                  "font-size": 28,
+                  "fill": "theme:ink",
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -408,8 +360,8 @@
                 "attributes": {
                   "x": 1044,
                   "y": 380,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -421,8 +373,8 @@
                 "attributes": {
                   "x": 1044,
                   "y": 410,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -437,8 +389,8 @@
                   "width": 320,
                   "height": 140,
                   "rx": 12,
-                  "fill": "white",
-                  "stroke": "#C5D6E9",
+                  "fill": "theme:background",
+                  "stroke": "theme:divider",
                   "stroke-width": 2
                 }
               },
@@ -448,8 +400,8 @@
                 "attributes": {
                   "x": 464,
                   "y": 532,
-                  "fill": "#142C48",
-                  "font-size": 28,
+                  "fill": "theme:ink",
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -461,8 +413,8 @@
                 "attributes": {
                   "x": 464,
                   "y": 570,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -474,8 +426,8 @@
                 "attributes": {
                   "x": 464,
                   "y": 600,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -487,7 +439,7 @@
                 "attributes": {
                   "points": "290,230 440,230",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -497,7 +449,7 @@
                 "attributes": {
                   "points": "428.9171812132264,236.79493397609858 440,230 428.9171812132264,223.20506602390142",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -507,8 +459,8 @@
                 "attributes": {
                   "x": 318,
                   "y": 208,
-                  "fill": "#2463CC",
-                  "font-size": 21,
+                  "fill": "theme:accent",
+                  "font-size": "scale:fine",
                   "font-weight": 500,
                   "font-family": "theme:body-font"
                 },
@@ -520,7 +472,7 @@
                 "attributes": {
                   "points": "760,218 870,218 870,152 1020,152",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -530,7 +482,7 @@
                 "attributes": {
                   "points": "1008.9171812132264,158.79493397609858 1020,152 1008.9171812132264,145.20506602390142",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -540,8 +492,8 @@
                 "attributes": {
                   "x": 875,
                   "y": 129,
-                  "fill": "#2463CC",
-                  "font-size": 21,
+                  "fill": "theme:accent",
+                  "font-size": "scale:fine",
                   "font-weight": 500,
                   "font-family": "theme:body-font"
                 },
@@ -553,7 +505,7 @@
                 "attributes": {
                   "points": "1185,225 1185,300",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -563,7 +515,7 @@
                 "attributes": {
                   "points": "1178.2050660239015,288.9171812132264 1185,300 1191.7949339760985,288.9171812132264",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -573,8 +525,8 @@
                 "attributes": {
                   "x": 1207,
                   "y": 268,
-                  "fill": "#2463CC",
-                  "font-size": 21,
+                  "fill": "theme:accent",
+                  "font-size": "scale:fine",
                   "font-weight": 500,
                   "font-family": "theme:body-font"
                 },
@@ -586,7 +538,7 @@
                 "attributes": {
                   "points": "1020,375 880,375 880,560 760,560",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -596,7 +548,7 @@
                 "attributes": {
                   "points": "771.0828187867736,553.2050660239014 760,560 771.0828187867736,566.7949339760986",
                   "fill": "none",
-                  "stroke": "#2463CC",
+                  "stroke": "theme:accent",
                   "stroke-width": 3
                 }
               },
@@ -606,8 +558,8 @@
                 "attributes": {
                   "x": 799,
                   "y": 595,
-                  "fill": "#2463CC",
-                  "font-size": 21,
+                  "fill": "theme:accent",
+                  "font-size": "scale:fine",
                   "font-weight": 500,
                   "font-family": "theme:body-font"
                 },
@@ -619,8 +571,8 @@
                 "attributes": {
                   "x": 0,
                   "y": 450,
-                  "fill": "#142C48",
-                  "font-size": 25,
+                  "fill": "theme:ink",
+                  "font-size": "scale:caption",
                   "font-weight": 600,
                   "font-family": "theme:body-font"
                 },
@@ -632,8 +584,8 @@
                 "attributes": {
                   "x": 0,
                   "y": 490,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
@@ -645,41 +597,47 @@
                 "attributes": {
                   "x": 0,
                   "y": 522,
-                  "fill": "#53677E",
-                  "font-size": 22,
+                  "fill": "theme:muted",
+                  "font-size": "scale:fine",
                   "font-weight": 400,
                   "font-family": "theme:body-font"
                 },
                 "text": "it cannot mutate the ledger."
               }
             ]
+          },
+          "area": {
+            "column": 1,
+            "span": 12,
+            "row": 14,
+            "rows": 54
           }
         },
         {
           "id": "caveat",
           "kind": "text-block",
-          "preferredRect": {
-            "x": 80,
-            "y": 920,
-            "width": 1440,
-            "height": 36.3
-          },
           "slotIds": [
             "caveat"
           ],
-          "content": "Boundary = product ownership, not infrastructure. Arrows show request or event direction.",
+          "content": "Boundary = product ownership, not infrastructure.\nArrows show request or event direction.",
           "textStyle": {
-            "size": 22,
             "weight": 400,
-            "lineHeight": 1.3,
             "color": "muted",
-            "font": "body"
+            "font": "body",
+            "step": "fine",
+            "leading": 2
           },
           "appearance": {
             "role": "caption",
             "alignment": "start",
             "border": "none",
             "rule": "none"
+          },
+          "area": {
+            "column": 1,
+            "span": 12,
+            "row": 69,
+            "rows": 4
           }
         }
       ],
@@ -766,7 +724,10 @@
         "system",
         "caveat"
       ],
-      "relationships": []
+      "relationships": [],
+      "grid": {
+        "preset": "gallery"
+      }
     }
   ]
 }

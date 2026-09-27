@@ -1,7 +1,7 @@
 # Gallery sources
 
-These are curated copies of reviewed composition JSON and PNG exports, unchanged
-from their authoring projects. All scenarios and data are fictional. The JSONs
+These are curated copies of reviewed composition JSON and PNG exports from their
+authoring projects. All scenarios and data are fictional. The JSONs
 contain editable text and vector artwork, not embedded screenshots; import them
 directly without running a generator. Authoring projects and generators remain
 separate. [Adaptation briefs](PROMPT.md) record the creative direction.
@@ -41,6 +41,12 @@ using the then-named `konpeki-composition/v18` contract. Only the identifier was
 migrated to `konpeki-composition/v1`; content and geometry were preserved and
 browser-reviewed at [this revision](https://github.com/vcfgdev/konpeki/commit/53a86b6d083ab346bb0b0c797b9052d839bda81f).
 The reviewed screenshots were retained.
+These gallery JSON files were subsequently ported from those v1 copies to the v2
+grid contract. The port replaces free-positioned outer rectangles with authored
+grid areas and theme-bound structured vectors; it does not change their historical
+provenance or imply that they were originally generated with v2. Preset selection
+does not automatically recompose their layouts. The adjacent PNGs now show the
+inspected v2 port, captured at 2× browser scale.
 
 ## Release
 
@@ -74,6 +80,9 @@ Konpeki supplies IBM Plex Sans.
 
 ## Rendering scope
 
-The PNGs are reviewed Chromium captures. They do not establish PDF/PPTX export,
-cross-browser or cross-application fidelity. These examples are authored and
-reviewed results, not evidence of automatic first-attempt layout quality.
+The PNGs are reviewed Chromium captures. All four gallery pages, together with
+the seven introduction pages, passed `scripts/check-grid.mjs` geometry, overflow
+and overlap checks at 1920×1080 and 1024×768. These checks do not establish
+PDF/PPTX export, cross-browser or cross-application fidelity, blind preference,
+or first-attempt agent quality. The examples are authored and reviewed results,
+not evidence of automatic layout or preset recomposition.

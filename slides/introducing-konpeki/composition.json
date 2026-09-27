@@ -1,22 +1,24 @@
 {
   "authoringMode": "default",
-  "schema": "konpeki-composition/v1",
+  "schema": "konpeki-composition/v2",
   "slides": [
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
+          "area": {
+            "column": 1,
+            "row": 5,
+            "rows": 6,
+            "span": 1
+          },
           "customVisual": {
             "description": "Konpeki blue brush mark",
             "elements": [
               {
                 "attributes": {
                   "d": "M55 0h5v1H55ZM52 1h9v1H52ZM108 1h4v1H108ZM25 2h2v1H25ZM50 2h13v1H50ZM105 2h8v1H105ZM24 3h5v1H24ZM47 3h16v1H47ZM102 3h11v1H102ZM22 4h8v1H22ZM45 4h19v1H45ZM100 4h13v1H100ZM21 5h10v1H21ZM43 5h22v1H43ZM78 5h4v1H78ZM97 5h17v1H97ZM20 6h12v1H20ZM41 6h24v1H41ZM76 6h8v1H76ZM94 6h21v1H94ZM19 7h13v1H19ZM38 7h27v1H38ZM73 7h12v1H73ZM92 7h23v1H92ZM18 8h15v1H18ZM35 8h31v1H35ZM71 8h15v1H71ZM90 8h25v1H90ZM17 9h49v1H17ZM69 9h18v1H69ZM88 9h27v1H88ZM16 10h99v1H16ZM15 11h101v1H15ZM14 12h104v1H14ZM13 13h107v1H13ZM12 14h109v1H12ZM10 15h112v1H10ZM9 16h114v1H9ZM8 17h116v1H8ZM6 18h119v1H6ZM5 19h120v1H5ZM4 20h121v1H4ZM3 21h122v1H3ZM3 22h122v1H3ZM2 23h122v1H2ZM1 24h123v1H1ZM0 25h122v1H0ZM0 26h120v1H0ZM1 27h118v1H1ZM2 28h116v1H2ZM3 29h113v1H3ZM3 30h113v1H3ZM4 31h111v1H4ZM5 32h111v1H5ZM6 33h111v1H6ZM7 34h109v1H7ZM8 35h108v1H8ZM9 36h107v1H9ZM9 37h106v1H9ZM9 38h105v1H9ZM8 39h105v1H8ZM8 40h104v1H8ZM9 41h104v1H9ZM9 42h105v1H9ZM10 43h104v1H10ZM11 44h104v1H11ZM13 45h103v1H13ZM14 46h103v1H14ZM14 47h103v1H14ZM13 48h103v1H13ZM12 49h104v1H12ZM11 50h105v1H11ZM10 51h106v1H10ZM9 52h106v1H9ZM8 53h107v1H8ZM7 54h107v1H7ZM6 55h110v1H6ZM5 56h112v1H5ZM4 57h114v1H4ZM4 58h113v1H4ZM4 59h113v1H4ZM4 60h114v1H4ZM4 61h114v1H4ZM4 62h115v1H4ZM6 63h114v1H6ZM7 64h114v1H7ZM8 65h113v1H8ZM9 66h113v1H9ZM13 67h109v1H13ZM13 68h108v1H13ZM12 69h110v1H12ZM12 70h111v1H12ZM11 71h113v1H11ZM10 72h115v1H10ZM9 73h116v1H9ZM8 74h117v1H8ZM8 75h116v1H8ZM7 76h117v1H7ZM7 77h119v1H7ZM6 78h118v1H6ZM6 79h118v1H6ZM4 80h119v1H4ZM3 81h120v1H3ZM2 82h121v1H2ZM1 83h122v1H1ZM0 84h125v1H0ZM0 85h1v1H0ZM3 85h123v1H3ZM2 86h124v1H2ZM3 87h122v1H3ZM5 88h1v1H5ZM10 88h115v1H10ZM10 89h115v1H10ZM9 90h114v1H9ZM8 91h114v1H8ZM8 92h114v1H8ZM7 93h114v1H7ZM6 94h113v1H6ZM5 95h4v1H5ZM11 95h107v1H11ZM6 96h3v1H6ZM11 96h106v1H11ZM125 96h3v1H125ZM7 97h2v1H7ZM11 97h105v1H11ZM123 97h4v1H123ZM8 98h1v1H8ZM11 98h105v1H11ZM120 98h5v1H120ZM10 99h106v1H10ZM117 99h7v1H117ZM10 100h114v1H10ZM9 101h114v1H9ZM8 102h113v1H8ZM7 103h113v1H7ZM7 104h2v1H7ZM10 104h109v1H10ZM10 105h108v1H10ZM9 106h109v1H9ZM9 107h107v1H9ZM10 108h105v1H10ZM10 109h103v1H10ZM10 110h101v1H10ZM9 111h101v1H9ZM10 112h17v1H10ZM28 112h2v1H28ZM32 112h77v1H32ZM11 113h15v1H11ZM31 113h77v1H31ZM12 114h10v1H12ZM24 114h1v1H24ZM31 114h76v1H31ZM14 115h7v1H14ZM31 115h28v1H31ZM60 115h3v1H60ZM67 115h38v1H67ZM15 116h4v1H15ZM31 116h31v1H31ZM68 116h35v1H68ZM18 117h1v1H18ZM34 117h26v1H34ZM69 117h33v1H69ZM33 118h24v1H33ZM69 118h31v1H69ZM32 119h23v1H32ZM68 119h31v1H68ZM31 120h22v1H31ZM68 120h6v1H68ZM77 120h5v1H77ZM83 120h2v1H83ZM86 120h11v1H86ZM31 121h20v1H31ZM68 121h4v1H68ZM78 121h3v1H78ZM86 121h9v1H86ZM30 122h2v1H30ZM35 122h14v1H35ZM85 122h2v1H85ZM92 122h1v1H92ZM30 123h1v1H30ZM33 123h3v1H33ZM39 123h9v1H39ZM32 124h1v1H32ZM41 124h7v1H41ZM35 125h1v1H35ZM41 125h3v1H41ZM42 126h1v1H42ZM42 127h1v1H42Z",
-                  "fill": "#007fb5"
+                  "fill": "theme:accent"
                 },
                 "id": "mark-silhouette",
                 "kind": "path"
@@ -32,12 +34,6 @@
           },
           "id": "mark",
           "kind": "image",
-          "preferredRect": {
-            "height": 72,
-            "width": 72,
-            "x": 112,
-            "y": 120
-          },
           "slotIds": [
             "mark-slot"
           ]
@@ -49,23 +45,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 2,
+            "row": 6,
+            "rows": 5,
+            "span": 3
+          },
           "content": "Konpeki",
           "id": "wordmark",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 64,
-            "width": 400,
-            "x": 204,
-            "y": 126
-          },
           "slotIds": [
             "wordmark-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.2,
-            "size": 44,
+            "step": "heading",
             "weight": 600
           }
         },
@@ -76,23 +71,22 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 17,
+            "rows": 26,
+            "span": 6
+          },
           "content": "Create clear visuals\nwith your coding agent.",
           "id": "cover-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 316.1402027027027,
-            "width": 848,
-            "x": 112,
-            "y": 263.8597972972973
-          },
           "slotIds": [
             "cover-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.12,
-            "size": 74,
+            "step": "display",
             "weight": 600
           }
         },
@@ -103,27 +97,32 @@
             "role": "subtitle",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 47,
+            "rows": 12,
+            "span": 5
+          },
           "content": "Your agent drafts covers, social graphics, visual explanations and presentations. You and your agent edit the same page.",
           "id": "cover-lead",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 140,
-            "width": 760,
-            "x": 112,
-            "y": 620
-          },
           "slotIds": [
             "cover-lead-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 32,
+            "step": "body",
             "weight": 400
           }
         },
         {
+          "area": {
+            "column": 7,
+            "row": 10,
+            "rows": 57,
+            "span": 5
+          },
           "customVisual": {
             "description": "Four page sizes Konpeki supports: presentation, square post, portrait post and link preview, each sketched with typical components.",
             "elements": [
@@ -237,7 +236,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 0,
                   "y": 322
                 },
@@ -335,7 +334,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 540,
                   "y": 322
                 },
@@ -433,7 +432,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 0,
                   "y": 706
                 },
@@ -525,7 +524,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 267,
                   "y": 706
                 },
@@ -545,12 +544,6 @@
           },
           "id": "page-family",
           "kind": "image",
-          "preferredRect": {
-            "height": 684,
-            "width": 768,
-            "x": 1040,
-            "y": 180
-          },
           "slotIds": [
             "page-family-slot"
           ]
@@ -593,14 +586,11 @@
           "role": "image"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "cover",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "Konpeki",
       "pageNumber": {
@@ -641,10 +631,6 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -653,23 +639,22 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 2,
+            "rows": 8,
+            "span": 12
+          },
           "content": "Give your agent a brief. It returns an editable page.",
           "id": "flow-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 88
-          },
           "slotIds": [
             "flow-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.15,
-            "size": 58,
+            "step": "title",
             "weight": 600
           }
         },
@@ -680,23 +665,22 @@
             "role": "subtitle",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 11,
+            "rows": 4,
+            "span": 9
+          },
           "content": "Konpeki is a skill for your coding agent plus a canvas you both work on.",
           "id": "flow-lead",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 1400,
-            "x": 112,
-            "y": 190
-          },
           "slotIds": [
             "flow-lead-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 400
           }
         },
@@ -708,6 +692,12 @@
             "emphasis": "primary",
             "selection": "explicit",
             "type": "process"
+          },
+          "area": {
+            "column": 1,
+            "row": 22,
+            "rows": 5,
+            "span": 12
           },
           "customVisual": {
             "description": "Four numbered steps joined by arrows: brief, agent, canvas preview, page.",
@@ -728,7 +718,7 @@
                 "attributes": {
                   "fill": "theme:accent",
                   "font-family": "theme:heading-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 32,
@@ -743,7 +733,7 @@
                   "stroke": "theme:muted",
                   "stroke-width": 2.5,
                   "x1": 78,
-                  "x2": 430,
+                  "x2": 436,
                   "y1": 32,
                   "y2": 32
                 },
@@ -752,7 +742,7 @@
               },
               {
                 "attributes": {
-                  "d": "M417.7 38.7L430 32L417.7 25.3",
+                  "d": "M423.7 38.7L436 32L423.7 25.3",
                   "fill": "none",
                   "stroke": "theme:muted",
                   "stroke-linecap": "round",
@@ -764,7 +754,7 @@
               },
               {
                 "attributes": {
-                  "cx": 476,
+                  "cx": 482,
                   "cy": 32,
                   "fill": "theme:background",
                   "r": 30,
@@ -778,10 +768,10 @@
                 "attributes": {
                   "fill": "theme:accent",
                   "font-family": "theme:heading-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "text-anchor": "middle",
-                  "x": 476,
+                  "x": 482,
                   "y": 42
                 },
                 "id": "flow-n1-num",
@@ -792,8 +782,8 @@
                 "attributes": {
                   "stroke": "theme:muted",
                   "stroke-width": 2.5,
-                  "x1": 522,
-                  "x2": 874,
+                  "x1": 528,
+                  "x2": 886,
                   "y1": 32,
                   "y2": 32
                 },
@@ -802,7 +792,7 @@
               },
               {
                 "attributes": {
-                  "d": "M861.7 38.7L874 32L861.7 25.3",
+                  "d": "M873.7 38.7L886 32L873.7 25.3",
                   "fill": "none",
                   "stroke": "theme:muted",
                   "stroke-linecap": "round",
@@ -814,7 +804,7 @@
               },
               {
                 "attributes": {
-                  "cx": 920,
+                  "cx": 932,
                   "cy": 32,
                   "fill": "theme:background",
                   "r": 30,
@@ -828,10 +818,10 @@
                 "attributes": {
                   "fill": "theme:accent",
                   "font-family": "theme:heading-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "text-anchor": "middle",
-                  "x": 920,
+                  "x": 932,
                   "y": 42
                 },
                 "id": "flow-n2-num",
@@ -842,8 +832,8 @@
                 "attributes": {
                   "stroke": "theme:muted",
                   "stroke-width": 2.5,
-                  "x1": 966,
-                  "x2": 1318,
+                  "x1": 978,
+                  "x2": 1336,
                   "y1": 32,
                   "y2": 32
                 },
@@ -852,7 +842,7 @@
               },
               {
                 "attributes": {
-                  "d": "M1305.7 38.7L1318 32L1305.7 25.3",
+                  "d": "M1323.7 38.7L1336 32L1323.7 25.3",
                   "fill": "none",
                   "stroke": "theme:muted",
                   "stroke-linecap": "round",
@@ -864,7 +854,7 @@
               },
               {
                 "attributes": {
-                  "cx": 1364,
+                  "cx": 1382,
                   "cy": 32,
                   "fill": "theme:accent",
                   "r": 30,
@@ -878,10 +868,10 @@
                 "attributes": {
                   "fill": "theme:on-accent",
                   "font-family": "theme:heading-font",
-                  "font-size": 28,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "text-anchor": "middle",
-                  "x": 1364,
+                  "x": 1382,
                   "y": 42
                 },
                 "id": "flow-n3-num",
@@ -893,19 +883,13 @@
             "format": "vector",
             "viewBox": {
               "height": 64,
-              "width": 1696,
+              "width": 1776,
               "x": 0,
               "y": 0
             }
           },
           "id": "flow-diagram",
           "kind": "diagram",
-          "preferredRect": {
-            "height": 64,
-            "width": 1696,
-            "x": 112,
-            "y": 320
-          },
           "slotIds": [
             "flow-diagram-slot"
           ]
@@ -917,23 +901,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 30,
+            "rows": 4,
+            "span": 3
+          },
           "content": "Your brief",
           "id": "step1-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 364,
-            "x": 112,
-            "y": 420
-          },
           "slotIds": [
             "step1-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -944,23 +927,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 35,
+            "rows": 17,
+            "span": 3
+          },
           "content": "Notes, source material and where the visual will be used.",
           "id": "step1-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 200,
-            "width": 364,
-            "x": 112,
-            "y": 480
-          },
           "slotIds": [
             "step1-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 27,
+            "step": "body",
             "weight": 400
           }
         },
@@ -971,23 +953,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 30,
+            "rows": 4,
+            "span": 3
+          },
           "content": "Your coding agent",
           "id": "step2-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 364,
-            "x": 556,
-            "y": 420
-          },
           "slotIds": [
             "step2-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -998,23 +979,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 35,
+            "rows": 17,
+            "span": 3
+          },
           "content": "Follows Konpeki's authoring guide and writes composition.json in your workspace.",
           "id": "step2-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 200,
-            "width": 364,
-            "x": 556,
-            "y": 480
-          },
           "slotIds": [
             "step2-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 27,
+            "step": "body",
             "weight": 400
           }
         },
@@ -1025,23 +1005,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 7,
+            "row": 30,
+            "rows": 4,
+            "span": 3
+          },
           "content": "Canvas preview",
           "id": "step3-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 364,
-            "x": 1000,
-            "y": 420
-          },
           "slotIds": [
             "step3-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -1052,23 +1031,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 7,
+            "row": 35,
+            "rows": 17,
+            "span": 3
+          },
           "content": "The agent opens the page, inspects the render and repairs problems it finds.",
           "id": "step3-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 200,
-            "width": 364,
-            "x": 1000,
-            "y": 480
-          },
           "slotIds": [
             "step3-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 27,
+            "step": "body",
             "weight": 400
           }
         },
@@ -1079,23 +1057,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 10,
+            "row": 30,
+            "rows": 4,
+            "span": 3
+          },
           "content": "Your page",
           "id": "step4-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 364,
-            "x": 1444,
-            "y": 420
-          },
           "slotIds": [
             "step4-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -1106,27 +1083,32 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 10,
+            "row": 35,
+            "rows": 17,
+            "span": 3
+          },
           "content": "Edit it directly, Present it, export PNG or download the editable JSON.",
           "id": "step4-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 200,
-            "width": 364,
-            "x": 1444,
-            "y": 480
-          },
           "slotIds": [
             "step4-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 27,
+            "step": "body",
             "weight": 400
           }
         },
         {
+          "area": {
+            "column": 1,
+            "row": 56,
+            "rows": 1,
+            "span": 12
+          },
           "customVisual": {
             "description": "Divider between the main flow and the alternatives below it.",
             "elements": [
@@ -1147,19 +1129,14 @@
             "format": "vector",
             "viewBox": {
               "height": 2,
-              "width": 1696,
+              "width": 1776,
               "x": 0,
               "y": 0
             }
           },
           "id": "flow-divider",
           "kind": "image",
-          "preferredRect": {
-            "height": 2,
-            "width": 1696,
-            "x": 112,
-            "y": 730
-          },
+          "layer": "background",
           "slotIds": [
             "flow-divider-slot"
           ]
@@ -1171,23 +1148,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 59,
+            "rows": 4,
+            "span": 5
+          },
           "content": "Prefer to sketch first?",
           "id": "sketch-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 800,
-            "x": 112,
-            "y": 770
-          },
           "slotIds": [
             "sketch-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -1198,23 +1174,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 64,
+            "rows": 9,
+            "span": 5
+          },
           "content": "In the editor your agent opened, add a component, describe its intent, then choose Build it. Your agent drafts from your layout.",
           "id": "sketch-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 110,
-            "width": 800,
-            "x": 112,
-            "y": 828
-          },
           "slotIds": [
             "sketch-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -1225,23 +1200,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 7,
+            "row": 59,
+            "rows": 4,
+            "span": 6
+          },
           "content": "No separate setup step",
           "id": "firstuse-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 804,
-            "x": 1004,
-            "y": 770
-          },
           "slotIds": [
             "firstuse-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -1252,23 +1226,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 7,
+            "row": 64,
+            "rows": 9,
+            "span": 6
+          },
           "content": "On first use the skill installs the Konpeki runtime in a user cache, not in your project.",
           "id": "firstuse-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 110,
-            "width": 804,
-            "x": 1004,
-            "y": 828
-          },
           "slotIds": [
             "firstuse-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         }
@@ -1387,14 +1360,11 @@
           "role": "body"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "brief-to-page",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "From brief to page",
       "pageNumber": {
@@ -1490,10 +1460,6 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -1502,23 +1468,22 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 2,
+            "rows": 8,
+            "span": 12
+          },
           "content": "You and your agent edit the same file.",
           "id": "share-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 88
-          },
           "slotIds": [
             "share-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.15,
-            "size": 58,
+            "step": "title",
             "weight": 600
           }
         },
@@ -1529,23 +1494,22 @@
             "role": "subtitle",
             "rule": "none"
           },
-          "content": "The page lives in composition.json. The browser canvas and your agent both read and write it.",
+          "area": {
+            "column": 1,
+            "row": 11,
+            "rows": 6,
+            "span": 10
+          },
+          "content": "The page lives in composition.json. The browser canvas\nand your agent both read and write it.",
           "id": "share-lead",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 1500,
-            "x": 112,
-            "y": 190
-          },
           "slotIds": [
             "share-lead-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 400
           }
         },
@@ -1558,6 +1522,12 @@
             "selection": "explicit",
             "type": "data-flow"
           },
+          "area": {
+            "column": 1,
+            "row": 20,
+            "rows": 40,
+            "span": 12
+          },
           "customVisual": {
             "description": "Browser canvas and coding agent on either side of composition.json. Arrows: canvas saves edits to the file and loads new revisions; agent writes validated revisions and rereads before revising.",
             "elements": [
@@ -1565,7 +1535,7 @@
                 "attributes": {
                   "fill": "theme:ink",
                   "font-family": "theme:heading-font",
-                  "font-size": 30,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "x": 0,
                   "y": 30
@@ -1748,7 +1718,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 40,
                   "y": 390
                 },
@@ -1760,7 +1730,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 40,
                   "y": 422
                 },
@@ -1794,7 +1764,7 @@
                 "attributes": {
                   "fill": "theme:accent",
                   "font-family": "theme:heading-font",
-                  "font-size": 64,
+                  "font-size": "scale:title",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 848,
@@ -1808,7 +1778,7 @@
                 "attributes": {
                   "fill": "theme:ink",
                   "font-family": "theme:body-font",
-                  "font-size": 26,
+                  "font-size": "scale:caption",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 848,
@@ -1822,7 +1792,7 @@
                 "attributes": {
                   "fill": "theme:ink",
                   "font-family": "theme:heading-font",
-                  "font-size": 30,
+                  "font-size": "scale:body",
                   "font-weight": 600,
                   "x": 1226,
                   "y": 30
@@ -1849,7 +1819,7 @@
                 "attributes": {
                   "fill": "theme:ink",
                   "font-family": "theme:body-font",
-                  "font-size": 21,
+                  "font-size": "scale:fine",
                   "x": 1254,
                   "y": 134
                 },
@@ -1909,7 +1879,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 1254,
                   "y": 390
                 },
@@ -1921,7 +1891,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 22,
+                  "font-size": "scale:caption",
                   "x": 1254,
                   "y": 422
                 },
@@ -1957,7 +1927,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 20,
+                  "font-size": "scale:fine",
                   "text-anchor": "middle",
                   "x": 614,
                   "y": 192
@@ -1994,7 +1964,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 20,
+                  "font-size": "scale:fine",
                   "text-anchor": "middle",
                   "x": 614,
                   "y": 344
@@ -2031,7 +2001,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 20,
+                  "font-size": "scale:fine",
                   "text-anchor": "middle",
                   "x": 1082,
                   "y": 192
@@ -2068,7 +2038,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 20,
+                  "font-size": "scale:fine",
                   "text-anchor": "middle",
                   "x": 1082,
                   "y": 344
@@ -2089,12 +2059,6 @@
           },
           "id": "share-diagram",
           "kind": "diagram",
-          "preferredRect": {
-            "height": 480,
-            "width": 1696,
-            "x": 112,
-            "y": 300
-          },
           "slotIds": [
             "share-diagram-slot"
           ]
@@ -2106,23 +2070,22 @@
             "role": "caption",
             "rule": "none"
           },
-          "content": "A revision hash stops either side from overwriting a newer change. When your agent updates the file, your previous version stays in Undo.",
+          "area": {
+            "column": 1,
+            "row": 65,
+            "rows": 8,
+            "span": 12
+          },
+          "content": "A revision hash stops either side from overwriting a newer change.\nWhen your agent updates the file, your previous version stays in Undo.",
           "id": "share-note",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 840
-          },
           "slotIds": [
             "share-note-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         }
@@ -2137,7 +2100,7 @@
         },
         {
           "id": "share-lead-slot",
-          "instruction": "The page lives in composition.json. The browser canvas and your agent both read and write it.",
+          "instruction": "The page lives in composition.json. The browser canvas\nand your agent both read and write it.",
           "label": "share-lead",
           "required": true,
           "role": "body"
@@ -2151,20 +2114,17 @@
         },
         {
           "id": "share-note-slot",
-          "instruction": "A revision hash stops either side from overwriting a newer change. When your agent updates the file, your previous version stays in Undo.",
+          "instruction": "A revision hash stops either side from overwriting a newer change.\nWhen your agent updates the file, your previous version stays in Undo.",
           "label": "share-note",
           "required": true,
           "role": "body"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "shared-file",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "One shared file",
       "pageNumber": {
@@ -2200,10 +2160,6 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -2212,27 +2168,32 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 2,
+            "rows": 8,
+            "span": 12
+          },
           "content": "Every page is built from five editable components.",
           "id": "comp-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 88
-          },
           "slotIds": [
             "comp-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.15,
-            "size": 58,
+            "step": "title",
             "weight": 600
           }
         },
         {
+          "area": {
+            "column": 2,
+            "row": 16,
+            "rows": 18,
+            "span": 10
+          },
           "customVisual": {
             "description": "Five schematic icons: text lines, a small node diagram, a bar chart, a framed picture and a table.",
             "elements": [
@@ -2243,7 +2204,7 @@
                   "rx": 10,
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "width": 300,
+                  "width": 276,
                   "x": 0,
                   "y": 20
                 },
@@ -2257,8 +2218,8 @@
                   "rx": 10,
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "width": 300,
-                  "x": 349,
+                  "width": 276,
+                  "x": 300,
                   "y": 20
                 },
                 "id": "icons-tile1",
@@ -2271,8 +2232,8 @@
                   "rx": 10,
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "width": 300,
-                  "x": 698,
+                  "width": 276,
+                  "x": 600,
                   "y": 20
                 },
                 "id": "icons-tile2",
@@ -2285,8 +2246,8 @@
                   "rx": 10,
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "width": 300,
-                  "x": 1047,
+                  "width": 276,
+                  "x": 900,
                   "y": 20
                 },
                 "id": "icons-tile3",
@@ -2299,8 +2260,8 @@
                   "rx": 10,
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "width": 300,
-                  "x": 1396,
+                  "width": 276,
+                  "x": 1200,
                   "y": 20
                 },
                 "id": "icons-tile4",
@@ -2362,7 +2323,7 @@
                   "stroke": "theme:accent",
                   "stroke-width": 2.5,
                   "width": 64,
-                  "x": 379,
+                  "x": 330,
                   "y": 86
                 },
                 "id": "icons-d-a",
@@ -2376,7 +2337,7 @@
                   "stroke": "theme:muted",
                   "stroke-width": 2,
                   "width": 64,
-                  "x": 555,
+                  "x": 506,
                   "y": 46
                 },
                 "id": "icons-d-b",
@@ -2390,7 +2351,7 @@
                   "stroke": "theme:muted",
                   "stroke-width": 2,
                   "width": 64,
-                  "x": 555,
+                  "x": 506,
                   "y": 126
                 },
                 "id": "icons-d-c",
@@ -2400,8 +2361,8 @@
                 "attributes": {
                   "stroke": "theme:muted",
                   "stroke-width": 2.5,
-                  "x1": 449,
-                  "x2": 547,
+                  "x1": 400,
+                  "x2": 498,
                   "y1": 102,
                   "y2": 74
                 },
@@ -2410,7 +2371,7 @@
               },
               {
                 "attributes": {
-                  "d": "M537 83.8L547 74L533.3 70.9",
+                  "d": "M488 83.8L498 74L484.3 70.9",
                   "fill": "none",
                   "stroke": "theme:muted",
                   "stroke-linecap": "round",
@@ -2424,8 +2385,8 @@
                 "attributes": {
                   "stroke": "theme:muted",
                   "stroke-width": 2.5,
-                  "x1": 449,
-                  "x2": 547,
+                  "x1": 400,
+                  "x2": 498,
                   "y1": 118,
                   "y2": 146
                 },
@@ -2434,7 +2395,7 @@
               },
               {
                 "attributes": {
-                  "d": "M533.3 149.1L547 146L537 136.2",
+                  "d": "M484.3 149.1L498 146L488 136.2",
                   "fill": "none",
                   "stroke": "theme:muted",
                   "stroke-linecap": "round",
@@ -2448,8 +2409,8 @@
                 "attributes": {
                   "stroke": "theme:ink",
                   "stroke-width": 2,
-                  "x1": 734,
-                  "x2": 962,
+                  "x1": 636,
+                  "x2": 864,
                   "y1": 170,
                   "y2": 170
                 },
@@ -2461,7 +2422,7 @@
                   "fill": "theme:divider",
                   "height": 50,
                   "width": 36,
-                  "x": 758,
+                  "x": 660,
                   "y": 120
                 },
                 "id": "icons-c-b0",
@@ -2472,7 +2433,7 @@
                   "fill": "theme:divider",
                   "height": 90,
                   "width": 36,
-                  "x": 804,
+                  "x": 706,
                   "y": 80
                 },
                 "id": "icons-c-b1",
@@ -2483,7 +2444,7 @@
                   "fill": "theme:divider",
                   "height": 70,
                   "width": 36,
-                  "x": 850,
+                  "x": 752,
                   "y": 100
                 },
                 "id": "icons-c-b2",
@@ -2494,7 +2455,7 @@
                   "fill": "theme:accent",
                   "height": 110,
                   "width": 36,
-                  "x": 896,
+                  "x": 798,
                   "y": 60
                 },
                 "id": "icons-c-b3",
@@ -2508,7 +2469,7 @@
                   "stroke": "theme:accent",
                   "stroke-width": 2,
                   "width": 180,
-                  "x": 1107,
+                  "x": 960,
                   "y": 50
                 },
                 "id": "icons-i-frame",
@@ -2516,7 +2477,7 @@
               },
               {
                 "attributes": {
-                  "cx": 1247,
+                  "cx": 1100,
                   "cy": 82,
                   "fill": "theme:accent",
                   "r": 12
@@ -2526,7 +2487,7 @@
               },
               {
                 "attributes": {
-                  "d": "M1107 170L1167 108L1211 146L1233 128L1287 170Z",
+                  "d": "M960 170L1020 108L1064 146L1086 128L1140 170Z",
                   "fill": "theme:accent",
                   "opacity": 0.55
                 },
@@ -2538,7 +2499,7 @@
                   "fill": "theme:wash",
                   "height": 28,
                   "width": 220,
-                  "x": 1436,
+                  "x": 1240,
                   "y": 54
                 },
                 "id": "icons-tb-head",
@@ -2548,8 +2509,8 @@
                 "attributes": {
                   "stroke": "theme:ink",
                   "stroke-width": 2,
-                  "x1": 1436,
-                  "x2": 1656,
+                  "x1": 1240,
+                  "x2": 1460,
                   "y1": 54,
                   "y2": 54
                 },
@@ -2560,8 +2521,8 @@
                 "attributes": {
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "x1": 1436,
-                  "x2": 1656,
+                  "x1": 1240,
+                  "x2": 1460,
                   "y1": 82,
                   "y2": 82
                 },
@@ -2572,8 +2533,8 @@
                 "attributes": {
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "x1": 1436,
-                  "x2": 1656,
+                  "x1": 1240,
+                  "x2": 1460,
                   "y1": 110,
                   "y2": 110
                 },
@@ -2584,8 +2545,8 @@
                 "attributes": {
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "x1": 1436,
-                  "x2": 1656,
+                  "x1": 1240,
+                  "x2": 1460,
                   "y1": 138,
                   "y2": 138
                 },
@@ -2596,8 +2557,8 @@
                 "attributes": {
                   "stroke": "theme:ink",
                   "stroke-width": 2,
-                  "x1": 1436,
-                  "x2": 1656,
+                  "x1": 1240,
+                  "x2": 1460,
                   "y1": 166,
                   "y2": 166
                 },
@@ -2608,8 +2569,8 @@
                 "attributes": {
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "x1": 1509,
-                  "x2": 1509,
+                  "x1": 1313,
+                  "x2": 1313,
                   "y1": 54,
                   "y2": 166
                 },
@@ -2620,8 +2581,8 @@
                 "attributes": {
                   "stroke": "theme:divider",
                   "stroke-width": 1.5,
-                  "x1": 1582,
-                  "x2": 1582,
+                  "x1": 1386,
+                  "x2": 1386,
                   "y1": 54,
                   "y2": 166
                 },
@@ -2632,20 +2593,14 @@
             "fit": "contain",
             "format": "vector",
             "viewBox": {
-              "height": 220,
-              "width": 1696,
+              "height": 216,
+              "width": 1476,
               "x": 0,
               "y": 0
             }
           },
           "id": "comp-icons",
           "kind": "image",
-          "preferredRect": {
-            "height": 220,
-            "width": 1696,
-            "x": 112,
-            "y": 250
-          },
           "slotIds": [
             "comp-icons-slot"
           ]
@@ -2657,23 +2612,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 2,
+            "row": 37,
+            "rows": 4,
+            "span": 2
+          },
           "content": "Text block",
           "id": "comp1-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 300,
-            "x": 112,
-            "y": 500
-          },
           "slotIds": [
             "comp1-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -2684,23 +2638,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 2,
+            "row": 42,
+            "rows": 14,
+            "span": 2
+          },
           "content": "Headlines, body copy and captions with consistent type roles.",
           "id": "comp1-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 170,
-            "width": 300,
-            "x": 112,
-            "y": 560
-          },
           "slotIds": [
             "comp1-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -2711,23 +2664,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 37,
+            "rows": 4,
+            "span": 2
+          },
           "content": "Diagram",
           "id": "comp2-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 300,
-            "x": 461,
-            "y": 500
-          },
           "slotIds": [
             "comp2-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -2738,23 +2690,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 42,
+            "rows": 14,
+            "span": 2
+          },
           "content": "Nodes and connections for processes, systems and flows.",
           "id": "comp2-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 170,
-            "width": 300,
-            "x": 461,
-            "y": 560
-          },
           "slotIds": [
             "comp2-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -2765,23 +2716,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 6,
+            "row": 37,
+            "rows": 4,
+            "span": 2
+          },
           "content": "Chart",
           "id": "comp3-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 300,
-            "x": 810,
-            "y": 500
-          },
           "slotIds": [
             "comp3-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -2792,23 +2742,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 6,
+            "row": 42,
+            "rows": 14,
+            "span": 2
+          },
           "content": "Bar, line, Sankey and other forms for the data you supply.",
           "id": "comp3-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 170,
-            "width": 300,
-            "x": 810,
-            "y": 560
-          },
           "slotIds": [
             "comp3-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -2819,23 +2768,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 8,
+            "row": 37,
+            "rows": 4,
+            "span": 2
+          },
           "content": "Image",
           "id": "comp4-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 300,
-            "x": 1159,
-            "y": 500
-          },
           "slotIds": [
             "comp4-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -2846,23 +2794,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 8,
+            "row": 42,
+            "rows": 14,
+            "span": 2
+          },
           "content": "Licensed pictures, brand marks and illustrations.",
           "id": "comp4-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 170,
-            "width": 300,
-            "x": 1159,
-            "y": 560
-          },
           "slotIds": [
             "comp4-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -2873,23 +2820,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 10,
+            "row": 37,
+            "rows": 4,
+            "span": 2
+          },
           "content": "Table",
           "id": "comp5-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 300,
-            "x": 1508,
-            "y": 500
-          },
           "slotIds": [
             "comp5-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -2900,23 +2846,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 10,
+            "row": 42,
+            "rows": 14,
+            "span": 2
+          },
           "content": "Rows and columns derived from your content.",
           "id": "comp5-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 170,
-            "width": 300,
-            "x": 1508,
-            "y": 560
-          },
           "slotIds": [
             "comp5-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -2927,23 +2872,22 @@
             "role": "body",
             "rule": "none"
           },
-          "content": "Diagram, Chart and Table start as structural drafts. Finished artwork becomes editable vector shapes with stable IDs, drawn from your source data, so you can select and change any line or label.",
+          "area": {
+            "column": 1,
+            "row": 66,
+            "rows": 10,
+            "span": 12
+          },
+          "content": "Diagram, Chart and Table start as structural drafts. Finished artwork\nbecomes editable vector shapes with stable IDs, drawn from your source data,\nso you can select and change any line or label.",
           "id": "comp-note",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 120,
-            "width": 1696,
-            "x": 112,
-            "y": 848.1918819188191
-          },
           "slotIds": [
             "comp-note-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.45,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         }
@@ -3035,20 +2979,17 @@
         },
         {
           "id": "comp-note-slot",
-          "instruction": "Diagram, Chart and Table start as structural drafts. Finished artwork becomes editable vector shapes with stable IDs, drawn from your source data, so you can select and change any line or label.",
+          "instruction": "Diagram, Chart and Table start as structural drafts. Finished artwork\nbecomes editable vector shapes with stable IDs, drawn from your source data,\nso you can select and change any line or label.",
           "label": "comp-note",
           "required": true,
           "role": "body"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "components",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "Five components",
       "pageNumber": {
@@ -3129,10 +3070,6 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -3141,27 +3078,32 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 2,
+            "rows": 8,
+            "span": 12
+          },
           "content": "Point at what to change, then choose Build it.",
           "id": "notes-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 88
-          },
           "slotIds": [
             "notes-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.15,
-            "size": 58,
+            "step": "title",
             "weight": 600
           }
         },
         {
+          "area": {
+            "column": 1,
+            "row": 17,
+            "rows": 47,
+            "span": 6
+          },
           "customVisual": {
             "description": "Schematic editor: Notes panel with two numbered notes and a Build it button; a page on the canvas with matching pins on the title and a selected chart bar.",
             "elements": [
@@ -3195,7 +3137,7 @@
                 "attributes": {
                   "fill": "theme:ink",
                   "font-family": "theme:heading-font",
-                  "font-size": 24,
+                  "font-size": "scale:caption",
                   "font-weight": 600,
                   "x": 28,
                   "y": 48
@@ -3244,7 +3186,7 @@
                 "attributes": {
                   "fill": "theme:on-accent",
                   "font-family": "theme:body-font",
-                  "font-size": 18,
+                  "font-size": "scale:fine",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 46,
@@ -3306,7 +3248,7 @@
                 "attributes": {
                   "fill": "theme:on-accent",
                   "font-family": "theme:body-font",
-                  "font-size": 18,
+                  "font-size": "scale:fine",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 46,
@@ -3356,7 +3298,7 @@
                 "attributes": {
                   "fill": "theme:on-accent",
                   "font-family": "theme:heading-font",
-                  "font-size": 24,
+                  "font-size": "scale:caption",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 125,
@@ -3489,7 +3431,7 @@
                 "attributes": {
                   "fill": "theme:on-accent",
                   "font-family": "theme:body-font",
-                  "font-size": 19,
+                  "font-size": "scale:fine",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 590,
@@ -3515,7 +3457,7 @@
                 "attributes": {
                   "fill": "theme:on-accent",
                   "font-family": "theme:body-font",
-                  "font-size": 19,
+                  "font-size": "scale:fine",
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 770,
@@ -3529,7 +3471,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 21,
+                  "font-size": "scale:fine",
                   "x": 290,
                   "y": 444
                 },
@@ -3541,7 +3483,7 @@
                 "attributes": {
                   "fill": "theme:muted",
                   "font-family": "theme:body-font",
-                  "font-size": 21,
+                  "font-size": "scale:fine",
                   "x": 290,
                   "y": 474
                 },
@@ -3561,12 +3503,6 @@
           },
           "id": "notes-ui",
           "kind": "image",
-          "preferredRect": {
-            "height": 560,
-            "width": 860,
-            "x": 112,
-            "y": 260
-          },
           "slotIds": [
             "notes-ui-slot"
           ]
@@ -3578,23 +3514,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 8,
+            "row": 17,
+            "rows": 4,
+            "span": 1
+          },
           "content": "1",
           "id": "nstep1-num",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 56,
-            "x": 1060,
-            "y": 262
-          },
           "slotIds": [
             "nstep1-num-slot"
           ],
           "textStyle": {
             "color": "accent",
             "font": "heading",
-            "lineHeight": 1.2,
-            "size": 36,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -3605,23 +3540,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 17,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Select a target",
           "id": "nstep1-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 684,
-            "x": 1124,
-            "y": 262
-          },
           "slotIds": [
             "nstep1-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -3632,23 +3566,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 21,
+            "rows": 7,
+            "span": 4
+          },
           "content": "A page, a component or a single vector shape inside it.",
           "id": "nstep1-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 80,
-            "width": 684,
-            "x": 1124,
-            "y": 312
-          },
           "slotIds": [
             "nstep1-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 25,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -3659,23 +3592,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 8,
+            "row": 29,
+            "rows": 4,
+            "span": 1
+          },
           "content": "2",
           "id": "nstep2-num",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 56,
-            "x": 1060,
-            "y": 404
-          },
           "slotIds": [
             "nstep2-num-slot"
           ],
           "textStyle": {
             "color": "accent",
             "font": "heading",
-            "lineHeight": 1.2,
-            "size": 36,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -3686,23 +3618,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 29,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Add notes",
           "id": "nstep2-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 684,
-            "x": 1124,
-            "y": 404
-          },
           "slotIds": [
             "nstep2-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -3713,23 +3644,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 33,
+            "rows": 7,
+            "span": 4
+          },
           "content": "Write what should change. Add notes to several targets before sending.",
           "id": "nstep2-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 80,
-            "width": 684,
-            "x": 1124,
-            "y": 454
-          },
           "slotIds": [
             "nstep2-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 25,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -3740,23 +3670,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 8,
+            "row": 41,
+            "rows": 4,
+            "span": 1
+          },
           "content": "3",
           "id": "nstep3-num",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 56,
-            "x": 1060,
-            "y": 546
-          },
           "slotIds": [
             "nstep3-num-slot"
           ],
           "textStyle": {
             "color": "accent",
             "font": "heading",
-            "lineHeight": 1.2,
-            "size": 36,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -3767,23 +3696,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 41,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Choose Build it",
           "id": "nstep3-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 684,
-            "x": 1124,
-            "y": 546
-          },
           "slotIds": [
             "nstep3-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -3794,23 +3722,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 45,
+            "rows": 7,
+            "span": 4
+          },
           "content": "The saved revision and every open note go to your agent as one request.",
           "id": "nstep3-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 80,
-            "width": 684,
-            "x": 1124,
-            "y": 596
-          },
           "slotIds": [
             "nstep3-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 25,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -3821,23 +3748,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 8,
+            "row": 52,
+            "rows": 4,
+            "span": 1
+          },
           "content": "4",
           "id": "nstep4-num",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 56,
-            "x": 1060,
-            "y": 688
-          },
           "slotIds": [
             "nstep4-num-slot"
           ],
           "textStyle": {
             "color": "accent",
             "font": "heading",
-            "lineHeight": 1.2,
-            "size": 36,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -3848,23 +3774,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 52,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Your agent revises",
           "id": "nstep4-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 684,
-            "x": 1124,
-            "y": 688
-          },
           "slotIds": [
             "nstep4-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -3875,23 +3800,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 57,
+            "rows": 7,
+            "span": 4
+          },
           "content": "It applies each note to its target, checks the render, then marks the request finished.",
           "id": "nstep4-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 80,
-            "width": 684,
-            "x": 1124,
-            "y": 738
-          },
           "slotIds": [
             "nstep4-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 25,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -3902,23 +3826,22 @@
             "role": "caption",
             "rule": "none"
           },
-          "content": "Notes and Build it need a preview your agent opened from a file. Build it cannot wake an idle agent; use Copy prompt to hand over the request.",
+          "area": {
+            "column": 1,
+            "row": 68,
+            "rows": 8,
+            "span": 12
+          },
+          "content": "Notes and Build it need a preview your agent opened from a file.\nBuild it cannot wake an idle agent; use Copy prompt to hand over the request.",
           "id": "notes-limit",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 880
-          },
           "slotIds": [
             "notes-limit-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         }
@@ -4024,20 +3947,17 @@
         },
         {
           "id": "notes-limit-slot",
-          "instruction": "Notes and Build it need a preview your agent opened from a file. Build it cannot wake an idle agent; use Copy prompt to hand over the request.",
+          "instruction": "Notes and Build it need a preview your agent opened from a file.\nBuild it cannot wake an idle agent; use Copy prompt to hand over the request.",
           "label": "notes-limit",
           "required": true,
           "role": "body"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "notes",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "Revision notes",
       "pageNumber": {
@@ -4128,10 +4048,6 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -4140,27 +4056,32 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 2,
+            "rows": 8,
+            "span": 12
+          },
           "content": "Try it in the browser. Keep working with your agent.",
           "id": "where-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 88
-          },
           "slotIds": [
             "where-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.15,
-            "size": 58,
+            "step": "title",
             "weight": 600
           }
         },
         {
+          "area": {
+            "column": 1,
+            "row": 16,
+            "rows": 43,
+            "span": 12
+          },
           "customVisual": {
             "description": "Table rules: a heading rule, row separators and a closing rule.",
             "elements": [
@@ -4236,12 +4157,7 @@
           },
           "id": "where-rules",
           "kind": "image",
-          "preferredRect": {
-            "height": 520,
-            "width": 1696,
-            "x": 112,
-            "y": 250
-          },
+          "layer": "background",
           "slotIds": [
             "where-rules-slot"
           ]
@@ -4253,23 +4169,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 17,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Browser playground",
           "id": "where-h1",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 620,
-            "x": 490,
-            "y": 260
-          },
           "slotIds": [
             "where-h1-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -4280,23 +4195,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 17,
+            "rows": 4,
+            "span": 4
+          },
           "content": "With your coding agent",
           "id": "where-h2",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 650,
-            "x": 1158,
-            "y": 260
-          },
           "slotIds": [
             "where-h2-slot"
           ],
           "textStyle": {
             "color": "accent",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 34,
+            "step": "lead",
             "weight": 600
           }
         },
@@ -4307,23 +4221,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 24,
+            "rows": 6,
+            "span": 2
+          },
           "content": "Start from",
           "id": "where-r1-label",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 330,
-            "x": 112,
-            "y": 352
-          },
           "slotIds": [
             "where-r1-label-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 600
           }
         },
@@ -4334,23 +4247,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 24,
+            "rows": 6,
+            "span": 4
+          },
           "content": "An example page, or a blank one",
           "id": "where-r1-browser",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 620,
-            "x": 490,
-            "y": 352
-          },
           "slotIds": [
             "where-r1-browser-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4361,23 +4273,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 24,
+            "rows": 6,
+            "span": 4
+          },
           "content": "Your brief and materials",
           "id": "where-r1-agent",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 650,
-            "x": 1158,
-            "y": 352
-          },
           "slotIds": [
             "where-r1-agent-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4388,23 +4299,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 34,
+            "rows": 6,
+            "span": 2
+          },
           "content": "Saved to",
           "id": "where-r2-label",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 330,
-            "x": 112,
-            "y": 464
-          },
           "slotIds": [
             "where-r2-label-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 600
           }
         },
@@ -4415,23 +4325,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 34,
+            "rows": 6,
+            "span": 4
+          },
           "content": "This browser only; no cloud sync",
           "id": "where-r2-browser",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 620,
-            "x": 490,
-            "y": 464
-          },
           "slotIds": [
             "where-r2-browser-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4442,23 +4351,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 34,
+            "rows": 6,
+            "span": 4
+          },
           "content": "composition.json in your workspace",
           "id": "where-r2-agent",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 650,
-            "x": 1158,
-            "y": 464
-          },
           "slotIds": [
             "where-r2-agent-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4469,23 +4377,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 43,
+            "rows": 6,
+            "span": 2
+          },
           "content": "Changes",
           "id": "where-r3-label",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 330,
-            "x": 112,
-            "y": 576
-          },
           "slotIds": [
             "where-r3-label-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 600
           }
         },
@@ -4496,23 +4403,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 43,
+            "rows": 6,
+            "span": 4
+          },
           "content": "Edit by hand",
           "id": "where-r3-browser",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 620,
-            "x": 490,
-            "y": 576
-          },
           "slotIds": [
             "where-r3-browser-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4523,23 +4429,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 43,
+            "rows": 6,
+            "span": 4
+          },
           "content": "Edit by hand, or send notes with Build it",
           "id": "where-r3-agent",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 650,
-            "x": 1158,
-            "y": 576
-          },
           "slotIds": [
             "where-r3-agent-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4550,23 +4455,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 52,
+            "rows": 6,
+            "span": 2
+          },
           "content": "Get it out",
           "id": "where-r4-label",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 330,
-            "x": 112,
-            "y": 688
-          },
           "slotIds": [
             "where-r4-label-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 600
           }
         },
@@ -4577,23 +4481,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 4,
+            "row": 52,
+            "rows": 6,
+            "span": 4
+          },
           "content": "Download JSON, export PNG or Present",
           "id": "where-r4-browser",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 620,
-            "x": 490,
-            "y": 688
-          },
           "slotIds": [
             "where-r4-browser-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4604,23 +4507,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 52,
+            "rows": 6,
+            "span": 4
+          },
           "content": "Export PNG or Present; the file is already saved",
           "id": "where-r4-agent",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 650,
-            "x": 1158,
-            "y": 688
-          },
           "slotIds": [
             "where-r4-agent-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -4631,23 +4533,22 @@
             "role": "caption",
             "rule": "none"
           },
-          "content": "To switch, download JSON from the playground and give it to your agent. The two copies don't sync afterwards.",
+          "area": {
+            "column": 1,
+            "row": 65,
+            "rows": 6,
+            "span": 12
+          },
+          "content": "To switch, download JSON from the playground and give it to your agent.\nThe two copies don't sync afterwards.",
           "id": "where-note",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 1696,
-            "x": 112,
-            "y": 840
-          },
           "slotIds": [
             "where-note-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         }
@@ -4767,20 +4668,17 @@
         },
         {
           "id": "where-note-slot",
-          "instruction": "To switch, download JSON from the playground and give it to your agent. The two copies don't sync afterwards.",
+          "instruction": "To switch, download JSON from the playground and give it to your agent.\nThe two copies don't sync afterwards.",
           "label": "where-note",
           "required": true,
           "role": "body"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "browser-or-agent",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "Browser or agent",
       "pageNumber": {
@@ -4881,10 +4779,6 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
-      "canvas": {
-        "height": 1080,
-        "width": 1920
-      },
       "components": [
         {
           "appearance": {
@@ -4893,27 +4787,32 @@
             "role": "title",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 2,
+            "rows": 8,
+            "span": 12
+          },
           "content": "Start with one install and a brief.",
           "id": "start-title",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 90,
-            "width": 1696,
-            "x": 112,
-            "y": 88
-          },
           "slotIds": [
             "start-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.15,
-            "size": 58,
+            "step": "title",
             "weight": 600
           }
         },
         {
+          "area": {
+            "column": 1,
+            "row": 22,
+            "rows": 30,
+            "span": 7
+          },
           "customVisual": {
             "description": "Background panels for the install command and the example brief.",
             "elements": [
@@ -4946,7 +4845,7 @@
                 "kind": "rect"
               }
             ],
-            "fit": "contain",
+            "fit": "stretch",
             "format": "vector",
             "viewBox": {
               "height": 360,
@@ -4957,12 +4856,7 @@
           },
           "id": "start-boxes",
           "kind": "image",
-          "preferredRect": {
-            "height": 360,
-            "width": 960,
-            "x": 112,
-            "y": 324
-          },
+          "layer": "background",
           "slotIds": [
             "start-boxes-slot"
           ]
@@ -4974,23 +4868,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 17,
+            "rows": 4,
+            "span": 7
+          },
           "content": "1  Install the skill once",
           "id": "start-s1",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 960,
-            "x": 112,
-            "y": 260
-          },
           "slotIds": [
             "start-s1-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -5001,23 +4894,23 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 22,
+            "rows": 8,
+            "span": 7
+          },
           "content": "npx skills add vcfgdev/konpeki -g",
           "id": "start-cmd",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 46,
-            "width": 900,
-            "x": 144,
-            "y": 346
-          },
+          "padding": 2,
           "slotIds": [
             "start-cmd-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 400
           }
         },
@@ -5028,23 +4921,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 34,
+            "rows": 4,
+            "span": 7
+          },
           "content": "2  Send your agent a brief",
           "id": "start-s2",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 960,
-            "x": 112,
-            "y": 470
-          },
           "slotIds": [
             "start-s2-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -5055,23 +4947,23 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 1,
+            "row": 40,
+            "rows": 12,
+            "span": 7
+          },
           "content": "Use Konpeki to create a one-page explainer of how a browser, API and database work together.",
           "id": "start-brief",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 96,
-            "width": 900,
-            "x": 144,
-            "y": 562
-          },
+          "padding": 2,
           "slotIds": [
             "start-brief-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 32,
+            "step": "body",
             "weight": 400
           }
         },
@@ -5082,23 +4974,22 @@
             "role": "body",
             "rule": "none"
           },
-          "content": "Your agent prepares the runtime, writes the file, opens the canvas and checks the result. Keep revising in the same conversation.",
+          "area": {
+            "column": 1,
+            "row": 55,
+            "rows": 8,
+            "span": 7
+          },
+          "content": "Your agent prepares the runtime, writes the file, opens the canvas\nand checks the result. Keep revising in the same conversation.",
           "id": "start-s2-note",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 100,
-            "width": 960,
-            "x": 112,
-            "y": 716
-          },
           "slotIds": [
             "start-s2-note-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         },
@@ -5109,23 +5000,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 17,
+            "rows": 4,
+            "span": 4
+          },
           "content": "You need",
           "id": "need-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 608,
-            "x": 1200,
-            "y": 260
-          },
           "slotIds": [
             "need-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -5136,23 +5026,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 23,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Node.js 24+ and npm",
           "id": "need-1",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 48,
-            "width": 560,
-            "x": 1200,
-            "y": 330
-          },
           "slotIds": [
             "need-1-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -5163,23 +5052,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 28,
+            "rows": 7,
+            "span": 4
+          },
           "content": "A coding agent that can edit files and run commands",
           "id": "need-2",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 87,
-            "width": 560,
-            "x": 1200,
-            "y": 396
-          },
           "slotIds": [
             "need-2-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -5190,23 +5078,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 37,
+            "rows": 4,
+            "span": 4
+          },
           "content": "A browser",
           "id": "need-3",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 48,
-            "width": 560,
-            "x": 1200,
-            "y": 501
-          },
           "slotIds": [
             "need-3-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "body",
-            "lineHeight": 1.4,
-            "size": 28,
+            "step": "body",
             "weight": 400
           }
         },
@@ -5217,23 +5104,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 43,
+            "rows": 4,
+            "span": 4
+          },
           "content": "Want an empty canvas first?",
           "id": "init-head",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 50,
-            "width": 608,
-            "x": 1200,
-            "y": 580
-          },
           "slotIds": [
             "init-head-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "lineHeight": 1.3,
-            "size": 32,
+            "step": "body",
             "weight": 600
           }
         },
@@ -5244,23 +5130,22 @@
             "role": "body",
             "rule": "none"
           },
+          "area": {
+            "column": 9,
+            "row": 49,
+            "rows": 10,
+            "span": 4
+          },
           "content": "Ask your agent for Konpeki init. It opens a blank page in the editor without generating anything.",
           "id": "init-body",
           "kind": "text-block",
-          "preferredRect": {
-            "height": 120,
-            "width": 608,
-            "x": 1200,
-            "y": 644
-          },
           "slotIds": [
             "init-body-slot"
           ],
           "textStyle": {
             "color": "muted",
             "font": "body",
-            "lineHeight": 1.45,
-            "size": 26,
+            "step": "caption",
             "weight": 400
           }
         }
@@ -5310,7 +5195,7 @@
         },
         {
           "id": "start-s2-note-slot",
-          "instruction": "Your agent prepares the runtime, writes the file, opens the canvas and checks the result. Keep revising in the same conversation.",
+          "instruction": "Your agent prepares the runtime, writes the file, opens the canvas\nand checks the result. Keep revising in the same conversation.",
           "label": "start-s2-note",
           "required": true,
           "role": "body"
@@ -5358,14 +5243,11 @@
           "role": "body"
         }
       ],
+      "grid": {
+        "preset": "presentation"
+      },
       "groups": [],
       "id": "start",
-      "innerPadding": {
-        "bottom": 0,
-        "left": 112,
-        "right": 112,
-        "top": 72
-      },
       "intendedViewingSize": "presentation",
       "name": "Get started",
       "pageNumber": {

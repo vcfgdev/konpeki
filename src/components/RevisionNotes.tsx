@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { CompositionDocument } from "../../composition/types.ts";
+import type { CompositionDocument } from "../../composition/runtime.ts";
 import { componentInstanceLabel } from "../lib/model.ts";
 import { activeRequest, type ReviewState, type ReviewTarget } from "../lib/review.ts";
 

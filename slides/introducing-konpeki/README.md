@@ -1,6 +1,6 @@
 # Introducing Konpeki
 
-A seven-page `konpeki-composition/v1` deck introducing Konpeki. It was rebuilt
+A seven-page `konpeki-composition/v2` deck introducing Konpeki. It was rebuilt
 from the original one-line brief using the public README, skill and authoring
 guide, then revised after comparison with the previous bundled deck. See
 [PROMPT.md](PROMPT.md) for the brief and revision, and [SOURCE.md](SOURCE.md) for
@@ -49,13 +49,18 @@ With `agent-browser` installed and a preview running:
 mise exec -- node slides/introducing-konpeki/review.mjs "<preview-url-with-session>" /tmp/intro-review
 ```
 
-It enters Present, checks every page at 1920×1080 and 1024×768 for text-block
-overflow and clipped vector text, and saves a capture of each page. All seven
-pages passed at both sizes. It does not check contrast, Night mode, other
-palettes, PDF/PPTX or cross-browser rendering.
+It enters Present, checks text overflow and clipped vector text, and saves a
+capture of each page. Separately, all seven pages and the four gallery pages
+passed `scripts/check-grid.mjs` geometry, overflow and overlap checks at
+1920×1080 and 1024×768. This does not establish contrast, Night mode, other
+palettes, PDF/PPTX or cross-browser rendering, blind preference, or first-attempt
+agent quality.
 
-Known limitations: the Konpeki mark keeps its brand blue, which differs from the
-Plex accent. Page layouts 2, 4 and 5 share a column rhythm.
+Known limitations: the Konpeki mark now follows the theme accent rather than a
+fixed brand blue. Page layouts 2, 4 and 5 share a column rhythm. The v2 port retains
+local vector viewports while placing outer components on the presentation grid;
+page 4 uses deliberate two-column spans and whitespace for its five items. v2
+component padding is available, but fixed-height text still needs render checks.
 
 ## Authoring notes
 
@@ -63,6 +68,7 @@ Friction found while following the documentation as a new author:
 
 - Apart from the target deck, `github-cover` is the only full example JSON in
   the npm package, so the format was inferred from it and `composition/types.ts`.
-- A text block with `border: "filled"` gets no inner padding, and text blocks
-  paint an opaque background; boxed text needs a separate vector panel behind it.
-- Text blocks do not grow to fit, so heights need a render check.
+- The original v1 authoring pass found that a text block with `border: "filled"`
+  had no inner padding and painted an opaque background, so boxed text needed a
+  separate vector panel. v2 now provides baseline-unit component padding.
+- Text blocks still do not grow to fit, so fixed heights need a render check.
