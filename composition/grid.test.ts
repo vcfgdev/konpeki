@@ -13,6 +13,8 @@ import { addComponent, addSlide, duplicateComponent, initialDraft, initialGridDr
 import { areaRect, gridSchema, lineLengthWarnings, resolveDocument, snapArea, toComposition, type GridDocument } from "./grid.ts";
 import { pageSizeIssue, resizePage } from "../src/lib/page-size.ts";
 import { readCompositionFile, saveCompositionFile } from "../bin/session-store.ts";
+import { composerPalette } from "../src/lib/theme.ts";
+import { contrastRatio } from "../lib/contrast.ts";
 
 function fixture(): GridDocument {
   const document = toComposition(addComponent(initialGridDraft(), "text-block")) as GridDocument;
@@ -67,10 +69,26 @@ test("type follows role and preset, explicit steps override; leading and padding
   delete c.textStyle;
   const title = resolveDocument(document).slides[0].components[0];
   assert.equal(title.textStyle?.size, 60);
-  assert.equal(title.textStyle?.lineHeight, 84 / 60);
+  assert.equal(title.textStyle?.lineHeight, 68 / 60);
   assert.deepEqual(toComposition(resolveDocument(document)), document, "role-default text needs no stored derived style");
+  c.area.column = 1;
+  for (const [preset, step, size, height] of [
+    ["presentation", "fine", 20, 24], ["presentation", "caption", 24, 32],
+    ["portrait", "display", 76, 84], ["link", "title", 52, 60],
+  ] as const) {
+    document.slides[0].grid.preset = preset;
+    c.textStyle = { step };
+    assert.equal(validateComposition(document).ok, true);
+    const resolved = resolveDocument(document).slides[0].components[0];
+    assert.equal(resolved.textStyle?.size, size);
+    assert.equal(resolved.textStyle?.lineHeight, height / size);
+    assert.deepEqual(toComposition(resolveDocument(document)), document, "preset leading is derived, never stored as an override");
+  }
+  document.slides[0].grid.preset = "presentation";
   c.textStyle = { step: "heading", leading: 4 };
-  assert.equal(resolveDocument(document).slides[0].components[0].textStyle?.size, 44);
+  const explicit = resolveDocument(document).slides[0].components[0];
+  assert.equal(explicit.textStyle?.size, 44);
+  assert.equal(explicit.textStyle?.lineHeight, 48 / 44, "explicit leading still uses whole 12px baseline units");
   c.textStyle.leading = 3;
   assert.equal(validateComposition(document).ok, false);
   c.textStyle.leading = 4;
@@ -178,6 +196,25 @@ test("file sessions retain v2 source and reject stale or derived-pixel writes", 
     assert.equal("preferredRect" in saved.slides[0].components[0], false);
     await assert.rejects(saveCompositionFile(path, opened.revision, document), { code: "REVISION_CONFLICT" });
   } finally { await rm(directory, { recursive: true, force: true }); }
+});
+
+test("Sankey quantities survive scaling and the paid label contrasts with its ribbon", () => {
+  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/gallery/sankey.json", import.meta.url), "utf8")));
+  const chart = document.slides[0].components.find(c => c.id === "chart")!;
+  assert.equal(chart.customVisual?.format, "vector");
+  if (chart.customVisual?.format !== "vector") throw Error("Expected vector chart");
+  const elements = new Map(chart.customVisual.elements.map(e => [e.id, e]));
+  const totalHeight = Number(elements.get("node-trial")!.attributes.height);
+  for (const [id, users] of [["trial", 1000], ["active", 700], ["inactive", 300], ["paid", 400], ["free", 300], ["lost", 300]] as const)
+    assert.equal(Number(elements.get(`node-${id}`)!.attributes.height) / totalHeight, users / 1000);
+  assert.doesNotMatch(elements.get("scale-note")!.text!, /\bpx\b/, "the caption must remain true when the artwork scales");
+  assert.match(elements.get("scale-note")!.text!, /All splits conserve users; no unrecorded exits/);
+  assert.equal(elements.get("flow-value-2")!.attributes.fill, "theme:on-accent");
+  assert.equal(elements.get("flow-2")!.attributes.fill, "theme:accent");
+  for (const mode of ["paper", "night"] as const) {
+    const palette = composerPalette(document.theme!.id, mode);
+    assert.ok(contrastRatio(palette.bg, palette.accent) >= 4.5, `${mode} on-accent label`);
+  }
 });
 
 test("all eleven shipped grid pages validate and round-trip without derived layout", () => {

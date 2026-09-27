@@ -31,8 +31,11 @@ The fictional cohort conserves 1,000 users at every stage:
 | Not activated | Left | 300 |
 
 Paid is 40% of the initial cohort, not 40% of activated users. Ribbon and node
-thicknesses use 0.4 chart pixels per user. The explicit Sankey Chart records six
-nodes and five labeled edges; filled vector paths connect the exact stacked
+thicknesses use 0.4 local vector units per user. Fitting the 730-unit viewport
+into its 660px grid area scales this to about 0.362 page pixels per user; the
+visible caption therefore describes the proportional encoding, not a fixed pixel
+scale. The paid-ribbon label uses on-accent text. The explicit Sankey Chart records
+six nodes and five labeled edges; filled vector paths connect the exact stacked
 intervals. No exits are hidden. No external imagery; Konpeki supplies IBM Plex Sans.
 
 Architecture and Sankey were originally authored against
@@ -46,7 +49,7 @@ grid contract. The port replaces free-positioned outer rectangles with authored
 grid areas and theme-bound structured vectors; it does not change their historical
 provenance or imply that they were originally generated with v2. Preset selection
 does not automatically recompose their layouts. The adjacent PNGs now show the
-inspected v2 port, captured at 2× browser scale.
+inspected v2 port, captured at exactly 2× each page's declared dimensions.
 
 ## Release
 
@@ -56,7 +59,9 @@ previews release notes for human review and exports Markdown; it does not publis
 releases. No logo, URL, adoption or performance evidence was supplied. “Review
 the release before you publish” addresses the person's workflow, not a publishing
 capability of the tool. The three document drawings are symbolic, not application
-screenshots. Konpeki supplies Hanken Grotesk.
+screenshots. Each drawing owns a two-column component matching its label's grid
+area, rather than sharing a page-wide vector pitch. Their original vector IDs and
+local coordinate systems are retained. Konpeki supplies Hanken Grotesk.
 
 ## Explainer
 
@@ -82,7 +87,9 @@ Konpeki supplies IBM Plex Sans.
 
 The PNGs are reviewed Chromium captures. All four gallery pages, together with
 the seven introduction pages, passed `scripts/check-grid.mjs` geometry, overflow
-and overlap checks at 1920×1080 and 1024×768. These checks do not establish
+and overlap checks at 1920×1080 and 1024×768. It also checks the release drawing/
+label alignment, samples opaque vector text/fill contrast, and warns about scaled
+chart artwork so pixel-unit claims receive review. These checks do not establish
 PDF/PPTX export, cross-browser or cross-application fidelity, blind preference,
 or first-attempt agent quality. The examples are authored and reviewed results,
 not evidence of automatic layout or preset recomposition.

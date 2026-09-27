@@ -9,15 +9,17 @@ export const roleSteps: Record<V1.TextRole, TypeStep> = {
 
 // Fixed baseline rows keep a bounded page deterministic before fonts load. All
 // dimensions live here, never in authored component placement.
+// Type sizes and default line heights are hand-tuned in page pixels. Leading
+// need not consume a whole layout row; explicit overrides still use baseline units.
 export const gridPresets = {
-  presentation: { width: 1920, height: 1080, columns: 12, gutter: 24, margin: 72, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76] },
-  portrait: { width: 1080, height: 1350, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76] },
-  link: { width: 1200, height: 630, columns: 4, gutter: 24, margin: 48, baseline: 8, scale: [16, 20, 24, 30, 40, 52, 64] },
-  square: { width: 1080, height: 1080, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76] },
-  article: { width: 1600, height: 600, columns: 8, gutter: 24, margin: 48, baseline: 8, scale: [18, 22, 28, 34, 44, 56, 72] },
+  presentation: { width: 1920, height: 1080, columns: 12, gutter: 24, margin: 72, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [24, 32, 36, 44, 52, 68, 84] },
+  portrait: { width: 1080, height: 1350, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76], lineHeights: [24, 28, 36, 44, 52, 68, 84] },
+  link: { width: 1200, height: 630, columns: 4, gutter: 24, margin: 48, baseline: 8, scale: [16, 20, 24, 30, 40, 52, 64], lineHeights: [20, 24, 32, 36, 48, 60, 72] },
+  square: { width: 1080, height: 1080, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76], lineHeights: [24, 28, 36, 44, 52, 68, 84] },
+  article: { width: 1600, height: 600, columns: 8, gutter: 24, margin: 48, baseline: 8, scale: [18, 22, 28, 34, 44, 56, 72], lineHeights: [24, 28, 36, 44, 52, 64, 80] },
   // The original gallery briefs specify these two additional destinations.
-  explainer: { width: 1200, height: 1600, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76] },
-  gallery: { width: 1600, height: 1000, columns: 12, gutter: 24, margin: 64, baseline: 12, scale: [20, 24, 28, 34, 44, 56, 72] },
+  explainer: { width: 1200, height: 1600, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [24, 32, 36, 44, 52, 68, 84] },
+  gallery: { width: 1600, height: 1000, columns: 12, gutter: 24, margin: 64, baseline: 12, scale: [20, 24, 28, 34, 44, 56, 72], lineHeights: [24, 32, 36, 44, 52, 64, 80] },
 } as const;
 export type GridPreset = keyof typeof gridPresets;
 export type PageGrid = { preset: GridPreset };
@@ -86,8 +88,10 @@ export function resolveComponent(component: GridComponent, grid: PageGrid): Reso
   if (component.kind === "text-block" && result.kind === "text-block") {
     const step = component.textStyle?.step ?? roleSteps[component.appearance.role];
     const size = typeSize(grid, step);
-    const leading = component.textStyle?.leading ?? Math.ceil(size * 1.25 / gridPresets[grid.preset].baseline);
-    result.textStyle = { ...component.textStyle, size, lineHeight: leading * gridPresets[grid.preset].baseline / size };
+    const preset = gridPresets[grid.preset];
+    const height = component.textStyle?.leading === undefined
+      ? preset.lineHeights[typeSteps.indexOf(step)] : component.textStyle.leading * preset.baseline;
+    result.textStyle = { ...component.textStyle, size, lineHeight: height / size };
   }
   return result;
 }

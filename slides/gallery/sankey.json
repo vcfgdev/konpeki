@@ -202,7 +202,7 @@
                   "y": 198,
                   "font-size": "scale:caption",
                   "font-family": "theme:body-font",
-                  "fill": "theme:ink",
+                  "fill": "theme:on-accent",
                   "text-anchor": "middle"
                 },
                 "text": "400"
@@ -443,7 +443,7 @@
                   "fill": "theme:muted",
                   "text-anchor": "start"
                 },
-                "text": "Ribbon thickness: 0.4 px per user. All splits conserve users; no unrecorded exits."
+                "text": "Ribbon thickness encodes users. All splits conserve users; no unrecorded exits."
               }
             ]
           },

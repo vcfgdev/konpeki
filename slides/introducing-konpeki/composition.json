@@ -696,16 +696,16 @@
           "area": {
             "column": 1,
             "row": 22,
-            "rows": 5,
-            "span": 12
+            "rows": 6,
+            "span": 3
           },
           "customVisual": {
-            "description": "Four numbered steps joined by arrows: brief, agent, canvas preview, page.",
+            "description": "Step 1: Your brief. Arrow continues to the next step.",
             "elements": [
               {
                 "attributes": {
                   "cx": 32,
-                  "cy": 32,
+                  "cy": 36,
                   "fill": "theme:background",
                   "r": 30,
                   "stroke": "theme:accent",
@@ -722,7 +722,7 @@
                   "font-weight": 600,
                   "text-anchor": "middle",
                   "x": 32,
-                  "y": 42
+                  "y": 46
                 },
                 "id": "flow-n0-num",
                 "kind": "text",
@@ -733,16 +733,16 @@
                   "stroke": "theme:muted",
                   "stroke-width": 2.5,
                   "x1": 78,
-                  "x2": 436,
-                  "y1": 32,
-                  "y2": 32
+                  "x2": 410,
+                  "y1": 36,
+                  "y2": 36
                 },
                 "id": "flow-e0-shaft",
                 "kind": "line"
               },
               {
                 "attributes": {
-                  "d": "M423.7 38.7L436 32L423.7 25.3",
+                  "d": "M397.7 42.7L410 36L397.7 29.3",
                   "fill": "none",
                   "stroke": "theme:muted",
                   "stroke-linecap": "round",
@@ -751,139 +751,13 @@
                 },
                 "id": "flow-e0-head",
                 "kind": "path"
-              },
-              {
-                "attributes": {
-                  "cx": 482,
-                  "cy": 32,
-                  "fill": "theme:background",
-                  "r": 30,
-                  "stroke": "theme:accent",
-                  "stroke-width": 3
-                },
-                "id": "flow-n1",
-                "kind": "circle"
-              },
-              {
-                "attributes": {
-                  "fill": "theme:accent",
-                  "font-family": "theme:heading-font",
-                  "font-size": "scale:body",
-                  "font-weight": 600,
-                  "text-anchor": "middle",
-                  "x": 482,
-                  "y": 42
-                },
-                "id": "flow-n1-num",
-                "kind": "text",
-                "text": "2"
-              },
-              {
-                "attributes": {
-                  "stroke": "theme:muted",
-                  "stroke-width": 2.5,
-                  "x1": 528,
-                  "x2": 886,
-                  "y1": 32,
-                  "y2": 32
-                },
-                "id": "flow-e1-shaft",
-                "kind": "line"
-              },
-              {
-                "attributes": {
-                  "d": "M873.7 38.7L886 32L873.7 25.3",
-                  "fill": "none",
-                  "stroke": "theme:muted",
-                  "stroke-linecap": "round",
-                  "stroke-linejoin": "round",
-                  "stroke-width": 2.5
-                },
-                "id": "flow-e1-head",
-                "kind": "path"
-              },
-              {
-                "attributes": {
-                  "cx": 932,
-                  "cy": 32,
-                  "fill": "theme:background",
-                  "r": 30,
-                  "stroke": "theme:accent",
-                  "stroke-width": 3
-                },
-                "id": "flow-n2",
-                "kind": "circle"
-              },
-              {
-                "attributes": {
-                  "fill": "theme:accent",
-                  "font-family": "theme:heading-font",
-                  "font-size": "scale:body",
-                  "font-weight": 600,
-                  "text-anchor": "middle",
-                  "x": 932,
-                  "y": 42
-                },
-                "id": "flow-n2-num",
-                "kind": "text",
-                "text": "3"
-              },
-              {
-                "attributes": {
-                  "stroke": "theme:muted",
-                  "stroke-width": 2.5,
-                  "x1": 978,
-                  "x2": 1336,
-                  "y1": 32,
-                  "y2": 32
-                },
-                "id": "flow-e2-shaft",
-                "kind": "line"
-              },
-              {
-                "attributes": {
-                  "d": "M1323.7 38.7L1336 32L1323.7 25.3",
-                  "fill": "none",
-                  "stroke": "theme:muted",
-                  "stroke-linecap": "round",
-                  "stroke-linejoin": "round",
-                  "stroke-width": 2.5
-                },
-                "id": "flow-e2-head",
-                "kind": "path"
-              },
-              {
-                "attributes": {
-                  "cx": 1382,
-                  "cy": 32,
-                  "fill": "theme:accent",
-                  "r": 30,
-                  "stroke": "theme:accent",
-                  "stroke-width": 3
-                },
-                "id": "flow-n3",
-                "kind": "circle"
-              },
-              {
-                "attributes": {
-                  "fill": "theme:on-accent",
-                  "font-family": "theme:heading-font",
-                  "font-size": "scale:body",
-                  "font-weight": 600,
-                  "text-anchor": "middle",
-                  "x": 1382,
-                  "y": 42
-                },
-                "id": "flow-n3-num",
-                "kind": "text",
-                "text": "4"
               }
             ],
             "fit": "contain",
             "format": "vector",
             "viewBox": {
-              "height": 64,
-              "width": 1776,
+              "height": 72,
+              "width": 426,
               "x": 0,
               "y": 0
             }
@@ -948,6 +822,90 @@
         },
         {
           "appearance": {
+            "border": "none",
+            "colorScheme": "accent-with-muted-context",
+            "density": "sparse",
+            "emphasis": "primary",
+            "selection": "explicit",
+            "type": "process"
+          },
+          "area": {
+            "column": 4,
+            "row": 22,
+            "rows": 6,
+            "span": 3
+          },
+          "customVisual": {
+            "description": "Step 2: Your coding agent. Arrow continues to the next step.",
+            "elements": [
+              {
+                "attributes": {
+                  "cx": 32,
+                  "cy": 36,
+                  "fill": "theme:background",
+                  "r": 30,
+                  "stroke": "theme:accent",
+                  "stroke-width": 3
+                },
+                "id": "flow-n1",
+                "kind": "circle"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:accent",
+                  "font-family": "theme:heading-font",
+                  "font-size": "scale:body",
+                  "font-weight": 600,
+                  "text-anchor": "middle",
+                  "x": 32,
+                  "y": 46
+                },
+                "id": "flow-n1-num",
+                "kind": "text",
+                "text": "2"
+              },
+              {
+                "attributes": {
+                  "stroke": "theme:muted",
+                  "stroke-width": 2.5,
+                  "x1": 78,
+                  "x2": 410,
+                  "y1": 36,
+                  "y2": 36
+                },
+                "id": "flow-e1-shaft",
+                "kind": "line"
+              },
+              {
+                "attributes": {
+                  "d": "M397.7 42.7L410 36L397.7 29.3",
+                  "fill": "none",
+                  "stroke": "theme:muted",
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round",
+                  "stroke-width": 2.5
+                },
+                "id": "flow-e1-head",
+                "kind": "path"
+              }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 72,
+              "width": 426,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "flow-step-2",
+          "kind": "diagram",
+          "slotIds": [
+            "flow-step-2-slot"
+          ]
+        },
+        {
+          "appearance": {
             "alignment": "start",
             "border": "none",
             "role": "body",
@@ -1000,6 +958,90 @@
         },
         {
           "appearance": {
+            "border": "none",
+            "colorScheme": "accent-with-muted-context",
+            "density": "sparse",
+            "emphasis": "primary",
+            "selection": "explicit",
+            "type": "process"
+          },
+          "area": {
+            "column": 7,
+            "row": 22,
+            "rows": 6,
+            "span": 3
+          },
+          "customVisual": {
+            "description": "Step 3: Canvas preview. Arrow continues to the next step.",
+            "elements": [
+              {
+                "attributes": {
+                  "cx": 32,
+                  "cy": 36,
+                  "fill": "theme:background",
+                  "r": 30,
+                  "stroke": "theme:accent",
+                  "stroke-width": 3
+                },
+                "id": "flow-n2",
+                "kind": "circle"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:accent",
+                  "font-family": "theme:heading-font",
+                  "font-size": "scale:body",
+                  "font-weight": 600,
+                  "text-anchor": "middle",
+                  "x": 32,
+                  "y": 46
+                },
+                "id": "flow-n2-num",
+                "kind": "text",
+                "text": "3"
+              },
+              {
+                "attributes": {
+                  "stroke": "theme:muted",
+                  "stroke-width": 2.5,
+                  "x1": 78,
+                  "x2": 410,
+                  "y1": 36,
+                  "y2": 36
+                },
+                "id": "flow-e2-shaft",
+                "kind": "line"
+              },
+              {
+                "attributes": {
+                  "d": "M397.7 42.7L410 36L397.7 29.3",
+                  "fill": "none",
+                  "stroke": "theme:muted",
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round",
+                  "stroke-width": 2.5
+                },
+                "id": "flow-e2-head",
+                "kind": "path"
+              }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 72,
+              "width": 426,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "flow-step-3",
+          "kind": "diagram",
+          "slotIds": [
+            "flow-step-3-slot"
+          ]
+        },
+        {
+          "appearance": {
             "alignment": "start",
             "border": "none",
             "role": "body",
@@ -1049,6 +1091,66 @@
             "step": "body",
             "weight": 400
           }
+        },
+        {
+          "appearance": {
+            "border": "none",
+            "colorScheme": "accent-with-muted-context",
+            "density": "sparse",
+            "emphasis": "primary",
+            "selection": "explicit",
+            "type": "process"
+          },
+          "area": {
+            "column": 10,
+            "row": 22,
+            "rows": 6,
+            "span": 3
+          },
+          "customVisual": {
+            "description": "Step 4: Your page.",
+            "elements": [
+              {
+                "attributes": {
+                  "cx": 32,
+                  "cy": 36,
+                  "fill": "theme:accent",
+                  "r": 30,
+                  "stroke": "theme:accent",
+                  "stroke-width": 3
+                },
+                "id": "flow-n3",
+                "kind": "circle"
+              },
+              {
+                "attributes": {
+                  "fill": "theme:on-accent",
+                  "font-family": "theme:heading-font",
+                  "font-size": "scale:body",
+                  "font-weight": 600,
+                  "text-anchor": "middle",
+                  "x": 32,
+                  "y": 46
+                },
+                "id": "flow-n3-num",
+                "kind": "text",
+                "text": "4"
+              }
+            ],
+            "fit": "contain",
+            "format": "vector",
+            "viewBox": {
+              "height": 72,
+              "width": 426,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "id": "flow-step-4",
+          "kind": "diagram",
+          "slotIds": [
+            "flow-step-4-slot"
+          ]
         },
         {
           "appearance": {
@@ -1263,7 +1365,7 @@
         },
         {
           "id": "flow-diagram-slot",
-          "instruction": "Four numbered steps joined by arrows: brief, agent, canvas preview, page.",
+          "instruction": "Step 1: Your brief. Arrow continues to the next step.",
           "label": "flow-diagram",
           "required": true,
           "role": "process-step"
@@ -1283,6 +1385,13 @@
           "role": "process-step"
         },
         {
+          "id": "flow-step-2-slot",
+          "instruction": "Step 2: Your coding agent. Arrow continues to the next step.",
+          "label": "flow-step-2",
+          "required": true,
+          "role": "process-step"
+        },
+        {
           "id": "step2-head-slot",
           "instruction": "Your coding agent",
           "label": "step2-head",
@@ -1297,6 +1406,13 @@
           "role": "process-step"
         },
         {
+          "id": "flow-step-3-slot",
+          "instruction": "Step 3: Canvas preview. Arrow continues to the next step.",
+          "label": "flow-step-3",
+          "required": true,
+          "role": "process-step"
+        },
+        {
           "id": "step3-head-slot",
           "instruction": "Canvas preview",
           "label": "step3-head",
@@ -1307,6 +1423,13 @@
           "id": "step3-body-slot",
           "instruction": "The agent opens the page, inspects the render and repairs problems it finds.",
           "label": "step3-body",
+          "required": true,
+          "role": "process-step"
+        },
+        {
+          "id": "flow-step-4-slot",
+          "instruction": "Step 4: Your page.",
+          "label": "flow-step-4",
           "required": true,
           "role": "process-step"
         },
@@ -1377,10 +1500,13 @@
         "flow-diagram",
         "step1-head",
         "step1-body",
+        "flow-step-2",
         "step2-head",
         "step2-body",
+        "flow-step-3",
         "step3-head",
         "step3-body",
+        "flow-step-4",
         "step4-head",
         "step4-body",
         "flow-divider",
@@ -1412,6 +1538,10 @@
           "kind": "component"
         },
         {
+          "id": "flow-step-2",
+          "kind": "component"
+        },
+        {
           "id": "step2-head",
           "kind": "component"
         },
@@ -1420,11 +1550,19 @@
           "kind": "component"
         },
         {
+          "id": "flow-step-3",
+          "kind": "component"
+        },
+        {
           "id": "step3-head",
           "kind": "component"
         },
         {
           "id": "step3-body",
+          "kind": "component"
+        },
+        {
+          "id": "flow-step-4",
           "kind": "component"
         },
         {

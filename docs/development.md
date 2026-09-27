@@ -261,9 +261,14 @@ component, theme or dependency changes also need the full test suite and
 representative affected decks. A build can report a large-framework-chunk advisory.
 
 For v2 gallery and introduction pages, `scripts/check-grid.mjs` checks geometry,
-overflow and unmarked overlap at both 1920×1080 and 1024×768. Passing these checks
-does not establish aesthetic preference, blind-review preference or first-attempt
-agent quality; inspect the rendered pages as well.
+leading, overflow and unmarked overlap at both 1920×1080 and 1024×768. It checks
+the release/intro flow drawings against their label columns, samples opaque text
+against underlying fills within each vector, and warns when chart artwork scales
+away from 1:1. Contrast sampling excludes translucent stacks and cross-component
+backgrounds; it is not a complete contrast audit. `*-page-2x.png` captures use
+exactly twice the page dimensions, independently of the review viewport.
+Passing these checks does not establish aesthetic preference, blind-review
+preference or first-attempt agent quality; inspect the rendered pages as well.
 
 `scripts/check-grid-editing.mjs <preview-url> <output-directory>` exercises pointer
 drag/resize, keyboard nudges, undo/redo, padded text, transformed SVG type, theme
@@ -274,22 +279,25 @@ for a real file/agent round trip. That disposable document must be titled
 
 `scripts/evaluate-grid.mjs <preview-url> <output-directory> [v1-git-ref]` compares
 the five source documents and tests all 33 preset-only variants. Its default
-baseline is the pre-port Git revision; fetch full history if needed. Initial
-results use minified UTF-8 JSON bytes, not the plan's pretty-printed file sizes:
+baseline is the pre-port Git revision; fetch full history if needed. Results after
+the artwork alignment repairs use minified UTF-8 JSON bytes, not the plan's
+pretty-printed file sizes:
 
 | Document | v1 bytes | v2 bytes | v1 explicit sizes | v2 named steps used |
 | --- | ---: | ---: | ---: | ---: |
 | Architecture | 10,267 | 10,268 | 7 | 4 |
-| Sankey | 7,741 | 7,925 | 5 | 4 |
-| Release | 10,016 | 9,768 | 5 | 3 |
+| Sankey | 7,741 | 7,928 | 5 | 4 |
+| Release | 10,016 | 11,100 | 5 | 3 |
 | Explainer | 11,444 | 11,325 | 7 | 4 |
-| Introduction | 75,649 | 73,726 | 18 | 7 |
+| Introduction | 75,649 | 75,606 | 18 | 7 |
 
 All 94 native text blocks and 79 vector labels use scale steps. The baseline's
 union is 28 explicit sizes (native plus vector attributes), not the plan's quoted
-20; the port uses seven named steps. Source size falls 1.8% overall, but not in
-every document. These ports do not measure first-attempt agent validity or blind
-preference. The line-length estimate flags no gallery text and two intro notes
+20; the port uses seven named steps. Source size is now 1.0% larger overall:
+giving each repeated drawing its own aligned component costs metadata. The first
+port's 1.8% reduction did not survive those fidelity repairs. These ports do not
+measure first-attempt agent validity or blind preference. The line-length
+estimate flags no gallery text and two intro notes
 (76/77 characters); it is advisory, excludes artwork labels, and is not a font
 measurement or a reason to shorten necessary evidence automatically.
 

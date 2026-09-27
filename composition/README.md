@@ -63,9 +63,13 @@ The seven hand-tuned text steps, from smallest to largest, are `fine`, `caption`
 caption→caption, body→body, subtitle→lead and title→title. `textStyle.step`
 overrides that default. Each preset maps the named steps to its own pixel sizes;
 authors do not write `textStyle.size` or `textStyle.lineHeight`. Optional
-`textStyle.leading` is a positive number of baseline units. By default, leading
-is 1.25 times the type size rounded up to a whole baseline. Component `padding`
-is likewise measured in baseline units on every side and must leave a positive
+`textStyle.leading` overrides are positive whole baseline units. Without an
+override, the preset supplies a hand-tuned line height for each step, in 4px
+increments rather than rounding every line up to a layout row. Presentation
+fine/caption/title are 20/24, 24/32 and 60/68 (type size/line height in pixels).
+These defaults stay derived, not stored in the document; choose **Preset**
+in the inspector to remove an override. Component `padding` is likewise measured
+in whole baseline units on every side and must leave a positive
 content area. Fixed-height text still requires rendered overflow checks.
 
 v2 custom artwork is structured vector data only. Colors must use theme roles,

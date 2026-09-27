@@ -21,10 +21,11 @@ const AREAS = {
   },
   "brief-to-page": {
     "flow-title": area(1, 12, 2, 8), "flow-lead": area(1, 9, 11, 4),
-    "flow-diagram": area(1, 12, 22, 5), "flow-divider": area(1, 12, 56, 1),
+    "flow-divider": area(1, 12, 56, 1),
     ...Object.fromEntries([1, 2, 3, 4].flatMap((n) => {
       const column = 1 + (n - 1) * 3;
-      return [[`step${n}-head`, area(column, 3, 30, 4)],
+      return [[n === 1 ? "flow-diagram" : `flow-step-${n}`, area(column, 3, 22, 6)],
+        [`step${n}-head`, area(column, 3, 30, 4)],
         [`step${n}-body`, area(column, 3, 35, 17)]];
     })),
     "sketch-head": area(1, 5, 59, 4), "sketch-body": area(1, 5, 64, 9),
@@ -204,16 +205,16 @@ const steps2 = [
   ["Your page", "Edit it directly, Present it, export PNG or download the editable JSON."],
 ];
 {
-  const v = V("flow");
-  const pitch = 450;
-  steps2.forEach((_, i) => {
-    const cx = i * pitch + 32;
-    v.circle(`n${i}`, cx, 32, 30, { fill: i === 3 ? ACCENT : BG, stroke: ACCENT, "stroke-width": 3 });
-    v.text(`n${i}-num`, cx, 42, String(i + 1), { "font-size": "scale:body", "font-weight": 600, "text-anchor": "middle", fill: i === 3 ? ON_ACCENT : ACCENT, "font-family": HEAD });
-    if (i < 3) v.arrow(`e${i}`, cx + 46, 32, cx + pitch - 46, 32);
-  });
-  p2.add(vector("flow-diagram", "diagram", 1776, 64, "Four numbered steps joined by arrows: brief, agent, canvas preview, page.", v.els, { type: "process", selection: "explicit", border: "none", colorScheme: "accent-with-muted-context", emphasis: "primary", density: "sparse" }), "process-step");
   steps2.forEach(([h, d], i) => {
+    const v = V("flow");
+    v.circle(`n${i}`, 32, 36, 30, { fill: i === 3 ? ACCENT : BG, stroke: ACCENT, "stroke-width": 3 });
+    v.text(`n${i}-num`, 32, 46, String(i + 1), { "font-size": "scale:body", "font-weight": 600, "text-anchor": "middle", fill: i === 3 ? ON_ACCENT : ACCENT, "font-family": HEAD });
+    if (i < 3) v.arrow(`e${i}`, 78, 36, 410, 36);
+    // Each numbered drawing shares its label's three-column area. Its local
+    // viewport matches that cell; no page-wide artwork pitch competes with it.
+    p2.add(vector(i === 0 ? "flow-diagram" : `flow-step-${i + 1}`, "diagram", 426, 72,
+      `Step ${i + 1}: ${h}.${i < 3 ? " Arrow continues to the next step." : ""}`, v.els,
+      { type: "process", selection: "explicit", border: "none", colorScheme: "accent-with-muted-context", emphasis: "primary", density: "sparse" }), "process-step");
     p2.add(text(`step${i + 1}-head`, h, "lead", { weight: 600, font: "heading" }), "process-step");
     p2.add(text(`step${i + 1}-body`, d, "body", { color: "muted" }), "process-step");
   });

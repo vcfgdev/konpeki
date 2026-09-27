@@ -516,9 +516,11 @@ export function InspectorPanel({
           onChange={(color) => onComponent({ ...component, textStyle: { ...component.textStyle, color: color as "ink" | "muted" | "accent" } })} />
         <Select label="Font weight" value={String(component.textStyle?.weight ?? 400)} options={["400", "500", "600"]}
           onChange={(weight) => onComponent({ ...component, textStyle: { ...component.textStyle, weight: Number(weight) as 400 | 500 | 600 } })} />
-        {grid ? <NumberField label="Leading" unit="rows" min={Math.ceil(component.textStyle!.size! / grid.baseline)} max={32}
-          value={component.textStyle?.leading ?? Math.ceil(component.textStyle!.size! * 1.25 / grid.baseline)}
-          onCommit={leading => onComponent({ ...component, textStyle: { ...component.textStyle, leading } }, `leading:${component.id}`)} onEditEnd={onEditEnd} />
+        {grid ? <Select label="Leading" value={component.textStyle?.leading === undefined ? "preset" : String(component.textStyle.leading)}
+          options={["preset", ...Array.from({ length: 32 }, (_, i) => i + 1).filter(rows => rows * grid.baseline >= component.textStyle!.size!).map(String)]}
+          optionLabels={{ preset: `Preset · ${grid.lineHeights[typeSteps.indexOf(component.textStyle?.step ?? roleSteps[component.appearance.role])]} px`,
+            ...Object.fromEntries(Array.from({ length: 32 }, (_, i) => [String(i + 1), `${i + 1} rows · ${(i + 1) * grid.baseline} px`])) }}
+          onChange={leading => onComponent({ ...component, textStyle: { ...component.textStyle, leading: leading === "preset" ? undefined : Number(leading) } })} />
           : <NumberField label="Line height" min={1} max={3} step={0.1} value={component.textStyle?.lineHeight ?? 1.4}
             onCommit={lineHeight => onComponent({ ...component, textStyle: { ...component.textStyle, lineHeight } }, `leading:${component.id}`)} onEditEnd={onEditEnd} />}
         </div>

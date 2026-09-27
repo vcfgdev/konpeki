@@ -124,7 +124,7 @@
           "slotIds": [
             "release-steps-content"
           ],
-          "intent": "Three illustrative documents: preview release notes, review a highlighted line, then export Markdown. These are symbolic steps, not screenshots of a real application.",
+          "intent": "Preview release notes. This document is symbolic, not a screenshot of a real application.",
           "appearance": {
             "type": "process",
             "selection": "explicit",
@@ -138,10 +138,10 @@
             "viewBox": {
               "x": 0,
               "y": 0,
-              "width": 936,
+              "width": 304,
               "height": 300
             },
-            "description": "Three illustrative documents: preview release notes, review a highlighted line, then export Markdown. These are symbolic steps, not screenshots of a real application.",
+            "description": "A symbolic release-notes document, followed by an arrow toward review.",
             "elements": [
               {
                 "id": "document-0",
@@ -231,14 +231,32 @@
                 "id": "step-arrow-0",
                 "kind": "path",
                 "attributes": {
-                  "d": "M254 145H310M299 135L310 145L299 155",
+                  "d": "M250 145H300M289 135L300 145L289 155",
                   "fill": "none",
                   "stroke": "theme:ink",
                   "stroke-width": 3,
                   "stroke-linecap": "round",
                   "stroke-linejoin": "round"
                 }
-              },
+              }
+            ]
+          },
+          "area": { "column": 1, "span": 2, "row": 57, "rows": 25 }
+        },
+        {
+          "id": "release-review",
+          "kind": "diagram",
+          "slotIds": ["release-review-content"],
+          "intent": "Review a highlighted line before export. This document is symbolic, not a screenshot.",
+          "appearance": {
+            "type": "process", "selection": "explicit", "border": "none",
+            "colorScheme": "monochrome", "emphasis": "none", "density": "sparse"
+          },
+          "customVisual": {
+            "format": "vector",
+            "viewBox": { "x": 344, "y": 0, "width": 304, "height": 300 },
+            "description": "A symbolic document with a highlighted line, followed by an arrow toward export.",
+            "elements": [
               {
                 "id": "document-1",
                 "kind": "rect",
@@ -327,14 +345,32 @@
                 "id": "step-arrow-1",
                 "kind": "path",
                 "attributes": {
-                  "d": "M598 145H654M643 135L654 145L643 155",
+                  "d": "M594 145H644M633 135L644 145L633 155",
                   "fill": "none",
                   "stroke": "theme:ink",
                   "stroke-width": 3,
                   "stroke-linecap": "round",
                   "stroke-linejoin": "round"
                 }
-              },
+              }
+            ]
+          },
+          "area": { "column": 3, "span": 2, "row": 57, "rows": 25 }
+        },
+        {
+          "id": "release-export",
+          "kind": "diagram",
+          "slotIds": ["release-export-content"],
+          "intent": "Export Markdown after review. This document is symbolic, not a screenshot.",
+          "appearance": {
+            "type": "process", "selection": "explicit", "border": "none",
+            "colorScheme": "monochrome", "emphasis": "none", "density": "sparse"
+          },
+          "customVisual": {
+            "format": "vector",
+            "viewBox": { "x": 688, "y": 0, "width": 304, "height": 300 },
+            "description": "A symbolic document with an export arrow; no publishing capability is implied.",
+            "elements": [
               {
                 "id": "document-2",
                 "kind": "rect",
@@ -448,8 +484,8 @@
             ]
           },
           "area": {
-            "column": 1,
-            "span": 6,
+            "column": 5,
+            "span": 2,
             "row": 57,
             "rows": 25
           }
@@ -614,7 +650,21 @@
           "label": "release-steps",
           "role": "body",
           "required": true,
-          "instruction": "Three illustrative documents: preview release notes, review a highlighted line, then export Markdown. These are symbolic steps, not screenshots of a real application."
+          "instruction": "Preview release notes. This document is symbolic, not a screenshot of a real application."
+        },
+        {
+          "id": "release-review-content",
+          "label": "release-review",
+          "role": "body",
+          "required": true,
+          "instruction": "Review a highlighted line before export. This document is symbolic, not a screenshot."
+        },
+        {
+          "id": "release-export-content",
+          "label": "release-export",
+          "role": "body",
+          "required": true,
+          "instruction": "Export Markdown after review. This document is symbolic, not a screenshot."
         },
         {
           "id": "step-1-content",
@@ -666,6 +716,14 @@
         },
         {
           "kind": "component",
+          "id": "release-review"
+        },
+        {
+          "kind": "component",
+          "id": "release-export"
+        },
+        {
+          "kind": "component",
           "id": "step-1"
         },
         {
@@ -686,6 +744,8 @@
         "product",
         "support",
         "release-steps",
+        "release-review",
+        "release-export",
         "step-1",
         "step-2",
         "step-3",

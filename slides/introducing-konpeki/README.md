@@ -7,7 +7,8 @@ guide, then revised after comparison with the previous bundled deck. See
 claim provenance.
 
 [composition.json](composition.json) is the editable document of record.
-[author.mjs](author.mjs) regenerates it; the screenshots are Chromium captures.
+[author.mjs](author.mjs) regenerates it; the screenshots are Chromium captures
+at exactly 2× the declared page size (3840×2160).
 
 ![Cover](screenshots/page-1.png)
 
@@ -52,14 +53,16 @@ mise exec -- node slides/introducing-konpeki/review.mjs "<preview-url-with-sessi
 It enters Present, checks text overflow and clipped vector text, and saves a
 capture of each page. Separately, all seven pages and the four gallery pages
 passed `scripts/check-grid.mjs` geometry, overflow and overlap checks at
-1920×1080 and 1024×768. This does not establish contrast, Night mode, other
-palettes, PDF/PPTX or cross-browser rendering, blind preference, or first-attempt
-agent quality.
+1920×1080 and 1024×768. It also checks page 2's circle/label alignment and samples
+opaque vector text/fill contrast. This is not a complete contrast audit and does
+not establish Night mode, other palettes, PDF/PPTX or cross-browser rendering,
+blind preference, or first-attempt agent quality.
 
 Known limitations: the Konpeki mark now follows the theme accent rather than a
-fixed brand blue. Page layouts 2, 4 and 5 share a column rhythm. The v2 port retains
-local vector viewports while placing outer components on the presentation grid;
-page 4 uses deliberate two-column spans and whitespace for its five items. v2
+fixed brand blue. Page 2 now gives each numbered drawing the same three-column
+area as its heading and body, preserving vector IDs while eliminating the old
+page-wide artwork pitch. Page 4 uses deliberate two-column spans and whitespace
+for its five items; page 5's step numbers still occupy their own columns. v2
 component padding is available, but fixed-height text still needs render checks.
 
 ## Authoring notes
