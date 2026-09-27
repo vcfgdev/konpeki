@@ -19,9 +19,17 @@ Each page chooses a fixed preset:
 | `explainer` | 1200×1600 | 6 × 123 | 12 px |
 | `gallery` | 1600×1000 | 12 × 72 | 12 px |
 
-Components use one-based `area` values: `column`, `span`, `row`, and `rows`.
+Components use `area: {column, span, row, rows}`. Starts are one-based integers
+or `"center"`; spans are positive integers. Center placement requires the span
+and the grid count to have the same parity on that axis. For example, a
+12-column grid accepts centered spans 2, 4, 6…; the article preset's 63 rows
+accept centered heights 1, 3, 5…. Invalid spans suggest the nearest valid sizes.
+No fractional starts or pixel offsets are supported. Spare height after the
+last full baseline row is split equally above and below the grid.
+
 Authored areas are authoritative. Preset changes never stretch or automatically
-recompose content. Component padding is measured in baseline units.
+recompose content. Component padding is measured in baseline units. Dragging or
+nudging converts centered placement to a numeric start only on the changed axis.
 
 The type steps are `fine`, `caption`, `body`, `lead`, `heading`, `title`, and
 `display`. Role defaults are footnote→fine, caption→caption, body→body,
@@ -29,8 +37,23 @@ subtitle→lead, and title→title. `textStyle.step` overrides the role default.
 `textStyle.leading` is a positive whole number of baseline units; without it,
 each preset's leading table supplies the line height. Leading is derived rather
 than stored as arbitrary pixels and must not be smaller than the type size.
-Title-role blocks bottom-align their lines inside each padded text region;
-other roles start at the top. Overlong titles start at the top and report overflow.
+Native text accepts `appearance.verticalAlignment: "start" | "center" | "end"`.
+The default is `end` for titles and `start` for other roles. Start and end align
+the line boxes; overlong end-aligned text starts at the top and reports overflow.
+Center aligns the first line's cap top through the last baseline, using the
+font manifest's cap height. It excludes half-leading and descenders, applies
+within each padded text region, and adds no optical lift. Overlong centered
+text remains centered and reports clipping.
+
+Groups may pair an `area` with `verticalAlignment` to translate their members
+together. Group alignment uses text glyph ink and shape geometry, rather than
+empty component cells; strokes use half-width envelopes (not exact miter/dash
+outlines), and SVG arcs use the path library's cubic approximation. It preserves
+paint order, member clips, relative authored positions and IDs. It is not a
+stack layout: changing copy recomputes the offset but does not reflow neighbours.
+Selection, editing overlays and pins use the translated scene geometry; saved
+member areas never contain the derived offset. The GitHub cover demonstrates a
+centered `brand-stack` group on the link preset.
 
 Page numbers are opt-in: omitting `pageNumber` or choosing `style: "none"` hides
 them. Set `style: "01"` or `"01/02"` to show them. This differs from the old
@@ -52,6 +75,13 @@ is a draft until deliberately authored and may be flagged as such.
 Unauthored topology shows a neutral reserved area and node/edge counts, not an
 inferred diagram. The topology remains in the document for authoring; the draft
 is not a finished representation of its relationships.
+
+`customVisual.alignment: "start" | "center" | "end"` positions fitted artwork
+horizontally inside its padded cell; the default is `center`. Contain uses spare
+width, cover chooses which side to crop, and stretch fills the width regardless
+of alignment. Shapes and labels move together; vertical fitting stays centered.
+This is independent of native text's `appearance.alignment`. The cover combines
+left-aligned text and artwork with a vertically centered group.
 
 Labels allow `x`, `y`, `text-anchor`, `fill`, `font-family`, `font-size` (a type
 step), `font-weight`, and `font-style`. Tspans are whole lines with explicit
@@ -77,6 +107,8 @@ maps text for selection; pages may have mixed dimensions.
 `validateComposition` checks the v2 structure and cross references.
 `checkPage`/`checkPageNode` report stable diagnostics for overflow, clipped
 labels, missing glyphs, draft artwork, scaled charts, and text contrast.
+`group-overflow` names the group ID when aligned contents exceed its area;
+alignment never enlarges or removes the member clips to hide overflowing copy.
 Contrast examines all solid glyph pixels at 2x; it remains a finite-resolution
 measurement and excludes effects it cannot establish reliably.
 

@@ -11,7 +11,7 @@ import {
   type TypographyId,
   type VectorElement,
 } from "../../composition/runtime.ts";
-import { gridMetrics, roleSteps, typeSteps, type TypeStep } from "../../composition/grid.ts";
+import { gridMetrics, resolveArea, roleSteps, typeSteps, type TypeStep } from "../../composition/grid.ts";
 import {
   chartDefinitions,
   chartTemplates,
@@ -447,6 +447,7 @@ export function InspectorPanel({
     );
   const rect = component.preferredRect;
   const grid = slide.grid ? gridMetrics(slide.grid) : undefined;
+  const numericArea = slide.grid && component.area ? resolveArea(slide.grid, component.area) : undefined;
   const appearance = component.appearance as Record<string, string> | undefined;
   const defaults = defaultAppearance(component.kind);
   const previewPalette = composerPalette(draft.theme?.id ?? "plex", draft.theme?.mode ?? "paper");
@@ -514,6 +515,9 @@ export function InspectorPanel({
             onCommit={size => onComponent({ ...component, textStyle: { ...component.textStyle, size } }, `font:${component.id}`)} onEditEnd={onEditEnd} />}
         <Select label="Text color" value={component.textStyle?.color ?? "ink"} options={["ink", "muted", "accent"]}
           onChange={(color) => onComponent({ ...component, textStyle: { ...component.textStyle, color: color as "ink" | "muted" | "accent" } })} />
+        <Select label="Vertical alignment" value={component.appearance.verticalAlignment ?? "role"} options={["role", "start", "center", "end"]}
+          optionLabels={{ role: `Role default (${component.appearance.role === "title" ? "end" : "start"})`, center: "Center (cap height)" }}
+          onChange={value => onComponent({ ...component, appearance: { ...component.appearance, verticalAlignment: value === "role" ? undefined : value as "start" | "center" | "end" } })} />
         <Select label="Font weight" value={String(component.textStyle?.weight ?? 400)} options={["400", "500", "600"]}
           onChange={(weight) => onComponent({ ...component, textStyle: { ...component.textStyle, weight: Number(weight) as 400 | 500 | 600 } })} />
         {grid ? <Select label="Leading" value={component.textStyle?.leading === undefined ? "preset" : String(component.textStyle.leading)}
@@ -561,11 +565,19 @@ export function InspectorPanel({
       <fieldset>
         <legend>{grid ? "Grid area" : "Position & size"}</legend>
         <div className="geometry">
-          {grid && component.area ? (["column", "span", "row", "rows"] as const).map(key => (
-            <NumberField key={key} name={key} label={humanize(key)} value={component.area![key]} min={1}
-              max={key === "column" ? grid.columns - component.area!.span + 1 : key === "span" ? grid.columns - component.area!.column + 1 : key === "row" ? grid.rows - component.area!.rows + 1 : grid.rows - component.area!.row + 1}
-              onCommit={value => onComponent({ ...component, area: { ...component.area!, [key]: value } }, `geometry:${component.id}`)} onEditEnd={onEditEnd} />
-          )) : (["x", "y", "width", "height"] as const).map((key) => (
+          {grid && component.area && numericArea ? (["column", "span", "row", "rows"] as const).map(key => {
+            const count = key === "column" || key === "span" ? grid.columns : grid.rows;
+            if (key === "column" || key === "row") {
+              const length = key === "column" ? component.area!.span : component.area!.rows;
+              return <Select key={key} label={humanize(key)} value={String(component.area![key])}
+                options={[...((count - length) % 2 === 0 ? ["center"] : []), ...Array.from({ length: count - length + 1 }, (_, i) => String(i + 1))]}
+                onChange={value => onComponent({ ...component, area: { ...component.area!, [key]: value === "center" ? value : Number(value) } })} />;
+            }
+            const start = key === "span" ? "column" : "row", centered = component.area![start] === "center";
+            return <NumberField key={key} name={key} label={humanize(key)} value={component.area![key]} min={centered && count % 2 === 0 ? 2 : 1} step={centered ? 2 : 1}
+              max={centered ? count : count - numericArea[start] + 1}
+              onCommit={value => onComponent({ ...component, area: { ...component.area!, [key]: value } }, `geometry:${component.id}`)} onEditEnd={onEditEnd} />;
+          }) : (["x", "y", "width", "height"] as const).map((key) => (
             <NumberField key={key} name={key} label={humanize(key)} unit="px" value={rect[key]}
               min={key === "width" ? Math.min(180, rect.width, slide.canvas.width - rect.x) : key === "height" ? Math.min(72, rect.height, slide.canvas.height - rect.y) : 0}
               max={key === "x" ? slide.canvas.width - rect.width : key === "y" ? slide.canvas.height - rect.height : key === "width" ? slide.canvas.width - rect.x : slide.canvas.height - rect.y}
@@ -605,6 +617,9 @@ export function InspectorPanel({
           )}
           {vectorVisual && (
             <>
+              <Select label="Artwork alignment" value={vectorVisual.alignment ?? "center"} options={["start", "center", "end"]}
+                optionLabels={{ start: "Left", center: "Center", end: "Right" }}
+                onChange={alignment => onComponent({ ...component, customVisual: { ...vectorVisual, alignment: alignment as "start" | "center" | "end" } })} />
               <Field label="Vector element">
                 <select
                   value={selectedVectorElementId ?? ""}

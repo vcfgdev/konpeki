@@ -8,6 +8,8 @@ import { renderSVG } from "./svg.ts";
 import { assertComposition } from "./validate.ts";
 import { addComponent, initialGridDraft } from "./document.ts";
 import { toComposition } from "./grid.ts";
+import { itemBounds, textInkBounds, type SceneShape } from "./scene.ts";
+import { checkPage } from "./check.ts";
 
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 const baseline = JSON.parse(readFileSync(new URL("./fixtures/text-layout-browser-baseline.json", import.meta.url), "utf8"));
@@ -50,7 +52,9 @@ for (const name of ["architecture", "sankey", "release", "explainer", "intro"]) 
     for (const label of previous.labels) {
       const item = capturedScene.items.find(item => item.kind === "text" && item.label && item.elementId === label.id && item.source === label.text);
       assert.ok(item?.kind === "text");
-      assert.ok(Math.abs(item.box.y + item.layout.lines[0].baseline - label.baseline) <= 0.5, `${label.id}: preserve captured SVG baseline within 0.5px`);
+      // Centering spare grid height intentionally moves these preset origins.
+      const originShift = { architecture: 4, sankey: 4, release: 3, explainer: 2, intro: 0 }[name]!;
+      assert.ok(Math.abs(item.box.y + item.layout.lines[0].baseline - label.baseline - originShift) <= 0.5, `${label.id}: preserve baseline relative to the centered grid within 0.5px`);
     }
   });
 }
@@ -74,6 +78,34 @@ test("artwork fits once; labels keep unscaled steps, anchors, IDs and paint orde
   assert.equal(label.fontSize, 24);
   assert.ok(Math.abs(label.box.x + label.layout.lines[0].width - 360) < 1e-9);
   assert.ok(Math.abs(label.box.y + label.layout.lines[0].baseline - 168) < 1e-9);
+});
+
+test("artwork alignment uses the padded cell, keeps labels attached, and preserves default centering", () => {
+  const document = toComposition(addComponent(initialGridDraft(), "image"));
+  const page = document.slides[0], component = page.components[0];
+  component.area = { column: 2, span: 2, row: 4, rows: 10 }; component.padding = 1;
+  // Padded cell [234,120,252,96]. Contain leaves 204px spare width; cover
+  // crops 228px; stretch has no spare width. Nonzero view origins matter.
+  for (const config of [
+    { fit: "contain", width: 80, height: 160, sx: .6, sy: .6, dy: 108, offsets: [330, 228, 330, 432] },
+    { fit: "cover", width: 200, height: 40, sx: 2.4, sy: 2.4, dy: 72, offsets: [96, 210, 96, -18] },
+    { fit: "stretch", width: 80, height: 160, sx: 3.15, sy: .6, dy: 108, offsets: [202.5, 202.5, 202.5, 202.5] },
+  ] as const) for (const [i, alignment] of ([undefined, "start", "center", "end"] as const).entries()) {
+    component.customVisual = { format: "vector", fit: config.fit, alignment, description: "Aligned artwork with label",
+      viewBox: { x: 10, y: 20, width: config.width, height: config.height }, elements: [
+        { id: "panel", kind: "rect", attributes: { x: 10, y: 20, width: config.width, height: config.height, fill: "theme:wash" } },
+        { id: "label", kind: "text", text: "X", attributes: { x: 50, y: 40, "text-anchor": "middle", "font-size": "scale:caption" } },
+      ] };
+    assertComposition(document);
+    const [shape, label] = lowerPage(document, page, fonts).items;
+    assert.ok(shape.kind === "shape" && label.kind === "text");
+    [config.sx, 0, 0, config.sy, config.offsets[i], config.dy].forEach((expected, index) => assert.ok(Math.abs(shape.transform[index] - expected) < 1e-9));
+    assert.deepEqual(shape.clip, { x: 234, y: 120, width: 252, height: 96 });
+    assert.deepEqual(label.clip, shape.clip);
+    assert.equal(label.fontSize, 24);
+    assert.ok(Math.abs(label.box.x + label.layout.lines[0].width / 2 - (config.offsets[i] + 50 * config.sx)) < 1e-9);
+    assert.ok(Math.abs(label.box.y + label.layout.lines[0].baseline - (config.dy + 40 * config.sy)) < 1e-9);
+  }
 });
 
 test("nested vertical regions keep pixel gutters and put sparse content first", () => {
@@ -127,5 +159,103 @@ test("restores the reviewed title offsets without moving subtitles", () => {
       assert.ok(subtitle?.kind === "text" && subtitle.clip);
       assert.equal(subtitle.box.y, subtitle.clip.y);
     }
+  }
+});
+
+test("explicit vertical alignment overrides roles; cap centering ignores descenders and leading", () => {
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const page = document.slides[0], component = page.components[0];
+  assert.ok(component.kind === "text-block");
+  component.area = { column: 2, span: 6, row: 4, rows: 20 };
+  component.padding = 2;
+  component.textStyle = { step: "heading" };
+  component.appearance.role = "title";
+  for (const copy of ["H", "Hp", "H\nHp"]) for (const leading of [undefined, 6]) {
+    component.content = copy;
+    component.textStyle.leading = leading;
+    component.appearance.verticalAlignment = "center";
+    const item = lowerPage(document, page, fonts).items.find(item => item.kind === "text");
+    assert.ok(item?.kind === "text" && item.clip);
+    const first = item.box.y + item.layout.lines[0].baseline;
+    const last = item.box.y + item.layout.lines.at(-1)!.baseline;
+    // IBM Plex Sans cap height is 698/1000 em; the padded region is [132,324].
+    assert.ok(Math.abs((first - 44 * 0.698 + last) / 2 - 228) < 1e-9);
+    assert.deepEqual(checkPage(lowerPage(document, page, fonts), fonts), []);
+    if (copy === "Hp") assert.ok(textInkBounds(item, fonts)!.y + textInkBounds(item, fonts)!.height > last, "descender extends below the centered cap-to-baseline span");
+  }
+  component.appearance.verticalAlignment = "start";
+  assert.equal(lowerPage(document, page, fonts).items.find(item => item.kind === "text")!.box.y, 132);
+  component.content = "H\nH\nH\nH\nH";
+  component.appearance.verticalAlignment = "center";
+  assert.ok(checkPage(lowerPage(document, page, fonts), fonts).some(issue => issue.code === "native-overflow"));
+});
+
+test("group centering translates ink and selection cells together and responds to changed copy", () => {
+  const document = toComposition(addComponent(addComponent(initialGridDraft(), "image"), "text-block"));
+  const page = document.slides[0], [mark, copy] = page.components;
+  assert.ok(copy.kind === "text-block");
+  mark.area = { column: 1, span: 1, row: 3, rows: 10 };
+  mark.customVisual = { format: "vector", description: "Asymmetric mark", viewBox: { x: 0, y: 0, width: 126, height: 120 }, elements: [
+    { id: "mark", kind: "path", attributes: { d: "M0 20H126V50H0Z", fill: "theme:accent" } },
+  ] };
+  copy.area = { column: 1, span: 3, row: 20, rows: 10 };
+  copy.content = "H"; copy.textStyle = { step: "body" };
+  const ungrouped = lowerPage(document, page, fonts);
+  page.groups = [{ id: "stack", childIds: [mark.id, copy.id], area: { column: 1, span: 3, row: "center", rows: 40 }, verticalAlignment: "center" }];
+  for (const extraLine of [false, true]) {
+    copy.content = extraLine ? "H\nH" : "H";
+    const original = structuredClone(document), scene = lowerPage(document, page, fonts);
+    assert.deepEqual(document, original);
+    const offset = extraLine ? 296.75 : 316.75; // [116,330.5] ink, centered at page y540; extra line adds40px.
+    scene.components.forEach((component, i) => {
+      assert.ok(Math.abs(component.box.y - ungrouped.components[i].box.y - offset) < 1e-9);
+      assert.equal(component.box.height, ungrouped.components[i].box.height);
+    });
+    const bounds = scene.items.map(item => itemBounds(item, fonts)!);
+    assert.ok(Math.abs((Math.min(...bounds.map(b => b.y)) + Math.max(...bounds.map(b => b.y + b.height))) / 2 - 540) < 1e-9);
+    assert.deepEqual(scene.items.map(item => [item.componentId, item.elementId]), ungrouped.items.map(item => [item.componentId, item.elementId]));
+    assert.deepEqual(checkPage(scene, fonts), []);
+  }
+  for (const alignment of ["start", "end"] as const) {
+    page.groups[0].verticalAlignment = alignment;
+    const scene = lowerPage(document, page, fonts), bounds = scene.groups![0].bounds;
+    assert.equal(alignment === "start" ? bounds.y : bounds.y + bounds.height, alignment === "start" ? 300 : 780);
+    assert.deepEqual(checkPage(scene, fonts), []);
+  }
+  page.groups[0].area!.rows = 2;
+  assert.equal(checkPage(lowerPage(document, page, fonts), fonts).find(issue => issue.code === "group-overflow")?.groupId, "stack");
+});
+
+test("group shape bounds follow curve extrema and fit, and ignore invisible geometry", () => {
+  const shape = (tag: SceneShape["tag"], attributes: SceneShape["attributes"]): SceneShape => ({
+    kind: "shape", pageId: "bounds", tag, attributes, transform: [2, 0, 0, 3, 7, 11],
+  });
+  assert.deepEqual(itemBounds(shape("path", { d: "M0 0Q100 200 200 0Z", fill: "#000" }), fonts), { x: 7, y: 11, width: 400, height: 300 });
+  assert.deepEqual(itemBounds(shape("circle", { cx: 10, cy: 20, r: 5, fill: "#000" }), fonts), { x: 17, y: 56, width: 20, height: 30 });
+  assert.deepEqual(itemBounds(shape("polygon", { points: "0,0 10-20 30,5", fill: "#000" }), fonts), { x: 7, y: -49, width: 60, height: 75 });
+  const line = shape("line", { x1: 4, y1: 6, x2: 10, y2: 20, stroke: "#000", "stroke-width": 4, "vector-effect": "non-scaling-stroke" });
+  assert.deepEqual(itemBounds(line, fonts), { x: 13, y: 27, width: 16, height: 46 });
+  assert.equal(itemBounds(shape("line", { x1: 4, y1: 6, x2: 10, y2: 20, fill: "#000" }), fonts), undefined);
+  assert.equal(itemBounds(shape("circle", { cx: 10, cy: 20, r: 5, fill: "#000", "fill-opacity": 0 }), fonts), undefined);
+});
+
+test("cover stack stays left-aligned and vertically centered when the audience gains a line", () => {
+  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const page = document.slides[0], group = page.groups.find(group => group.id === "brand-stack")!;
+  for (const changed of [false, true]) {
+    const audience = page.components.find(item => item.id === "audience")!;
+    if (changed && audience.kind === "text-block") { audience.content += "\nAnd your team."; audience.area.rows += 4; }
+    const scene = lowerPage(document, page, fonts);
+    const mark = scene.items.find(item => item.elementId === "mark-silhouette")!;
+    assert.ok(mark.kind === "shape");
+    assert.equal(mark.transform[4], 48, "mark viewBox starts at the left grid margin");
+    for (const item of scene.items.filter(item => item.kind === "text" && group.childIds.includes(item.componentId ?? ""))) {
+      assert.ok(item.kind === "text");
+      assert.equal(item.box.x, 48);
+      assert.ok(item.layout.lines.every(line => line.x === 0), "every text line starts at the same column edge");
+    }
+    const bounds = scene.items.filter(item => group.childIds.includes(item.componentId ?? "")).map(item => itemBounds(item, fonts)!);
+    assert.ok(Math.abs((Math.min(...bounds.map(b => b.y)) + Math.max(...bounds.map(b => b.y + b.height))) / 2 - 315) < 1e-9);
+    assert.deepEqual(checkPage(scene, fonts), []);
   }
 });

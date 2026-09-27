@@ -1,6 +1,6 @@
 import { Ajv2020 } from "ajv/dist/2020.js";
 import { schemaV2 } from "./schema-v2.ts";
-import { gridSchema, gridMetrics, resolveDocument, type WireDocument } from "./grid.ts";
+import { areaIssue, gridSchema, gridMetrics, resolveDocument, type WireDocument } from "./grid.ts";
 import { vectorAttributeNames } from "./vector.ts";
 import { validThemeBinding } from "./theme-tokens.ts";
 
@@ -21,10 +21,18 @@ export function validateComposition(input: unknown): ValidationResult {
         message: error.message ?? "Invalid value",
       })),
     };
-  const candidate = resolveDocument(input);
   const issues: ValidationIssue[] = [];
   const fail = (path: string, message: string) =>
     issues.push({ path, message });
+  input.slides.forEach((slide, index) => {
+    for (const key of ["components", "groups"] as const) slide[key].forEach((item, itemIndex) => {
+      if (!item.area) return;
+      const issue = areaIssue(slide.grid, item.area);
+      if (issue) fail(`/slides/${index}/${key}/${itemIndex}/area`, issue);
+    });
+  });
+  if (issues.length) return { ok: false, issues };
+  const candidate = resolveDocument(input);
   const unique = (ids: string[], path: string) => {
     if (new Set(ids).size !== ids.length) fail(path, "IDs must be unique");
   };
@@ -38,10 +46,7 @@ export function validateComposition(input: unknown): ValidationResult {
     if (slide.grid) {
       const metrics = gridMetrics(slide.grid);
       for (const [index, component] of slide.components.entries()) {
-        const a = component.area!;
         const path = `${base}/components/${index}`;
-        if (a.column + a.span - 1 > metrics.columns || a.row + a.rows - 1 > metrics.rows)
-          fail(`${path}/area`, "Area exceeds grid; recompose for this destination");
         const inset = (component.padding ?? 0) * metrics.baseline * 2;
         if (inset >= component.preferredRect.width || inset >= component.preferredRect.height)
           fail(`${path}/padding`, "Padding leaves no component content area");

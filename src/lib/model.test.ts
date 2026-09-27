@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { canonicalJSON } from "../../composition/compile.ts";
-import { gridMetrics, resolveDocument, toComposition } from "../../composition/grid.ts";
+import { gridMetrics, resolveArea, resolveDocument, toComposition } from "../../composition/grid.ts";
 import { fixtures } from "../../composition/fixtures.ts";
 import { canvasPadding } from "../../composition/types.ts";
 import { validateComposition } from "../../composition/validate.ts";
@@ -420,8 +420,9 @@ test("duplicate placement and labels distinguish repeated components", () => {
   );
   assert.notDeepEqual(visuals[1].area, visuals[0].area);
   const metrics = gridMetrics(firstSlide(next).grid!);
-  assert.equal(visuals[1].preferredRect.x, metrics.margin + (visuals[1].area!.column - 1) * (metrics.columnWidth + metrics.gutter));
-  assert.equal(visuals[1].preferredRect.y, metrics.margin + (visuals[1].area!.row - 1) * metrics.baseline);
+  const area = resolveArea(firstSlide(next).grid!, visuals[1].area!);
+  assert.equal(visuals[1].preferredRect.x, metrics.margin + (area.column - 1) * (metrics.columnWidth + metrics.gutter));
+  assert.equal(visuals[1].preferredRect.y, metrics.marginY + (area.row - 1) * metrics.baseline);
   assert.deepEqual(
     visuals.map((component) =>
       componentInstanceLabel(firstSlide(next).components, component.id),
@@ -438,7 +439,7 @@ test("repeated additions offset from the latest component", () => {
       component.kind === "text-block" && component.appearance.role === "body",
   );
   assert.equal(new Set(blocks.map(component => `${component.area!.column}:${component.area!.row}`)).size, blocks.length);
-  assert.ok(blocks.every(component => component.area!.row + component.area!.rows - 1 <= 78), "new blocks remain inside the bounded page");
+  assert.ok(blocks.every(component => resolveArea(firstSlide(second).grid!, component.area!).row + component.area!.rows - 1 <= 78), "new blocks remain inside the bounded page");
   assert.equal(validateComposition(toComposition(second)).ok, true);
 });
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositionComponent } from "../../composition/runtime.ts";
 import { validateDraft as validateComposition, initialGridDraft } from "../../composition/document.ts";
-import { resolveDocument, toComposition } from "../../composition/grid.ts";
+import { areaIssue, resolveDocument, toComposition } from "../../composition/grid.ts";
 import { removeVectorElement } from "../../composition/vector.ts";
 import {
   addComponent,
@@ -327,6 +327,8 @@ export function App() {
     component: CompositionComponent,
     mergeKey?: string,
   ) {
+    const issue = slide.grid && component.area && areaIssue(slide.grid, component.area);
+    if (issue) { showNotice(issue, "error"); return; }
     const previous = slide.components.find(
       (candidate) => candidate.id === component.id,
     );

@@ -18,7 +18,7 @@ const blue='theme:accent',lightGray='theme:divider';
 const text=(id:string,content:string,area:GridArea,step:TypeStep,weight:400|600=600,leading?:number):GridComponent=>({
   id,kind:'text-block',content,slotIds:[`${id}-content`],area,
   textStyle:{step,weight,leading,color:'ink',font:'heading'},
-  appearance:{role:id==='brand'?'title':'body',alignment:'center',border:'none',rule:'none'},
+  appearance:{role:id==='brand'?'title':'body',alignment:'start',border:'none',rule:'none'},
 });
 const elements:VectorElement[]=[
   {id:'cover-frame',kind:'rect',attributes:{x:10,y:8,width:260,height:140,rx:8,fill:'#ffffff',stroke:blue,'stroke-width':2.5}},
@@ -60,16 +60,17 @@ for(const element of elements)for(const key of ['fill','stroke']){
 }
 const components:GridComponent[]=[
   text('brand','Konpeki',{column:1,span:2,row:23,rows:11},'display',600,10),
-  {id:'brand-mark',kind:'image',slotIds:['brand-mark-content'],area:{column:1,span:2,row:14,rows:8},customVisual:{format:'vector',viewBox:{x:0,y:0,width:128,height:128},description:'Konpeki blue brush mark',elements:[{id:'mark-silhouette',kind:'path',attributes:{d:outline,fill:blue}}]}},
+  {id:'brand-mark',kind:'image',slotIds:['brand-mark-content'],area:{column:1,span:2,row:14,rows:8},customVisual:{format:'vector',alignment:'start',viewBox:{x:0,y:0,width:128,height:128},description:'Konpeki blue brush mark',elements:[{id:'mark-silhouette',kind:'path',attributes:{d:outline,fill:blue}}]}},
   text('promise','Create clear visuals',{column:1,span:2,row:40,rows:7},'heading'),
   text('audience','with your coding agent.',{column:1,span:2,row:47,rows:6},'lead',400),
-  {id:'visual-family',kind:'image',slotIds:['visual-family-content'],area:{column:3,span:2,row:5,rows:57},customVisual:{format:'vector',viewBox:{x:0,y:0,width:444,height:412},description:'Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components.',elements}},
+  {id:'visual-family',kind:'image',slotIds:['visual-family-content'],area:{column:3,span:2,row:'center',rows:58},customVisual:{format:'vector',viewBox:{x:0,y:0,width:444,height:412},description:'Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components.',elements}},
 ];
 const document:GridDocument={schema:gridSchema,title:'Konpeki GitHub cover',authoringMode:'default',theme:{id:'plex',mode:'paper'},slides:[{
   id:'github-cover',name:'GitHub repository cover',grid:{preset:'link'},pageNumber:{style:'none',color:'muted'},
   audience:'Developers discovering Konpeki on GitHub',question:'What can I create with Konpeki and my coding agent?',intendedViewingSize:'social',components,
   contentSlots:components.map(c=>({id:c.slotIds[0],label:c.id,role:'body',required:true,instruction:c.kind==='text-block'?c.content??'':c.customVisual?.description??''})),
-  groups:[],relationships:[],readingOrder:components.map(c=>({kind:'component',id:c.id})),paintOrder:components.map(c=>c.id),
+  groups:[{id:'brand-stack',childIds:['brand-mark','brand','promise','audience'],area:{column:1,span:2,row:'center',rows:66},verticalAlignment:'center'}],
+  relationships:[],readingOrder:components.map(c=>({kind:'component',id:c.id})),paintOrder:components.map(c=>c.id),
 }]};
 assertComposition(document);
 writeFileSync(new URL('composition.json',import.meta.url),JSON.stringify(document,null,2)+'\n');

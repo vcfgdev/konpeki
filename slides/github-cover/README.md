@@ -4,6 +4,10 @@
 recomposed for the 1200×630 `link` preset; [cover.png](cover.png) is its exact 2×
 Konpeki PNG export (2400×1260).
 The varied canvas sizes illustrate possible formats, not a fixed workflow.
+The `brand-stack` group vertically centers the left-aligned mark and copy within
+the left two columns. Its members keep their relative spacing; changing copy
+recomputes the shared offset rather than requiring new top and bottom rows. Enlarge a member's
+area or recompose the spacing if added lines would clip or overlap neighbours.
 
 Check and render from the repository root without a browser:
 

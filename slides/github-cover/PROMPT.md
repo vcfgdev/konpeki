@@ -16,10 +16,12 @@
 ## v2 adaptation
 
 The original 1280×640 size is not a v2 preset. The port uses the existing
-1200×630 `link` destination with a centered brand/copy group and the retained
-canvas motifs. It preserves component and artwork IDs, uses named type steps
+1200×630 `link` destination with a vertically centered brand/copy group and the
+retained canvas motifs. It preserves component and artwork IDs, uses named type steps
 and theme colors, and exports through the owned scene. The wordmark uses an
 explicit 80px leading override to keep its descenders inside the title region.
+The alignment follow-up left-aligns the mark and copy within their cells while
+retaining the group's vertical centering.
 
 ## Sources
 

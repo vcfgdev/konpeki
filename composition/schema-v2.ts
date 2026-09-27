@@ -17,17 +17,24 @@ slide.properties.grid = {
   type: "object", additionalProperties: false, required: ["preset"],
   properties: { preset: { enum: Object.keys(gridPresets) } },
 };
+const gridInteger = { type: "integer", minimum: 1, maximum: 512 };
+const area = {
+  type: "object", additionalProperties: false, required: ["column", "span", "row", "rows"],
+  properties: { column: { anyOf: [gridInteger, { const: "center" }] }, span: gridInteger,
+    row: { anyOf: [gridInteger, { const: "center" }] }, rows: gridInteger },
+};
+slide.properties.groups.items.properties.area = area;
+slide.properties.groups.items.properties.verticalAlignment = { enum: ["start", "center", "end"] };
+slide.properties.groups.items.dependentRequired = { area: ["verticalAlignment"], verticalAlignment: ["area"] };
 for (const component of slide.properties.components.items.oneOf) {
   delete component.properties.preferredRect;
   component.required = component.required.map((key: string) => key === "preferredRect" ? "area" : key);
-  component.properties.area = {
-    type: "object", additionalProperties: false, required: ["column", "span", "row", "rows"],
-    properties: Object.fromEntries(["column", "span", "row", "rows"].map(key => [key, { type: "integer", minimum: 1, maximum: 512 }])),
-  };
+  component.properties.area = area;
   component.properties.layer = { enum: ["background", "overlay"] };
   component.properties.padding = { type: "integer", minimum: 0, maximum: 24 };
   const style = component.properties.textStyle;
   if (style) {
+    component.properties.appearance.properties.verticalAlignment = { enum: ["start", "center", "end"] };
     delete style.properties.size;
     delete style.properties.lineHeight;
     style.properties.step = { enum: typeSteps };

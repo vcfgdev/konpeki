@@ -1,13 +1,15 @@
 import type { FontContext } from "./fonts.ts";
-import type { ScenePage, SceneText } from "./scene.ts";
+import { textInkBounds, type ScenePage } from "./scene.ts";
+export { textInkBounds } from "./scene.ts";
 
 export type DiagnosticSeverity = "error" | "warning";
 export interface Diagnostic {
-  code: "native-overflow" | "clipped-label" | "missing-glyph" | "draft-placeholder" | "chart-scale" | "text-contrast";
+  code: "native-overflow" | "clipped-label" | "missing-glyph" | "draft-placeholder" | "chart-scale" | "text-contrast" | "group-overflow";
   severity: DiagnosticSeverity;
   pageId: string;
   componentId?: string;
   elementId?: string;
+  groupId?: string;
   message: string;
   evidence: Record<string, unknown>;
 }
@@ -17,24 +19,6 @@ const target = (scene: ScenePage, item?: { componentId?: string; elementId?: str
   ...(item?.componentId ? { componentId: item.componentId } : {}),
   ...(item?.elementId ? { elementId: item.elementId } : {}),
 });
-
-/** The exact ink bounds produced by HarfBuzz, in page pixels. */
-export function textInkBounds(item: SceneText, fonts: FontContext) {
-  let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity, glyphCount = 0;
-  for (const line of item.layout.lines) for (const glyph of line.glyphs) {
-    const font = fonts.fonts.get(glyph.fontId);
-    const extents = font?.hbFont.glyphExtents(glyph.glyphId);
-    if (!font || !extents) continue;
-    const scale = item.fontSize / font.unitsPerEm;
-    const x = item.box.x + glyph.x + extents.xBearing * scale;
-    const y = item.box.y + glyph.y - extents.yBearing * scale;
-    const x2 = x + extents.width * scale;
-    const y2 = y - extents.height * scale;
-    left = Math.min(left, x, x2); right = Math.max(right, x, x2);
-    top = Math.min(top, y, y2); bottom = Math.max(bottom, y, y2); glyphCount++;
-  }
-  return glyphCount ? { x: left, y: top, width: right - left, height: bottom - top, glyphCount } : undefined;
-}
 
 const outside = (a: { x: number; y: number; width: number; height: number }, b: { x: number; y: number; width: number; height: number }) =>
   a.x < b.x || a.y < b.y || a.x + a.width > b.x + b.width || a.y + a.height > b.y + b.height;
@@ -55,6 +39,10 @@ export function checkPage(scene: ScenePage, fonts: FontContext): Diagnostic[] {
       message: `No bundled font contains ${JSON.stringify(missing.text)}.`,
       evidence: { source: item.source, range: [missing.start, missing.end], text: missing.text, codePoints: missing.codePoints.map(value => `U+${value.toString(16).toUpperCase().padStart(4, "0")}`) } });
   }
+  for (const group of scene.groups ?? []) if (outside(group.bounds, group.box))
+    diagnostics.push({ code: "group-overflow", severity: "error", pageId: scene.pageId, groupId: group.id,
+      message: "Aligned group contents exceed its area; recompose the members or enlarge the area.",
+      evidence: { bounds: group.bounds, area: group.box } });
   for (const component of scene.components) {
     if (component.draft) diagnostics.push({ code: "draft-placeholder", severity: "warning", pageId: scene.pageId, componentId: component.id,
       message: "Component still uses generated draft artwork.", evidence: { draft: true } });

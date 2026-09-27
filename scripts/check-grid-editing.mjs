@@ -2,12 +2,14 @@
 // no authored transform attributes: all fitting must come from scene lowering.
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { addComponent, initialDraft, initialGridDraft, parseCompositionJSON } from "../composition/document.ts";
 import { toComposition } from "../composition/grid.ts";
 import { assertComposition } from "../composition/validate.ts";
+import { loadNodeFontContext } from "../composition/fonts.ts";
+import { lowerPage } from "../composition/lower.ts";
 
 const [base = "http://localhost:4318", output = "/tmp/konpeki-grid-editing"] = process.argv.slice(2);
 mkdirSync(output, { recursive: true });
@@ -34,8 +36,9 @@ function importDocument(document) {
 }
 
 function drag(selector, dx, dy) {
-  const point = evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}),r=target.getBoundingClientRect(),c=document.querySelector('.scene-canvas').getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2,scale:c.width/1920}; })()`);
+  const point = evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}),r=target.getBoundingClientRect(),c=document.querySelector('.scene-canvas').getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2,scale:c.width/document.querySelector('.scene-artwork svg').viewBox.baseVal.width}; })()`);
   b("mouse", "move", String(Math.round(point.x)), String(Math.round(point.y))); b("mouse", "down", "left");
+  b("mouse", "move", String(Math.round(point.x + dx * point.scale / 2)), String(Math.round(point.y + dy * point.scale / 2)));
   b("mouse", "move", String(Math.round(point.x + dx * point.scale)), String(Math.round(point.y + dy * point.scale))); b("mouse", "up", "left");
   settle();
 }
@@ -120,10 +123,72 @@ try {
   })()`), true, "presentation clips resolve inside its own scene");
   capture("scene-presentation"); click("Exit");
 
+  const centered = toComposition(addComponent(initialGridDraft(), "text-block"));
+  centered.title = "Centered placement editing regression";
+  const block = centered.slides[0].components[0];
+  block.area = { column: "center", span: 4, row: "center", rows: 10 };
+  block.content = "Konpeki"; block.textStyle = { step: "title" };
+  block.appearance.alignment = "center"; block.appearance.verticalAlignment = "center";
+  importDocument(centered);
+  const centeredHit = `.component-hit[data-component='${block.id}']`;
+  b("click", centeredHit);
+  b("wait", "--fn", "getComputedStyle(document.querySelector('.component-hit.selected')).backgroundColor === 'rgba(0, 0, 0, 0)'");
+  assert.equal(evaluate("document.querySelector('select[name=Column]').value"), "center");
+  assert.equal(evaluate("document.querySelector('select[name=Row]').value"), "center");
+  assert.equal(evaluate("document.querySelector('select[name=\"Vertical alignment\"]').value"), "center");
+  b("fill", "input[name=span]", "3"); b("press", "Enter");
+  assert.equal(stored().slides[0].components[0].area.span, 4, "invalid centered spans never reach the scene");
+  assert.ok(evaluate("document.querySelector('[role=alert]').textContent.includes('use span 2 or 4')"));
+  b("press", "Escape"); b("focus", centeredHit); b("press", "ArrowDown");
+  assert.deepEqual(stored().slides[0].components[0].area, { column: "center", span: 4, row: 36, rows: 10 });
+  capture("centered-text-inspector");
+
+  const cover = JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8"));
+  importDocument(cover);
+  const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
+  const assertGroupHits = current => {
+    settle();
+    const expected = lowerPage(current, current.slides[0], fonts);
+    for (const component of expected.components) {
+      const top = evaluate(`parseFloat(document.querySelector('.component-hit[data-component="${component.id}"]').style.top) * ${expected.height} / 100`);
+      assert.ok(Math.abs(top - component.box.y) < .001, `${component.id}: hit target follows scene, including group offset`);
+    }
+  };
+  assertGroupHits(cover);
+  const brandHit = ".component-hit[data-component=brand]";
+  b("focus", brandHit); b("press", "ArrowDown");
+  assert.equal(stored().slides[0].components.find(item => item.id === "brand").area.row, 24, "group nudge changes authored row by exactly one");
+  drag(brandHit, 0, 16);
+  const movedCover = stored();
+  assert.equal(movedCover.slides[0].components.find(item => item.id === "brand").area.row, 26, "multi-move drag does not accumulate the group offset");
+  assertGroupHits(movedCover);
+  b("press", "Control+z"); b("press", "Control+z");
+  assertGroupHits(stored());
+  b("click", brandHit);
+  capture("centered-cover-editor");
+
+  b("click", ".component-hit[data-component=brand-mark]");
+  const artworkAlignment = 'select[name="Artwork alignment"]';
+  assert.equal(evaluate(`document.querySelector('${artworkAlignment}').value`), "start");
+  for (const [alignment, x] of [["center", 286], ["end", 524], ["start", 48]]) {
+    b("select", artworkAlignment, alignment);
+    assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, alignment);
+    settle();
+    assert.equal(evaluate("document.querySelector('[data-vector-element=mark-silhouette] path').transform.baseVal.consolidate().matrix.e"), x,
+      "artwork uses the selected fit alignment, not a new authored area");
+    assertGroupHits(stored());
+    if (alignment === "end") capture("right-aligned-artwork-inspector");
+  }
+  b("focus", ".component-hit[data-component=brand-mark]"); b("press", "Control+z");
+  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "end");
+  b("press", "Control+Shift+z");
+  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "start");
+  capture("left-aligned-artwork-inspector");
+
   const legacy = initialDraft(true);
   assert.equal(parseCompositionJSON(JSON.stringify(legacy)).ok, false, "v1 documents are rejected rather than edited");
   assert.equal(parseCompositionJSON(JSON.stringify({ ...document, schema: "v2" })).ok, false, "schema aliases are rejected");
-  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, temporary and vector text editing, fitted scaled line handles, theme rendering, exact 2x PNG, and v2-only validation");
+  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, temporary and vector text editing, fitted scaled line handles, theme rendering, exact 2x PNG, centered placement/parity, aligned group hits and drag offsets, artwork alignment/undo, and v2-only validation");
 } finally {
   try { b("close"); } finally { rmSync(scratch, { recursive: true, force: true }); }
 }

@@ -17,9 +17,17 @@ silently cropping evidence or shrinking essential text. Each page can have its o
 
 New browser-authored documents use the v2 grid presets: `presentation`,
 `portrait`, `link`, `square`, `article`, `explainer` and `gallery`. Place each
-component with an explicit one-based `area` (`column`, `span`, `row`, `rows`).
+component with an explicit `area` (`column`, `span`, `row`, `rows`). Starts are
+one-based integers or `"center"`; centered spans must match the grid's parity.
 Preset changes never recompose a page; adapt areas and copy deliberately. Baseline
 rows are fixed, so more content does not make a component grow.
+
+Declare alignment rather than calculating offsets. Native text accepts
+`appearance.alignment` and `appearance.verticalAlignment`; artwork accepts
+`customVisual.alignment` for horizontal fitting. Values are `start`, `center`,
+or `end`. A group with an `area` and `verticalAlignment` aligns its members as
+one unit, preserving their relative positions without reflowing them. Left
+alignment and vertical centering are independent choices.
 
 Return finished, inspected output by default. Do not require people to sketch,
 choose component types or approve an outline unless they ask for that checkpoint.

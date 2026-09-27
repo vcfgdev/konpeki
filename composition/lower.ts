@@ -2,7 +2,7 @@ import { areaRect, gridMetrics, roleSteps, typeSteps, type GridDocument, type Gr
 import type { Rect, VectorElement } from "./types.ts";
 import type { FontContext } from "./fonts.ts";
 import { layoutText } from "./text-layout.ts";
-import type { ScenePage, SceneShape, SceneText, SceneTarget } from "./scene.ts";
+import { itemBounds, type ScenePage, type SceneShape, type SceneText, type SceneTarget } from "./scene.ts";
 import { composerPalette, themeLabel } from "../src/lib/theme.ts";
 import { getTheme } from "../design/themes/index.ts";
 import { draftArtwork } from "./draft-artwork.ts";
@@ -46,7 +46,8 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
       const sx = cell.width / view.width, sy = cell.height / view.height;
       const fit = visual.fit === "cover" ? Math.max(sx, sy) : Math.min(sx, sy);
       const scaleX = visual.fit === "stretch" ? sx : fit, scaleY = visual.fit === "stretch" ? sy : fit;
-      const dx = cell.x + (cell.width - view.width * scaleX) / 2 - view.x * scaleX;
+      const alignment = visual.alignment === "start" ? 0 : visual.alignment === "end" ? 1 : 0.5;
+      const dx = cell.x + (cell.width - view.width * scaleX) * alignment - view.x * scaleX;
       const dy = cell.y + (cell.height - view.height * scaleY) / 2 - view.y * scaleY;
       const transform: SceneShape["transform"] = [scaleX, 0, 0, scaleY, dx, dy];
       info.artworkScale = [scaleX, scaleY];
@@ -93,10 +94,13 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
         const item = text(region.text, region.box, owner, size, height, component.textStyle?.font === "heading" ? heading : body,
           component.textStyle?.weight ?? 400, appearance.treatment === "strong" ? palette.bg : colors[component.textStyle?.color ?? "ink"],
           appearance.alignment === "center" ? "center" : appearance.alignment === "end" ? "right" : "left");
-        // Preserve the canvas's title alignment, including multiline titles and
-        // padding. Keep the original clip so overflowing copy is still diagnosed.
-        if (component.appearance.role === "title") {
-          const offset = Math.max(0, region.box.height - item.layout.height);
+        const alignment = component.appearance.verticalAlignment ?? (component.appearance.role === "title" ? "end" : "start");
+        if (alignment !== "start") {
+          // Center from the first cap top to the last baseline, excluding
+          // half-leading and descenders. End retains the title's line-box rule.
+          const top = item.layout.lines[0].baseline - item.layout.capHeight * size;
+          const bottom = item.layout.lines.at(-1)!.baseline;
+          const offset = alignment === "center" ? (region.box.height - top - bottom) / 2 : Math.max(0, region.box.height - item.layout.height);
           item.box = { ...region.box, y: region.box.y + offset, height: region.box.height - offset };
         }
         scene.items.push(item);
@@ -117,6 +121,31 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
         item.clip = cell;
         scene.items.push(item);
       }
+    }
+  }
+  for (const group of page.groups) {
+    if (!group.area || !group.verticalAlignment) continue;
+    const members = new Set(group.childIds);
+    const items = scene.items.filter(item => item.componentId && members.has(item.componentId));
+    const bounds = items.map(item => itemBounds(item, fonts)).filter((box): box is Rect => box !== undefined);
+    if (!bounds.length) continue;
+    const top = Math.min(...bounds.map(box => box.y)), bottom = Math.max(...bounds.map(box => box.y + box.height));
+    const area = areaRect(page.grid, group.area);
+    const offset = group.verticalAlignment === "center" ? area.y + (area.height - top - bottom) / 2
+      : group.verticalAlignment === "end" ? area.y + area.height - bottom : area.y - top;
+    const translate = (box: Rect): Rect => ({ ...box, y: box.y + offset });
+    const left = Math.min(...bounds.map(box => box.x)), right = Math.max(...bounds.map(box => box.x + box.width));
+    (scene.groups ??= []).push({ id: group.id, box: area, bounds: { x: left, y: top + offset, width: right - left, height: bottom - top } });
+    for (const item of items) {
+      if (item.kind === "text") item.box = translate(item.box);
+      else item.transform = [...item.transform.slice(0, 5), item.transform[5] + offset] as SceneShape["transform"];
+      // Keep the original member clips, translated with their contents. Group
+      // alignment must not conceal overflowing copy by enlarging a text box.
+      if (item.clip) item.clip = translate(item.clip);
+    }
+    for (const component of scene.components) if (members.has(component.id)) {
+      component.box = translate(component.box);
+      component.contentBox = translate(component.contentBox);
     }
   }
   if (page.pageNumber && page.pageNumber.style !== "none") {

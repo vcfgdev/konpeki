@@ -1,5 +1,5 @@
 import type { CanvasSize, CompositionSlide } from "../../composition/runtime.ts";
-import { gridMetrics, gridPresets, resolveComponent, resolveSlide, toGridComponent, type GridPreset } from "../../composition/grid.ts";
+import { areaIssue, gridMetrics, gridPresets, resolveComponent, resolveSlide, toGridComponent, type GridPreset } from "../../composition/grid.ts";
 
 export const pagePresets = [
   { name: "Presentation", width: 1920, height: 1080, destination: "presentation" },
@@ -14,8 +14,11 @@ export function pageSizeIssue(slide: CompositionSlide, size: CanvasSize): string
     const preset = (Object.keys(gridPresets) as GridPreset[]).find(key => gridPresets[key].width === size.width && gridPresets[key].height === size.height);
     if (!preset) return "Choose a grid preset for this document.";
     const metrics = gridMetrics({ preset });
-    if (slide.components.some(c => c.area!.column + c.area!.span - 1 > metrics.columns || c.area!.row + c.area!.rows - 1 > metrics.rows))
-      return "The areas do not fit this grid. Ask your agent to recompose; nothing has changed.";
+    for (const item of [...slide.components, ...slide.groups]) {
+      if (!item.area) continue;
+      const issue = areaIssue({ preset }, item.area);
+      if (issue) return `${issue}. Ask your agent to recompose; nothing has changed.`;
+    }
     for (const component of slide.components) {
       const next = resolveComponent(toGridComponent(component), { preset });
       const inset = (next.padding ?? 0) * metrics.baseline * 2;

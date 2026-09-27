@@ -68,6 +68,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      svg-path-bbox:
+        specifier: 2.1.0
+        version: 2.1.0
       vite:
         specifier: ^8.3.0
         version: 8.3.0(@types/node@24.13.3)(jiti@2.7.0)
@@ -734,6 +737,14 @@ packages:
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
+
+  svg-path-bbox@2.1.0:
+    resolution: {integrity: sha512-PEoSQFbBvL7FOCE4cN8Knej6L7bXdNkjPcUYsfMMpq0HpnqiO0sE2mcXTd7LX160aOyh5HbaeN/SoY8thMk5Kg==}
+    engines: {node: '>=6.17.1'}
+    hasBin: true
+
+  svgpath@2.6.0:
+    resolution: {integrity: sha512-OIWR6bKzXvdXYyO4DK/UWa1VA1JeKq8E+0ug2DG98Y/vOmMpfZNj+TIG988HjfYSqtcy/hFOtZq/n/j5GSESNg==}
 
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
@@ -1447,6 +1458,12 @@ snapshots:
   signal-exit@3.0.7: {}
 
   source-map-js@1.2.1: {}
+
+  svg-path-bbox@2.1.0:
+    dependencies:
+      svgpath: 2.6.0
+
+  svgpath@2.6.0: {}
 
   tiny-inflate@1.0.3: {}
 

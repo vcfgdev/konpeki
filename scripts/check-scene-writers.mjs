@@ -15,6 +15,7 @@ const documents = [
   "slides/gallery/architecture.json", "slides/gallery/sankey.json",
   "slides/gallery/release.json", "slides/gallery/explainer.json",
   "slides/introducing-konpeki/composition.json",
+  "slides/github-cover/composition.json",
 ];
 const keep = process.argv.includes("--keep");
 const root = resolve(import.meta.dirname, "..");
@@ -44,9 +45,9 @@ try {
   const pages = [];
   for (const relative of documents) {
     const document = JSON.parse(await readFile(resolve(root, relative), "utf8"));
-    document.slides.forEach((page, index) => pages.push({ document, page, index, label: `${basename(relative, ".json")}-${index + 1}` }));
+    document.slides.forEach((page, index) => pages.push({ document, page, index, label: `${relative.includes("github-cover") ? "github-cover" : basename(relative, ".json")}-${index + 1}` }));
   }
-  if (pages.length !== 11) throw new Error(`Expected 11 fixture pages, found ${pages.length}`);
+  if (pages.length !== 12) throw new Error(`Expected 11 example pages and the cover, found ${pages.length}`);
   const scenes = pages.map(({ document, page }) => lowerPage(document, page, fonts));
   const pdfPath = join(output, "all.pdf");
   await writeFile(pdfPath, await renderPDF(scenes, fonts));
@@ -82,7 +83,7 @@ try {
   console.log(`PDF text: ${scenes.reduce((n, scene) => n + scene.items.filter(item => item.kind === "text").length, 0)} scene strings checked; ${missing.length} missing.`);
   if (missing.length) console.error("Missing extracted PDF characters:", missing);
   if (results.some(result => !result.passed) || missing.length) throw new Error(`Scene writer conformance failed; inspect ${output}`);
-  console.log(`PASS: 11 pages; scratch output ${output}${keep ? " retained" : " removed"}.`);
+  console.log(`PASS: ${pages.length} pages; scratch output ${output}${keep ? " retained" : " removed"}.`);
 } finally {
   try { browser("close"); } catch {}
   if (!keep) await rm(output, { recursive: true, force: true });

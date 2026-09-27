@@ -8,7 +8,7 @@ import {
   type ContentSlot,
   type Rect,
 } from "./runtime.ts";
-import { gridSchema, gridMetrics, resolveDocument, resolveSlide, resolveComponent, snapArea, toComposition, toGridComponent, type PageGrid } from "./grid.ts";
+import { gridSchema, gridMetrics, resolveArea, resolveDocument, resolveSlide, resolveComponent, snapArea, toComposition, toGridComponent, type GridArea, type PageGrid } from "./grid.ts";
 import { validateComposition } from "./validate.ts";
 import { appearanceOptions } from "./schema.ts";
 import { diagramDefinition } from "./visualizations.ts";
@@ -291,7 +291,7 @@ function offsetRect(rect: Rect, size: CanvasSize) {
 function avoidOccupiedArea(area: ReturnType<typeof snapArea>, slide: CompositionSlide) {
   if (!slide.grid) return area;
   const occupied = new Set(slide.components.map(component => {
-    const value = component.area!;
+    const value = resolveArea(slide.grid!, component.area!);
     return `${value.column}:${value.row}`;
   }));
   if (!occupied.has(`${area.column}:${area.row}`)) return area;
@@ -310,7 +310,12 @@ export function transformComponentRect(
   nextRect: Rect,
   grid?: PageGrid,
 ): CompositionComponent {
-  if (grid) return resolveComponent({ ...toGridComponent(component), area: snapArea(grid, nextRect) }, grid);
+  if (grid) {
+    const area: GridArea = snapArea(grid, nextRect);
+    if (component.area?.column === "center" && previousRect.x === nextRect.x && previousRect.width === nextRect.width) area.column = "center";
+    if (component.area?.row === "center" && previousRect.y === nextRect.y && previousRect.height === nextRect.height) area.row = "center";
+    return resolveComponent({ ...toGridComponent(component), area }, grid);
+  }
   const next = structuredClone(component);
   next.preferredRect = { ...nextRect };
   if ((next.kind !== "diagram" && next.kind !== "chart") || !next.topology) return next;
@@ -374,7 +379,7 @@ export function addComponent(
   if (slide.grid) {
     const area = snapArea(slide.grid, component.preferredRect);
     if (!at) {
-      const bottom = Math.max(0, ...slide.components.map(c => c.area!.row + c.area!.rows - 1));
+      const bottom = Math.max(0, ...slide.components.map(c => resolveArea(slide.grid!, c.area!).row + c.area!.rows - 1));
       area.row = Math.min(bottom + 3, gridMetrics(slide.grid).rows - area.rows + 1);
     }
     component = resolveComponent({ ...toGridComponent(component), area: avoidOccupiedArea(area, slide) }, slide.grid);
@@ -534,7 +539,7 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
   );
   if (slide.grid && component.area) component = resolveComponent({
     ...toGridComponent(component),
-    area: avoidOccupiedArea(component.area, slide),
+    area: avoidOccupiedArea(resolveArea(slide.grid, component.area), slide),
   }, slide.grid);
   component.id = componentId;
   component.slotIds = slotIds;

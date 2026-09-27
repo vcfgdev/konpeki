@@ -43,7 +43,7 @@
           },
           "appearance": {
             "role": "title",
-            "alignment": "center",
+            "alignment": "start",
             "border": "none",
             "rule": "none"
           }
@@ -62,6 +62,7 @@
           },
           "customVisual": {
             "format": "vector",
+            "alignment": "start",
             "viewBox": {
               "x": 0,
               "y": 0,
@@ -102,7 +103,7 @@
           },
           "appearance": {
             "role": "body",
-            "alignment": "center",
+            "alignment": "start",
             "border": "none",
             "rule": "none"
           }
@@ -128,7 +129,7 @@
           },
           "appearance": {
             "role": "body",
-            "alignment": "center",
+            "alignment": "start",
             "border": "none",
             "rule": "none"
           }
@@ -142,8 +143,8 @@
           "area": {
             "column": 3,
             "span": 2,
-            "row": 5,
-            "rows": 57
+            "row": "center",
+            "rows": 58
           },
           "customVisual": {
             "format": "vector",
@@ -550,7 +551,24 @@
           "instruction": "Aligned white canvases using Konpeki text, image, bar chart, line chart, diagram and table components."
         }
       ],
-      "groups": [],
+      "groups": [
+        {
+          "id": "brand-stack",
+          "childIds": [
+            "brand-mark",
+            "brand",
+            "promise",
+            "audience"
+          ],
+          "area": {
+            "column": 1,
+            "span": 2,
+            "row": "center",
+            "rows": 66
+          },
+          "verticalAlignment": "center"
+        }
+      ],
       "relationships": [],
       "readingOrder": [
         {

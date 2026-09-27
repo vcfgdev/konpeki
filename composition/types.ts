@@ -82,6 +82,7 @@ type VisualBase = {
   viewBox: { x: number; y: number; width: number; height: number };
   description: string;
   fit?: "contain" | "cover" | "stretch";
+  alignment?: Alignment;
 };
 export type CustomVisual = VisualBase & { format: "vector"; elements: VectorElement[] };
 type ComponentBase = {
@@ -104,6 +105,7 @@ export type TextBlockComponent = ComponentBase & {
   appearance: {
     role: TextRole;
     alignment?: Alignment;
+    verticalAlignment?: Alignment;
     border?: BorderTreatment;
     layout?: TextLayout;
     orientation?: "horizontal" | "vertical";

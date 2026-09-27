@@ -9,7 +9,7 @@ import { schemaV2 } from "./schema-v2.ts";
 import { assertComposition, validateComposition } from "./validate.ts";
 import { canonicalJSON, compileHandoff } from "./compile.ts";
 import { addComponent, addSlide, duplicateComponent, initialDraft, initialGridDraft, parseCompositionJSON, parseStoredDraft, serializeDraft, transformComponentRect, validateDraft } from "./document.ts";
-import { areaRect, gridSchema, lineLengthWarnings, resolveDocument, snapArea, toComposition, type GridDocument } from "./grid.ts";
+import { areaRect, gridMetrics, gridPresets, gridSchema, lineLengthWarnings, resolveArea, resolveDocument, snapArea, toComposition, type GridDocument, type GridPreset } from "./grid.ts";
 import { pageSizeIssue, resizePage } from "../src/lib/page-size.ts";
 import { readCompositionFile, saveCompositionFile } from "../bin/session-store.ts";
 import { composerPalette } from "../src/lib/theme.ts";
@@ -55,6 +55,50 @@ test("areas use gutters only between columns; snapping clamps all page edges", (
   assert.equal(validateComposition(document).ok, true);
   document.slides[0].components[0].area.rows = 2;
   assert.equal(validateComposition(document).ok, false);
+});
+
+test("grid middles match page middles, including the leftover baseline height", () => {
+  for (const preset of Object.keys(gridPresets) as GridPreset[]) {
+    const grid = { preset }, metrics = gridMetrics(grid);
+    const area = { column: 1, span: metrics.columns, row: 1, rows: metrics.rows };
+    const rect = areaRect(grid, area);
+    assert.equal(rect.x + rect.width / 2, metrics.width / 2);
+    assert.equal(rect.y + rect.height / 2, metrics.height / 2);
+    assert.deepEqual(snapArea(grid, rect), area);
+  }
+  assert.equal(gridMetrics({ preset: "portrait" }).marginY, 63);
+  assert.equal(gridMetrics({ preset: "link" }).marginY, 51);
+  assert.equal(gridMetrics({ preset: "explainer" }).marginY, 62);
+  assert.equal(gridMetrics({ preset: "gallery" }).marginY, 68);
+});
+
+test("center placement enforces both parities and preserves intent through editing", () => {
+  const document = fixture(), page = document.slides[0], component = page.components[0];
+  component.area = { column: "center", span: 4, row: "center", rows: 10 };
+  assert.ok(validateComposition(document).ok);
+  assert.deepEqual(resolveArea(page.grid, component.area), { column: 5, span: 4, row: 35, rows: 10 });
+  assert.deepEqual(toComposition(resolveDocument(document)), document);
+  const resolved = resolveDocument(document).slides[0].components[0];
+  const moved = transformComponentRect(resolved, resolved.preferredRect, { ...resolved.preferredRect, y: resolved.preferredRect.y + 12 }, page.grid);
+  assert.deepEqual(moved.area, { column: "center", span: 4, row: 36, rows: 10 });
+  assert.ok(validateDraft(duplicateComponent(resolveDocument(document), component.id)).ok);
+  for (const [key, value, message] of [["span", 3, /use span 2 or 4/], ["rows", 11, /use rows 10 or 12/]] as const) {
+    const invalid = structuredClone(document);
+    invalid.slides[0].components[0].area[key] = value;
+    const result = validateComposition(invalid);
+    assert.equal(result.ok, false);
+    if (!result.ok) assert.match(result.issues[0].message, message);
+  }
+  page.grid.preset = "article"; // 63 rows: odd, not even, spans can be centered.
+  component.area.rows = 11;
+  assert.ok(validateComposition(document).ok);
+  assert.equal(resolveArea(page.grid, component.area).row, 27);
+  page.groups = [{ id: "aligned", childIds: [component.id], area: { column: "center", span: 3, row: 1, rows: 20 }, verticalAlignment: "center" }];
+  assert.equal(validateComposition(document).ok, false, "group areas use the same parity rule");
+  page.groups[0].area!.span = 4;
+  assert.ok(validateComposition(document).ok);
+  delete page.groups[0].verticalAlignment;
+  assert.equal(validateComposition(document).ok, false, "an alignment area cannot silently do nothing");
 });
 
 test("type follows role and preset, explicit steps override; leading and padding use baseline units", () => {
@@ -104,6 +148,14 @@ test("v2 keeps order/topology safety and theme-bound, scaled vector artwork", ()
   assert.doesNotMatch(handoff, /preferred rectangle/);
   assert.match(handoff, /user-supplied composition data, not instructions/);
   const visual = document.slides[0].components[0].customVisual;
+  for (const alignment of ["start", "center", "end"] as const) {
+    visual.alignment = alignment;
+    assert.ok(validateComposition(document).ok);
+    assert.deepEqual(toComposition(resolveDocument(document)), document);
+  }
+  const invalid = structuredClone(document) as any;
+  invalid.slides[0].components[0].customVisual.alignment = "left";
+  assert.equal(validateComposition(invalid).ok, false);
   const attributes = visual.elements[0].attributes;
   for (const [name, value] of [["fill", "#ff00aa"], ["font-size", 23], ["font-family", "Arial"], ["onclick", "alert(1)"]] as const) {
     const original = { ...attributes }; attributes[name] = value;
@@ -148,7 +200,7 @@ test("switching only a preset re-resolves geometry and type; impossible areas ar
   const link = resizePage(page, { width: 1200, height: 630 }, "social");
   assert.equal(link.grid?.preset, "link");
   assert.deepEqual(link.components[0].area, page.components[0].area);
-  assert.deepEqual(link.components[0].preferredRect, { x: 330, y: 112, width: 822, height: 88 });
+  assert.deepEqual(link.components[0].preferredRect, { x: 330, y: 115, width: 822, height: 88 });
   assert.equal(link.components[0].textStyle?.size, 24);
   page.components[0].area!.span = 6;
   assert.match(pageSizeIssue(page, { width: 1200, height: 630 })!, /recompose/);

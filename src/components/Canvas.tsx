@@ -3,7 +3,8 @@ import type { CompositionComponent, Rect, VectorElement } from "../../compositio
 import { areaRect, gridMetrics, snapArea, toComposition } from "../../composition/grid.ts";
 import { lowerPage } from "../../composition/lower.ts";
 import { renderSVG } from "../../composition/svg.ts";
-import { componentInstanceLabel, getSlide, snapRect, snapResizeRect, type Draft, type Guide } from "../lib/model.ts";
+import type { ScenePage } from "../../composition/scene.ts";
+import { componentInstanceLabel, getSlide, snapRect, snapResizeRect, transformComponentRect, type Draft, type Guide } from "../lib/model.ts";
 import { sceneFonts } from "../lib/scene-fonts.ts";
 import type { RevisionNote } from "../lib/review.ts";
 
@@ -31,7 +32,8 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
   const interactive = mode === "edit", slide = getSlide(draft, activeSlideId);
   const root = useRef<HTMLDivElement>(null);
   const sceneId = useId();
-  const [markup, setMarkup] = useState("");
+  const [rendered, setRendered] = useState<{ markup: string; components: ScenePage["components"] }>({ markup: "", components: [] });
+  const { markup } = rendered;
   const [renderError, setRenderError] = useState("");
   const [guides, setGuides] = useState<Guide[]>([]);
   const [editing, setEditing] = useState<{ component: CompositionComponent; value: string }>();
@@ -45,21 +47,23 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     void sceneFonts().then(fonts => {
       const document = toComposition(draft);
       const page = document.slides.find(item => item.id === activeSlideId)!;
-      const next = renderSVG(lowerPage(document, page, fonts), fonts, undefined, sceneId);
-      if (!stale) setMarkup(next);
+      const scene = lowerPage(document, page, fonts);
+      const next = renderSVG(scene, fonts, undefined, sceneId);
+      if (!stale) setRendered({ markup: next, components: scene.components });
     }).catch(error => !stale && setRenderError(error instanceof Error ? error.message : "Scene rendering failed."));
     return () => { stale = true; };
   }, [draft, activeSlideId, sceneId]);
 
-  const box = (component: CompositionComponent) => component.preferredRect;
+  const box = (component: CompositionComponent) => rendered.components.find(item => item.id === component.id)?.box ?? component.preferredRect;
   function changed(component: CompositionComponent, rect: Rect) {
-    const next = slide.grid && "area" in component ? { ...component, area: snapArea(slide.grid, rect), preferredRect: areaRect(slide.grid, snapArea(slide.grid, rect)) } : { ...component, preferredRect: rect };
-    onComponent(next as CompositionComponent, `geometry:${component.id}`);
+    onComponent(transformComponentRect(component, component.preferredRect, rect, slide.grid), `geometry:${component.id}`);
   }
   function start(event: ReactPointerEvent, component: CompositionComponent, corner?: Corner) {
     if (event.button !== 0) return;
     event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect(component.id);
-    gesture.current = { id: component.id, x: event.clientX, y: event.clientY, rect: box(component), corner, duplicate: event.altKey && !corner, scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
+    // Pointer deltas apply to authored geometry. Capturing it here keeps the
+    // derived group offset out of the document and stable throughout the drag.
+    gesture.current = { id: component.id, x: event.clientX, y: event.clientY, rect: component.preferredRect, corner, duplicate: event.altKey && !corner, scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
   }
   function move(event: ReactPointerEvent) {
     const active = gesture.current;
@@ -121,7 +125,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     }
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
-    const r = box(component);
+    const r = component.preferredRect;
     const metrics = slide.grid && gridMetrics(slide.grid);
     const dx = event.key === "ArrowRight" ? metrics ? metrics.columnWidth + metrics.gutter : 10 : event.key === "ArrowLeft" ? metrics ? -metrics.columnWidth - metrics.gutter : -10 : 0;
     const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
@@ -134,7 +138,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     const metrics = slide.grid && gridMetrics(slide.grid);
     const dx = event.key === "ArrowRight" ? metrics ? metrics.columnWidth + metrics.gutter : 10 : event.key === "ArrowLeft" ? metrics ? -metrics.columnWidth - metrics.gutter : -10 : 0;
     const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
-    const next = snapResizeRect(resize(box(component), dx, dy, corner), [], 0, { left: corner.endsWith("w"), right: corner.endsWith("e"), top: corner.startsWith("n"), bottom: corner.startsWith("s") }, slide.canvas, slide.innerPadding).rect;
+    const next = snapResizeRect(resize(component.preferredRect, dx, dy, corner), [], 0, { left: corner.endsWith("w"), right: corner.endsWith("e"), top: corner.startsWith("n"), bottom: corner.startsWith("s") }, slide.canvas, slide.innerPadding).rect;
     changed(component, next); onNotice(`Size ${Math.round(next.width)} by ${Math.round(next.height)}`);
   }
 

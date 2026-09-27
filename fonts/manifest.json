@@ -13,6 +13,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "OS/2"
     },
     {
@@ -26,6 +27,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "OS/2"
     },
     {
@@ -39,6 +41,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "OS/2"
     },
     {
@@ -52,6 +55,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "OS/2"
     },
     {
@@ -65,6 +69,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "OS/2"
     },
     {
@@ -78,6 +83,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "OS/2"
     },
     {
@@ -91,6 +97,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "hhea"
     },
     {
@@ -104,6 +111,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "hhea"
     },
     {
@@ -117,6 +125,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "hhea"
     },
     {
@@ -130,6 +139,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "hhea"
     },
     {
@@ -143,6 +153,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "hhea"
     },
     {
@@ -156,6 +167,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.025,
       "descent": 0.275,
+      "capHeight": 0.698,
       "metricsSource": "hhea"
     },
     {
@@ -169,6 +181,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.293,
+      "capHeight": 0.714,
       "metricsSource": "OS/2"
     },
     {
@@ -182,6 +195,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.293,
+      "capHeight": 0.714,
       "metricsSource": "OS/2"
     },
     {
@@ -195,6 +209,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.293,
+      "capHeight": 0.714,
       "metricsSource": "OS/2"
     },
     {
@@ -208,6 +223,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.293,
+      "capHeight": 0.714,
       "metricsSource": "OS/2"
     },
     {
@@ -221,6 +237,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.293,
+      "capHeight": 0.714,
       "metricsSource": "OS/2"
     },
     {
@@ -234,6 +251,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.293,
+      "capHeight": 0.714,
       "metricsSource": "OS/2"
     },
     {
@@ -247,6 +265,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.0,
       "descent": 0.303,
+      "capHeight": 0.697,
       "metricsSource": "OS/2"
     },
     {
@@ -260,6 +279,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.0,
       "descent": 0.303,
+      "capHeight": 0.697,
       "metricsSource": "OS/2"
     },
     {
@@ -273,6 +293,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.0,
       "descent": 0.303,
+      "capHeight": 0.697,
       "metricsSource": "OS/2"
     },
     {
@@ -286,6 +307,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.0,
       "descent": 0.303,
+      "capHeight": 0.697,
       "metricsSource": "OS/2"
     },
     {
@@ -299,6 +321,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.0,
       "descent": 0.303,
+      "capHeight": 0.697,
       "metricsSource": "OS/2"
     },
     {
@@ -312,6 +335,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.0,
       "descent": 0.303,
+      "capHeight": 0.697,
       "metricsSource": "OS/2"
     },
     {
@@ -325,6 +349,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.069,
       "descent": 0.63,
+      "capHeight": 0.945,
       "metricsSource": "OS/2",
       "fallback": true
     },
@@ -339,6 +364,7 @@
       "unitsPerEm": 1000,
       "ascent": 1.48,
       "descent": 0.57,
+      "capHeight": 0.714,
       "metricsSource": "OS/2",
       "fallback": true
     }

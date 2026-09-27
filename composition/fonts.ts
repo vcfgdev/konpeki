@@ -3,6 +3,7 @@ import { Blob, Face, Font } from "harfbuzzjs";
 export interface FontManifestEntry {
   id: string; family: string; weight: number; style: "normal" | "italic"; file: string;
   sha256: string; bytes: number; unitsPerEm: number; ascent: number; descent: number;
+  capHeight: number;
   metricsSource?: "hhea" | "OS/2"; fallback?: boolean;
 }
 export interface FontManifest { version: number; generator: string; fonts: FontManifestEntry[] }

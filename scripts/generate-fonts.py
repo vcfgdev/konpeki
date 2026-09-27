@@ -53,7 +53,8 @@ for package, family in FAMILIES.items():
             entries.append({"id": target[:-4], "family": family, "weight": weight, "style": style,
                 "file": target, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data),
                 "unitsPerEm": head.unitsPerEm, "ascent": ascent / head.unitsPerEm,
-                "descent": descent / head.unitsPerEm, "metricsSource": metrics_source})
+                "descent": descent / head.unitsPerEm, "capHeight": font["OS/2"].sCapHeight / head.unitsPerEm,
+                "metricsSource": metrics_source})
 
 # Symbols 2 contains pictographs, but not the ordinary U+2192 arrow. Bundle
 # Symbols too; fallback selection checks cmap coverage rather than font names.
@@ -69,6 +70,7 @@ for package, family in (("noto-sans-symbols-2", "Noto Sans Symbols 2"), ("noto-s
     entries.append({"id": target[:-4], "family": family, "weight": 400, "style": "normal", "file": target,
         "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data), "unitsPerEm": head.unitsPerEm,
         "ascent": ascent / head.unitsPerEm, "descent": descent / head.unitsPerEm,
+        "capHeight": font["OS/2"].sCapHeight / head.unitsPerEm,
         "metricsSource": metrics_source, "fallback": True})
 
 manifest = {"version": 1, "generator": "uv run scripts/generate-fonts.py", "fonts": entries}

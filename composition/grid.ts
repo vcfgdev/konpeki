@@ -23,7 +23,9 @@ export const gridPresets = {
 } as const;
 export type GridPreset = keyof typeof gridPresets;
 export type PageGrid = { preset: GridPreset };
-export type GridArea = { column: number; span: number; row: number; rows: number };
+export type GridArea = { column: number | "center"; span: number; row: number | "center"; rows: number };
+export type NumericGridArea = GridArea & { column: number; row: number };
+export type GridGroup = Contract.ManipulationGroup & { area?: GridArea; verticalAlignment?: Contract.Alignment };
 export type GridPlacement = { area: GridArea; layer?: "background" | "overlay"; padding?: number };
 type OnGrid<C> = C extends Contract.CompositionComponent
   ? Omit<C, "preferredRect" | "textStyle" | "customVisual"> & GridPlacement &
@@ -31,9 +33,10 @@ type OnGrid<C> = C extends Contract.CompositionComponent
     (C extends Contract.TextBlockComponent ? { textStyle?: Omit<NonNullable<C["textStyle"]>, "size" | "lineHeight"> & { step?: TypeStep; leading?: number } } : {})
   : never;
 export type GridComponent = OnGrid<Contract.CompositionComponent>;
-export type GridSlide = Omit<Contract.CompositionSlide, "canvas" | "innerPadding" | "components"> & {
+export type GridSlide = Omit<Contract.CompositionSlide, "canvas" | "innerPadding" | "components" | "groups"> & {
   grid: PageGrid;
   components: GridComponent[];
+  groups: GridGroup[];
 };
 export type GridDocument = Omit<Contract.CompositionDocument, "slides"> & { slides: GridSlide[] };
 export type WireDocument = GridDocument;
@@ -43,9 +46,10 @@ export type WireDocument = GridDocument;
 export type ResolvedComponent = Contract.CompositionComponent & Partial<GridPlacement> & {
   textStyle?: Contract.TextBlockComponent["textStyle"] & { step?: TypeStep; leading?: number };
 };
-export type ResolvedSlide = Omit<Contract.CompositionSlide, "components"> & {
+export type ResolvedSlide = Omit<Contract.CompositionSlide, "components" | "groups"> & {
   grid?: PageGrid;
   components: ResolvedComponent[];
+  groups: GridGroup[];
 };
 export type ResolvedDocument = Omit<Contract.CompositionDocument, "slides"> & {
   slides: ResolvedSlide[];
@@ -54,21 +58,40 @@ export type ResolvedDocument = Omit<Contract.CompositionDocument, "slides"> & {
 export function gridMetrics(grid: PageGrid) {
   const p = gridPresets[grid.preset];
   const width = p.width - p.margin * 2;
-  return { ...p, rows: Math.floor((p.height - p.margin * 2) / p.baseline), columnWidth: (width - p.gutter * (p.columns - 1)) / p.columns };
+  const rows = Math.floor((p.height - p.margin * 2) / p.baseline);
+  return { ...p, rows, marginY: (p.height - rows * p.baseline) / 2, columnWidth: (width - p.gutter * (p.columns - 1)) / p.columns };
 }
 export function typeSize(grid: PageGrid, step: TypeStep) {
   return gridPresets[grid.preset].scale[typeSteps.indexOf(step)];
 }
-export function areaRect(grid: PageGrid, area: GridArea): Contract.Rect {
+export function areaIssue(grid: PageGrid, area: GridArea): string | undefined {
   const p = gridMetrics(grid);
+  for (const [position, span, count] of [["column", "span", p.columns], ["row", "rows", p.rows]] as const) {
+    if (area[span] > count || typeof area[position] === "number" && area[position] + area[span] - 1 > count)
+      return "Area exceeds grid; recompose for this destination";
+    if (area[position] === "center" && (count - area[span]) % 2 !== 0) {
+      const nearest = [area[span] - 1, area[span] + 1].filter(value => value >= 1 && value <= count);
+      return `Cannot center ${span} ${area[span]} on ${count} ${position}s; use ${span} ${nearest.join(" or ")}`;
+    }
+  }
+}
+export function resolveArea(grid: PageGrid, area: GridArea): NumericGridArea {
+  const issue = areaIssue(grid, area);
+  if (issue) throw new Error(issue);
+  const p = gridMetrics(grid);
+  return { ...area, column: area.column === "center" ? (p.columns - area.span) / 2 + 1 : area.column,
+    row: area.row === "center" ? (p.rows - area.rows) / 2 + 1 : area.row };
+}
+export function areaRect(grid: PageGrid, area: GridArea): Contract.Rect {
+  const p = gridMetrics(grid), resolved = resolveArea(grid, area);
   return {
-    x: p.margin + (area.column - 1) * (p.columnWidth + p.gutter),
-    y: p.margin + (area.row - 1) * p.baseline,
+    x: p.margin + (resolved.column - 1) * (p.columnWidth + p.gutter),
+    y: p.marginY + (resolved.row - 1) * p.baseline,
     width: area.span * (p.columnWidth + p.gutter) - p.gutter,
     height: area.rows * p.baseline,
   };
 }
-export function snapArea(grid: PageGrid, rect: Contract.Rect): GridArea {
+export function snapArea(grid: PageGrid, rect: Contract.Rect): NumericGridArea {
   const p = gridMetrics(grid);
   const clamp = (n: number, max: number) => Math.max(1, Math.min(max, Math.round(n)));
   const span = clamp((rect.width + p.gutter) / (p.columnWidth + p.gutter), p.columns);
@@ -76,7 +99,7 @@ export function snapArea(grid: PageGrid, rect: Contract.Rect): GridArea {
   return {
     column: clamp((rect.x - p.margin) / (p.columnWidth + p.gutter) + 1, p.columns - span + 1),
     span,
-    row: clamp((rect.y - p.margin) / p.baseline + 1, p.rows - rows + 1),
+    row: clamp((rect.y - p.marginY) / p.baseline + 1, p.rows - rows + 1),
     rows,
   };
 }
@@ -94,7 +117,7 @@ export function resolveComponent(component: GridComponent, grid: PageGrid): Reso
 }
 export function resolveSlide(slide: GridSlide): ResolvedSlide {
   const p = gridMetrics(slide.grid);
-  return { ...slide, canvas: { width: p.width, height: p.height }, innerPadding: { top: p.margin, right: p.margin, bottom: p.margin, left: p.margin }, components: slide.components.map(c => resolveComponent(c, slide.grid)) };
+  return { ...slide, canvas: { width: p.width, height: p.height }, innerPadding: { top: p.marginY, right: p.margin, bottom: p.marginY, left: p.margin }, components: slide.components.map(c => resolveComponent(c, slide.grid)) };
 }
 export function resolveDocument(document: WireDocument): ResolvedDocument {
   return { ...document, slides: document.slides.map(resolveSlide) };

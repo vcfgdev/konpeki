@@ -105,7 +105,9 @@ renders all 11 pages without a browser; chart scale is a review warning.
 The original 3,719-case layout harness was not supplied. The reconstructed
 45-case corpus is regression coverage, not a replacement for that acceptance
 dataset. All 94 native blocks retain their captured Chromium line breaks, and
-79 artwork labels retain their captured baselines within 0.5 px. The 11 scene
+79 artwork labels retain their captured baselines within 0.5 px relative to
+their grid origin. Centering leftover baseline space intentionally moves the
+portrait/link grids down 3 px, explainer 2 px, and gallery 4 px. The 11 scene
 snapshots include every item, target ID, glyph, fit and clip.
 
 The font baseline check independently measures 78 Chromium positions. Nine
@@ -117,8 +119,9 @@ half-leading. Konpeki intentionally retains fractional OpenType metrics. The
 manifest records OS/2 typo metrics when `USE_TYPO_METRICS` is set, otherwise hhea.
 
 `check-scene-writers` compares Chromium SVG rasterization, resvg PNG and Poppler
-PDF rasterization at 2x, with raw and blurred RMSE limits for raster edge
-coverage. It also checks extracted PDF characters per page. These pixel limits
+PDF rasterization for the 11 example pages plus the GitHub cover at 2x, with raw
+and blurred RMSE limits for raster edge coverage. It also checks extracted PDF
+characters per page. These pixel limits
 are regression alarms, not proof that only antialiasing can differ; inspect the
 pairs when a writer changes. `--keep` retains the comparison output.
 

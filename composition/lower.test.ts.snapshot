@@ -1,6 +1,6 @@
 exports[`architecture/architecture: deterministic scene snapshot 1`] = `
 {
-  "digest": "5036f2663cf5b778f95fb2dea300903a2a00c8138881726b8a54ce239d172e6c",
+  "digest": "eb623397d259eacc274ce20070d7840c8bd7604543b541d0bcd4519abd87a390",
   "size": [
     1600,
     1000
@@ -10,7 +10,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "componentId": "headline",
       "box": {
         "x": 64,
-        "y": 84,
+        "y": 88,
         "width": 1472,
         "height": 52
       },
@@ -27,7 +27,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "componentId": "context",
       "box": {
         "x": 64,
-        "y": 136,
+        "y": 140,
         "width": 1472,
         "height": 48
       },
@@ -45,7 +45,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-2",
       "box": {
         "x": 504.4727272727273,
-        "y": 241.14545454545453,
+        "y": 245.14545454545453,
         "width": 410.424,
         "height": 32
       },
@@ -63,7 +63,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-4",
       "box": {
         "x": 116.65454545454548,
-        "y": 409.4636363636364,
+        "y": 413.4636363636364,
         "width": 132.97199999999998,
         "height": 36
       },
@@ -81,7 +81,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-5",
       "box": {
         "x": 116.65454545454548,
-        "y": 455.77272727272725,
+        "y": 459.77272727272725,
         "width": 194.17999999999998,
         "height": 24
       },
@@ -99,7 +99,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-6",
       "box": {
         "x": 116.65454545454548,
-        "y": 485.22727272727275,
+        "y": 489.22727272727275,
         "width": 172.34000000000003,
         "height": 24
       },
@@ -117,7 +117,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-8",
       "box": {
         "x": 548.6545454545455,
-        "y": 409.4636363636364,
+        "y": 413.4636363636364,
         "width": 173.87999999999997,
         "height": 36
       },
@@ -135,7 +135,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-9",
       "box": {
         "x": 548.6545454545455,
-        "y": 455.77272727272725,
+        "y": 459.77272727272725,
         "width": 182.64,
         "height": 24
       },
@@ -153,7 +153,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-10",
       "box": {
         "x": 548.6545454545455,
-        "y": 485.22727272727275,
+        "y": 489.22727272727275,
         "width": 186.80000000000004,
         "height": 24
       },
@@ -171,7 +171,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-12",
       "box": {
         "x": 1118.1090909090908,
-        "y": 311.28181818181815,
+        "y": 315.28181818181815,
         "width": 163.212,
         "height": 36
       },
@@ -189,7 +189,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-13",
       "box": {
         "x": 1118.1090909090908,
-        "y": 357.5909090909091,
+        "y": 361.5909090909091,
         "width": 151.67999999999998,
         "height": 24
       },
@@ -207,7 +207,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-14",
       "box": {
         "x": 1118.1090909090908,
-        "y": 387.0454545454545,
+        "y": 391.0454545454545,
         "width": 207.82,
         "height": 24
       },
@@ -225,7 +225,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-16",
       "box": {
         "x": 1118.1090909090908,
-        "y": 527.2818181818182,
+        "y": 531.2818181818182,
         "width": 171.64000000000001,
         "height": 36
       },
@@ -243,7 +243,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-17",
       "box": {
         "x": 1118.1090909090908,
-        "y": 573.590909090909,
+        "y": 577.590909090909,
         "width": 191.32,
         "height": 24
       },
@@ -261,7 +261,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-18",
       "box": {
         "x": 1118.1090909090908,
-        "y": 603.0454545454545,
+        "y": 607.0454545454545,
         "width": 175.41999999999996,
         "height": 24
       },
@@ -279,7 +279,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-20",
       "box": {
         "x": 548.6545454545455,
-        "y": 713.8272727272728,
+        "y": 717.8272727272728,
         "width": 141.288,
         "height": 36
       },
@@ -297,7 +297,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-21",
       "box": {
         "x": 548.6545454545455,
-        "y": 760.1363636363636,
+        "y": 764.1363636363636,
         "width": 151.94,
         "height": 24
       },
@@ -315,7 +315,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-22",
       "box": {
         "x": 548.6545454545455,
-        "y": 789.5909090909091,
+        "y": 793.5909090909091,
         "width": 190.95999999999998,
         "height": 24
       },
@@ -333,7 +333,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-25",
       "box": {
         "x": 405.3090909090909,
-        "y": 404.71818181818185,
+        "y": 408.71818181818185,
         "width": 62.2,
         "height": 24
       },
@@ -351,7 +351,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-28",
       "box": {
         "x": 952.1818181818182,
-        "y": 327.1545454545454,
+        "y": 331.1545454545454,
         "width": 71.8,
         "height": 24
       },
@@ -369,7 +369,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-31",
       "box": {
         "x": 1278.1454545454544,
-        "y": 463.6272727272727,
+        "y": 467.6272727272727,
         "width": 116.72,
         "height": 24
       },
@@ -387,7 +387,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-34",
       "box": {
         "x": 877.5636363636364,
-        "y": 784.6818181818181,
+        "y": 788.6818181818181,
         "width": 114.60000000000002,
         "height": 24
       },
@@ -405,7 +405,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-35",
       "box": {
         "x": 93.09090909090912,
-        "y": 636.8181818181818,
+        "y": 640.8181818181818,
         "width": 259.77599999999995,
         "height": 32
       },
@@ -423,7 +423,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-36",
       "box": {
         "x": 93.09090909090912,
-        "y": 681.590909090909,
+        "y": 685.590909090909,
         "width": 263.08,
         "height": 24
       },
@@ -441,7 +441,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "elementId": "v-37",
       "box": {
         "x": 93.09090909090912,
-        "y": 713.0090909090909,
+        "y": 717.0090909090909,
         "width": 246.99999999999997,
         "height": 24
       },
@@ -458,7 +458,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
       "componentId": "caveat",
       "box": {
         "x": 64,
-        "y": 880,
+        "y": 884,
         "width": 1472,
         "height": 48
       },
@@ -483,7 +483,7 @@ exports[`architecture/architecture: deterministic scene snapshot 1`] = `
 
 exports[`explainer/explainer: deterministic scene snapshot 1`] = `
 {
-  "digest": "103cf9deb158db8be980ffa6fdbfc05eff55eae06cd361b9b77371ee1b56e80b",
+  "digest": "52ca9c0a8eb2495f9f30fc106eeb6eac709d342f4702cc25e60987b03323c23e",
   "size": [
     1200,
     1600
@@ -493,7 +493,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "headline",
       "box": {
         "x": 60,
-        "y": 116,
+        "y": 118,
         "width": 1080,
         "height": 136
       },
@@ -516,7 +516,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "setup",
       "box": {
         "x": 60,
-        "y": 276,
+        "y": 278,
         "width": 1080,
         "height": 96
       },
@@ -539,7 +539,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "mechanism-title",
       "box": {
         "x": 60,
-        "y": 408,
+        "y": 410,
         "width": 1080,
         "height": 48
       },
@@ -556,7 +556,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "mechanism",
       "box": {
         "x": 60,
-        "y": 468,
+        "y": 470,
         "width": 1080,
         "height": 132
       },
@@ -586,7 +586,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "person-0",
       "box": {
         "x": 93.71945701357461,
-        "y": 670.7398190045249,
+        "y": 672.7398190045249,
         "width": 216.97199999999998,
         "height": 40
       },
@@ -604,7 +604,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "title-0",
       "box": {
         "x": 93.71945701357461,
-        "y": 721.9705882352941,
+        "y": 723.9705882352941,
         "width": 236.57200000000003,
         "height": 40
       },
@@ -622,7 +622,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "expects-0",
       "box": {
         "x": 93.71945701357461,
-        "y": 776.6923076923076,
+        "y": 778.6923076923076,
         "width": 194.30399999999997,
         "height": 32
       },
@@ -640,7 +640,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "rows-0",
       "box": {
         "x": 696.4343891402714,
-        "y": 670.7398190045249,
+        "y": 672.7398190045249,
         "width": 189.78400000000005,
         "height": 40
       },
@@ -658,7 +658,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "stored-title-0",
       "box": {
         "x": 696.4343891402714,
-        "y": 721.9705882352941,
+        "y": 723.9705882352941,
         "width": 236.57200000000003,
         "height": 40
       },
@@ -676,7 +676,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "stored-revision-0",
       "box": {
         "x": 696.4343891402714,
-        "y": 776.6923076923076,
+        "y": 778.6923076923076,
         "width": 208.368,
         "height": 32
       },
@@ -694,7 +694,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "person-1",
       "box": {
         "x": 93.71945701357461,
-        "y": 895.7533936651583,
+        "y": 897.7533936651583,
         "width": 215.46000000000004,
         "height": 40
       },
@@ -712,7 +712,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "title-1",
       "box": {
         "x": 93.71945701357461,
-        "y": 946.9841628959276,
+        "y": 948.9841628959276,
         "width": 203.30800000000002,
         "height": 40
       },
@@ -730,7 +730,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "expects-1",
       "box": {
         "x": 93.71945701357461,
-        "y": 1001.7058823529412,
+        "y": 1003.7058823529412,
         "width": 194.30399999999997,
         "height": 32
       },
@@ -748,7 +748,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "rows-1",
       "box": {
         "x": 696.4343891402714,
-        "y": 895.7533936651583,
+        "y": 897.7533936651583,
         "width": 345.0160000000001,
         "height": 40
       },
@@ -766,7 +766,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "stored-title-1",
       "box": {
         "x": 696.4343891402714,
-        "y": 946.9841628959276,
+        "y": 948.9841628959276,
         "width": 236.57200000000003,
         "height": 40
       },
@@ -784,7 +784,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "elementId": "stored-revision-1",
       "box": {
         "x": 696.4343891402714,
-        "y": 1001.7058823529412,
+        "y": 1003.7058823529412,
         "width": 293.616,
         "height": 32
       },
@@ -801,7 +801,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "recovery-title",
       "box": {
         "x": 60,
-        "y": 1128,
+        "y": 1130,
         "width": 1080,
         "height": 60
       },
@@ -818,7 +818,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "recovery",
       "box": {
         "x": 60,
-        "y": 1200,
+        "y": 1202,
         "width": 1080,
         "height": 132
       },
@@ -847,7 +847,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
       "componentId": "limits",
       "box": {
         "x": 60,
-        "y": 1392,
+        "y": 1394,
         "width": 1080,
         "height": 144
       },
@@ -884,7 +884,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
 
 exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
 {
-  "digest": "7bddd7fee1425acdc0597795174cd66da3df215a3f4c8daa475bb2beb3aaf6f3",
+  "digest": "893e47a66d3d13d5fe95403b08de9e470b4f827060c5e690e469e72c0096de25",
   "size": [
     1920,
     1080
@@ -1270,7 +1270,7 @@ exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
 
 exports[`intro/browser-or-agent: deterministic scene snapshot 1`] = `
 {
-  "digest": "290f8aaee4063a0c339902028003072179dd23838f65e59210545c750b39230a",
+  "digest": "e7d3d9ae5fad3bd1d709cfd585d740313113b96c8afcda6748dd63d9103a84b4",
   "size": [
     1920,
     1080
@@ -1576,7 +1576,7 @@ exports[`intro/browser-or-agent: deterministic scene snapshot 1`] = `
 
 exports[`intro/components: deterministic scene snapshot 1`] = `
 {
-  "digest": "048919b6cba1111597bbf918a994bcf8ab34df8ed70027a63a3de482cb9b3004",
+  "digest": "f540d6e7c710a5de1d07e14d3cbff8511136a1d2474d3eb878ed606d9cf62a24",
   "size": [
     1920,
     1080
@@ -1874,7 +1874,7 @@ exports[`intro/components: deterministic scene snapshot 1`] = `
 
 exports[`intro/cover: deterministic scene snapshot 1`] = `
 {
-  "digest": "741b1a1d2a812be3979d8aec8856161f6cf7351e83cd366ca0df99383bad2c42",
+  "digest": "85bf39fd0e5e205e4dc2033efd9766ea94ee097bf0fbd7e7984fa557e002f1ea",
   "size": [
     1920,
     1080
@@ -2027,7 +2027,7 @@ exports[`intro/cover: deterministic scene snapshot 1`] = `
 
 exports[`intro/notes: deterministic scene snapshot 1`] = `
 {
-  "digest": "ac6be16f28d553d819c15a3bf13935fa66777156f36cdd540d8f7720c7ba0523",
+  "digest": "1acaf235dc497cd457822cadf931b1aa12263f9a18b6258a4be60a4afaf91ab5",
   "size": [
     1920,
     1080
@@ -2467,7 +2467,7 @@ exports[`intro/notes: deterministic scene snapshot 1`] = `
 
 exports[`intro/shared-file: deterministic scene snapshot 1`] = `
 {
-  "digest": "4c03914ad1f010807d3dfc7cfc65e0e275956eca0c10d409a5860c20b3383f83",
+  "digest": "de66c57467b300ad5a645f09204500169b8fb6fa5a727accbddf164167f584ba",
   "size": [
     1920,
     1080
@@ -2792,7 +2792,7 @@ exports[`intro/shared-file: deterministic scene snapshot 1`] = `
 
 exports[`intro/start: deterministic scene snapshot 1`] = `
 {
-  "digest": "17848e67a861716b9fce09d928c7fe603e29739df606c3ff8d8e5694db690ac0",
+  "digest": "227de3e72658f58fffc906033b0f71d43218e7204b0016ab4385c7066184f159",
   "size": [
     1920,
     1080
@@ -3048,7 +3048,7 @@ exports[`intro/start: deterministic scene snapshot 1`] = `
 
 exports[`release/release: deterministic scene snapshot 1`] = `
 {
-  "digest": "29e8c49af7f94c493c554a4b3bd5e41c48ced9abcadbb9ad80b01826d2f8b2fd",
+  "digest": "52c749340dae81254ba6cca4763399907f4ad6177d186d2c3876e9f6f3e745c5",
   "size": [
     1080,
     1350
@@ -3058,7 +3058,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "headline",
       "box": {
         "x": 60,
-        "y": 300,
+        "y": 303,
         "width": 960,
         "height": 168
       },
@@ -3081,7 +3081,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "product",
       "box": {
         "x": 60,
-        "y": 84,
+        "y": 87,
         "width": 960,
         "height": 60
       },
@@ -3098,7 +3098,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "support",
       "box": {
         "x": 60,
-        "y": 492,
+        "y": 495,
         "width": 960,
         "height": 132
       },
@@ -3121,7 +3121,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "step-1",
       "box": {
         "x": 60,
-        "y": 1068,
+        "y": 1071,
         "width": 304,
         "height": 108
       },
@@ -3144,7 +3144,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "step-2",
       "box": {
         "x": 388,
-        "y": 1068,
+        "y": 1071,
         "width": 304,
         "height": 108
       },
@@ -3167,7 +3167,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "step-3",
       "box": {
         "x": 716,
-        "y": 1068,
+        "y": 1071,
         "width": 304,
         "height": 108
       },
@@ -3190,7 +3190,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
       "componentId": "caveat",
       "box": {
         "x": 60,
-        "y": 1248,
+        "y": 1251,
         "width": 960,
         "height": 36
       },
@@ -3209,7 +3209,7 @@ exports[`release/release: deterministic scene snapshot 1`] = `
 
 exports[`sankey/sankey: deterministic scene snapshot 1`] = `
 {
-  "digest": "7e52cb9374dc8f00b910ca345c2c57138c66c04e7a79883c1919046dc1db324b",
+  "digest": "bf8c02ec125eb492151291e79226c6b908ec489b24bd736163edc776d6e5a0cb",
   "size": [
     1600,
     1000
@@ -3219,7 +3219,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "componentId": "title",
       "box": {
         "x": 64,
-        "y": 108,
+        "y": 112,
         "width": 1472,
         "height": 52
       },
@@ -3236,7 +3236,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "componentId": "subtitle",
       "box": {
         "x": 64,
-        "y": 160,
+        "y": 164,
         "width": 1472,
         "height": 48
       },
@@ -3254,7 +3254,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "flow-value-0",
       "box": {
         "x": 477.33150684931513,
-        "y": 446.3424657534247,
+        "y": 450.3424657534247,
         "width": 43.2,
         "height": 32
       },
@@ -3272,7 +3272,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "flow-value-1",
       "box": {
         "x": 477.33150684931513,
-        "y": 645.2465753424658,
+        "y": 649.2465753424658,
         "width": 43.2,
         "height": 32
       },
@@ -3290,7 +3290,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "flow-value-2",
       "box": {
         "x": 979.1123287671234,
-        "y": 374.013698630137,
+        "y": 378.013698630137,
         "width": 43.2,
         "height": 32
       },
@@ -3308,7 +3308,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "flow-value-3",
       "box": {
         "x": 979.1123287671234,
-        "y": 518.6712328767123,
+        "y": 522.6712328767123,
         "width": 43.2,
         "height": 32
       },
@@ -3326,7 +3326,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "flow-value-4",
       "box": {
         "x": 979.1123287671234,
-        "y": 663.3287671232877,
+        "y": 667.3287671232877,
         "width": 43.2,
         "height": 32
       },
@@ -3344,7 +3344,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "node-label-trial",
       "box": {
         "x": 239.45205479452062,
-        "y": 314.3424657534247,
+        "y": 318.3424657534247,
         "width": 123.55200000000002,
         "height": 32
       },
@@ -3362,7 +3362,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "node-label-active",
       "box": {
         "x": 654.6803287671233,
-        "y": 278.17808219178085,
+        "y": 282.17808219178085,
         "width": 164.06400000000002,
         "height": 32
       },
@@ -3380,7 +3380,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "node-label-inactive",
       "box": {
         "x": 633.7163287671234,
-        "y": 572.9178082191781,
+        "y": 576.9178082191781,
         "width": 205.992,
         "height": 32
       },
@@ -3398,7 +3398,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "node-label-paid",
       "box": {
         "x": 1188.317698630137,
-        "y": 278.17808219178085,
+        "y": 282.17808219178085,
         "width": 109.39200000000002,
         "height": 32
       },
@@ -3416,7 +3416,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "node-label-free",
       "box": {
         "x": 1187.849698630137,
-        "y": 464.42465753424653,
+        "y": 468.42465753424653,
         "width": 110.32800000000002,
         "height": 32
       },
@@ -3434,7 +3434,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "node-label-lost",
       "box": {
         "x": 1191.257698630137,
-        "y": 609.0821917808219,
+        "y": 613.0821917808219,
         "width": 103.51200000000001,
         "height": 32
       },
@@ -3452,7 +3452,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "stage-1",
       "box": {
         "x": 239.45205479452062,
-        "y": 241.1849315068493,
+        "y": 245.1849315068493,
         "width": 127.48,
         "height": 24
       },
@@ -3470,7 +3470,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "stage-2",
       "box": {
         "x": 679.3523287671234,
-        "y": 241.1849315068493,
+        "y": 245.1849315068493,
         "width": 114.71999999999998,
         "height": 24
       },
@@ -3488,7 +3488,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "stage-3",
       "box": {
         "x": 1205.564794520548,
-        "y": 241.1849315068493,
+        "y": 245.1849315068493,
         "width": 92.97999999999999,
         "height": 24
       },
@@ -3506,7 +3506,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "elementId": "scale-note",
       "box": {
         "x": 239.45205479452062,
-        "y": 791.7123287671233,
+        "y": 795.7123287671233,
         "width": 851.1839999999999,
         "height": 32
       },
@@ -3523,7 +3523,7 @@ exports[`sankey/sankey: deterministic scene snapshot 1`] = `
       "componentId": "illustrative",
       "box": {
         "x": 64,
-        "y": 892,
+        "y": 896,
         "width": 1472,
         "height": 36
       },

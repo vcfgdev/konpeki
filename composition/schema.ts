@@ -162,6 +162,7 @@ const visualBase = {
   }),
   description: { ...text, maxLength: 1000 },
   fit: enumeration(["contain", "cover", "stretch"]),
+  alignment: enumeration(alignment),
 };
 const customVisual = {
   oneOf: [

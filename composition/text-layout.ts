@@ -13,7 +13,7 @@ export interface GlyphRecord {
 }
 export interface TextLine { text: string; start: number; end: number; x: number; top: number; baseline: number; width: number; glyphs: GlyphRecord[] }
 export interface MissingGlyphDiagnostic { start: number; end: number; text: string; codePoints: number[] }
-export interface TextLayout { width: number; height: number; ascent: number; descent: number; lines: TextLine[]; missingGlyphs: MissingGlyphDiagnostic[] }
+export interface TextLayout { width: number; height: number; ascent: number; descent: number; capHeight: number; lines: TextLine[]; missingGlyphs: MissingGlyphDiagnostic[] }
 
 const graphemes = new Intl.Segmenter("und", { granularity: "grapheme" });
 // Blink compares inline widths on a 1/64 CSS-pixel layout-unit grid. HarfBuzz
@@ -108,5 +108,5 @@ export function layoutText(context: FontContext, options: TextLayoutOptions): Te
     return { text: text.slice(start, end), start, end, x, top: index * lineHeight, baseline, width: shaped.width,
       glyphs: shaped.glyphs.map(glyph => ({ ...glyph, x: glyph.x + x, y: glyph.y + baseline })) };
   });
-  return { width, height: lines.length * lineHeight, ascent: primary.ascent, descent: primary.descent, lines, missingGlyphs };
+  return { width, height: lines.length * lineHeight, ascent: primary.ascent, descent: primary.descent, capHeight: primary.capHeight, lines, missingGlyphs };
 }
