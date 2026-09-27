@@ -55,6 +55,14 @@ Selection, editing overlays and pins use the translated scene geometry; saved
 member areas never contain the derived offset. The GitHub cover demonstrates a
 centered `brand-stack` group on the link preset.
 
+During pointer drags, resizes and held arrow-key edits, the editor freezes the
+group's offset and outlines its target area. It recomputes alignment on release
+or interruption, so edge members track the gesture instead of moving at half
+speed. The override is transient; saved documents and exports use settled
+alignment. Ink-based offsets may be fractional, so aligned members need not sit
+on baseline rows. Use group alignment deliberately where centering matters more
+than matching neighbouring rows.
+
 Page numbers are opt-in: omitting `pageNumber` or choosing `style: "none"` hides
 them. Set `style: "01"` or `"01/02"` to show them. This differs from the old
 canvas's implicit `"01"` default.

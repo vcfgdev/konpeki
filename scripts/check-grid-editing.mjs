@@ -35,11 +35,14 @@ function importDocument(document) {
   settle();
 }
 
-function drag(selector, dx, dy) {
+function drag(selector, dx, dy, during = () => {}) {
   const point = evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}),r=target.getBoundingClientRect(),c=document.querySelector('.scene-canvas').getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2,scale:c.width/document.querySelector('.scene-artwork svg').viewBox.baseVal.width}; })()`);
   b("mouse", "move", String(Math.round(point.x)), String(Math.round(point.y))); b("mouse", "down", "left");
-  b("mouse", "move", String(Math.round(point.x + dx * point.scale / 2)), String(Math.round(point.y + dy * point.scale / 2)));
-  b("mouse", "move", String(Math.round(point.x + dx * point.scale)), String(Math.round(point.y + dy * point.scale))); b("mouse", "up", "left");
+  for (const fraction of [.5, 1]) {
+    b("mouse", "move", String(Math.round(point.x + dx * point.scale * fraction)), String(Math.round(point.y + dy * point.scale * fraction)));
+    settle(); during(fraction);
+  }
+  b("mouse", "up", "left");
   settle();
 }
 
@@ -155,6 +158,75 @@ try {
     }
   };
   assertGroupHits(cover);
+  const positions = () => evaluate(`Object.fromEntries(['brand-mark','brand','promise','audience','visual-family'].map(id => {
+    const hit = document.querySelector('.component-hit[data-component="'+id+'"]');
+    const item = document.querySelector('.scene-artwork [data-component="'+id+'"]');
+    const line = item.querySelector('[data-baseline]');
+    return [id, { box: parseFloat(hit.style.top) * 630 / 100,
+      artwork: line ? +line.dataset.baseline : item.querySelector('path,rect').transform.baseVal.consolidate().matrix.f }];
+  }))`);
+  const beforeGesture = positions();
+  const assertMovement = (changes, message) => {
+    const current = positions();
+    for (const id of Object.keys(beforeGesture)) for (const field of ["box", "artwork"])
+      assert.ok(Math.abs(current[id][field] - beforeGesture[id][field] - (changes[id] ?? 0)) < .001,
+        `${message}: ${id}/${field} moved ${current[id][field] - beforeGesture[id][field]}px, expected ${changes[id] ?? 0}px`);
+  };
+  const audienceHit = ".component-hit[data-component=audience]";
+  drag(audienceHit, 0, 48, fraction => {
+    assertMovement({ audience: 48 * fraction }, "edge member tracks pointer; siblings stay still until drop");
+    assert.equal(evaluate("document.querySelectorAll('.group-area-outline').length"), 1);
+    if (fraction === 1) capture("group-offset-held");
+  });
+  assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 53);
+  assertMovement({ audience: 24, "brand-mark": -24, brand: -24, promise: -24 }, "group settles once on drop");
+  assert.equal(evaluate("document.querySelector('.group-area-outline') === null"), true);
+  assertGroupHits(stored()); capture("group-offset-settled");
+  b("press", "Control+z"); settle(); assertMovement({}, "one undo restores the whole gesture");
+
+  b("focus", audienceHit);
+  for (const distance of [8, 16]) {
+    b("keydown", "ArrowDown"); settle();
+    assertMovement({ audience: distance }, "held key repeats use the original group offset");
+  }
+  b("keyup", "ArrowDown"); settle();
+  assertMovement({ audience: 8, "brand-mark": -8, brand: -8, promise: -8 }, "key release settles the group");
+  assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 49);
+  b("press", "Control+z"); settle(); assertMovement({}, "held keys form one undo step");
+  b("keydown", "ArrowUp"); settle(); assertMovement({ audience: -8 }, "upward nudge stays held");
+  b("focus", ".document-title input"); b("keyup", "ArrowUp"); settle();
+  assertMovement({ audience: -4, "brand-mark": 4, brand: 4, promise: 4 }, "blur releases held keys");
+  b("focus", audienceHit); b("press", "Control+z"); settle(); assertMovement({}, "blur preserves undo");
+
+  for (const cancel of ["pointercancel", "lostpointercapture"]) {
+    b("eval", "document.addEventListener('pointerdown', event => { window.testPointerId = event.pointerId; }, {once:true, capture:true})");
+    drag(audienceHit, 0, 48, fraction => {
+      if (fraction === .5) {
+        assertMovement({ audience: 24 }, "first move precedes cancellation");
+        b("eval", cancel === "pointercancel"
+          ? `document.querySelector('${audienceHit}').dispatchEvent(new PointerEvent('pointercancel', {bubbles:true, pointerId:window.testPointerId}))`
+          : `document.querySelector('${audienceHit}').releasePointerCapture(window.testPointerId)`);
+        // Native capture release is processed before the next pointer event.
+        if (cancel === "lostpointercapture") return;
+        settle();
+      }
+      assertMovement({ audience: 12, "brand-mark": -12, brand: -12, promise: -12 }, `${cancel} releases the offset and stops further moves`);
+      assert.equal(evaluate("document.querySelector('.group-area-outline') === null"), true);
+    });
+    assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 50);
+    b("press", "Control+z"); settle(); assertMovement({}, `${cancel} preserves undo`);
+  }
+
+  b("click", ".component-hit[data-component=brand-mark]");
+  drag(".resize-se", 0, 16, () => assertMovement({}, "resize keeps all origins fixed until drop"));
+  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").area.rows, 10);
+  assertGroupHits(stored());
+  b("press", "Control+z"); settle(); assertMovement({}, "resize undo restores the stack");
+  b("focus", ".resize-se"); b("keydown", "ArrowDown"); settle();
+  assertMovement({}, "keyboard resize also holds the offset");
+  b("keyup", "ArrowDown"); assertGroupHits(stored());
+  b("press", "Control+z"); settle(); assertMovement({}, "keyboard resize undo restores the stack");
+
   const brandHit = ".component-hit[data-component=brand]";
   b("focus", brandHit); b("press", "ArrowDown");
   assert.equal(stored().slides[0].components.find(item => item.id === "brand").area.row, 24, "group nudge changes authored row by exactly one");
@@ -188,7 +260,7 @@ try {
   const legacy = initialDraft(true);
   assert.equal(parseCompositionJSON(JSON.stringify(legacy)).ok, false, "v1 documents are rejected rather than edited");
   assert.equal(parseCompositionJSON(JSON.stringify({ ...document, schema: "v2" })).ok, false, "schema aliases are rejected");
-  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, temporary and vector text editing, fitted scaled line handles, theme rendering, exact 2x PNG, centered placement/parity, aligned group hits and drag offsets, artwork alignment/undo, and v2-only validation");
+  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, temporary and vector text editing, fitted scaled line handles, theme rendering, exact 2x PNG, centered placement/parity, held group offsets through drag/resize/key repeats, release/cancel/blur, artwork alignment/undo, and v2-only validation");
 } finally {
   try { b("close"); } finally { rmSync(scratch, { recursive: true, force: true }); }
 }

@@ -7,7 +7,7 @@ import { lowerPage } from "./lower.ts";
 import { renderSVG } from "./svg.ts";
 import { assertComposition } from "./validate.ts";
 import { addComponent, initialGridDraft } from "./document.ts";
-import { toComposition } from "./grid.ts";
+import { areaRect, toComposition } from "./grid.ts";
 import { itemBounds, textInkBounds, type SceneShape } from "./scene.ts";
 import { checkPage } from "./check.ts";
 
@@ -258,4 +258,33 @@ test("cover stack stays left-aligned and vertically centered when the audience g
     assert.ok(Math.abs((Math.min(...bounds.map(b => b.y)) + Math.max(...bounds.map(b => b.y + b.height))) / 2 - 315) < 1e-9);
     assert.deepEqual(checkPage(scene, fonts), []);
   }
+});
+
+test("held group offsets move shapes, text, clips and hit boxes together without changing the document", () => {
+  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const page = document.slides[0], before = lowerPage(document, page, fonts);
+  const offsets = new Map([["brand-stack", before.components[0].box.y - areaRect(page.grid, page.components[0].area).y]]);
+  for (const [id, delta] of [["brand-mark", -24], ["audience", 48]] as const) {
+    const edited = structuredClone(document), next = edited.slides[0], member = next.components.find(item => item.id === id)!;
+    assert.ok(typeof member.area.row === "number"); member.area.row += delta / 8;
+    const source = structuredClone(edited), held = lowerPage(edited, next, fonts, offsets);
+    assert.deepEqual(edited, source);
+    for (const [index, item] of held.items.entries()) {
+      const original = before.items[index], shift = item.componentId === id ? delta : 0;
+      assert.ok(item.clip && original.clip);
+      assert.equal(item.clip.y, original.clip.y + shift, `${id}: clip tracks artwork`);
+      if (item.kind === "text" && original.kind === "text") assert.equal(item.box.y, original.box.y + shift);
+      else if (item.kind === "shape" && original.kind === "shape") assert.equal(item.transform[5], original.transform[5] + shift);
+    }
+    held.components.forEach((item, i) => assert.equal(item.box.y, before.components[i].box.y + (item.id === id ? delta : 0)));
+    const settled = lowerPage(edited, next, fonts);
+    settled.components.forEach((item, i) => {
+      const shift = item.id === "visual-family" ? 0 : (item.id === id ? delta : 0) - delta / 2;
+      assert.ok(Math.abs(item.box.y - before.components[i].box.y - shift) < 1e-9);
+    });
+  }
+  const zero = lowerPage(document, page, fonts, new Map([["brand-stack", 0]]));
+  const ungrouped = lowerPage(document, { ...page, groups: [] }, fonts);
+  assert.deepEqual(zero.items, ungrouped.items, "zero is a valid held offset, not a request to recenter");
+  assert.deepEqual(zero.components, ungrouped.components);
 });

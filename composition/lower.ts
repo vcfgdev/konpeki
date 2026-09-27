@@ -11,8 +11,9 @@ const identity: SceneShape["transform"] = [1, 0, 0, 1, 0, 0];
 const familyName = (value: string) => value.split(",")[0].replaceAll('"', "").trim();
 const inheritKeys = new Set(["fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-dasharray", "fill-opacity", "stroke-opacity", "font-family", "font-size", "font-weight", "font-style", "text-anchor", "color"]);
 
-/** Shared page-pixel layout. No DOM, viewport, filesystem, or renderer measurement. */
-export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontContext): ScenePage {
+/** Shared page-pixel layout. No DOM, viewport, filesystem, or renderer measurement.
+ * The editor may hold group offsets during a gesture; these never enter the IR. */
+export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontContext, groupOffsets?: ReadonlyMap<string, number>): ScenePage {
   const grid = gridMetrics(page.grid);
   const palette = composerPalette(document.theme?.id ?? "plex", document.theme?.mode ?? "paper");
   const theme = getTheme(themeLabel(document.theme?.id ?? "plex"), document.theme?.mode ?? "paper", document.theme?.typography);
@@ -131,8 +132,8 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
     if (!bounds.length) continue;
     const top = Math.min(...bounds.map(box => box.y)), bottom = Math.max(...bounds.map(box => box.y + box.height));
     const area = areaRect(page.grid, group.area);
-    const offset = group.verticalAlignment === "center" ? area.y + (area.height - top - bottom) / 2
-      : group.verticalAlignment === "end" ? area.y + area.height - bottom : area.y - top;
+    const offset = groupOffsets?.get(group.id) ?? (group.verticalAlignment === "center" ? area.y + (area.height - top - bottom) / 2
+      : group.verticalAlignment === "end" ? area.y + area.height - bottom : area.y - top);
     const translate = (box: Rect): Rect => ({ ...box, y: box.y + offset });
     const left = Math.min(...bounds.map(box => box.x)), right = Math.max(...bounds.map(box => box.x + box.width));
     (scene.groups ??= []).push({ id: group.id, box: area, bounds: { x: left, y: top + offset, width: right - left, height: bottom - top } });

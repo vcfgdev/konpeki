@@ -36,6 +36,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
   const { markup } = rendered;
   const [renderError, setRenderError] = useState("");
   const [guides, setGuides] = useState<Guide[]>([]);
+  const [heldGroup, setHeldGroup] = useState<{ id: string; offset: number; area: Rect }>();
   const [editing, setEditing] = useState<{ component: CompositionComponent; value: string }>();
   const [renaming, setRenaming] = useState(false), [name, setName] = useState(slide.name);
   const gesture = useRef<{ id: string; x: number; y: number; rect: Rect; scale: number; corner?: Corner; duplicate?: boolean } | undefined>(undefined);
@@ -47,14 +48,25 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     void sceneFonts().then(fonts => {
       const document = toComposition(draft);
       const page = document.slides.find(item => item.id === activeSlideId)!;
-      const scene = lowerPage(document, page, fonts);
+      const scene = lowerPage(document, page, fonts, heldGroup && new Map([[heldGroup.id, heldGroup.offset]]));
       const next = renderSVG(scene, fonts, undefined, sceneId);
       if (!stale) setRendered({ markup: next, components: scene.components });
     }).catch(error => !stale && setRenderError(error instanceof Error ? error.message : "Scene rendering failed."));
     return () => { stale = true; };
-  }, [draft, activeSlideId, sceneId]);
+  }, [draft, activeSlideId, sceneId, heldGroup]);
+
+  useEffect(() => {
+    window.addEventListener("blur", end);
+    return () => window.removeEventListener("blur", end);
+  }, [onEditEnd]);
 
   const box = (component: CompositionComponent) => rendered.components.find(item => item.id === component.id)?.box ?? component.preferredRect;
+  function holdGroup(component: CompositionComponent) {
+    const group = slide.groups.find(group => group.area && group.verticalAlignment && group.childIds.includes(component.id));
+    if (!group || !slide.grid) return;
+    const held = { id: group.id, offset: box(component).y - component.preferredRect.y, area: areaRect(slide.grid, group.area!) };
+    setHeldGroup(current => current ?? held);
+  }
   function changed(component: CompositionComponent, rect: Rect) {
     onComponent(transformComponentRect(component, component.preferredRect, rect, slide.grid), `geometry:${component.id}`);
   }
@@ -64,6 +76,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     // Pointer deltas apply to authored geometry. Capturing it here keeps the
     // derived group offset out of the document and stable throughout the drag.
     gesture.current = { id: component.id, x: event.clientX, y: event.clientY, rect: component.preferredRect, corner, duplicate: event.altKey && !corner, scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
+    if (!gesture.current.duplicate) holdGroup(component);
   }
   function move(event: ReactPointerEvent) {
     const active = gesture.current;
@@ -80,7 +93,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     if (active.duplicate) { active.duplicate = false; component = onDuplicate?.(component.id, result.rect); if (!component) gesture.current = undefined; else active.id = component.id; return; }
     changed(component, result.rect);
   }
-  function end() { if (!gesture.current) return; gesture.current = undefined; setGuides([]); onEditEnd(); }
+  function end() { gesture.current = undefined; lineGesture.current = undefined; setHeldGroup(undefined); setGuides([]); onEditEnd(); }
   function commitEdit() {
     if (!editing) return;
     const component = editing.component;
@@ -125,6 +138,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
     }
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
+    holdGroup(component);
     const r = component.preferredRect;
     const metrics = slide.grid && gridMetrics(slide.grid);
     const dx = event.key === "ArrowRight" ? metrics ? metrics.columnWidth + metrics.gutter : 10 : event.key === "ArrowLeft" ? metrics ? -metrics.columnWidth - metrics.gutter : -10 : 0;
@@ -135,6 +149,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
   function keyboardResize(event: React.KeyboardEvent, component: CompositionComponent, corner: Corner) {
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault(); event.stopPropagation();
+    holdGroup(component);
     const metrics = slide.grid && gridMetrics(slide.grid);
     const dx = event.key === "ArrowRight" ? metrics ? metrics.columnWidth + metrics.gutter : 10 : event.key === "ArrowLeft" ? metrics ? -metrics.columnWidth - metrics.gutter : -10 : 0;
     const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
@@ -148,14 +163,17 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, vectorSe
         {selectedComponent?.customVisual?.format === "vector" && <button type="button" className="edit-elements-action" aria-pressed={vectorSelection?.componentId === selected} onClick={() => onVectorSelect?.(vectorSelection?.componentId === selected ? undefined : { componentId: selectedComponent.id })}>{vectorSelection?.componentId === selected ? "Done editing" : "Edit elements"}</button>}
       </div>}
       <div ref={root} className={`canvas scene-canvas ${interactive ? "" : "presentation-canvas"}`} style={{ aspectRatio: `${slide.canvas.width}/${slide.canvas.height}` }} aria-label="Page canvas" aria-busy={!markup || undefined}
-        onPointerDown={selectArtwork} onDoubleClick={event => { const target = svgTarget(event); const componentId = target?.dataset.component, elementId = target?.dataset.vectorElement; if (componentId && elementId) { event.stopPropagation(); onSelect(componentId); onVectorSelect?.({ componentId, elementId }, true); } }} onPointerMove={move} onPointerUp={end} onPointerCancel={end}
+        onPointerDown={selectArtwork} onDoubleClick={event => { const target = svgTarget(event); const componentId = target?.dataset.component, elementId = target?.dataset.vectorElement; if (componentId && elementId) { event.stopPropagation(); onSelect(componentId); onVectorSelect?.({ componentId, elementId }, true); } }} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end}
+        onBlur={() => { if (!gesture.current && !lineGesture.current) end(); }}
+        onKeyUp={event => { if (event.key.startsWith("Arrow")) end(); }}
         onDragOver={event => { if (interactive) event.preventDefault(); }} onDrop={event => { if (!interactive) return; event.preventDefault(); const kind = event.dataTransfer.getData("application/konpeki-component") as CompositionComponent["kind"]; const r = event.currentTarget.getBoundingClientRect(); onAdd(kind, { x: (event.clientX-r.left)/r.width*slide.canvas.width, y: (event.clientY-r.top)/r.height*slide.canvas.height }); }}>
         {renderError ? <p className="scene-error" role="alert">{renderError}</p> : <div className="scene-artwork" dangerouslySetInnerHTML={{ __html: markup }} />}
+        {interactive && heldGroup && <div className="group-area-outline" aria-hidden="true" style={{ left: `${heldGroup.area.x/slide.canvas.width*100}%`, top: `${heldGroup.area.y/slide.canvas.height*100}%`, width: `${heldGroup.area.width/slide.canvas.width*100}%`, height: `${heldGroup.area.height/slide.canvas.height*100}%` }} />}
         {interactive && slide.paintOrder.map(id => slide.components.find(component => component.id === id)!).map(component => <button key={component.id} type="button" data-component={component.id} className={`component-hit ${selected === component.id ? "selected" : ""} ${vectorSelection?.componentId === component.id ? "element-editing" : ""}`} style={{ left: `${box(component).x/slide.canvas.width*100}%`, top: `${box(component).y/slide.canvas.height*100}%`, width: `${box(component).width/slide.canvas.width*100}%`, height: `${box(component).height/slide.canvas.height*100}%` }} aria-label={`Select ${componentInstanceLabel(slide.components, component.id)}`} aria-pressed={selected === component.id}
-          onPointerDown={event => start(event, component)} onDoubleClick={event => { event.stopPropagation(); setEditing({ component, value: component.kind === "text-block" ? component.content ?? "" : component.intent ?? "" }); }} onKeyDown={event => nudge(event, component)} onKeyUp={event => { if (event.key.startsWith("Arrow")) onEditEnd(); }} />)}
-        {interactive && selectedComponent && (["nw","ne","sw","se"] as Corner[]).map(corner => <button key={corner} type="button" className={`resize-handle resize-${corner}`} style={{ left: `${(box(selectedComponent).x + (corner.endsWith("e") ? box(selectedComponent).width : 0))/slide.canvas.width*100}%`, top: `${(box(selectedComponent).y + (corner.startsWith("s") ? box(selectedComponent).height : 0))/slide.canvas.height*100}%` }} aria-label={`Resize ${componentInstanceLabel(slide.components, selectedComponent.id)} from ${corner}`} onPointerDown={event => start(event, selectedComponent, corner)} onKeyDown={event => keyboardResize(event, selectedComponent, corner)} onKeyUp={event => { if (event.key.startsWith("Arrow")) onEditEnd(); }} />)}
+          onPointerDown={event => start(event, component)} onDoubleClick={event => { event.stopPropagation(); setEditing({ component, value: component.kind === "text-block" ? component.content ?? "" : component.intent ?? "" }); }} onKeyDown={event => nudge(event, component)} />)}
+        {interactive && selectedComponent && (["nw","ne","sw","se"] as Corner[]).map(corner => <button key={corner} type="button" className={`resize-handle resize-${corner}`} style={{ left: `${(box(selectedComponent).x + (corner.endsWith("e") ? box(selectedComponent).width : 0))/slide.canvas.width*100}%`, top: `${(box(selectedComponent).y + (corner.startsWith("s") ? box(selectedComponent).height : 0))/slide.canvas.height*100}%` }} aria-label={`Resize ${componentInstanceLabel(slide.components, selectedComponent.id)} from ${corner}`} onPointerDown={event => start(event, selectedComponent, corner)} onKeyDown={event => keyboardResize(event, selectedComponent, corner)} />)}
         {editing && <textarea className="scene-text-editor" aria-label={`Edit ${componentInstanceLabel(slide.components, editing.component.id)}`} autoFocus value={editing.value} style={{ left: `${box(editing.component).x/slide.canvas.width*100}%`, top: `${box(editing.component).y/slide.canvas.height*100}%`, width: `${box(editing.component).width/slide.canvas.width*100}%`, height: `${box(editing.component).height/slide.canvas.height*100}%` }} onPointerDown={e => e.stopPropagation()} onChange={e => setEditing({ ...editing, value: e.target.value })} onBlur={commitEdit} onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); setEditing(undefined); } }} />}
-        {interactive && selectedLine && <svg className="line-handles" viewBox={`0 0 ${slide.canvas.width} ${slide.canvas.height}`}>{(["start","end"] as const).map(endpoint => { const point = linePoint(selectedLine, endpoint); return point && <circle key={endpoint} cx={point.x} cy={point.y} r="9" tabIndex={0} aria-label={`${endpoint} endpoint`} onPointerDown={event => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); const rendered = root.current!.querySelector<SVGGraphicsElement>(`[data-component="${CSS.escape(selected!)}"][data-vector-element="${CSS.escape(selectedLine.id)}"] line`)!; lineGesture.current = { pointerId: event.pointerId, endpoint, line: selectedLine, screenInverse: rendered.getScreenCTM()!.inverse() }; }} onPointerMove={moveLine} onPointerUp={() => { lineGesture.current = undefined; onEditEnd(); }} />; })}</svg>}
+        {interactive && selectedComponent && selectedLine && <svg className="line-handles" viewBox={`0 0 ${slide.canvas.width} ${slide.canvas.height}`}>{(["start","end"] as const).map(endpoint => { const point = linePoint(selectedLine, endpoint); return point && <circle key={endpoint} cx={point.x} cy={point.y} r="9" tabIndex={0} aria-label={`${endpoint} endpoint`} onPointerDown={event => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); const rendered = root.current!.querySelector<SVGGraphicsElement>(`[data-component="${CSS.escape(selected!)}"][data-vector-element="${CSS.escape(selectedLine.id)}"] line`)!; lineGesture.current = { pointerId: event.pointerId, endpoint, line: selectedLine, screenInverse: rendered.getScreenCTM()!.inverse() }; holdGroup(selectedComponent); }} onPointerMove={moveLine} />; })}</svg>}
         {interactive && guides.map((guide,index) => <i key={index} className={`guide guide-${guide.axis}`} style={guide.axis === "x" ? { left: `${guide.value/slide.canvas.width*100}%` } : { top: `${guide.value/slide.canvas.height*100}%` }} />)}
         {interactive && revisionNotes.map((note,index) => {
           const component = slide.components.find(item => item.id === note.componentId);

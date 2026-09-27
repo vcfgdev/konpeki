@@ -63,6 +63,7 @@
 }
 .line-handles { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
 .line-handles circle { fill: white; stroke: #0974e9; stroke-width: 3; vector-effect: non-scaling-stroke; pointer-events: all; cursor: crosshair; }
+.group-area-outline { position: absolute; z-index: 1; pointer-events: none; outline: 1px dashed var(--accent); }
 .guide { position: absolute; z-index: 7; pointer-events: none; background: #0974e9; }
 .guide-x { top: 0; bottom: 0; width: 1px; }
 .guide-y { left: 0; right: 0; height: 1px; }
