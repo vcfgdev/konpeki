@@ -356,12 +356,19 @@ test('chart, image, table and diagram-internal icon and shape primitives are val
   if (table?.kind === 'table') table.appearance = { ...table.appearance, header: 'invented' as 'row' };
   assert.equal(validateComposition(toComposition(draft)).ok, false);
 });
-test('theme contract covers trusted themes in both modes, independent from authoring mode', () => {
+test('theme contract accepts default or omitted authoring mode and rejects invalid modes', () => {
   const doc = initialDraft();
   for (const id of themeIds) for (const mode of ['paper', 'night'] as const) {
-    doc.theme = { id, mode }; doc.authoringMode = 'dynamic';
+    doc.theme = { id, mode };
     assert.equal(validateComposition(toComposition(doc)).ok, true);
   }
+  doc.authoringMode = 'default';
+  assert.equal(validateComposition(toComposition(doc)).ok, true);
+  assert.equal(validateSchema(toComposition(doc)), true);
+  assert.equal(validateSchema({ ...toComposition(doc), authoringMode: 'dynamic' }), false);
+  const removedMode = validateComposition({ ...toComposition(doc), authoringMode: 'dynamic' });
+  assert.equal(removedMode.ok, false);
+  if (!removedMode.ok) assert.ok(removedMode.issues.some(issue => issue.path === '/authoringMode'));
   assert.equal(validateSchema({ ...doc, theme: { id: 'invented', mode: 'paper' } }), false);
 });
 test('independent typography survives validation, handoff and both JSON storage formats', () => {

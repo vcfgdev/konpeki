@@ -11,6 +11,37 @@ export type ValidationResult =
   | { ok: false; issues: ValidationIssue[] };
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 const structuralV2 = ajv.compile<WireDocument>(schemaV2);
+
+function normalizeBookkeeping(input: WireDocument): WireDocument {
+  let changed = false;
+  const slides = input.slides.map((slide) => {
+    const componentIds = slide.components.map((component) => component.id);
+    let componentsChanged = false;
+    const components = slide.components.map((component) => {
+      if (component.slotIds !== undefined) return component;
+      changed = true;
+      componentsChanged = true;
+      return { ...component, slotIds: [] };
+    });
+    const normalized = {
+      ...slide,
+      contentSlots: slide.contentSlots ?? [],
+      groups: slide.groups ?? [],
+      relationships: slide.relationships ?? [],
+      readingOrder: slide.readingOrder ?? componentIds.map((id) => ({ kind: "component" as const, id })),
+      paintOrder: slide.paintOrder ?? componentIds,
+      components,
+    };
+    if (componentsChanged || slide.contentSlots === undefined || slide.groups === undefined ||
+        slide.relationships === undefined || slide.readingOrder === undefined || slide.paintOrder === undefined) {
+      changed = true;
+      return normalized;
+    }
+    return slide;
+  });
+  return changed ? { ...input, slides } : input;
+}
+
 export function validateComposition(input: unknown): ValidationResult {
   if (!input || typeof input !== "object" || !("schema" in input) || input.schema !== gridSchema)
     return { ok: false, issues: [{ path: "/schema", message: `must be ${gridSchema}` }] };
@@ -22,10 +53,11 @@ export function validateComposition(input: unknown): ValidationResult {
         message: error.message ?? "Invalid value",
       })),
     };
+  const normalized = normalizeBookkeeping(input);
   const issues: ValidationIssue[] = [];
   const fail = (path: string, message: string) =>
     issues.push({ path, message });
-  input.slides.forEach((slide, index) => {
+  normalized.slides.forEach((slide, index) => {
     for (const key of ["components", "groups"] as const) slide[key].forEach((item, itemIndex) => {
       if (!item.area) return;
       const issue = areaIssue(slide.grid, item.area);
@@ -33,7 +65,7 @@ export function validateComposition(input: unknown): ValidationResult {
     });
   });
   if (issues.length) return { ok: false, issues };
-  const candidate = resolveDocument(input);
+  const candidate = resolveDocument(normalized);
   const unique = (ids: string[], path: string) => {
     if (new Set(ids).size !== ids.length) fail(path, "IDs must be unique");
   };
@@ -219,7 +251,7 @@ export function validateComposition(input: unknown): ValidationResult {
   });
   return issues.length
     ? { ok: false, issues }
-    : { ok: true, document: input };
+    : { ok: true, document: normalized };
 }
 export function assertComposition(input: unknown): WireDocument {
   const result = validateComposition(input);

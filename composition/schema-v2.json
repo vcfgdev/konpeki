@@ -5,8 +5,7 @@
   "properties": {
     "authoringMode": {
       "enum": [
-        "default",
-        "dynamic"
+        "default"
       ],
       "type": "string"
     },
@@ -734,12 +733,14 @@
                       "type": "integer"
                     },
                     "slotIds": {
+                      "default": [],
+                      "description": "Defaults to an empty array for components with no semantic content slots.",
                       "items": {
                         "minLength": 1,
                         "pattern": "\\S",
                         "type": "string"
                       },
-                      "minItems": 1,
+                      "minItems": 0,
                       "type": "array",
                       "uniqueItems": true
                     },
@@ -793,7 +794,6 @@
                     "id",
                     "kind",
                     "area",
-                    "slotIds",
                     "appearance"
                   ],
                   "type": "object"
@@ -1499,12 +1499,14 @@
                       "type": "integer"
                     },
                     "slotIds": {
+                      "default": [],
+                      "description": "Defaults to an empty array for components with no semantic content slots.",
                       "items": {
                         "minLength": 1,
                         "pattern": "\\S",
                         "type": "string"
                       },
-                      "minItems": 1,
+                      "minItems": 0,
                       "type": "array",
                       "uniqueItems": true
                     },
@@ -1660,7 +1662,6 @@
                     "id",
                     "kind",
                     "area",
-                    "slotIds",
                     "appearance"
                   ],
                   "type": "object"
@@ -2369,12 +2370,14 @@
                       "type": "object"
                     },
                     "slotIds": {
+                      "default": [],
+                      "description": "Defaults to an empty array for components with no semantic content slots.",
                       "items": {
                         "minLength": 1,
                         "pattern": "\\S",
                         "type": "string"
                       },
-                      "minItems": 1,
+                      "minItems": 0,
                       "type": "array",
                       "uniqueItems": true
                     },
@@ -2551,7 +2554,6 @@
                     "id",
                     "kind",
                     "area",
-                    "slotIds",
                     "appearance"
                   ],
                   "type": "object"
@@ -3180,12 +3182,14 @@
                       "type": "integer"
                     },
                     "slotIds": {
+                      "default": [],
+                      "description": "Defaults to an empty array for components with no semantic content slots.",
                       "items": {
                         "minLength": 1,
                         "pattern": "\\S",
                         "type": "string"
                       },
-                      "minItems": 1,
+                      "minItems": 0,
                       "type": "array",
                       "uniqueItems": true
                     }
@@ -3193,8 +3197,7 @@
                   "required": [
                     "id",
                     "kind",
-                    "area",
-                    "slotIds"
+                    "area"
                   ],
                   "type": "object"
                 },
@@ -3849,12 +3852,14 @@
                       "type": "integer"
                     },
                     "slotIds": {
+                      "default": [],
+                      "description": "Defaults to an empty array for components with no semantic content slots.",
                       "items": {
                         "minLength": 1,
                         "pattern": "\\S",
                         "type": "string"
                       },
-                      "minItems": 1,
+                      "minItems": 0,
                       "type": "array",
                       "uniqueItems": true
                     }
@@ -3862,8 +3867,7 @@
                   "required": [
                     "id",
                     "kind",
-                    "area",
-                    "slotIds"
+                    "area"
                   ],
                   "type": "object"
                 }
@@ -3873,6 +3877,8 @@
             "type": "array"
           },
           "contentSlots": {
+            "default": [],
+            "description": "Defaults to an empty contentSlots array when omitted.",
             "items": {
               "oneOf": [
                 {
@@ -4001,6 +4007,8 @@
             "type": "object"
           },
           "groups": {
+            "default": [],
+            "description": "Defaults to an empty groups array when omitted.",
             "items": {
               "additionalProperties": false,
               "dependentRequired": {
@@ -4139,6 +4147,7 @@
             "type": "object"
           },
           "paintOrder": {
+            "description": "Defaults to component IDs in source component-array order when omitted.",
             "items": {
               "minLength": 1,
               "pattern": "\\S",
@@ -4154,6 +4163,7 @@
             "type": "string"
           },
           "readingOrder": {
+            "description": "Defaults to component entries in source component-array order when omitted.",
             "items": {
               "additionalProperties": false,
               "properties": {
@@ -4181,6 +4191,8 @@
             "uniqueItems": true
           },
           "relationships": {
+            "default": [],
+            "description": "Defaults to an empty relationships array when omitted.",
             "items": {
               "additionalProperties": false,
               "properties": {
@@ -4269,12 +4281,7 @@
           "audience",
           "question",
           "intendedViewingSize",
-          "contentSlots",
-          "components",
-          "groups",
-          "readingOrder",
-          "paintOrder",
-          "relationships"
+          "components"
         ],
         "type": "object"
       },

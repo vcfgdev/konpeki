@@ -13,6 +13,14 @@ const slide = schema.properties.slides.items;
 delete slide.properties.canvas;
 delete slide.properties.innerPadding;
 slide.required = slide.required.map((key: string) => key === "canvas" ? "grid" : key);
+const defaultedSlideArrays = ["contentSlots", "groups", "relationships"];
+slide.required = slide.required.filter((key: string) => !defaultedSlideArrays.includes(key) && key !== "readingOrder" && key !== "paintOrder");
+for (const key of defaultedSlideArrays) {
+  slide.properties[key].default = [];
+  slide.properties[key].description = `Defaults to an empty ${key} array when omitted.`;
+}
+slide.properties.readingOrder.description = "Defaults to component entries in source component-array order when omitted.";
+slide.properties.paintOrder.description = "Defaults to component IDs in source component-array order when omitted.";
 slide.properties.grid = {
   type: "object", additionalProperties: false, required: ["preset"],
   properties: { preset: { enum: Object.keys(gridPresets) }, revision: { enum: [1, 2] } },
@@ -29,6 +37,11 @@ slide.properties.groups.items.dependentRequired = { area: ["verticalAlignment"],
 for (const component of slide.properties.components.items.oneOf) {
   delete component.properties.preferredRect;
   component.required = component.required.map((key: string) => key === "preferredRect" ? "area" : key);
+  component.required = component.required.filter((key: string) => key !== "slotIds");
+  component.properties.slotIds = structuredClone(component.properties.slotIds);
+  component.properties.slotIds.minItems = 0;
+  component.properties.slotIds.default = [];
+  component.properties.slotIds.description = "Defaults to an empty array for components with no semantic content slots.";
   component.properties.area = area;
   component.properties.layer = { enum: ["background", "overlay"] };
   component.properties.padding = { type: "integer", minimum: 0, maximum: 24 };

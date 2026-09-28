@@ -5,6 +5,26 @@ intent contract; the owned scene produced by `lower.ts` is the rendering contrac
 shared by the canvas, checks, SVG, PNG, and PDF writers. Unknown schema versions
 are rejected. There is no supported v1 migration command.
 
+## Source defaults
+
+Use the single `default` authoring mode, or omit `authoringMode`. The removed
+`dynamic` value is invalid; remove it or replace it with `default` in older files.
+The brief or reference overrides aesthetic defaults, not factual fidelity or
+readability requirements.
+
+Omit unused page `contentSlots`, `groups`, and `relationships`, and component
+`slotIds`; validation supplies empty arrays. Do not create semantic slots just
+to duplicate visible copy. Keep slots when topology or other semantic references
+need them.
+
+Omitted `readingOrder` and `paintOrder` independently default to component-array
+order. Supply an explicit order when reading and stacking differ, or when reading
+order uses groups. Explicit values are never repaired or replaced: empty orders
+with components, invalid values, and unresolved references remain errors.
+Normalization does not mutate the input or invent content, relationships, or
+topology. Validated documents contain the full arrays used by the renderer and
+editor; saving may write those defaults back into the JSON.
+
 ## Grid and type
 
 New pages choose a fixed preset with `grid.revision: 2`:
@@ -34,7 +54,6 @@ saving never upgrades a page implicitly. Revision is independent of destination
 and is preserved when switching presets. New pages in an existing document
 inherit its first page's grid.
 
-The editor's **Use finer grid** action upgrades one page and supports undo.
 `konpeki refine-grid input.json --output refined.json` upgrades all pages into a
 new file; it never overwrites a file. It maps numeric column `c` to `2c − 1` and
 span `s` to `2s`, preserving `"center"`, rows, IDs and all other content. Group

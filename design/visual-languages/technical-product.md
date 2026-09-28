@@ -4,7 +4,7 @@ Use for product explanations, processes and comparisons where a concrete visual
 can carry the argument. This is art direction, not a palette or a fixed template.
 
 - Give the product/interface/output enough space to explain the claim.
-- Apply the selected mode's framing and emphasis rules; do not flatten
+- Apply the default framing and emphasis guidance; do not flatten
   unrelated content into equally prominent boxes.
 - Connect a process to its tangible output. Keep labels near their connectors.
 - Make selection/recommendation distinct without obscuring alternatives.

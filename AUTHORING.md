@@ -6,7 +6,7 @@ accuracy and readability. Components, specimens and historical studies are
 resources to adapt freely.
 
 For ordinary work, deliver the editable composition and requested exports.
-Read Requirements and Writing tone, plus Authoring mode for new designs; consult
+Read Requirements, Writing tone and Taste and creative freedom for new designs; consult
 the remaining sections when the task needs them. Showcase records apply only
 to contributed examples or an explicitly requested reproducibility record.
 
@@ -28,7 +28,7 @@ dimensions; compose each page explicitly, since text does not auto-paginate.
 When reproducing a reference, preserve its destination, content and page count
 unless an adaptation is requested. Revision 2
 doubles columns, not rows. Existing pages without a revision retain their
-original grid. Use the editor's **Use finer grid** action or `konpeki refine-grid`
+original grid. Use `konpeki refine-grid`
 to convert existing areas losslessly; never change the revision alone. Place each
 component with an explicit `area` (`column`, `span`, `row`, `rows`). Starts are
 one-based integers or `"center"`; centered spans must match the grid's parity.
@@ -111,33 +111,20 @@ instead of pronouns when multiple actors make the reference ambiguous.
 
 ## Taste and creative freedom
 
-### Authoring mode
+Use the single `default` authoring mode, including when the setting is omitted.
+Without contrary direction, use a minimalist white canvas, dark sans-serif text
+and one restrained main accent; additional semantic chart or status colors are
+allowed. Build hierarchy through typography, placement and whitespace. Keep
+containers restrained and purposeful, give subheadings clear typographic
+emphasis, and keep text and data crisp. Use arrows only when relationships are
+not already clear, with open stroked heads by default. Do not add decorative
+top or bottom ribbons or side rails; compose surrounding space deliberately.
 
-Offer exactly two modes: `default` and `dynamic`. Use `default` when omitted.
-Default preserves the pre-revision visual rules; dynamic removes the specific
-restrictions listed below. It grants freedom, not a requirement to add decoration,
-more colors or more diagrams. This is an authoring instruction, not a runtime
-switch or a model-specific setting.
-
-| Rule | `default` — original rules | `dynamic` — relaxed rules |
-| --- | --- | --- |
-| Unspecified theme | Minimalist white canvas, dark text, sans-serif and one restrained main accent. Beige and light violet only when requested. Additional semantic chart/status colors are allowed. | Same background, font and main-accent defaults. Expressiveness comes from composition and visual explanation, not an automatic theme change. |
-| Emphasis and containers | Prefer typography, placement and whitespace. Keep containers restrained; use fills for state, meaningful boundaries or highlighted evidence, not decorative emphasis. | Color fields, tinted panels and shapes may also provide hierarchy, grouping, rhythm and emphasis. Remove competing layers, not containers as a category. |
-| Subheadings | Give subheadings enough typographic emphasis to distinguish them from supporting text. | Hierarchy may also come from placement, color or grouping without extra type contrast. |
-| Drawing style | Keep text/data crisp; Rough.js is opt-in by user or template choice. | Choose crisp or hand-drawn treatment to suit the direction; text/data remain legible. |
-| Arrows | Use arrows for relationships that placement and wording do not already make clear. Default to open, stroked heads unless the user or notation calls for another form. | Arrows may reinforce prose when useful; open or filled heads are valid. |
-| Framing | No decorative top/bottom ribbons or side rails. Match surrounding padding to differently proportioned artwork rather than adding contrasting bands. | Bands and rails may support composition or emphasis; compose surrounding space deliberately. |
-
-Dynamic does not imply a dark or colored canvas. Make the composition more
-expressive before changing the theme. Keep the white canvas and sans-serif
-fallback unless the user supplies another direction; use accent fills locally
-for emphasis, grouping or visual explanation rather than recoloring the page.
-
-In both modes, explicit brand, palette, typeface and visual references override
-taste defaults, never accuracy or readability. Choose explanation structure and
-depth from the source, audience and brief, not extra parameters. Tinted text cards
+An explicit brief, brand, palette, typeface or visual reference overrides these
+taste defaults, but never accuracy, factual fidelity or readability. Choose
+explanation structure and depth from the source, audience and brief, not extra parameters. Tinted text cards
 alone do not constitute a visual explanation. Never invent relationships or
-supporting facts to satisfy a mode.
+supporting facts to satisfy a style.
 
 Palette/background, font pairing, illustration style, audience, tone, delivery
 format, viewing size and page count are brief choices or constraints. They are
@@ -146,20 +133,10 @@ Do not expose separate container-count, arrow-count, hue, corner-radius or
 "creativity" sliders: choose these implementation details to serve the brief.
 
 Resolve conflicts in this order: accuracy/readability requirements, explicit
-content and delivery constraints, specific visual directions, then authoring mode
-and its default. With a fixed page count, recompose or remove optional repetition
+content and delivery constraints, specific visual directions, then taste defaults.
+With a fixed page count, recompose or remove optional repetition
 rather than shrinking text to fit; ask for a scope/page-count decision if required
 content cannot fit legibly. Never silently drop it or add pages.
-
-Apply the mode deck-wide, with page-level variation where content warrants it.
-For showcase examples, record the requested setting (or `unspecified`) and
-resolved setting in `PROMPT.md`, separately from verbatim user wording. Ordinary
-documents do not need a mode record. Do not retroactively label historical outputs
-as if they were generated with this parameter.
-
-The parameter is usable through the existing authoring workflow, but its
-reliability has not been established by earlier examples. Compare actual renders
-on the same brief, not counts of shapes or an aesthetic score.
 
 ### Palette, type and visual explanation
 
@@ -170,10 +147,11 @@ choose for readability, language coverage and fit with the brief rather than
 novelty. These are suggestions, not a closed list. Keep font roles consistent
 and verify the required weights load.
 
-Choose a coherent deck-wide palette and treatment within the selected mode or
+Choose a coherent deck-wide palette and treatment within the default taste or
 explicit user direction. Keep font roles consistent and the reading order clear.
 Keep chart and status meanings stable, and provide labels or other cues when a
-distinction carries information. Apply the mode table to emphasis and containers.
+distinction carries information. Keep emphasis and containers restrained unless
+the brief directs otherwise.
 
 Consider a diagram, annotated artifact or visual comparison when relationships
 are central to the point. Use it when it makes those relationships easier to
@@ -187,15 +165,16 @@ readers track corresponding items across columns. When rules establish table
 rows or paired rows, give the group a clear ending before notes or conclusions,
 usually a closing bottom rule. Do not add separators to every paragraph.
 Align a short row heading with the first line of its description, rather than
-centering it against a multiline paragraph. Apply the mode's subheading guidance
-and verify that headings are distinguishable from their supporting text.
+centering it against a multiline paragraph. Verify that headings are
+distinguishable from their supporting text.
 
-Use the mode's arrow policy. Keep arrow meaning and treatment consistent, and
+Use arrows sparingly with open stroked heads by default. Keep their meaning and
+treatment consistent, and
 align anchors and labels with the objects they refer to. Do not imply a transition
 or dependency that the evidence does not support.
 
-Use the mode's framing policy; do not add recurring metadata strips merely to
-fill space. Use the intended ratio where supported. Inspect both the preview
+Avoid decorative rails and framing; do not add recurring metadata strips merely
+to fill space. Use the intended ratio where supported. Inspect both the preview
 and requested export.
 
 Find optional themes, palettes and semantic patterns in the
@@ -249,13 +228,6 @@ original prompt for an inherited specimen. Never commit secrets or private
 material without permission; record any redaction.
 
 ### Explore an uncertain direction
-
-When the user is unsure about the mode, offer two candidates of one representative
-page: `default` and `dynamic`. Generate them when requested or accepted, not
-automatically for every deck. Keep wording, evidence, caveats and viewing size
-fixed. Honor the same explicit visual constraints; otherwise let each mode's
-theme policy apply. Render and inspect both, label the modes and explain the
-differences. Let the user choose before applying the mode across the deck.
 
 When a design choice matters and the brief does not settle it, choose one page
 and one primary axis: composition, density, hierarchy or wording. Render two or

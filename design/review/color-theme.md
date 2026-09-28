@@ -4,10 +4,9 @@ Owns palette use across the deck. Apply existing
 [theme guidance](../../AUTHORING.md#taste-and-creative-freedom) and
 [color roles](../palettes/README.md); this category adds no new style rules.
 
-- Check palette roles, background and visual emphasis against the brief and
-  selected mode. Both modes use the original white-background/main-accent
-  fallback unless the user supplies another direction. Dynamic permits local
-  emphasis fills, not an automatic dark or colored canvas.
+- Check palette roles, background and visual emphasis against the brief. Unless
+  the user supplies another direction, use the default white background, dark
+  sans-serif text and restrained main accent.
 - Check text/mark contrast on actual surfaces at viewing size. Confirm category
   and status meanings stay consistent and have cues beyond color alone.
 

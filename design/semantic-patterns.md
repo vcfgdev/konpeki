@@ -2,8 +2,8 @@
 
 Start with the audience's question, not a favorite layout. These are choices,
 not templates. Choose the primary medium from the source, audience and brief;
-plain text or a large image may be enough. Authoring mode changes visual rules, not
-the truth of the relationships. More detail requires more supported explanation,
+plain text or a large image may be enough. Taste never changes the truth of the
+relationships. More detail requires more supported explanation,
 not more nodes or arrows by default.
 
 ## Pick the relationship
@@ -21,18 +21,17 @@ restrained or expressive; decorative shapes must not imply data.
 
 ## Infer the form; preserve the meaning
 
-People do not need to name a diagram or chart type. In Auto, infer a suitable form
-from the goal, audience, supplied relationships and data. An explicitly selected form is binding:
-preserve it and ask before switching, including to another component kind. Never
-silently reset explicit selection to Auto. Honor notation requested in the intent
-or brief even in Auto. When ambiguity changes the explanation, ask what should be emphasized rather than
+People do not need to name a diagram or chart type or fill in a browser intent
+form. Infer a suitable form from the goal, audience, supplied relationships and
+data. An explicitly requested form is binding: preserve it and ask before
+switching, including to another component kind. Honor notation requested in the
+brief. When ambiguity changes the explanation, ask what should be emphasized rather than
 asking the person to choose from a taxonomy.
 
 Keep specialized semantics when they matter: message order in a sequence,
 guarded transitions in a state machine, enclosure for containment, and honest
 scales for quantities. Use editable vectors when a standard draft cannot express
-them. In Auto, update the returned diagram type or chart template to match the chosen form
-without changing its selection mode.
+them. Set the diagram type or chart template to match the inferred form.
 
 Diagram Design and Archify are references, not product specifications. Borrow
 useful techniques with attribution; do not pursue their catalog coverage or

@@ -7,9 +7,9 @@ and section placement to layout review.
 
 | Check | Guidance |
 | --- | --- |
-| Font category | Both modes use sans-serif unless the brief directs otherwise. Dynamic may vary typographic emphasis without changing the font category. Verify language coverage, loaded weights and readability in both modes. |
+| Font category | Use sans-serif unless the brief directs otherwise. Verify language coverage, loaded weights and readability. |
 | Useful numbering | Remove repeated micro-indices beside headings when they add no ordering information. Keep useful step and page numbers readable. |
-| Subheading distinction | Apply the mode table: default requires typographic emphasis; dynamic may establish hierarchy through placement, color or grouping. Check the result at review size. |
+| Subheading distinction | Give subheadings enough typographic emphasis to separate them from supporting text. Check the result at review size. |
 | Readable line measure | Keep paragraph lines easy to track into the next line. Judge the actual font and viewing size; avoid imposing a web character limit on every slide label. |
 
 Use the shared [review process](../visual-review.md#independent-review).

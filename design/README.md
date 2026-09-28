@@ -5,7 +5,7 @@ the resources below for a specific need; none impose a composition or reading or
 
 | Need | Where | Use |
 | --- | --- | --- |
-| Choose the rules | [Authoring mode](../AUTHORING.md#authoring-mode) | Default (original rules) or dynamic (relaxed visual rules); optional paired comparison |
+| Apply design defaults | [Taste and creative freedom](../AUTHORING.md#taste-and-creative-freedom) | Default taste, overridden by an explicit brief or reference |
 | Choose a visual structure | [Semantic patterns](semantic-patterns.md) | Audience question → relationships → visual structure |
 | Review rendered pages | [Review categories](visual-review.md) | Text, typography, layout, color/theme and visuals; optional parallel review |
 | Colors only | [palettes](palettes/README.md) | Base, eight light/dark palettes, Mineral/Botanical light candidates |

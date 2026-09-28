@@ -10,7 +10,7 @@ export const canvasPadding = {
   bottom: 0,
   left: 112,
 } as const;
-export const authoringModes = ["default", "dynamic"] as const;
+export const authoringModes = ["default"] as const;
 export type AuthoringMode = (typeof authoringModes)[number];
 export const themeIds = [
   "plex",

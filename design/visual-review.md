@@ -4,14 +4,11 @@ Choose the relevant categories for the work. Each owns its checks; shared
 requirements remain in [AUTHORING](../AUTHORING.md). Apply judgment to the
 content; no automatic bans or aesthetic score.
 
-All categories apply the selected [authoring mode](../AUTHORING.md#authoring-mode)
-and explicit brief. Default uses the original visual restrictions; dynamic
-relaxes only the rules named in the mode table. That table takes precedence over
-general suggestions below and in category guides. Do not impose default-only
-restrictions on dynamic work or require dynamic work to add effects. Judge
-explanation structure and depth against the source, audience and brief.
-Correctness, readability and source fidelity remain non-negotiable in both modes.
-Report a mode mismatch separately from a factual/access defect or taste preference.
+All categories apply the [default taste](../AUTHORING.md#taste-and-creative-freedom)
+and explicit brief. A supplied visual reference or direction overrides taste,
+never correctness, readability or source fidelity. Judge explanation structure
+and depth against the source, audience and brief. Report a taste mismatch
+separately from a factual or access defect.
 
 | Category | Scope |
 | --- | --- |
