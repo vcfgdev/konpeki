@@ -103,14 +103,16 @@ remote. Do not publish its token. All pages share one scrollable canvas, with
 arrows showing their order and a single bottom-right comment button. The browser
 and CLI use the same owned scene; delivery exports come from the CLI.
 
-Click Comment to enter review mode and open pending reviews. Select a page or
-component, write feedback in the nearby composer, then **Add comment** to return
-to the list with **Copy prompt** ready. Select another canvas target to keep
-commenting. Paste the prompt into the agent conversation; it
-includes all pending comments and their page/component/vector IDs. Copying never
-changes comments or invokes an agent. Clipboard failure offers
-selectable text for manual copying. Closing the composer returns to the list;
-closing the list, clicking the blue comment button, or Escape returns to editing.
+Click **Comment** to select a page or component, or open the queue when comments
+already exist. Write feedback in the nearby composer, then **Add** to open the
+queue with **Copy & clear** ready. Use **New comment** to select another target,
+or the pencil to edit saved feedback. Paste the prompt into the agent conversation; it
+includes all pending comments and their page/component/vector IDs. Clipboard
+success clears the copied batch with an **Undo** notice; unsent drafts remain.
+Clipboard or storage failure keeps the queue; clipboard failure also offers
+selectable text for manual copying. Copying never invokes an agent, and clearing
+does not mean the revisions were applied. **Cancel** returns to the queue, or
+closes if it is empty. Clicking the launcher or Escape returns to editing.
 Outside comment mode, people can move, resize, delete and correct native text
 directly, with keyboard undo. No sidebars, design pickers or presentation mode.
 Comments combine intent and revision requests; existing targeted notes remain

@@ -9,7 +9,7 @@ source; one owned scene drives canvas display, checking, and every export.
 2. Receive a finished, inspected visual with editable source and requested exports.
 3. Optionally move, resize, delete, correct text, or leave page comments that combine
    communication intent with concrete revision requests.
-4. Click **Copy prompt** in pending reviews, then paste into your agent conversation.
+4. Click **Copy & clear** in pending reviews, then paste into your agent conversation.
 5. Keep the editable JSON and delivery exports you need. Copy pending comments
    before clearing browser storage; no review sidecar is required.
 
@@ -56,45 +56,59 @@ session URL; it is a capability and must not be published. Browser saves are
 revision checked, valid external edits update the canvas, and the prior state
 remains undoable. In remote environments use authenticated forwarding.
 
-All pages sit on one scrollable canvas, with arrows showing document order.
-Wide screens use two columns in a snake pattern; narrow screens use one column.
+All pages sit in one horizontal row, with arrows showing document order.
+Each page nearly fills the viewport at the default zoom, fitting both its width
+and height. Narrow screens keep the same left-to-right order.
 Pinch the trackpad or hold Ctrl/⌘ while scrolling the mouse wheel to zoom around
-the pointer, from 25% to 400%. Ordinary two-finger or wheel scrolling moves around
-the canvas. Zoom affects only this view, not the composition or exports; the
+the pointer, from 10% to 400%. Horizontal two-finger scrolling moves along the
+row; a plain mouse wheel does the same when the pages fit vertically. Zooming in
+restores native two-axis panning. Zoom affects only this view, not the composition or exports; the
 comment button and composer keep their normal size.
 There are no sidebars, bottom toolbar, or presentation mode. Start new feedback
 with **Comment** in the bottom-right corner:
 
-1. Click **Comment** to enter review mode and open pending reviews in one step.
-   Select a page background or component to open its nearby composer, which
-   follows scrolling and zooming.
-2. Write feedback and click **Add comment**. The comment saves locally and returns
-   you to pending reviews, with **Copy prompt** ready. Select another canvas target
-   to keep commenting.
-3. Click **Copy prompt**, then paste into your agent conversation. The blue
-   comment button shows the pending count; click it again to return to editing.
+1. Click **Comment** to select a target. The launcher turns blue; no empty queue
+   covers the canvas. Select a page background or component to open its nearby
+   composer, which follows scrolling and zooming. If comments already exist,
+   the launcher opens the queue instead; choose **New comment** to start selecting.
+2. Write feedback and click **Add** (or Ctrl/⌘ Enter). The comment saves locally
+   and opens the compact queue. **New comment** hides the queue to free the canvas
+   for another selection. The pencil edits a saved comment without changing its ID.
+3. Click **Copy & clear**, then paste into your agent conversation. The dark
+   comment launcher shows the pending count. Click it again or press Escape to close.
 
 The prompt includes the composition title, source filename when available, and
 page/component/vector IDs. It preserves your wording and asks the agent to reread
 the current source, preserve unrelated edits, and inspect the revised render.
-Copying never changes comments or invokes an agent. If browser
-clipboard access is unavailable, a selected text field lets you copy manually.
+After clipboard success, the copied comments and markers are cleared, and
+reviews close to return to editing. The
+**Copied and cleared** notice offers **Undo** for eight seconds; keyboard undo
+also restores the batch. Unsent drafts stay intact. Clearing does not mean the
+agent has applied the revisions, and copying never invokes an agent.
+If clipboard access is unavailable, the queue stays intact and a selected text
+field lets you copy manually. If browser storage cannot save the clear, the
+queue is kept and a notice explains why.
 Copying stays available during file-save errors or revision conflicts, so local
 feedback can still be recovered.
 
-Closing a composer returns to pending reviews. Closing that list, clicking the
-pill, or pressing Escape returns to editing without discarding unsent drafts
+**Cancel** returns to pending reviews, or closes if there are none. Clicking the
+launcher or pressing Escape returns to editing without discarding unsent drafts
 during this session. Saved comments
 leave small numbered markers on their pages or components, including outside
 review mode. Click a marker to read that target's pending comments above the reply
-field; close the composer for the full list. **Remove** discards a comment and its marker;
+field; cancel the composer for the full list. The remove icon discards a comment and its marker;
 there is no separate Resolve action. Moving a component moves its markers with
 it. Comments do not change the composition.
 
 Outside comment mode, click a component to select it. Drag or use arrow keys to
 move it, drag its corner handles to resize, or press Delete/Backspace to remove
-it. Double-click native text (or press Enter on its selected component) to edit;
-blur commits and Escape cancels. Ctrl/⌘ Z undoes and Ctrl/⌘ Shift Z redoes.
+it. Moving a component follows the pointer continuously; grid snapping and saving
+happen on release, as one undo step. Movement and resizing use equal horizontal
+and vertical steps: 12×12 px on a presentation page, following its baseline.
+Existing geometry is preserved; horizontal corrections can save fractional
+column coordinates in the composition. Double-click native text (or press Enter on
+its selected component) to edit; blur commits and Escape cancels. Ctrl/⌘ Z undoes
+and Ctrl/⌘ Shift Z redoes.
 Text corrections preserve newer geometry and styling from external edits. If
 the text itself changed or its component was removed, the draft stays open with
 a warning; copy it before pressing Escape to load the current source.

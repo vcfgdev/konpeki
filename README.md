@@ -34,8 +34,9 @@ installation permission.
 
 Keep revisions in the same conversation. The browser does not require a content
 or intent form, or ask people to choose diagram or chart types. Optional basic
-text corrections remain in the composition. **Copy prompt** copies pending
-comments with their target IDs; paste them into your agent. Comments stay local
+text corrections remain in the composition. **Copy & clear** copies pending
+comments with their target IDs and clears the copied batch, with **Undo**;
+paste the prompt into your agent. Comments stay local
 to the browser and never invoke an agent or require a review sidecar. File-session
 composition edits still use revision-checked saves. See
 [setup details](SETUP.md) for other install methods.
@@ -47,10 +48,11 @@ composition edits still use revision-checked saves. See
 The browser-only playground lets you review and comment on an example, move,
 resize, delete, correct text, keep a local working copy, import/download editable
 JSON, and copy feedback as a prompt. All pages share a canvas with arrows
-showing their order. The bottom-right button opens reviews in one click: select
-a canvas target, write feedback, and **Add comment** to return to the list with
-**Copy prompt** ready. Click the blue comment button again to return to
-editing. There are no sidebars or toolbars.
+showing their order. The bottom-right button starts target selection, or opens
+the queue when comments already exist. Select a canvas target, write feedback,
+and **Add** to open the compact queue. Use **New comment** to select another
+target, the pencil to edit feedback, or **Copy & clear** to hand it off.
+Click the comment button again or press Escape to close. There are no sidebars or toolbars.
 Use the CLI for PNG/SVG/PDF exports. It requires
 no account or AI service. Browser-local data is not cloud backup; download JSON
 and copy pending comments before moving or clearing your work. Share the latest

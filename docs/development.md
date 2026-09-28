@@ -120,24 +120,37 @@ renders all 11 pages without a browser; chart scale is a review warning.
 
 `check-grid-editing` exercises the correction canvas: text, movement, resize,
 undo, repeated component IDs across pages, mixed page sizes, group alignment,
-imports, and export. Design changes such as theme, artwork
+imports (including during a drag), and export. Component moves translate the
+existing SVG, hit targets, handles and comment markers once per animation frame;
+they snap and commit the source only on release. Group offsets stay held until
+drop. Design changes such as theme, artwork
 alignment, and grid refinement now arrive through source imports rather than
 browser settings. `check-notes` starts a disposable file session and verifies
 page/component comments, legacy import, browser-local persistence across preview
 restarts, actual clipboard contents, denied/unavailable clipboard fallback,
 no-duplicate retry, no sidecar writes, export isolation, failed-storage draft
-preservation, the comment pill and pending count, one-click review entry,
+preservation, the launcher and pending count, selection-first entry,
+saved-comment editing and keyboard submission, reduced-motion support,
 draft preservation across dialogs, page-order arrows, and empty/narrow layouts.
 It also verifies text correction during external edits, copying during GET/PUT
 failures, and malformed legacy imports without blocking composition saves.
+Copy & clear coverage includes automatic dismissal, persisted removal, Undo without reverting newer
+composition edits, unsent drafts, clipboard/storage failure, comments restored
+while permission is pending, and imports during an outstanding copy.
 Older scripts for the pre-scene
 editor and presentation UI are historical; use the checks listed above for the
 current canvas.
 
 `check-page-zoom` verifies native Chromium Ctrl+wheel input, pointer anchoring,
 two-axis wheel scrolling, zoom limits, delta units, a synthetic Safari gesture
-sequence, and corrections/comments while zoomed. It does not replace a physical
-trackpad check in macOS Safari.
+sequence, and corrections/comments while zoomed. It checks frame-batched input,
+easing, reduced motion, aligned page headers and the removed status subtitle.
+Drag checks include sub-grid movement, unchanged SVG identities and source during
+preview, release before a queued frame, handle alignment, and exact Undo.
+It also checks near-full-page default sizing, left-to-right order on narrow
+screens, wheel navigation along the fitted row, fixed right gutters, centered
+zoomed-out pages, and the seven-page overview.
+It does not replace a physical trackpad check in macOS Safari.
 
 `check-process-flow` exercises node drag/nudge, undo/redo, reset, reload, and a
 subsequent JSON revision preserving the human's position override. It captures
