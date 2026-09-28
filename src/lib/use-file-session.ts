@@ -2,11 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { canonicalJSON } from "../../composition/compile.ts";
 import { validateDraft as validateComposition } from "../../composition/document.ts";
 import type { Draft } from "./model.ts";
-import { emptyReview, type ReviewState, type ReviewTarget } from "./review.ts";
 import {
-  addNote,
-  removeNote,
-  resolveNote,
+  type FileSessionDocument,
   FileSessionError,
   fileSessionToken,
   loadFileSession,
@@ -16,9 +13,8 @@ import {
 export type FileStatus = "loading" | "saved" | "saving" | "conflict" | "error";
 
 type Callbacks = {
-  onOpen: (draft: Draft, name: string) => void;
+  onOpen: (session: FileSessionDocument) => void;
   onExternalChange: (draft: Draft) => void;
-  onNotice: (message: string, tone?: "neutral" | "error") => void;
   onError: (message: string) => void;
 };
 
@@ -29,9 +25,6 @@ export function useFileSession(
 ) {
   const token = fileSessionToken();
   const [status, setStatus] = useState<FileStatus>(enabled ? "loading" : "saved");
-  const [review, setReview] = useState<ReviewState>(emptyReview);
-  const reviewRef = useRef(review);
-  const submittingNote = useRef(false);
   const loading = useRef(false);
   const loadGeneration = useRef(0);
   const callbacksRef = useRef(callbacks);
@@ -67,12 +60,11 @@ export function useFileSession(
     if (!enabled || !token) return;
     let cancelled = false;
     const timer = window.setInterval(() => {
-      if (!state.current.ready || loading.current || state.current.drain || submittingNote.current) return;
+      if (!state.current.ready || loading.current || state.current.drain) return;
       const revision = state.current.revision;
       const generation = loadGeneration.current;
       void loadFileSession(token).then((remote) => {
-        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingNote.current || revision !== state.current.revision) return;
-        receiveReview(remote.review);
+        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || revision !== state.current.revision) return;
         if (canonicalJSON(draftRef.current) === state.current.savedJSON) {
           setStatus("saved");
           callbacksRef.current.onError("");
@@ -91,7 +83,7 @@ export function useFileSession(
         setStatus("saved");
         callbacksRef.current.onExternalChange(remote.document);
       }).catch((error) => {
-        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || submittingNote.current || revision !== state.current.revision) return;
+        if (cancelled || generation !== loadGeneration.current || loading.current || state.current.drain || revision !== state.current.revision) return;
         setStatus("error");
         callbacksRef.current.onError(`Could not load the latest file. ${error instanceof Error ? error.message : "Check the local file service."}`);
       });
@@ -101,22 +93,6 @@ export function useFileSession(
       window.clearInterval(timer);
     };
   }, [enabled, token]);
-
-  function receiveReview(next: ReviewState) {
-    if (next.version < reviewRef.current.version) return;
-    reviewRef.current = next;
-    setReview(next);
-  }
-
-  async function noteAction(action: () => Promise<ReviewState>, saveFirst = false) {
-    if (loading.current || !state.current.ready) throw new Error("Wait for the file to open before submitting.");
-    if (submittingNote.current) throw new Error("Wait for the current note to finish saving.");
-    submittingNote.current = true;
-    try {
-      if (saveFirst && !await save(draftRef.current)) throw new Error("Save the composition before adding a note.");
-      receiveReview(await action());
-    } finally { submittingNote.current = false; }
-  }
 
   function save(next: Draft): Promise<string | undefined> {
     if (!token || loading.current || !state.current.ready) return Promise.resolve(undefined);
@@ -165,7 +141,7 @@ export function useFileSession(
   }
 
   async function reload() {
-    if (!token || loading.current || state.current.drain || submittingNote.current) return;
+    if (!token || loading.current || state.current.drain) return;
     loading.current = true;
     const generation = ++loadGeneration.current;
     const requestedJSON = canonicalJSON(draftRef.current);
@@ -180,8 +156,7 @@ export function useFileSession(
       }
       state.current = { ready: true, revision: session.revision, savedJSON: canonicalJSON(session.document) };
       draftRef.current = session.document;
-      receiveReview(session.review);
-      callbacksRef.current.onOpen(session.document, session.name);
+      callbacksRef.current.onOpen(session);
       callbacksRef.current.onError("");
       setStatus("saved");
     } catch (error) {
@@ -194,13 +169,10 @@ export function useFileSession(
   }
 
   return {
-    status, review,
+    status: enabled && status === "saved" && canonicalJSON(draft) !== state.current.savedJSON ? "saving" : status,
     opening: status === "loading",
     ready: state.current.ready,
     reload,
     retry: () => state.current.ready ? save(draftRef.current) : reload(),
-    addNote: (target: ReviewTarget, text: string) => noteAction(() => addNote(token!, target, text), true),
-    removeNote: (id: string) => noteAction(() => removeNote(token!, id)),
-    resolveNote: (id: string) => noteAction(() => resolveNote(token!, id)),
   };
 }

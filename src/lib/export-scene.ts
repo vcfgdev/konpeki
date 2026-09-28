@@ -5,11 +5,6 @@ import { sceneFonts } from "./scene-fonts.ts";
 
 export type ExportFormat = "png" | "svg" | "pdf";
 
-export async function renderCompositionSVG(document: GridDocument, pageIndex: number) {
-  const fonts = await sceneFonts();
-  return renderSVG(lowerPage(document, document.slides[pageIndex], fonts), fonts);
-}
-
 export async function exportComposition(document: GridDocument, format: ExportFormat, pageIndex = 0, scale = 2): Promise<Blob> {
   const fonts = await sceneFonts();
   if (format === "pdf") {
@@ -43,17 +38,4 @@ export async function exportComposition(document: GridDocument, format: ExportFo
 
 function documentElement<K extends keyof HTMLElementTagNameMap>(tag: K) {
   return globalThis.document.createElement(tag);
-}
-
-export async function exportFileSession(token: string, format: ExportFormat, page: number, revision: string) {
-  const response = await fetch("/__konpeki/session/export", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-konpeki-session": token },
-    body: JSON.stringify({ format, page, scale: 2, revision }),
-  });
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({})) as { error?: string };
-    throw new Error(body.error ?? "The file export failed.");
-  }
-  return response.blob();
 }

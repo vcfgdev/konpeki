@@ -1,13 +1,15 @@
 import type { CompositionDocument } from "../../composition/runtime.ts";
 import { resolveDocument, toComposition, type WireDocument } from "../../composition/grid.ts";
 import { assertComposition } from "../../composition/validate.ts";
-import type { ReviewState, ReviewTarget } from "./review.ts";
+import type { ReviewState } from "./review.ts";
 
 export type FileSessionDocument = {
   document: CompositionDocument;
   revision: string;
   name: string;
+  commentKey: string;
   review: ReviewState;
+  reviewError?: string;
 };
 
 export class FileSessionError extends Error {
@@ -61,14 +63,4 @@ export function saveFileSession(
     method: "PUT",
     body: JSON.stringify({ revision, document: toComposition(document) }),
   });
-}
-
-export function addNote(token: string, target: ReviewTarget, text: string) {
-  return request<ReviewState>(token, "/notes", { method: "POST", body: JSON.stringify({ ...target, text }) });
-}
-export function removeNote(token: string, id: string) {
-  return request<ReviewState>(token, "/notes", { method: "DELETE", body: JSON.stringify({ id }) });
-}
-export function resolveNote(token: string, id: string) {
-  return request<ReviewState>(token, "/notes/resolve", { method: "POST", body: JSON.stringify({ id }) });
 }

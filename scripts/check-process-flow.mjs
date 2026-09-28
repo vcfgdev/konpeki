@@ -91,7 +91,7 @@ try {
   // The pinned backorder stays where the person put it; the longer graph may
   // report a conflict. This is preferable to silently discarding the override.
   importDocument(revised); selectFlow(); assert.deepEqual(positionOf(stored()), pinned);
-  b("find", "role", "button", "click", "--name", "Reset step positions", "--exact");
+  b("focus", selector); b("press", "Delete");
   const reset = stored(); assert.equal(positionOf(reset), undefined);
   await exports(reset, "process-revised");
   b("screenshot", resolve(output, "canvas-revised.png"));

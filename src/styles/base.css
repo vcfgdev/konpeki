@@ -53,10 +53,7 @@ button:disabled {
   cursor: default;
   color: #767676;
 }
-.right-panel input[type="number"],
-.revision-note-count,
-.overflow-trigger,
-.thumbnail-page-number {
+.revision-note-count {
   font-variant-numeric: tabular-nums;
 }
 :focus-visible {
@@ -105,12 +102,6 @@ h2 {
   background: #383838;
   border-color: #383838;
 }
-.panel-toggle:active:not(:disabled),
-.action-island button:active:not(:disabled),
-.component-dock button:active:not(:disabled),
-.segmented-options button:active:not(:disabled),
-.theme-options button:active:not(:disabled),
-.appearance-options button:active:not(:disabled),
 .revision-note-submit button:active:not(:disabled),
 .revision-note-remove:active:not(:disabled) {
   transform: scale(0.96);

@@ -15,12 +15,8 @@ import "@fontsource/hanken-grotesk/latin-600.css";
 import { App } from "./app/App.tsx";
 import "./styles/base.css";
 import "./styles/shell.css";
-import "./styles/chrome.css";
-import "./styles/left-panel.css";
-import "./styles/right-panel.css";
 import "./styles/canvas.css";
 import "./styles/feedback.css";
-import "./styles/presentation.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

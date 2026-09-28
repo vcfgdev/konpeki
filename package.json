@@ -91,7 +91,6 @@
     "harfbuzzjs": "1.6.2",
     "linebreak": "1.1.0",
     "pdf-lib": "1.17.1",
-    "proper-lockfile": "4.1.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "svg-path-bbox": "2.1.0",
@@ -99,7 +98,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
-    "@types/proper-lockfile": "4.1.4",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "typescript": "^5.9.3"

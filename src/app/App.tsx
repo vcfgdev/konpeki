@@ -1,804 +1,238 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositionComponent } from "../../composition/runtime.ts";
-import { validateDraft as validateComposition, initialGridDraft } from "../../composition/document.ts";
+import { validateDraft, initialGridDraft } from "../../composition/document.ts";
 import { areaIssue, resolveDocument, toComposition } from "../../composition/grid.ts";
-import { removeVectorElement } from "../../composition/vector.ts";
-import {
-  addComponent,
-  addSlide as appendSlide,
-  componentRemovalIssue,
-  componentInstanceLabel,
-  componentLabels,
-  duplicateComponent,
-  getSlide,
-  initialDraft,
-  parseCompositionJSON,
-  removeComponent,
-  removeSlide as deleteSlide,
-  reorderPaintOrder,
-  transformComponentRect,
-  type Draft,
-} from "../lib/model.ts";
-import {
-  commitHistory,
-  createHistory,
-  finishHistoryEdit,
-  redoHistory,
-  undoHistory,
-} from "../lib/history.ts";
-import {
-  clearStoredDraft,
-  clearStoredExampleDraft,
-  loadDraft,
-  loadExampleDraft,
-  persistDraft,
-  persistExampleDraft,
-} from "../lib/storage.ts";
+import { componentRemovalIssue, duplicateComponent, getSlide, parseCompositionJSON, removeComponent, transformComponentRect, type Draft } from "../lib/model.ts";
+import { commitHistory, createHistory, finishHistoryEdit, redoHistory, undoHistory } from "../lib/history.ts";
+import { clearStoredDraft, clearStoredExampleDraft, loadDraft, loadExampleDraft, loadFileReview, persistDraft, persistExampleDraft, persistFileReview } from "../lib/storage.ts";
 import { canonicalJSON } from "../../composition/compile.ts";
-import { diagramDefinition } from "../../composition/visualizations.ts";
 import { Canvas } from "../components/Canvas.tsx";
-import { LeftPanel, type LeftPanelView } from "../components/LeftPanel.tsx";
-import { Presentation } from "../components/Presentation.tsx";
-import {
-  RightPanel,
-  type RightPanelView,
-} from "../components/RightPanel.tsx";
-import { WorkspaceChrome } from "../components/WorkspaceChrome.tsx";
+import { PageBoard } from "../components/PageBoard.tsx";
+import { RevisionNotes } from "../components/RevisionNotes.tsx";
 import { FeedbackNotice } from "../components/ui.tsx";
 import { exampleDraft } from "../lib/examples.ts";
-import { exportComposition, exportFileSession, type ExportFormat } from "../lib/export-scene.ts";
 import { fileSessionToken } from "../lib/file-session.ts";
 import { useFileSession } from "../lib/use-file-session.ts";
-import { RevisionNotes } from "../components/RevisionNotes.tsx";
-import type { ReviewTarget } from "../lib/review.ts";
+import { emptyReview, reviewPrompt, type ReviewState, type ReviewTarget } from "../lib/review.ts";
 
 const sessionToken = fileSessionToken();
-
 function loadInitialDraft() {
-  if (sessionToken)
-    return {
-      draft: initialDraft(true),
-      storageBlocked: false,
-      exampleName: undefined,
-      fileSession: true,
-    };
+  if (sessionToken) return { draft: initialGridDraft(), storageBlocked: false, exampleName: undefined, fileSession: true, review: undefined, error: undefined };
   const exampleName = new URLSearchParams(window.location.search).get("example");
   const example = exampleDraft(exampleName);
   return example
-    ? {
-        ...loadExampleDraft(exampleName!, example),
-        exampleName: exampleName!,
-        fileSession: false,
-      }
+    ? { ...loadExampleDraft(exampleName!, example), exampleName: exampleName!, fileSession: false }
     : { ...loadDraft(), exampleName: undefined, fileSession: false };
 }
 
 export function App() {
   const [loaded] = useState(loadInitialDraft);
-  const [history, setHistory] = useState(() =>
-    createHistory<{ draft: Draft; selected?: string; activeSlideId: string }>({
-      draft: loaded.draft,
-      activeSlideId: loaded.draft.slides[0].id,
-    }),
-  );
-  const { draft, selected, activeSlideId } = history.present;
-  const slide = getSlide(draft, activeSlideId);
-  const validation = useMemo(() => validateComposition(draft), [draft]);
-  const [savedDraft, setSavedDraft] = useState<Draft>();
+  const [history, setHistory] = useState(() => createHistory<{ draft: Draft; review: ReviewState; selection?: ReviewTarget }>({ draft: loaded.draft, review: loaded.review ?? emptyReview() }));
+  const { draft, review: localReview, selection } = history.present;
+  const validation = useMemo(() => validateDraft(draft), [draft]);
   const [blocked, setBlocked] = useState(loaded.storageBlocked);
-  const [requiresReset, setRequiresReset] = useState(loaded.storageBlocked);
-  const [error, setError] = useState(loaded.error ?? "");
-  const [notice, setNotice] = useState<{
-    message: string;
-    tone: "neutral" | "error";
-  }>();
-  const [toastPaused, setToastPaused] = useState(false);
-  const [leftCollapsed, setLeftCollapsed] = useState(false);
-  const [leftView, setLeftView] = useState<LeftPanelView>("pages");
-  const [rightCollapsed, setRightCollapsed] = useState(false);
-  const [rightView, setRightView] = useState<RightPanelView>("settings");
-  const [vectorEditRequest, setVectorEditRequest] = useState(0);
-  const [presenting, setPresenting] = useState(false);
-  const [exportBusy, setExportBusy] = useState(false);
-  const [vectorSelection, setVectorSelection] = useState<{
-    componentId: string;
-    elementId?: string;
-  }>();
-  const [titleError, setTitleError] = useState(false);
-  const title = useRef<HTMLInputElement>(null);
-  const focusAfterHistory = useRef(false);
+  const [storageError, setStorageError] = useState(loaded.error ?? "");
+  const [error, setError] = useState("");
+  const [fileIdentity, setFileIdentity] = useState<{ key: string; name: string }>();
+  const [notice, setNotice] = useState("");
+  const [reviewing, setReviewing] = useState(false);
+  const [target, setTarget] = useState<ReviewTarget>();
+  const [reviewSession, setReviewSession] = useState(0);
+  const [saved, setSaved] = useState<{ draft: Draft; review: ReviewState }>();
+  const importInput = useRef<HTMLInputElement>(null);
+  const reviewButton = useRef<HTMLButtonElement>(null);
   const fileSession = useFileSession(loaded.fileSession, draft, {
-    onOpen: (document, name) => {
-      setHistory(createHistory({
-        draft: document,
-        activeSlideId: document.slides[0].id,
-      }));
-      showNotice(`${name} opened from the local service.`);
+    onOpen: session => {
+      const comments = loadFileReview(session.commentKey, session.review, session.reviewError);
+      setFileIdentity({ key: session.commentKey, name: session.name });
+      setBlocked(comments.storageBlocked); setStorageError(comments.error ?? "");
+      setHistory(createHistory({ draft: session.document, review: comments.review })); closeReview();
     },
-    onExternalChange: (document) => {
-      setHistory((current) => commitHistory(current, {
-        draft: document,
-        activeSlideId: document.slides.some(
-          (candidate) => candidate.id === current.present.activeSlideId,
-        ) ? current.present.activeSlideId : document.slides[0].id,
-        selected: undefined,
-      }));
-    },
-    onNotice: showNotice,
+    onExternalChange: document => setHistory(current => commitHistory(current, { ...current.present, draft: document, selection: undefined })),
     onError: setError,
   });
-  const fileLocked = loaded.fileSession && (!fileSession.ready || fileSession.opening);
+  const review = localReview;
+  const locked = loaded.fileSession && (!fileSession.ready || fileSession.opening);
+
   useEffect(() => {
-    if (!focusAfterHistory.current) return;
-    focusAfterHistory.current = false;
-    const frame = requestAnimationFrame(() => {
-      const target = history.present.selected
-        ? document.querySelector<HTMLElement>(`.component-hit[data-component="${CSS.escape(history.present.selected)}"]`)
-        : document.querySelector<HTMLElement>("#canvas-stage");
-      target?.focus();
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [history.present]);
-  useEffect(() => {
-    if (loaded.fileSession) return;
-    if (blocked) return;
-    if (!validation.ok) return;
+    if ((loaded.fileSession && !fileIdentity) || blocked || !validation.ok) return;
     const timer = setTimeout(() => {
-      try {
-        if (loaded.exampleName) persistExampleDraft(loaded.exampleName, draft);
-        else persistDraft(draft);
-        setSavedDraft(draft);
-      } catch {
-        setError(
-          "Unable to save this browser-local draft. Download JSON or reset to retry.",
-        );
-        setBlocked(true);
-      }
+      try { persist(draft, localReview); setSaved({ draft, review: localReview }); }
+      catch { setBlocked(true); setStorageError("Browser storage is unavailable. Download your composition and copy pending comments before reloading."); }
     }, 250);
     return () => clearTimeout(timer);
-  }, [draft, validation, blocked, loaded.exampleName, loaded.fileSession]);
+  }, [draft, localReview, validation, blocked, fileIdentity]);
   useEffect(() => {
-    if (!notice || notice.tone === "error" || toastPaused) return;
-    const timer = window.setTimeout(() => setNotice(undefined), 3000);
-    return () => window.clearTimeout(timer);
-  }, [notice, toastPaused]);
-  useEffect(() => {
-    const narrow = window.matchMedia("(max-width: 1200px)");
-    const compact = window.matchMedia("(max-width: 900px)");
-    const adaptPanels = () => {
-      setRightCollapsed(narrow.matches);
-      setLeftCollapsed(compact.matches);
-    };
-    adaptPanels();
-    narrow.addEventListener("change", adaptPanels);
-    compact.addEventListener("change", adaptPanels);
-    return () => {
-      narrow.removeEventListener("change", adaptPanels);
-      compact.removeEventListener("change", adaptPanels);
-    };
-  }, []);
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(""), 3000);
+    return () => clearTimeout(timer);
+  }, [notice]);
+  useEffect(() => { document.title = `${draft.title} · Konpeki`; }, [draft.title]);
   useEffect(() => {
     function keydown(event: KeyboardEvent) {
-      if (presenting || fileLocked) return;
-      const modifier = event.metaKey || event.ctrlKey;
-      const target = event.target;
-      const editable =
-        target instanceof HTMLElement &&
-        (target.closest("input,textarea,select") || target.isContentEditable);
-      const slideRename =
-        target instanceof HTMLInputElement &&
-        target.getAttribute("aria-label") === "Page name";
-      const noteEditing = target instanceof HTMLTextAreaElement && target.id === "revision-note";
-      if (event.key === "Escape" && !editable && vectorSelection) {
-        setVectorSelection(undefined);
-        return;
-      }
-      if (modifier && !event.altKey && event.key.toLowerCase() === "z") {
-        if (slideRename || noteEditing) return;
-        event.preventDefault();
-        setHistory((current) =>
-          event.shiftKey ? redoHistory(current) : undoHistory(current),
-        );
-        return;
-      }
-      if (
-        modifier &&
-        !event.altKey &&
-        event.key.toLowerCase() === "y"
-      ) {
-        if (slideRename || noteEditing) return;
-        event.preventDefault();
-        setHistory(redoHistory);
-        return;
-      }
-      if (
-        modifier &&
-        !event.altKey &&
-        event.key.toLowerCase() === "d" &&
-        selected &&
-        !editable
-      ) {
-        event.preventDefault();
-        duplicateSelected();
-        return;
-      }
-      if (
-        !["Delete", "Backspace"].includes(event.key) ||
-        event.ctrlKey ||
-        event.metaKey ||
-        event.altKey ||
-        !selected
-      )
-        return;
+      if (event.defaultPrevented || locked) return;
+      const editable = event.target instanceof HTMLElement && (event.target.closest("input,textarea,select") || event.target.isContentEditable);
+      if (event.key === "Escape" && reviewing) { event.preventDefault(); closeReview(); return; }
       if (editable) return;
-      event.preventDefault();
-      deleteSelected();
+      const modifier = event.metaKey || event.ctrlKey;
+      if (modifier && !event.altKey) {
+        const key = event.key.toLowerCase();
+        if (key === "o" && !loaded.fileSession) { event.preventDefault(); importInput.current?.click(); }
+        if (key === "s") { event.preventDefault(); downloadJSON(); }
+        if (key === "z" || key === "y") {
+          event.preventDefault();
+          setHistory(key === "y" || event.shiftKey ? redoHistory : undoHistory);
+        }
+      }
+      if (reviewing) return;
+      if (["Delete", "Backspace"].includes(event.key) && !modifier && !event.altKey && selection?.componentId) {
+        event.preventDefault();
+        const issue = componentRemovalIssue(draft, selection.componentId, selection.slideId);
+        if (issue) { setNotice(issue); return; }
+        updateDraft(removeComponent(draft, selection.componentId, selection.slideId), { selection: undefined });
+      }
     }
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [draft, presenting, selected, vectorSelection, fileLocked]);
-  function showNotice(message: string, tone: "neutral" | "error" = "neutral") {
-    if (!message) setToastPaused(false);
-    setNotice(message ? { message: message.replace(/\.$/, ""), tone } : undefined);
+  }, [draft, selection, reviewing, locked, review]);
+
+  function persist(document: Draft, comments: ReviewState) {
+    if (loaded.fileSession) {
+      if (!fileIdentity) throw new Error("Wait for the file to open before commenting.");
+      persistFileReview(fileIdentity.key, comments);
+    } else if (loaded.exampleName) persistExampleDraft(loaded.exampleName, document, comments);
+    else persistDraft(document, comments);
   }
-  function changeLeftPanel(collapsed: boolean) {
-    setLeftCollapsed(collapsed);
-    if (!collapsed && window.matchMedia("(max-width: 900px)").matches) setRightCollapsed(true);
+  function updateDraft(next: Draft, options: { mergeKey?: string; selection?: ReviewTarget; review?: ReviewState } = {}) {
+    setHistory(current => commitHistory(current, {
+      draft: resolveDocument(toComposition(next)),
+      review: options.review ?? current.present.review,
+      selection: Object.hasOwn(options, "selection") ? options.selection : current.present.selection,
+    }, options.mergeKey));
   }
-  function changeRightPanel(collapsed: boolean) {
-    setRightCollapsed(collapsed);
-    if (!collapsed && window.matchMedia("(max-width: 900px)").matches) setLeftCollapsed(true);
+  function select(slideId: string, componentId?: string) {
+    setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: { slideId, componentId } } }));
   }
-  function updateDraft(
-    next: Draft,
-    options: { mergeKey?: string; selected?: string; activeSlideId?: string } = {},
-  ) {
-    setHistory((current) =>
-      commitHistory(
-        current,
-        {
-          draft: resolveDocument(toComposition(next)),
-          selected: Object.hasOwn(options, "selected")
-            ? options.selected
-            : current.present.selected,
-          activeSlideId: options.activeSlideId ?? current.present.activeSlideId,
-        },
-        options.mergeKey,
-      ),
-    );
+  function updateComponent(slideId: string, component: CompositionComponent, mergeKey?: string) {
+    const page = getSlide(draft, slideId);
+    const issue = page.grid && component.area && areaIssue(page.grid, component.area);
+    if (issue) { setNotice(issue); return; }
+    updateDraft({ ...draft, slides: draft.slides.map(page => page.id === slideId
+      ? { ...page, components: page.components.map(item => item.id === component.id ? component : item) } : page) }, { mergeKey: mergeKey && `${slideId}:${mergeKey}` });
   }
-  function selectComponent(id?: string) {
-    if (!id || vectorSelection?.componentId !== id) setVectorSelection(undefined);
-    setHistory((current) => {
-      const next = finishHistoryEdit(current);
-      return { ...next, present: { ...next.present, selected: id } };
-    });
+  function closeReview() {
+    setReviewing(false); closeComment();
+    requestAnimationFrame(() => reviewButton.current?.focus({ preventScroll: true }));
   }
-  function selectSlide(id: string) {
-    setVectorSelection(undefined);
-    setHistory((current) => {
-      const next = finishHistoryEdit(current);
-      return {
-        ...next,
-        present: { ...next.present, activeSlideId: id, selected: undefined },
-      };
-    });
+  function closeComment() {
+    setTarget(undefined);
   }
-  function addNewSlide() {
-    const result = appendSlide(draft);
-    if (!result.slideId) {
-      showNotice("Could not add a page until the composition is valid.", "error");
-      return;
-    }
-    focusAfterHistory.current = true;
-    updateDraft(result.draft, {
-      activeSlideId: result.slideId,
-      selected: undefined,
-    });
-    showNotice("Page added.");
+  function comment(next: ReviewTarget) {
+    setNotice("");
+    setReviewing(true); setTarget({ slideId: next.slideId, componentId: next.componentId, elementId: next.elementId });
+    setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: undefined } }));
   }
-  function removeExistingSlide(id: string) {
-    if (draft.slides.length === 1) {
-      showNotice("A document needs at least one page.", "error");
-      return;
-    }
-    const index = draft.slides.findIndex((item) => item.id === id);
-    const next = deleteSlide(draft, id);
-    if (next === draft) return;
-    const nextActiveSlideId =
-      id === slide.id
-        ? next.slides[Math.min(index, next.slides.length - 1)].id
-        : slide.id;
-    focusAfterHistory.current = true;
-    updateDraft(next, {
-      activeSlideId: nextActiveSlideId,
-      selected: id === slide.id ? undefined : selected,
-    });
-    showNotice("Page deleted.");
+  function changeLocalReview(change: (value: ReviewState) => ReviewState) {
+    if (blocked || !validation.ok) throw new Error("Save or download your work before changing comments.");
+    const next = change(localReview);
+    persist(draft, next);
+    setHistory(current => commitHistory(current, { ...current.present, review: next }));
+    return next;
   }
-  function finishEdit() {
-    setHistory(finishHistoryEdit);
-  }
-  function performRedo() {
-    focusAfterHistory.current = true;
-    setHistory(redoHistory);
-  }
-  function updateComponent(
-    component: CompositionComponent,
-    mergeKey?: string,
-  ) {
-    const issue = slide.grid && component.area && areaIssue(slide.grid, component.area);
-    if (issue) { showNotice(issue, "error"); return; }
-    const previous = slide.components.find(
-      (candidate) => candidate.id === component.id,
-    );
-    const nextComponent = previous && (
-      previous.preferredRect.x !== component.preferredRect.x ||
-      previous.preferredRect.y !== component.preferredRect.y ||
-      previous.preferredRect.width !== component.preferredRect.width ||
-      previous.preferredRect.height !== component.preferredRect.height
-    )
-      ? transformComponentRect(
-          component,
-          previous.preferredRect,
-          component.preferredRect,
-          slide.grid,
-        )
-      : component;
-    const diagramTypeChanged =
-      previous?.kind === "diagram" &&
-      nextComponent.kind === "diagram" &&
-      previous.appearance.type !== nextComponent.appearance.type;
-    updateDraft(
-      {
-        ...draft,
-        slides: draft.slides.map((item) =>
-          item.id === slide.id
-            ? {
-                ...item,
-                components: item.components.map((candidate) =>
-                  candidate.id === nextComponent.id ? nextComponent : candidate,
-                ),
-                contentSlots: item.contentSlots.map((slot) => {
-                  if (
-                    !nextComponent.slotIds.includes(slot.id) ||
-                    "targets" in slot
-                  )
-                    return slot;
-                  if (
-                    diagramTypeChanged &&
-                    nextComponent.kind === "diagram" &&
-                    ["process-step", "entity"].includes(slot.role)
-                  )
-                    return {
-                      ...slot,
-                      role: diagramDefinition(nextComponent.appearance.type).slotRole,
-                    };
-                  return slot;
-                }),
-              }
-            : item,
-        ),
-      },
-      { mergeKey },
-    );
-  }
-  function add(
-    kind: CompositionComponent["kind"],
-    at?: { x: number; y: number },
-  ) {
-    const next = addComponent(draft, kind, at, slide.id);
-    if (next === draft) return;
-    const nextSlide = getSlide(next, slide.id);
-    const id = nextSlide.components.find(
-      (component) =>
-        !slide.components.some((item) => item.id === component.id),
-    )!.id;
-    focusAfterHistory.current = true;
-    updateDraft(next, { selected: id });
-    showNotice(`${componentLabels[kind]} added.`);
-  }
-  function duplicateSelected() {
-    if (!selected) return;
-    const next = duplicateComponent(draft, selected, slide.id);
-    if (next === draft) return;
-    const nextSlide = getSlide(next, slide.id);
-    const id = nextSlide.components.find(
-      (component) =>
-        !slide.components.some((item) => item.id === component.id),
-    )!.id;
-    focusAfterHistory.current = true;
-    updateDraft(next, { selected: id });
-    showNotice("Component duplicated.");
-  }
-  function updatePaintOrder(ids: string[]) {
-    const next = reorderPaintOrder(draft, ids, slide.id);
-    if (next === draft) return;
-    updateDraft(next);
-  }
-  function deleteSelected() {
-    if (!selected) return;
-    if (vectorSelection?.componentId === selected) {
-      const component = slide.components.find((item) => item.id === selected);
-      if (component?.customVisual?.format === "vector" && vectorSelection.elementId) {
-        updateComponent({
-          ...component,
-          customVisual: {
-            ...component.customVisual,
-            elements: removeVectorElement(component.customVisual.elements, vectorSelection.elementId),
-          },
-        });
-        setVectorSelection({ componentId: selected });
-      }
-      return;
-    }
-    remove(selected);
-  }
-  function remove(id: string) {
-    const issue = componentRemovalIssue(draft, id, slide.id);
-    if (issue) {
-      showNotice(issue, "error");
-      return;
-    }
-    const index = slide.components.findIndex((component) => component.id === id);
-    const next = removeComponent(draft, id, slide.id);
-    if (next === draft) return;
-    const nextSelected =
-      selected === id
-        ? slide.components[index - 1]?.id ?? slide.components[index + 1]?.id
-        : selected;
-    focusAfterHistory.current = true;
-    updateDraft(next, { selected: nextSelected });
-    showNotice("Component deleted.");
-  }
-  function selectNoteTarget(target: ReviewTarget & { id?: string }) {
-    const page = draft.slides.find(s => s.id === target.slideId);
-    if (!page) return;
-    selectSlide(page.id);
-    changeLeftPanel(false);
-    setLeftView("notes");
-    const component = page.components.find(c => c.id === target.componentId);
-    if (component) {
-      selectComponent(component.id);
-      if (target.elementId && component.customVisual?.format === "vector" && component.customVisual.elements.some(e => e.id === target.elementId))
-        setVectorSelection({ componentId: component.id, elementId: target.elementId });
-    }
-    if (target.id) requestAnimationFrame(() => document.getElementById(`note-${target.id}`)?.scrollIntoView({ block: "nearest" }));
-  }
-  async function openComposition(file: File) {
-    let raw = "";
-    try {
-      raw = await file.text();
-    } catch {
-      showNotice("Could not read that composition file.", "error");
-      return;
-    }
-    const parsed = parseCompositionJSON(raw);
-    if (!parsed.ok) {
-      showNotice(`Could not open: ${parsed.message}`, "error");
-      return;
-    }
-    focusAfterHistory.current = true;
-    updateDraft(parsed.document, {
-      activeSlideId: parsed.document.slides[0].id,
-      selected: undefined,
-    });
-    setTitleError(false);
-    showNotice("Editable composition opened. Undo restores the previous document.");
-  }
-  function present() {
-    const validation = validateComposition(draft);
-    if (!validation.ok) {
-      const issue = validation.issues[0];
-      showNotice(
-        `Cannot present: ${issue?.path || "document"} ${issue?.message || "is invalid"}.`,
-        "error",
-      );
-      return;
-    }
-    selectComponent();
-    setPresenting(true);
-  }
-  async function downloadExport(format: ExportFormat) {
-    setExportBusy(true);
-    showNotice(`Exporting ${format.toUpperCase()}…`);
-    try {
-      let blob: Blob;
-      if (sessionToken) {
-        const current = await fetch("/__konpeki/session", { headers: { "x-konpeki-session": sessionToken } });
-        if (!current.ok) throw new Error("Could not read the current file revision.");
-        const { revision } = await current.json() as { revision: string };
-        blob = await exportFileSession(sessionToken, format, draft.slides.indexOf(slide) + 1, revision);
-      } else {
-        blob = await exportComposition(toComposition(draft), format, draft.slides.indexOf(slide), 2);
-      }
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      const base = format === "pdf" ? draft.title : slide.name;
-      link.download = `${base.replace(/[^a-z0-9_-]+/gi, "-") || "konpeki"}.${format}`;
-      link.click();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showNotice(`${format.toUpperCase()} exported.`);
-    } catch (exportError) {
-      showNotice(
-        `Could not export ${format.toUpperCase()}: ${exportError instanceof Error ? exportError.message : "Unknown error"}`,
-        "error",
-      );
-    } finally {
-      setExportBusy(false);
-    }
-  }
-  function downloadJSON() {
-    const validation = validateComposition(draft);
-    if (!validation.ok) {
-      showNotice("Fix the composition before downloading JSON.", "error");
-      return;
-    }
-    const blob = new Blob([canonicalJSON(toComposition(draft))], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+  function download(value: string, extension: string) {
+    const url = URL.createObjectURL(new Blob([value], { type: "application/json" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${draft.title.replace(/[^a-z0-9_-]+/gi, "-") || "konpeki-composition"}.json`;
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-    showNotice("Editable composition JSON downloaded.");
+    link.download = `${draft.title.replace(/[^a-z0-9_-]+/gi, "-") || "konpeki-composition"}${extension}`;
+    link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
-  function startBlank() {
-    if (!window.confirm(
-      "Start with a blank composition? You can undo this replacement until you reload.",
-    )) return;
-    const next = initialGridDraft();
-    focusAfterHistory.current = true;
-    updateDraft(next, {
-      activeSlideId: next.slides[0].id,
-      selected: undefined,
-    });
-    setTitleError(false);
-    showNotice("Blank composition started. Undo restores the previous document.");
+  function downloadJSON() {
+    if (!validation.ok) { setNotice("Undo the invalid edit before downloading JSON."); return; }
+    download(canonicalJSON(toComposition(draft)), ".json");
+  }
+  async function openComposition(file: File) {
+    if (loaded.fileSession) { setNotice("Open a different file with konpeki preview."); return; }
+    try {
+      const parsed = parseCompositionJSON(await file.text());
+      if (!parsed.ok) throw new Error(parsed.message);
+      updateDraft(parsed.document, { selection: undefined, review: emptyReview() });
+      setReviewSession(current => current + 1);
+      closeReview(); setNotice("Composition opened. Undo restores the previous document and comments.");
+    } catch (error) { setNotice(`Could not open: ${error instanceof Error ? error.message : "Invalid file"}`); }
   }
   function reset() {
-    const target = loaded.exampleName ? "example" : "saved local draft";
-    if (!window.confirm(
-      `Reset this ${target}? This removes its browser-local working copy.`,
-    )) return;
+    if (!window.confirm("Reset this browser-local composition and its comments? Download JSON and copy pending comments first to keep your work.")) return;
     try {
-      if (loaded.exampleName) clearStoredExampleDraft(loaded.exampleName);
-      else clearStoredDraft();
-      const next = loaded.exampleName
-        ? structuredClone(exampleDraft(loaded.exampleName)!)
-        : initialGridDraft();
-      setHistory(
-        createHistory({ draft: next, activeSlideId: next.slides[0].id }),
-      );
-      setBlocked(false);
-      setRequiresReset(false);
-      setError("");
-      setTitleError(false);
-      showNotice(loaded.exampleName ? "Example reset." : "Saved draft reset.");
-    } catch {
-      setBlocked(true);
-      setError("Storage remains unavailable. Export your work to keep it.");
-    }
+      if (loaded.exampleName) clearStoredExampleDraft(loaded.exampleName); else clearStoredDraft();
+      setHistory(createHistory({ draft: loaded.exampleName ? structuredClone(exampleDraft(loaded.exampleName)!) : initialGridDraft(), review: emptyReview() }));
+      setReviewSession(current => current + 1);
+      setBlocked(false); setStorageError(""); closeReview();
+    } catch { setStorageError("Storage remains unavailable. Download your work before reloading."); }
   }
-  const browserSaveMessage = !validation.ok
-    ? `Autosave paused: ${validation.issues[0]?.path || "document"} ${validation.issues[0]?.message || "is invalid"}. Fix this to resume saving.`
-    : blocked
-      ? "Changes are not being saved. Download JSON to keep your work."
-      : savedDraft !== draft
-        ? "Saving changes in this browser…"
-        : "Your editable composition is saved only in this browser.";
-  const recoveryMessage = fileSession.opening
-    ? "Opening the file… Editing is paused."
-    : !validation.ok
-    ? `Changes are not saved: ${validation.issues[0]?.path || "document"} ${validation.issues[0]?.message || "is invalid"}. Undo the edit or correct this value.`
-    : error;
-  const selectedComponent = slide.components.find((c) => c.id === selected);
-  function useComponentTool(kind: CompositionComponent["kind"]) {
-    add(kind);
-  }
-  return (
-    <>
-      <a className="skip-link" href="#canvas-stage">
-        Skip to canvas
-      </a>
-      <FeedbackNotice kind="recovery">
-        {recoveryMessage ? <>
-          <span>{recoveryMessage}</span>
-          <div className="recovery-actions">
-            {!validation.ok ? <button type="button" onClick={() => setHistory(current => undoHistory(current))}>Undo edit</button> : <>
-              {(!loaded.fileSession || fileSession.ready) && <button type="button" onClick={downloadJSON}>Download JSON</button>}
-              {loaded.fileSession ? fileSession.status === "conflict" ? (
-                <button type="button" onClick={() => {
-                  if (window.confirm("Replace your browser edits with the current file? Download JSON first to keep a copy.")) void fileSession.reload();
-                }}>Load file version</button>
-              ) : <button type="button" disabled={fileSession.opening} onClick={() => { void fileSession.retry(); }}>{fileSession.opening ? "Opening…" : fileSession.ready ? "Retry save" : "Retry open"}</button> : <>
-                {!requiresReset && <button type="button" onClick={() => { setBlocked(false); setError(""); }}>Retry save</button>}
-                <button type="button" onClick={reset}>{loaded.exampleName ? "Reset example" : "Reset saved draft"}</button>
-              </>}
-            </>}
-          </div>
-        </> : null}
-      </FeedbackNotice>
-      <div
-        className={`workspace ${leftCollapsed ? "left-collapsed" : ""} ${rightCollapsed ? "right-collapsed" : ""}`}
-        aria-hidden={presenting || undefined}
-        inert={presenting || fileLocked || undefined}
-        aria-busy={fileSession.opening || undefined}
-        onDragOver={(event) => {
-          if (!event.dataTransfer.types.includes("Files")) return;
-          event.preventDefault();
-          event.dataTransfer.dropEffect = "copy";
+  const recovery = fileSession.opening ? "Opening the composition…" : !validation.ok ? "This edit is invalid. Undo it before saving." : error || storageError;
+  const pending = review.notes.filter(note => !note.resolved);
+  return <>
+    <main className={`workspace${reviewing ? " reviewing" : ""}`} aria-label="Composition canvas" inert={locked || undefined}
+      onDragOver={event => { if (event.dataTransfer.types.includes("Files")) event.preventDefault(); }}
+      onDrop={event => { event.preventDefault(); if (!locked && event.dataTransfer.files[0]) void openComposition(event.dataTransfer.files[0]); }}>
+      <header className="board-heading"><h1>{draft.title}</h1><p>{draft.slides.length} {draft.slides.length === 1 ? "page" : "pages"}
+        {loaded.fileSession ? <span className={`file-status ${fileSession.status}`}> · {fileSession.status === "saved" ? "Saved to file" : fileSession.status}</span>
+          : ` · ${blocked || !validation.ok ? "Not saved" : saved?.draft === draft && saved.review === localReview ? "Saved in this browser" : "Saving…"}`}</p></header>
+      <PageBoard draft={draft}>{page => <Canvas mode={reviewing ? "review" : "edit"} draft={draft} activeSlideId={page.id}
+        selected={selection?.slideId === page.id ? selection.componentId : undefined}
+        commentTarget={target?.slideId === page.id ? target : undefined}
+        onSelect={id => select(page.id, id)} onComment={componentId => comment({ slideId: page.id, ...(componentId ? { componentId } : {}) })}
+        onSlideName={name => updateDraft({ ...draft, slides: draft.slides.map(item => item.id === page.id ? { ...item, name } : item) })}
+        onComponent={(component, key) => updateComponent(page.id, component, key)}
+        onDuplicate={(sourceId, rect) => {
+          const next = duplicateComponent(draft, sourceId, page.id);
+          if (next === draft) return;
+          const nextPage = getSlide(next, page.id);
+          const copy = nextPage.components.find(item => !page.components.some(old => old.id === item.id));
+          if (!copy) return;
+          const moved = transformComponentRect(copy, copy.preferredRect, rect, page.grid);
+          nextPage.components = nextPage.components.map(item => item.id === copy.id ? moved : item);
+          updateDraft(next, { selection: { slideId: page.id, componentId: moved.id }, mergeKey: `${page.id}:geometry:${moved.id}` });
+          return moved;
         }}
-        onDrop={(event) => {
-          if (fileLocked) {
-            event.preventDefault();
-            return;
-          }
-          const file = event.dataTransfer.files[0];
-          if (!file) return;
-          event.preventDefault();
-          void openComposition(file);
-        }}
-      >
-        <WorkspaceChrome
-          leftCollapsed={leftCollapsed}
-          onToggleLeftPanel={() => changeLeftPanel(!leftCollapsed)}
-          title={draft.title}
-          titleRef={title}
-          titleError={titleError}
-          selectedKind={selectedComponent?.kind}
-          onTitle={(value, mergeKey) => {
-            updateDraft({ ...draft, title: value }, { mergeKey });
-            setTitleError(false);
-          }}
-          onEditEnd={finishEdit}
-          onExport={(format) => { void downloadExport(format); }}
-          exporting={exportBusy}
-          onPresent={present}
-          fileStatus={loaded.fileSession ? fileSession.status : undefined}
-          browserTools={loaded.fileSession ? undefined : {
-            example: Boolean(loaded.exampleName),
-            saveMessage: browserSaveMessage,
-            onImportJSON: (file) => { void openComposition(file); },
-            onDownloadJSON: downloadJSON,
-            onStartBlank: startBlank,
-            onReset: reset,
-          }}
-          onSelectTool={() => selectComponent()}
-          onComponentTool={useComponentTool}
-        >
-        <LeftPanel
-          draft={draft}
-          view={leftView}
-          onView={setLeftView}
-          revisionNotes={loaded.fileSession && <RevisionNotes
-            document={draft}
-            target={{ slideId: slide.id, ...(selected ? { componentId: selected } : {}), ...(vectorSelection?.componentId === selected && vectorSelection?.elementId ? { elementId: vectorSelection.elementId } : {}) }}
-            review={fileSession.review}
-            disabled={fileSession.status !== "saved"}
-            onAdd={fileSession.addNote}
-            onRemove={fileSession.removeNote}
-            onResolve={fileSession.resolveNote}
-            onSelect={selectNoteTarget}
-            onNotice={(message) => showNotice(message, "error")}
-          />}
-          activeSlideId={slide.id}
-          collapsed={leftCollapsed}
-          onSelectSlide={selectSlide}
-          onAddSlide={addNewSlide}
-          onRemoveSlide={removeExistingSlide}
-        />
-        </WorkspaceChrome>
-        <div className="editor-content">
-        <Canvas
-          key={slide.id}
-          revisionNotes={fileSession.review.notes.filter(note => !note.resolved)}
-          onSelectNote={selectNoteTarget}
-          draft={draft}
-          activeSlideId={slide.id}
-          selected={selected}
-          vectorSelection={vectorSelection}
-          onSelect={selectComponent}
-          onVectorSelect={(selection, edit) => {
-            if (selection) {
-              selectComponent(selection.componentId);
-              setVectorSelection(selection);
-              setRightView("settings");
-              if (edit) {
-                changeRightPanel(false);
-                setVectorEditRequest((request) => request + 1);
-              }
-            } else setVectorSelection(undefined);
-          }}
-          onSlideName={(name) =>
-            updateDraft({
-              ...draft,
-              slides: draft.slides.map((item) =>
-                item.id === slide.id ? { ...item, name } : item,
-              ),
-            })
-          }
-          onComponent={updateComponent}
-          onDuplicate={(sourceId, rect) => {
-            const next = duplicateComponent(draft, sourceId, slide.id);
-            if (next === draft) return;
-            const nextSlide = getSlide(next, slide.id);
-            const copy = nextSlide.components.find(candidate => !slide.components.some(existing => existing.id === candidate.id));
-            if (!copy) return;
-            const moved = transformComponentRect(copy, copy.preferredRect, rect, slide.grid);
-            nextSlide.components = nextSlide.components.map(candidate => candidate.id === copy.id ? moved : candidate);
-            setVectorSelection(undefined);
-            updateDraft(next, { selected: moved.id, mergeKey: `geometry:${moved.id}` });
-            return moved;
-          }}
-          onEditEnd={finishEdit}
-          onAdd={add}
-          onNotice={showNotice}
-        />
-        <RightPanel
-          view={rightView}
-          collapsed={rightCollapsed}
-          vectorEditRequest={vectorEditRequest}
-          component={selectedComponent}
-          selectedComponentId={selected}
-          selectedVectorElementId={
-            vectorSelection && vectorSelection.componentId === selected
-              ? vectorSelection.elementId
-              : undefined
-          }
-          componentLabel={
-            selected
-              ? componentInstanceLabel(slide.components, selected)
-              : undefined
-          }
-          slide={slide}
-          draft={draft}
-          onView={setRightView}
-          onCollapsedChange={changeRightPanel}
-          onSelectSlide={() => selectComponent()}
-          onSelectComponent={selectComponent}
-          onSelectVectorElement={(elementId) =>
-            selected && setVectorSelection({ componentId: selected, elementId })
-          }
-          onSelectOverflow={(componentId, elementId) => {
-            selectComponent(componentId);
-            setVectorSelection(elementId ? { componentId, elementId } : undefined);
-            setRightView("settings");
-            changeRightPanel(false);
-            if (elementId) setVectorEditRequest(request => request + 1);
-          }}
-          onReorderPaintOrder={updatePaintOrder}
-          onComponent={updateComponent}
-          onSlide={(nextSlide, mergeKey) =>
-            updateDraft(
-              {
-                ...draft,
-                slides: draft.slides.map((item) =>
-                  item.id === nextSlide.id ? nextSlide : item,
-                ),
-              },
-              { mergeKey },
-            )
-          }
-          onDraft={(patch, mergeKey) =>
-            updateDraft({ ...draft, ...patch }, { mergeKey })
-          }
-          onEditEnd={finishEdit}
-        />
-        </div>
-      </div>
-      {presenting && (
-        <Presentation
-          draft={draft}
-          initialSlideId={slide.id}
-          onExit={() => setPresenting(false)}
-        />
-      )}
-      <FeedbackNotice kind="toast" tone={notice?.tone} onPauseChange={setToastPaused}
-        onDismiss={() => { setNotice(undefined); setToastPaused(false); }}>
-        {notice?.message}
-      </FeedbackNotice>
-    </>
-  );
+        onEditEnd={() => setHistory(finishHistoryEdit)} onNotice={setNotice}
+        revisionNotes={pending} onSelectNote={comment} />}</PageBoard>
+      {!loaded.fileSession && <p className="board-help">Drop a composition JSON to open it · Ctrl/⌘ O to browse · Ctrl/⌘ S to save</p>}
+      <input ref={importInput} type="file" accept=".json,application/json" hidden onChange={event => {
+        const file = event.currentTarget.files?.[0]; if (file) void openComposition(file); event.currentTarget.value = "";
+      }} />
+    </main>
+    <RevisionNotes key={reviewSession} document={draft} open={reviewing} target={target} review={review}
+      disabled={!validation.ok || (loaded.fileSession && fileSession.status !== "saved")} storageBlocked={blocked}
+      onSelect={comment}
+      onClose={target ? closeComment : closeReview}
+      onAdd={(next, text) => {
+        changeLocalReview(current => ({ ...current, version: current.version + 1, notes: [...current.notes, { ...next, id: crypto.randomUUID(), text: text.trim(), resolved: false }] }));
+        closeComment();
+      }}
+      onPreparePrompt={() => reviewPrompt(draft, review, fileIdentity?.name)}
+      onCopied={() => setNotice("Copied—paste into your agent.")}
+      onRemove={id => { changeLocalReview(current => ({ ...current, version: current.version + 1, notes: current.notes.filter(note => note.id !== id) })); }} />
+    <button ref={reviewButton} type="button" className="review-launcher" aria-label={reviewing ? `Close reviews, ${pending.length} pending reviews` : "Comment"} aria-pressed={reviewing} disabled={locked}
+      aria-haspopup="dialog" aria-expanded={reviewing} aria-controls={reviewing ? "revision-notes" : undefined}
+      title={reviewing ? "Close reviews" : "Open reviews"} onClick={() => {
+        setNotice("");
+        if (reviewing) closeReview();
+        else { setReviewing(true); setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: undefined } })); }
+      }}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-6 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
+      {(reviewing || !!pending.length) && <span className="review-count">{pending.length}</span>}
+    </button>
+    <FeedbackNotice kind="toast">{notice}</FeedbackNotice>
+    <FeedbackNotice kind="recovery">{recovery && <><span>{recovery}</span>{!fileSession.opening && <div className="recovery-actions">
+      {!validation.ok ? <button onClick={() => setHistory(undoHistory)}>Undo edit</button> : <>
+        {!locked && <button onClick={downloadJSON}>Download JSON</button>}
+        {loaded.fileSession ? fileSession.status === "conflict" ? <button onClick={() => { if (window.confirm("Load the current file? Download unsaved changes first.")) void fileSession.reload(); }}>Load file version</button>
+          : <button onClick={() => {
+            if (!storageError) void fileSession.retry();
+            else if (window.confirm("Reload the file and saved comments? Download JSON and copy pending comments first to keep unsaved work.")) void fileSession.reload();
+          }}>Retry</button> : <>{!loaded.storageBlocked && <button onClick={() => { setBlocked(false); setStorageError(""); }}>Retry save</button>}<button onClick={reset}>Reset saved draft</button></>}
+      </>}
+    </div>}</>}</FeedbackNotice>
+  </>;
 }

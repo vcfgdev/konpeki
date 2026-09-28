@@ -7,8 +7,7 @@
   box-shadow: 0 7px 26px #00000012;
 }
 .scene-artwork,
-.scene-artwork > svg,
-.line-handles {
+.scene-artwork > svg {
   display: block;
   width: 100%;
   height: 100%;
@@ -31,10 +30,12 @@
 .component-hit:focus-visible { outline: 1px solid #8b8b8b; background: transparent; }
 .component-hit.selected,
 .component-hit.selected:hover:not(:disabled) { outline: 2px solid var(--accent); }
+.page-comment-hit { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; border: 0; border-radius: 0; padding: 0; background: transparent; }
+.page-comment-hit:hover:not(:disabled), .page-comment-hit:focus-visible { background: transparent; outline: 2px solid var(--accent); outline-offset: -2px; }
+.review-canvas .component-hit, .page-comment-hit { cursor: crosshair; touch-action: pan-y; }
+.review-canvas .component-hit:hover:not(:disabled) { outline: 2px solid var(--accent); background: #007bbb0a; }
+.comment-selected { outline: 2px solid var(--accent); }
 .process-node-hit { z-index: 3; }
-.scene-canvas:has(.component-hit.element-editing) .component-hit { pointer-events: none; }
-.scene-canvas:has(.component-hit.element-editing) .scene-artwork [data-vector-element] { cursor: pointer; }
-.presentation-canvas .scene-artwork { position: relative; }
 .resize-handle {
   position: absolute;
   z-index: 5;
@@ -62,8 +63,6 @@
   font: 16px/1.4 sans-serif;
   resize: none;
 }
-.line-handles { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
-.line-handles circle { fill: white; stroke: #0974e9; stroke-width: 3; vector-effect: non-scaling-stroke; pointer-events: all; cursor: crosshair; }
 .group-area-outline { position: absolute; z-index: 1; pointer-events: none; outline: 1px dashed var(--accent); }
 .guide { position: absolute; z-index: 7; pointer-events: none; background: #0974e9; }
 .guide-x { top: 0; bottom: 0; width: 1px; }

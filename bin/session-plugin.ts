@@ -1,9 +1,12 @@
 import {
   readCompositionFile,
+  revisionFor,
   saveCompositionFile,
 } from "./session-store.ts";
-import { addRevisionNote, removeRevisionNote, readReview, resolveRevisionNote } from "./review-store.ts";
+import { readReview } from "./review-store.ts";
+import { emptyReview } from "../src/lib/review.ts";
 import { renderDocument } from "./render.ts";
+import { resolve } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 
@@ -53,6 +56,7 @@ export function fileSessionPlugin({
   compositionPath: string;
   token: string;
 }): Plugin {
+  const commentKey = revisionFor(resolve(compositionPath));
   return {
     name: "konpeki-file-session",
     enforce: "pre",
@@ -74,10 +78,11 @@ export function fileSessionPlugin({
         }
         try {
           if (url.pathname === route && request.method === "GET") {
-            // Read acknowledgement first so a completed response includes at least
-            // the document version that was present when the agent finished.
-            const review = await readReview(compositionPath);
-            sendJSON(response, 200, { ...await readCompositionFile(compositionPath), review });
+            const legacy = await readReview(compositionPath).then(review => ({ review }), () => ({
+              review: emptyReview(),
+              reviewError: "Legacy comments could not be imported. The sidecar was not changed; repair it and retry.",
+            }));
+            sendJSON(response, 200, { ...await readCompositionFile(compositionPath), commentKey, ...legacy });
             return;
           }
           if (url.pathname === route && request.method === "PUT") {
@@ -104,21 +109,6 @@ export function fileSessionPlugin({
             const result = await renderDocument(current.document, { format: body.format, page: body.format === "pdf" ? undefined : body.page, scale: body.scale });
             response.writeHead(200, { "content-type": result.contentType, "cache-control": "no-store" });
             response.end(result.bytes);
-            return;
-          }
-          if (url.pathname === `${route}/notes` && request.method === "POST") {
-            const body = await readJSON(request);
-            sendJSON(response, 201, await addRevisionNote(compositionPath, body, body.text));
-            return;
-          }
-          if (url.pathname === `${route}/notes` && request.method === "DELETE") {
-            const body = await readJSON(request);
-            sendJSON(response, 200, await removeRevisionNote(compositionPath, body.id));
-            return;
-          }
-          if (url.pathname === `${route}/notes/resolve` && request.method === "POST") {
-            const body = await readJSON(request);
-            sendJSON(response, 200, await resolveRevisionNote(compositionPath, body.id));
             return;
           }
           sendJSON(response, 404, { error: "Unknown file-session endpoint." });
