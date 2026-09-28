@@ -58,16 +58,22 @@ inherit its first page's grid.
 new file; it never overwrites a file. It maps numeric column `c` to `2c − 1` and
 span `s` to `2s`, preserving `"center"`, rows, IDs and all other content. Group
 areas convert too. Applying it again does nothing. Do not change the revision
-without converting areas. This halves horizontal placement steps (150 → 75 px
+without converting areas. This halves the layout-column pitch (150 → 75 px
 on presentation, 282 → 141 px on link) without changing existing page pixels.
 
-Components use `area: {column, span, row, rows}`. Starts are one-based integers
-or `"center"`; spans are positive integers. Center placement requires the span
-and the grid count to have the same parity on that axis. For example, a
-24-column grid accepts centered spans 2, 4, 6…; the article preset's 63 rows
-accept centered heights 1, 3, 5…. Invalid spans suggest the nearest valid sizes.
-No fractional starts or pixel offsets are supported. Spare height after the
-last full baseline row is split equally above and below the grid.
+Components use `area: {column, span, row, rows}`. Starts are one-based numbers
+or `"center"`; spans are at least 1. Horizontal `column` and `span` may be
+fractional; `row` and `rows` remain integers. Centered heights must match the
+grid's row parity: the article preset's 63 rows accept heights 1, 3, 5….
+Horizontal centering accepts any valid span. Spare height after the last full
+baseline row is split equally above and below the grid.
+
+Canvas corrections use square steps: the preset's baseline on both axes
+(12×12 px on presentation, 8×8 px on link, 4×4 px on A4), independent of grid
+revision. Movement and resizing measure deltas from the existing area, preserving
+old positions and sizes until edited. Finer horizontal edits save as fractional
+column coordinates in the same JSON, not pixel offsets or another sidecar.
+Loading a document never quantizes its existing layout.
 
 Authored areas are authoritative. Preset changes never stretch or automatically
 recompose content. Component padding is measured in baseline units. Dragging or

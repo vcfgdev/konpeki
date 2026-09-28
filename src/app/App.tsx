@@ -38,7 +38,6 @@ export function App() {
   const [reviewing, setReviewing] = useState(false);
   const [target, setTarget] = useState<ReviewTarget>();
   const [reviewSession, setReviewSession] = useState(0);
-  const [saved, setSaved] = useState<{ draft: Draft; review: ReviewState }>();
   const importInput = useRef<HTMLInputElement>(null);
   const reviewButton = useRef<HTMLButtonElement>(null);
   const fileSession = useFileSession(loaded.fileSession, draft, {
@@ -57,7 +56,7 @@ export function App() {
   useEffect(() => {
     if ((loaded.fileSession && !fileIdentity) || blocked || !validation.ok) return;
     const timer = setTimeout(() => {
-      try { persist(draft, localReview); setSaved({ draft, review: localReview }); }
+      try { persist(draft, localReview); }
       catch { setBlocked(true); setStorageError("Browser storage is unavailable. Download your composition and copy pending comments before reloading."); }
     }, 250);
     return () => clearTimeout(timer);
@@ -172,13 +171,11 @@ export function App() {
   const recovery = fileSession.opening ? "Opening the composition…" : !validation.ok ? "This edit is invalid. Undo it before saving." : error || storageError;
   const pending = review.notes.filter(note => !note.resolved);
   return <>
-    <main className={`workspace${reviewing ? " reviewing" : ""}`} aria-label="Composition canvas" inert={locked || undefined}
+    <main className={`workspace${reviewing ? " reviewing" : ""}`} aria-label="Composition canvas" inert={locked || undefined} data-file-status={loaded.fileSession ? fileSession.status : undefined}
       onDragOver={event => { if (event.dataTransfer.types.includes("Files")) event.preventDefault(); }}
       onDrop={event => { event.preventDefault(); if (!locked && event.dataTransfer.files[0]) void openComposition(event.dataTransfer.files[0]); }}>
-      <header className="board-heading"><h1>{draft.title}</h1><p>{draft.slides.length} {draft.slides.length === 1 ? "page" : "pages"}
-        {loaded.fileSession ? <span className={`file-status ${fileSession.status}`}> · {fileSession.status === "saved" ? "Saved to file" : fileSession.status}</span>
-          : ` · ${blocked || !validation.ok ? "Not saved" : saved?.draft === draft && saved.review === localReview ? "Saved in this browser" : "Saving…"}`}</p></header>
-      <PageBoard draft={draft}>{page => <Canvas mode={reviewing ? "review" : "edit"} draft={draft} activeSlideId={page.id}
+      <header className="board-heading"><h1>{draft.title}</h1></header>
+      <PageBoard draft={draft}>{(page, index) => <Canvas mode={reviewing ? "review" : "edit"} draft={draft} activeSlideId={page.id} pageNumber={index + 1}
         selected={selection?.slideId === page.id ? selection.componentId : undefined}
         commentTarget={target?.slideId === page.id ? target : undefined}
         onSelect={id => select(page.id, id)} onComment={componentId => comment({ slideId: page.id, ...(componentId ? { componentId } : {}) })}

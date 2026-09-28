@@ -36,10 +36,12 @@ function importDocument(document) {
 
 function drag(selector, dx, dy, during = () => {}) {
   const point = evaluate(`(() => { const target=document.querySelector(${JSON.stringify(selector)}),r=target.getBoundingClientRect(),c=document.querySelector('.scene-canvas').getBoundingClientRect(); return {x:r.x+r.width/2,y:r.y+r.height/2,scale:c.width/document.querySelector('.scene-artwork svg').viewBox.baseVal.width}; })()`);
-  b("mouse", "move", String(Math.round(point.x)), String(Math.round(point.y))); b("mouse", "down", "left");
+  const start = { x: Math.round(point.x), y: Math.round(point.y) };
+  b("mouse", "move", String(start.x), String(start.y)); b("mouse", "down", "left");
   for (const fraction of [.5, 1]) {
-    b("mouse", "move", String(Math.round(point.x + dx * point.scale * fraction)), String(Math.round(point.y + dy * point.scale * fraction)));
-    settle(); during(fraction);
+    const x = Math.round(start.x + dx * point.scale * fraction), y = Math.round(start.y + dy * point.scale * fraction);
+    b("mouse", "move", String(x), String(y));
+    settle(); during(fraction, { x: (x - start.x) / point.scale, y: (y - start.y) / point.scale });
   }
   b("mouse", "up", "left");
   settle();
@@ -76,7 +78,7 @@ try {
   b("press", "Control+z"); assert.equal(stored().slides[0].components.find(item=>item.id===text.id).area.row, 8);
   b("press", "Control+Shift+z"); assert.equal(stored().slides[0].components.find(item=>item.id===text.id).area.row, 9);
   drag(hit, 170, 24);
-  assert.ok(Number.isInteger(stored().slides[0].components.find(item=>item.id===text.id).area.column), "drag persists snapped integer grid area");
+  assert.ok(Math.abs(stored().slides[0].components.find(item=>item.id===text.id).area.column - 8.12) < 1e-10, "168px drag persists without rounding back to a whole column");
   b("dblclick", hit); b("wait", ".scene-text-editor");
   b("dblclick", ".scene-text-editor");
   assert.equal(evaluate("document.querySelector('.revision-notes')===null"), true, "selecting words does not open comments");
@@ -140,6 +142,7 @@ try {
     const rect = evaluate(`document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().toJSON()`);
     assert.ok(Math.abs(rect.width / rect.height - 210 / 297) < .001, "preserve paper proportions");
     assert.ok(rect.left >= 0 && rect.right <= 1600, "A4 page fits canvas width");
+    assert.ok(rect.top >= 0 && rect.bottom <= 1000 && rect.height > 750, "portrait page nearly fills the viewport height without clipping");
   };
   fit(".scene-canvas");
   capture("a4-editor");
@@ -148,7 +151,10 @@ try {
   importDocument(mixed);
   const sizes = evaluate("[...document.querySelectorAll('.scene-canvas')].map(p=>{const r=p.getBoundingClientRect();return r.width/r.height})");
   assert.ok(Math.abs(sizes[0] - 16/9) < .001 && Math.abs(sizes[2] - 210/297) < .001);
-  b("eval", "document.querySelector('.workspace').scrollTop=0"); capture("mixed-page-sizes");
+  b("eval", "document.querySelector('.workspace').scrollTo(0,0)"); capture("mixed-page-sizes");
+  b("eval", "document.querySelector('[data-page=portrait]').scrollIntoView({block:'nearest',inline:'center'})");
+  fit("[data-page=portrait] .scene-canvas");
+  capture("mixed-portrait-fit");
   const printSize = evaluate(`(async () => {
     const { exportComposition } = await import('/src/lib/export-scene.ts');
     const blob = await exportComposition(${JSON.stringify(print)}, 'png', 0, 2);
@@ -175,12 +181,24 @@ try {
   assert.deepEqual(geometry(), beforeUpgrade);
   capture("fine-grid-corrections");
   b("focus", hit); b("press", "ArrowRight");
-  assert.equal(stored().slides[0].components[0].area.column, 14);
+  assert.equal(stored().slides[0].components[0].area.column, 13.16);
   const newLeft = Number.parseFloat(geometry().find(item=>item[0]===text.id)[1]);
   const oldLeft = Number.parseFloat(beforeUpgrade.find(item=>item[0]===text.id)[1]);
-  assert.ok(Math.abs((newLeft-oldLeft)*1920/100-75)<.001, "one finer column moves 75 page pixels");
+  assert.ok(Math.abs((newLeft-oldLeft)*1920/100-12)<.001, "horizontal nudge matches the 12px vertical baseline");
   b("press", "Control+z");
   assert.equal(stored().slides[0].components[0].area.column, 13, "wait for the undone placement to persist");
+
+  const beforeSquare = stored();
+  drag(hit, 13, 13);
+  assert.deepEqual(stored().slides[0].components[0].area, { column: 13.16, span: 8, row: 9, rows: 18 }, "equal diagonal input moves 12px on each axis");
+  capture("square-step-drag");
+  b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
+  drag(".resize-se", 13, 13);
+  assert.deepEqual(stored().slides[0].components[0].area, { column: 13, span: 8.16, row: 8, rows: 19 }, "pointer resize uses square steps too");
+  b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
+  b("focus", ".resize-se"); b("press", "ArrowRight"); b("press", "ArrowDown");
+  assert.deepEqual(stored().slides[0].components[0].area, { column: 13, span: 8.16, row: 8, rows: 19 }, "keyboard resize matches pointer steps");
+  b("press", "Control+z"); b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
   b("reload"); b("wait", ".scene-artwork svg:not([aria-busy])"); settle();
   assert.equal(stored().slides[0].grid.revision, 2, "reload retains grid revision");
   assert.deepEqual(geometry(), beforeUpgrade);
@@ -219,21 +237,33 @@ try {
     const hit = document.querySelector('.component-hit[data-component="'+id+'"]');
     const item = document.querySelector('.scene-artwork [data-component="'+id+'"]');
     const line = item.querySelector('[data-baseline]');
-    return [id, { box: parseFloat(hit.style.top) * 630 / 100,
-      artwork: line ? +line.dataset.baseline : item.querySelector('path,rect').transform.baseVal.consolidate().matrix.f }];
+    const canvas = document.querySelector('.scene-canvas').getBoundingClientRect(), scale=canvas.height/630;
+    const y = line ? +line.dataset.baseline : item.querySelector('path,rect').transform.baseVal.consolidate().matrix.f;
+    return [id, { box: (hit.getBoundingClientRect().top-canvas.top)/scale,
+      artwork: (new DOMPoint(0,y).matrixTransform(item.getScreenCTM()).y-canvas.top)/scale }];
   }))`);
   const beforeGesture = positions();
   const assertMovement = (changes, message) => {
     const current = positions();
     for (const id of Object.keys(beforeGesture)) for (const field of ["box", "artwork"])
-      assert.ok(Math.abs(current[id][field] - beforeGesture[id][field] - (changes[id] ?? 0)) < .001,
+      assert.ok(Math.abs(current[id][field] - beforeGesture[id][field] - (changes[id] ?? 0)) < .05,
         `${message}: ${id}/${field} moved ${current[id][field] - beforeGesture[id][field]}px, expected ${changes[id] ?? 0}px`);
   };
   const audienceHit = ".component-hit[data-component=audience]";
-  drag(audienceHit, 0, 48, fraction => {
-    assertMovement({ audience: 48 * fraction }, "edge member tracks pointer; siblings stay still until drop");
+  drag(audienceHit, 0, 48, (fraction, delta) => {
+    assertMovement({ audience: delta.y }, "edge member tracks pointer; siblings stay still until drop");
     assert.equal(evaluate("document.querySelectorAll('.group-area-outline').length"), 1);
-    if (fraction === 1) capture("group-offset-held");
+    if (fraction === 1) {
+      // A toast state update rerenders App without changing the document.
+      b("eval", "(()=>{window.dragArtwork=document.querySelector('.scene-artwork svg');document.querySelector('.toast').dispatchEvent(new MouseEvent('mouseover',{bubbles:true}))})()");
+      settle();
+      assert.equal(evaluate("window.dragArtwork===document.querySelector('.scene-artwork svg')"), true, "unrelated UI updates preserve the live SVG");
+      assertMovement({ audience: delta.y }, "artwork and handles stay together after a UI update");
+      b("eval", "document.querySelector('.toast').dispatchEvent(new MouseEvent('mouseout',{bubbles:true}))");
+      b("wait", "3500");
+      assertMovement({ audience: delta.y }, "toast dismissal cannot reset the preview");
+      capture("group-offset-held");
+    }
   });
   assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 53);
   assertMovement({ audience: 24, "brand-mark": -24, brand: -24, promise: -24 }, "group settles once on drop");
@@ -257,9 +287,9 @@ try {
 
   for (const cancel of ["pointercancel", "lostpointercapture"]) {
     b("eval", "document.addEventListener('pointerdown', event => { window.testPointerId = event.pointerId; }, {once:true, capture:true})");
-    drag(audienceHit, 0, 48, fraction => {
+    drag(audienceHit, 0, 48, (fraction, delta) => {
       if (fraction === .5) {
-        assertMovement({ audience: 24 }, "first move precedes cancellation");
+        assertMovement({ audience: delta.y }, "first move precedes cancellation");
         b("eval", cancel === "pointercancel"
           ? `document.querySelector('${audienceHit}').dispatchEvent(new PointerEvent('pointercancel', {bubbles:true, pointerId:window.testPointerId}))`
           : `document.querySelector('${audienceHit}').releasePointerCapture(window.testPointerId)`);
@@ -313,6 +343,16 @@ try {
   b("press", "Control+Shift+z");
   assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "start");
   capture("left-aligned-artwork");
+
+  const replacement = stored();
+  replacement.title = "Source replaced during drag";
+  const replacementBrand = replacement.slides[0].components.find(item => item.id === "brand");
+  replacementBrand.content = "Newer source";
+  replacementBrand.area.row += 1;
+  drag(brandHit, 0, 48, fraction => { if (fraction === .5) importDocument(replacement); });
+  assert.deepEqual(stored(), replacement, "a stale drag cannot overwrite imported geometry or text");
+  assert.equal(evaluate("[...document.querySelectorAll('.component-hit')].every(hit=>!hit.style.translate)"), true);
+  assertGroupHits(replacement);
 
   const legacy = initialDraft(true);
   assert.equal(parseCompositionJSON(JSON.stringify(legacy)).ok, false, "v1 documents are rejected rather than edited");

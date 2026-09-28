@@ -33,7 +33,9 @@ test("v2 is the sole public generated schema and rejects pixels", () => {
     (d: any) => d.slides[0].components[0].preferredRect = { x: 1, y: 1, width: 10, height: 10 },
     (d: any) => d.slides[0].components[0].textStyle.size = 37,
     (d: any) => d.slides[0].components[0].textStyle.lineHeight = 1.4,
-    (d: any) => d.slides[0].components[0].area.column = 1.5,
+    (d: any) => d.slides[0].components[0].area.column = .9,
+    (d: any) => d.slides[0].components[0].area.span = .875,
+    (d: any) => d.slides[0].components[0].area.row = 1.5,
     (d: any) => d.slides[0].components[0].area.row = 0,
     (d: any) => d.slides[0].grid.preset = "unknown",
     (d: any) => d.slides[0].grid.revision = 3,
@@ -90,14 +92,14 @@ test("new drafts use finer placement, retain parity and bounds, and inherit revi
     { column: 1, span: 24, row: 77, rows: 2 });
   component.area.column = 25;
   assert.equal(validateComposition(document).ok, false);
-  component.area = { column: "center", span: 5, row: 1, rows: 10 };
-  const invalid = validateComposition(document);
-  assert.ok(!invalid.ok); assert.match(invalid.issues[0].message, /use span 4 or 6/);
+  component.area = { column: "center", span: 5.125, row: 1, rows: 10 };
+  assert.ok(validateComposition(document).ok, "horizontal centering supports fractional columns");
+  assert.equal(resolveArea(page.grid, component.area).column, 10.4375);
   component.area.span = 6;
   assert.equal(resolveArea(page.grid, component.area).column, 10);
   const draft = resolveDocument(document), resolved = draft.slides[0].components[0];
-  const moved = transformComponentRect(resolved, resolved.preferredRect, { ...resolved.preferredRect, x: resolved.preferredRect.x + 75 }, page.grid);
-  assert.deepEqual(moved.area, { column: 11, span: 6, row: 1, rows: 10 });
+  const moved = transformComponentRect(resolved, resolved.preferredRect, { ...resolved.preferredRect, x: resolved.preferredRect.x + 12 }, page.grid);
+  assert.deepEqual(moved.area, { column: 10.16, span: 6, row: 1, rows: 10 });
   assert.deepEqual(addSlide(draft).draft.slides[1].grid, page.grid);
   assert.deepEqual(toComposition(resolveDocument(document)), document);
   assert.match(compileHandoff(document), /24 columns, 78 baseline rows/);
@@ -118,6 +120,47 @@ test("areas use gutters only between columns; snapping clamps all page edges", (
   assert.equal(validateComposition(document).ok, false);
 });
 
+test("corrections use equal horizontal and vertical steps without shifting existing geometry", () => {
+  const grid = { preset: "presentation", revision: 2 } as const;
+  const origin = { column: 3, span: 6, row: 6, rows: 5 };
+  const rect = { x: 222, y: 132, width: 426, height: 60 };
+  for (const [delta, expected] of [[5.99, 0], [6.01, 12], [-5.99, 0], [-6.01, -12]]) {
+    const area = snapArea(grid, { ...rect, x: rect.x + delta, y: rect.y + delta }, origin);
+    const moved = areaRect(grid, area);
+    assert.ok(Math.abs(moved.x - rect.x - expected) < 1e-10);
+    assert.equal(moved.y - rect.y, expected);
+    assert.equal(area.span, origin.span); assert.equal(area.rows, origin.rows);
+  }
+  assert.deepEqual(snapArea(grid, rect, origin), origin, "clicking does not quantize old positions or sizes");
+  const resized = areaRect(grid, snapArea(grid, { ...rect, width: rect.width + 13, height: rect.height + 13 }, origin));
+  assert.deepEqual(resized, { ...rect, width: 438, height: 72 });
+  assert.deepEqual(snapArea(grid, { ...rect, x: 4000, y: 4000, width: 438 }, origin),
+    { column: 18.84, span: 6.16, row: 74, rows: 5 });
+});
+
+test("fine horizontal areas round-trip on every preset and survive grid refinement", () => {
+  for (const preset of Object.keys(gridPresets) as GridPreset[]) for (const revision of [1, 2] as const) {
+    const document = fixture(), page = document.slides[0];
+    page.grid = { preset, revision };
+    page.components[0].area = { column: 2.1, span: 1.37, row: 9, rows: 11 };
+    page.groups = [{ id: "fine-group", childIds: [page.components[0].id],
+      area: { column: "center", span: 2.25, row: 1, rows: 30 }, verticalAlignment: "center" }];
+    assert.ok(validateComposition(document).ok);
+    assert.deepEqual(toComposition(resolveDocument(document)), document);
+    assert.deepEqual(parseStoredDraft(serializeDraft(resolveDocument(document))), { ok: true, draft: resolveDocument(document) });
+    const refined = refineGrid(page);
+    for (const [before, after] of [[page.components[0].area, refined.components[0].area], [page.groups[0].area!, refined.groups[0].area!]]) {
+      const rect = areaRect(page.grid, before), next = areaRect(refined.grid, after);
+      for (const axis of ["x", "y", "width", "height"] as const) assert.ok(Math.abs(rect[axis] - next[axis]) < 1e-10);
+    }
+    const area = page.components[0].area, rect = areaRect(page.grid, area), step = gridPresets[preset].baseline;
+    assert.deepEqual(snapArea(page.grid, rect, area), area);
+    const moved = areaRect(page.grid, snapArea(page.grid, { ...rect, x: rect.x + step, y: rect.y + step }, area));
+    assert.ok(Math.abs(moved.x - rect.x - step) < 1e-10);
+    assert.equal(moved.y - rect.y, step);
+  }
+});
+
 test("grid middles match page middles, including the leftover baseline height", () => {
   for (const preset of Object.keys(gridPresets) as GridPreset[]) {
     const grid = { preset }, metrics = gridMetrics(grid);
@@ -133,7 +176,7 @@ test("grid middles match page middles, including the leftover baseline height", 
   assert.equal(gridMetrics({ preset: "gallery" }).marginY, 68);
 });
 
-test("center placement enforces both parities and preserves intent through editing", () => {
+test("center placement enforces row parity and preserves intent through editing", () => {
   const document = fixture(), page = document.slides[0], component = page.components[0];
   component.area = { column: "center", span: 4, row: "center", rows: 10 };
   assert.ok(validateComposition(document).ok);
@@ -143,7 +186,7 @@ test("center placement enforces both parities and preserves intent through editi
   const moved = transformComponentRect(resolved, resolved.preferredRect, { ...resolved.preferredRect, y: resolved.preferredRect.y + 12 }, page.grid);
   assert.deepEqual(moved.area, { column: "center", span: 4, row: 36, rows: 10 });
   assert.ok(validateDraft(duplicateComponent(resolveDocument(document), component.id)).ok);
-  for (const [key, value, message] of [["span", 3, /use span 2 or 4/], ["rows", 11, /use rows 10 or 12/]] as const) {
+  for (const [key, value, message] of [["rows", 11, /use rows 10 or 12/]] as const) {
     const invalid = structuredClone(document);
     invalid.slides[0].components[0].area[key] = value;
     const result = validateComposition(invalid);
@@ -154,9 +197,9 @@ test("center placement enforces both parities and preserves intent through editi
   component.area.rows = 11;
   assert.ok(validateComposition(document).ok);
   assert.equal(resolveArea(page.grid, component.area).row, 27);
-  page.groups = [{ id: "aligned", childIds: [component.id], area: { column: "center", span: 3, row: 1, rows: 20 }, verticalAlignment: "center" }];
+  page.groups = [{ id: "aligned", childIds: [component.id], area: { column: "center", span: 3.125, row: "center", rows: 20 }, verticalAlignment: "center" }];
   assert.equal(validateComposition(document).ok, false, "group areas use the same parity rule");
-  page.groups[0].area!.span = 4;
+  page.groups[0].area!.rows = 21;
   assert.ok(validateComposition(document).ok);
   delete page.groups[0].verticalAlignment;
   assert.equal(validateComposition(document).ok, false, "an alignment area cannot silently do nothing");
@@ -232,7 +275,7 @@ test("canvas edits serialize as areas, retain IDs through agent revision, storag
   const draft = resolveDocument(original);
   const c = draft.slides[0].components[0];
   const moved = transformComponentRect(c, c.preferredRect, { x: 523, y: 217, width: 428, height: 156 }, draft.slides[0].grid);
-  assert.deepEqual(moved.area, { column: 4, span: 3, row: 13, rows: 13 });
+  assert.deepEqual(moved.area, { column: 4.04, span: 3.04, row: 13, rows: 13 });
   draft.slides[0].components[0] = moved;
   const wire = toComposition(draft) as GridDocument;
   assert.equal("preferredRect" in wire.slides[0].components[0], false);
@@ -250,7 +293,7 @@ test("canvas edits serialize as areas, retain IDs through agent revision, storag
   assert.ok(validateDraft(duplicate).ok);
   assert.equal(addSlide(duplicate).draft.slides[1].grid?.preset, "presentation");
   const handoff = compileHandoff(revised);
-  assert.match(handoff, /column 4, span 3, row 13, rows 13/);
+  assert.match(handoff, /column 4\.04, span 3\.04, row 13, rows 13/);
   assert.deepEqual(JSON.parse(handoff.match(/```json\n([\s\S]+?)\n```/)![1]), revised);
 });
 
@@ -298,11 +341,11 @@ test("file sessions retain v2 source and reject stale or derived-pixel writes", 
     assert.deepEqual(opened.document, document);
     const draft = resolveDocument(opened.document);
     await assert.rejects(saveCompositionFile(path, opened.revision, draft), { code: "INVALID_COMPOSITION" });
-    draft.slides[0].components[0].area!.column = 4;
+    draft.slides[0].components[0].area!.column = 4.125;
     await saveCompositionFile(path, opened.revision, toComposition(draft));
     const saved = JSON.parse(await readFile(path, "utf8"));
     assert.equal(saved.schema, gridSchema);
-    assert.equal(saved.slides[0].components[0].area.column, 4);
+    assert.equal(saved.slides[0].components[0].area.column, 4.125);
     assert.equal("preferredRect" in saved.slides[0].components[0], false);
     await assert.rejects(saveCompositionFile(path, opened.revision, document), { code: "REVISION_CONFLICT" });
   } finally { await rm(directory, { recursive: true, force: true }); }

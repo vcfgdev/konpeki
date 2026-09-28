@@ -85,9 +85,10 @@ export function typeSize(grid: PageGrid, step: TypeStep) {
 export function areaIssue(grid: PageGrid, area: GridArea): string | undefined {
   const p = gridMetrics(grid);
   for (const [position, span, count] of [["column", "span", p.columns], ["row", "rows", p.rows]] as const) {
-    if (area[span] > count || typeof area[position] === "number" && area[position] + area[span] - 1 > count)
+    // Fractional column coordinates can accumulate floating-point roundoff.
+    if (area[span] > count + 1e-9 || typeof area[position] === "number" && area[position] + area[span] - 1 > count + 1e-9)
       return "Area exceeds grid; recompose for this destination";
-    if (area[position] === "center" && (count - area[span]) % 2 !== 0) {
+    if (position === "row" && area[position] === "center" && (count - area[span]) % 2 !== 0) {
       const nearest = [area[span] - 1, area[span] + 1].filter(value => value >= 1 && value <= count);
       return `Cannot center ${span} ${area[span]} on ${count} ${position}s; use ${span} ${nearest.join(" or ")}`;
     }
@@ -109,15 +110,21 @@ export function areaRect(grid: PageGrid, area: GridArea): Contract.Rect {
     height: area.rows * p.baseline,
   };
 }
-export function snapArea(grid: PageGrid, rect: Contract.Rect): NumericGridArea {
+export function snapArea(grid: PageGrid, rect: Contract.Rect, origin?: GridArea): NumericGridArea {
   const p = gridMetrics(grid);
-  const clamp = (n: number, max: number) => Math.max(1, Math.min(max, Math.round(n)));
-  const span = clamp((rect.width + p.gutter) / (p.columnWidth + p.gutter), p.columns);
-  const rows = clamp(rect.height / p.baseline, p.rows);
+  const clamp = (n: number, max: number) => Math.max(1, Math.min(max, n));
+  const pitch = p.columnWidth + p.gutter;
+  const before = origin && areaRect(grid, origin);
+  // Corrections use the vertical baseline on both axes. Measure deltas from the
+  // authored area so selecting or moving vertically never shifts older layouts.
+  const span = clamp(origin && before ? origin.span + Math.round((rect.width - before.width) / p.baseline) * p.baseline / pitch
+    : Math.round((rect.width + p.gutter) / pitch), p.columns);
+  const rows = clamp(Math.round(rect.height / p.baseline), p.rows);
   return {
-    column: clamp((rect.x - p.margin) / (p.columnWidth + p.gutter) + 1, p.columns - span + 1),
+    column: clamp(origin && before ? resolveArea(grid, origin).column + Math.round((rect.x - before.x) / p.baseline) * p.baseline / pitch
+      : Math.round((rect.x - p.margin) / pitch + 1), p.columns - span + 1),
     span,
-    row: clamp((rect.y - p.marginY) / p.baseline + 1, p.rows - rows + 1),
+    row: clamp(Math.round((rect.y - p.marginY) / p.baseline + 1), p.rows - rows + 1),
     rows,
   };
 }

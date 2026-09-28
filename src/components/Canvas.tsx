@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import type { CompositionComponent, Rect } from "../../composition/runtime.ts";
 import { areaRect, gridMetrics, snapArea, toComposition } from "../../composition/grid.ts";
 import { lowerPage } from "../../composition/lower.ts";
@@ -10,7 +10,7 @@ import type { RevisionNote, ReviewTarget } from "../lib/review.ts";
 
 type Corner = "nw" | "ne" | "sw" | "se";
 type Props = {
-  mode?: "edit" | "review"; draft: Draft; activeSlideId: string; selected?: string;
+  mode?: "edit" | "review"; draft: Draft; activeSlideId: string; pageNumber: number; selected?: string;
   commentTarget?: ReviewTarget;
   onSelect: (id?: string) => void;
   onComment?: (componentId?: string) => void;
@@ -27,12 +27,14 @@ const resize = (r: Rect, dx: number, dy: number, c: Corner): Rect => ({
   width: r.width + (c.endsWith("w") ? -dx : dx), height: r.height + (c.startsWith("n") ? -dy : dy),
 });
 
-export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentTarget, onSelect, onComment, onSlideName, onComponent, onDuplicate, onEditEnd, onNotice, revisionNotes = [], onSelectNote }: Props) {
+export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, selected, commentTarget, onSelect, onComment, onSlideName, onComponent, onDuplicate, onEditEnd, onNotice, revisionNotes = [], onSelectNote }: Props) {
   const interactive = mode === "edit", slide = getSlide(draft, activeSlideId);
   const root = useRef<HTMLDivElement>(null);
   const sceneId = useId();
   const [rendered, setRendered] = useState<{ markup: string; components: ScenePage["components"] }>({ markup: "", components: [] });
   const { markup } = rendered;
+  // Unrelated UI updates must not replace the SVG underneath an active preview.
+  const artwork = useMemo(() => ({ __html: markup }), [markup]);
   const [renderError, setRenderError] = useState("");
   const [guides, setGuides] = useState<Guide[]>([]);
   const [heldGroup, setHeldGroup] = useState<{ id: string; offset: number; area: Rect }>();
@@ -40,6 +42,11 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
   const [renaming, setRenaming] = useState(false), [name, setName] = useState(slide.name);
   const gesture = useRef<{ id: string; x: number; y: number; rect: Rect; scale: number; corner?: Corner; duplicate?: boolean } | undefined>(undefined);
   const nodeGesture = useRef<{ componentId: string; nodeId: string; x: number; y: number; position: { x: number; y: number }; scale: number } | undefined>(undefined);
+  const preview = useRef<{ document: Draft; cssScale: number; rect?: Rect; nodes: (HTMLElement | SVGElement)[] } | undefined>(undefined);
+  const previewFrame = useRef(0);
+  // Moving does not change layout until drop. Keep the settled scene, including
+  // group offsets, and translate just its existing artwork and interaction chrome.
+  const renderGroup = preview.current ? undefined : heldGroup;
 
   useEffect(() => {
     let stale = false;
@@ -47,12 +54,24 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
     void sceneFonts().then(fonts => {
       const document = toComposition(draft);
       const page = document.slides.find(item => item.id === activeSlideId)!;
-      const scene = lowerPage(document, page, fonts, heldGroup && new Map([[heldGroup.id, heldGroup.offset]]));
+      const scene = lowerPage(document, page, fonts, renderGroup && new Map([[renderGroup.id, renderGroup.offset]]));
       const next = renderSVG(scene, fonts, undefined, sceneId);
       if (!stale) setRendered({ markup: next, components: scene.components });
     }).catch(error => !stale && setRenderError(error instanceof Error ? error.message : "Scene rendering failed."));
     return () => { stale = true; };
-  }, [draft, activeSlideId, sceneId, heldGroup]);
+  }, [draft, activeSlideId, sceneId, renderGroup]);
+
+  useLayoutEffect(() => {
+    // Keep the preview until the committed scene replaces it, avoiding a flash
+    // back to the old position between the document update and SVG generation.
+    if (!gesture.current) clearPreview();
+  }, [rendered]);
+  useLayoutEffect(() => {
+    if (gesture.current && preview.current && (preview.current.document !== draft || !interactive)) {
+      gesture.current = undefined; clearPreview(); setHeldGroup(undefined);
+    }
+  }, [draft, interactive]);
+  useEffect(() => () => clearPreview(), []);
 
   useEffect(() => {
     window.addEventListener("blur", end);
@@ -69,12 +88,33 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
   function changed(component: CompositionComponent, rect: Rect) {
     onComponent(transformComponentRect(component, component.preferredRect, rect, slide.grid), `geometry:${component.id}`);
   }
+  function clearPreview() {
+    cancelAnimationFrame(previewFrame.current); previewFrame.current = 0;
+    for (const node of preview.current?.nodes ?? []) {
+      if (node instanceof SVGElement) node.removeAttribute("transform");
+      else node.style.removeProperty("translate");
+    }
+    preview.current = undefined;
+  }
+  function paintPreview() {
+    previewFrame.current = 0;
+    const active = gesture.current, current = preview.current;
+    if (!active || !current?.rect || !root.current) return;
+    if (!current.nodes.length) current.nodes = [...root.current.querySelectorAll<HTMLElement | SVGElement>(`[data-component="${CSS.escape(active.id)}"], .resize-handle, .process-node-hit`)];
+    const dx = current.rect.x - active.rect.x, dy = current.rect.y - active.rect.y;
+    for (const node of current.nodes) {
+      if (node instanceof SVGElement) node.setAttribute("transform", `translate(${dx} ${dy})`);
+      else node.style.translate = `${dx * current.cssScale}px ${dy * current.cssScale}px`;
+    }
+  }
   function start(event: ReactPointerEvent, component: CompositionComponent, corner?: Corner) {
     if (event.button !== 0) return;
     event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect(component.id);
     // Pointer deltas apply to authored geometry. Capturing it here keeps the
     // derived group offset out of the document and stable throughout the drag.
     gesture.current = { id: component.id, x: event.clientX, y: event.clientY, rect: component.preferredRect, corner, duplicate: event.altKey && !corner, scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
+    clearPreview();
+    if (!corner && !event.altKey) preview.current = { document: draft, cssScale: parseFloat(getComputedStyle(root.current!).width) / slide.canvas.width, nodes: [] };
     if (!gesture.current.duplicate) holdGroup(component);
   }
   function move(event: ReactPointerEvent) {
@@ -90,15 +130,36 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
     const dx = (event.clientX - active.x) / active.scale, dy = (event.clientY - active.y) / active.scale;
     if (active.duplicate && Math.hypot(dx, dy) < 3) return;
     const proposed = active.corner ? resize(active.rect, dx, dy, active.corner) : { ...active.rect, x: active.rect.x + dx, y: active.rect.y + dy };
+    if (preview.current) {
+      const padding = slide.innerPadding;
+      preview.current.rect = { ...proposed,
+        x: Math.max(padding?.left ?? 0, Math.min(slide.canvas.width - (padding?.right ?? 0) - proposed.width, proposed.x)),
+        y: Math.max(padding?.top ?? 0, Math.min(slide.canvas.height - (padding?.bottom ?? 0) - proposed.height, proposed.y)),
+      };
+      if (!previewFrame.current) previewFrame.current = requestAnimationFrame(paintPreview);
+      return;
+    }
     const others = slide.components.filter(item => item.id !== active.id).map(box);
-    const result = slide.grid ? { rect: areaRect(slide.grid, snapArea(slide.grid, proposed)), guides: [] } : active.corner
+    const result = slide.grid ? { rect: areaRect(slide.grid, snapArea(slide.grid, proposed, component.area)), guides: [] } : active.corner
       ? snapResizeRect(proposed, others, 14, { left: active.corner.endsWith("w"), right: active.corner.endsWith("e"), top: active.corner.startsWith("n"), bottom: active.corner.startsWith("s") }, slide.canvas, slide.innerPadding)
       : snapRect(proposed, others, 14, slide.canvas, slide.innerPadding);
     setGuides(result.guides);
     if (active.duplicate) { active.duplicate = false; component = onDuplicate?.(component.id, result.rect); if (!component) gesture.current = undefined; else active.id = component.id; return; }
     changed(component, result.rect);
   }
-  function end() { gesture.current = undefined; nodeGesture.current = undefined; setHeldGroup(undefined); setGuides([]); onEditEnd(); }
+  function end() {
+    const active = gesture.current, current = preview.current;
+    gesture.current = undefined; nodeGesture.current = undefined;
+    cancelAnimationFrame(previewFrame.current); previewFrame.current = 0;
+    const component = active && slide.components.find(item => item.id === active.id);
+    if (active && component && current?.rect && current.document === draft) {
+      const rect = slide.grid ? areaRect(slide.grid, snapArea(slide.grid, current.rect, component.area))
+        : snapRect(current.rect, slide.components.filter(item => item.id !== component.id).map(box), 14, slide.canvas, slide.innerPadding).rect;
+      if (rect.x !== active.rect.x || rect.y !== active.rect.y) changed(component, rect);
+      else clearPreview();
+    } else if (active) clearPreview();
+    setHeldGroup(undefined); setGuides([]); onEditEnd();
+  }
   function positionNode(componentId: string, nodeId: string, position?: { x: number; y: number }) {
     const component = slide.components.find(item => item.id === componentId);
     if (component?.kind !== "diagram" || !component.processFlow || !component.topology) return;
@@ -152,7 +213,8 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
     holdGroup(component);
     const r = component.preferredRect;
     const metrics = slide.grid && gridMetrics(slide.grid);
-    const dx = event.key === "ArrowRight" ? metrics ? metrics.columnWidth + metrics.gutter : 10 : event.key === "ArrowLeft" ? metrics ? -metrics.columnWidth - metrics.gutter : -10 : 0;
+    const horizontalStep = metrics?.baseline ?? 10;
+    const dx = event.key === "ArrowRight" ? horizontalStep : event.key === "ArrowLeft" ? -horizontalStep : 0;
     const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
     const next = snapRect({ ...r, x: r.x + dx, y: r.y + dy }, [], 0, slide.canvas, slide.innerPadding).rect;
     changed(component, next);
@@ -162,7 +224,8 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
     event.preventDefault(); event.stopPropagation();
     holdGroup(component);
     const metrics = slide.grid && gridMetrics(slide.grid);
-    const dx = event.key === "ArrowRight" ? metrics ? metrics.columnWidth + metrics.gutter : 10 : event.key === "ArrowLeft" ? metrics ? -metrics.columnWidth - metrics.gutter : -10 : 0;
+    const horizontalStep = metrics?.baseline ?? 10;
+    const dx = event.key === "ArrowRight" ? horizontalStep : event.key === "ArrowLeft" ? -horizontalStep : 0;
     const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
     const next = snapResizeRect(resize(component.preferredRect, dx, dy, corner), [], 0, { left: corner.endsWith("w"), right: corner.endsWith("e"), top: corner.startsWith("n"), bottom: corner.startsWith("s") }, slide.canvas, slide.innerPadding).rect;
     changed(component, next); onNotice(`Size ${Math.round(next.width)} by ${Math.round(next.height)}`);
@@ -170,13 +233,13 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
 
   return <section className="stage" style={{ "--page-ratio": slide.canvas.width / slide.canvas.height } as CSSProperties} tabIndex={interactive ? -1 : undefined} onPointerDown={event => { if (interactive && event.target === event.currentTarget) onSelect(); }}>
     <div className="slide-wrap">
-      <div className="stage-meta">{interactive && renaming ? <input aria-label="Page name" autoFocus value={name} onChange={e => setName(e.target.value)} onBlur={() => { if (name.trim()) onSlideName(name.trim()); setRenaming(false); }} onKeyDown={e => e.key === "Enter" && e.currentTarget.blur()} /> : <h2 onClick={() => interactive ? onSelect() : onComment?.()} onDoubleClick={() => { if (interactive) { setName(slide.name); setRenaming(true); } }}>{slide.name}</h2>}
+      <div className="stage-meta"><span className="page-index" aria-hidden="true">{String(pageNumber).padStart(2, "0")}</span>{interactive && renaming ? <input aria-label="Page name" autoFocus value={name} onChange={e => setName(e.target.value)} onBlur={() => { if (name.trim()) onSlideName(name.trim()); setRenaming(false); }} onKeyDown={e => e.key === "Enter" && e.currentTarget.blur()} /> : <h2 onClick={() => interactive ? onSelect() : onComment?.()} onDoubleClick={() => { if (interactive) { setName(slide.name); setRenaming(true); } }}>{slide.name}</h2>}
       </div>
       <div ref={root} className={`canvas scene-canvas ${mode === "review" ? "review-canvas" : ""}${commentTarget && !commentTarget.componentId ? " comment-selected" : ""}`} style={{ aspectRatio: `${slide.canvas.width}/${slide.canvas.height}` }} aria-label="Page canvas" aria-busy={!markup || undefined}
-        onPointerDown={selectArtwork} onDoubleClick={() => { if (interactive) onComment?.(); }} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end}
+        onPointerDown={selectArtwork} onDoubleClick={() => { if (interactive) onComment?.(); }} onPointerMove={move} onPointerUp={event => { if (preview.current) move(event); end(); }} onPointerCancel={end} onLostPointerCapture={end}
         onBlur={() => { if (!gesture.current && !nodeGesture.current) end(); }}
         onKeyUp={event => { if (event.key.startsWith("Arrow")) end(); }}>
-        {renderError ? <p className="scene-error" role="alert">{renderError}</p> : <div className="scene-artwork" dangerouslySetInnerHTML={{ __html: markup }} />}
+        {renderError ? <p className="scene-error" role="alert">{renderError}</p> : <div className="scene-artwork" dangerouslySetInnerHTML={artwork} />}
         {mode === "review" && <button type="button" className="page-comment-hit" aria-label={`Comment on page: ${slide.name}`} onClick={() => onComment?.()} />}
         {interactive && heldGroup && <div className="group-area-outline" aria-hidden="true" style={{ left: `${heldGroup.area.x/slide.canvas.width*100}%`, top: `${heldGroup.area.y/slide.canvas.height*100}%`, width: `${heldGroup.area.width/slide.canvas.width*100}%`, height: `${heldGroup.area.height/slide.canvas.height*100}%` }} />}
         {slide.paintOrder.map(id => slide.components.find(component => component.id === id)!).map(component => <button key={component.id} type="button" data-component={component.id} className={`component-hit ${selected === component.id || commentTarget?.componentId === component.id ? "selected" : ""}`} style={{ left: `${box(component).x/slide.canvas.width*100}%`, top: `${box(component).y/slide.canvas.height*100}%`, width: `${box(component).width/slide.canvas.width*100}%`, height: `${box(component).height/slide.canvas.height*100}%` }} aria-label={`${interactive ? "Select" : "Comment on"} ${componentInstanceLabel(slide.components, component.id)}`} aria-pressed={selected === component.id || commentTarget?.componentId === component.id}
@@ -214,7 +277,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, selected, commentT
           if (note.slideId !== slide.id || note.resolved || note.componentId && !component) return null;
           const r = component && box(component);
           const previous = revisionNotes.slice(0, index).filter(item => !item.resolved && item.slideId === note.slideId && item.componentId === note.componentId).length;
-          return <button key={note.id} type="button" className="revision-pin" style={{ left: r ? `clamp(0px, calc(${(r.x+r.width)/slide.canvas.width*100}% - ${64 + previous * 44}px), calc(100% - 40px))` : `${3 + previous * 44}px`, top: r ? `max(0px, calc(${r.y/slide.canvas.height*100}% - 32px))` : "3px" }} aria-label={`Revision note ${index+1}: ${note.text}`} onPointerDown={event => event.stopPropagation()} onDoubleClick={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); onSelectNote?.(note); }}>{index+1}</button>;
+          return <button key={note.id} type="button" className="revision-pin" data-component={note.componentId} style={{ left: r ? `clamp(0px, calc(${(r.x+r.width)/slide.canvas.width*100}% - ${64 + previous * 44}px), calc(100% - 40px))` : `${3 + previous * 44}px`, top: r ? `max(0px, calc(${r.y/slide.canvas.height*100}% - 32px))` : "3px" }} aria-label={`Revision note ${index+1}: ${note.text}`} onPointerDown={event => event.stopPropagation()} onDoubleClick={event => event.stopPropagation()} onClick={event => { event.stopPropagation(); onSelectNote?.(note); }}>{index+1}</button>;
         })}
       </div>
     </div>

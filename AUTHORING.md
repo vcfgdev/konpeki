@@ -31,7 +31,10 @@ doubles columns, not rows. Existing pages without a revision retain their
 original grid. Use `konpeki refine-grid`
 to convert existing areas losslessly; never change the revision alone. Place each
 component with an explicit `area` (`column`, `span`, `row`, `rows`). Starts are
-one-based integers or `"center"`; centered spans must match the grid's parity.
+one-based or `"center"`. Columns and spans may be fractional; rows and heights
+remain integers, and centered heights must match the grid's row parity.
+Canvas corrections use the same baseline-sized step on both axes. Preserve
+their fractional column coordinates rather than rounding them to whole columns.
 Preset changes never recompose a page; adapt areas and copy deliberately. Baseline
 rows are fixed, so more content does not make a component grow.
 

@@ -26,9 +26,10 @@ slide.properties.grid = {
   properties: { preset: { enum: Object.keys(gridPresets) }, revision: { enum: [1, 2] } },
 };
 const gridInteger = { type: "integer", minimum: 1, maximum: 512 };
+const gridColumn = { type: "number", minimum: 1, maximum: 512 };
 const area = {
   type: "object", additionalProperties: false, required: ["column", "span", "row", "rows"],
-  properties: { column: { anyOf: [gridInteger, { const: "center" }] }, span: gridInteger,
+  properties: { column: { anyOf: [gridColumn, { const: "center" }] }, span: gridColumn,
     row: { anyOf: [gridInteger, { const: "center" }] }, rows: gridInteger },
 };
 slide.properties.groups.items.properties.area = area;

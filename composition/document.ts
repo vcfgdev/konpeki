@@ -312,7 +312,7 @@ export function transformComponentRect(
   grid?: PageGrid,
 ): CompositionComponent {
   if (grid) {
-    const area: GridArea = snapArea(grid, nextRect);
+    const area: GridArea = snapArea(grid, nextRect, component.area);
     if (component.area?.column === "center" && previousRect.x === nextRect.x && previousRect.width === nextRect.width) area.column = "center";
     if (component.area?.row === "center" && previousRect.y === nextRect.y && previousRect.height === nextRect.height) area.row = "center";
     return resolveComponent({ ...toGridComponent(component), area }, grid);
