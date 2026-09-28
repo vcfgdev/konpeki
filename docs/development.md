@@ -108,14 +108,36 @@ With the dev server running and `agent-browser` installed:
 node scripts/check-text-layout.mjs
 node scripts/check-scene-writers.mjs
 node scripts/check-grid-editing.mjs http://localhost:4318 /tmp/konpeki-editing
+node scripts/check-page-zoom.mjs http://localhost:4318 /tmp/konpeki-zoom
 node scripts/check-process-flow.mjs http://localhost:4318 /tmp/konpeki-process-flow
-node scripts/check-notes.mjs /tmp/konpeki-notes
+node scripts/check-notes.mjs /tmp/konpeki-comments
 node scripts/check-grid.mjs /tmp/konpeki-gallery
 ```
 
-Inspect the captured editor, presentation, night, and export states. Assertions
+Inspect the captured all-page canvas, comment, night, and export states. Assertions
 do not establish visual correctness. `check-grid` uses the scene checks and
 renders all 11 pages without a browser; chart scale is a review warning.
+
+`check-grid-editing` exercises the correction canvas: text, movement, resize,
+undo, repeated component IDs across pages, mixed page sizes, group alignment,
+imports, and export. Design changes such as theme, artwork
+alignment, and grid refinement now arrive through source imports rather than
+browser settings. `check-notes` starts a disposable file session and verifies
+page/component comments, legacy import, browser-local persistence across preview
+restarts, actual clipboard contents, denied/unavailable clipboard fallback,
+no-duplicate retry, no sidecar writes, export isolation, failed-storage draft
+preservation, the comment pill and pending count, one-click review entry,
+draft preservation across dialogs, page-order arrows, and empty/narrow layouts.
+It also verifies text correction during external edits, copying during GET/PUT
+failures, and malformed legacy imports without blocking composition saves.
+Older scripts for the pre-scene
+editor and presentation UI are historical; use the checks listed above for the
+current canvas.
+
+`check-page-zoom` verifies native Chromium Ctrl+wheel input, pointer anchoring,
+two-axis wheel scrolling, zoom limits, delta units, a synthetic Safari gesture
+sequence, and corrections/comments while zoomed. It does not replace a physical
+trackpad check in macOS Safari.
 
 `check-process-flow` exercises node drag/nudge, undo/redo, reset, reload, and a
 subsequent JSON revision preserving the human's position override. It captures

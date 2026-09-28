@@ -1,19 +1,21 @@
 ![Konpeki — Create clear visuals with your coding agent](slides/github-cover/cover.png)
 
-**Create clear visuals with your coding agent.** Konpeki is an opinionated design
-framework for covers, social graphics, visual explanations and presentations.
+**Create finished visuals with your coding agent.** Konpeki combines a concise
+design direction, its own rendering engine, and editable source for covers,
+social graphics, visual explanations and presentations.
 
-Give your coding agent notes, source material and a brief. Konpeki provides the
-canvas, design guidance, typography and semantic components for the intended
-format and dimensions.
+Give your coding agent source material and a brief. It authors a finished visual
+with editable source and requested exports. If a correction is useful, edit basic
+canvas text or leave comments that combine communication intent with specific
+revision requests, then copy the prompt and paste it into the agent conversation.
 
 People and agents edit the same v2 composition. The owned scene drives preview,
-checks, PNG/SVG/PDF output, and **Present**.
+checks, and PNG/SVG/PDF output.
 
 ## Use with your agent
 
 Requires **Node.js 24+**, npm, and a coding agent that can edit files and run
-commands. A browser is optional for human editing and presentation.
+commands. A browser is optional for review and basic corrections.
 
 Install once, choosing your agent when prompted:
 
@@ -30,18 +32,29 @@ runtime, creates editable JSON in your workspace, checks it, renders a 2x PNG,
 and inspects the result. A browser preview is optional. First use may require
 installation permission.
 
-Keep revisions in the same conversation. Optional canvas notes and pins remain
-attached to the revision-checked file session for the next agent edit. See
+Keep revisions in the same conversation. The browser does not require a content
+or intent form, or ask people to choose diagram or chart types. Optional basic
+text corrections remain in the composition. **Copy prompt** copies pending
+comments with their target IDs; paste them into your agent. Comments stay local
+to the browser and never invoke an agent or require a review sidecar. File-session
+composition edits still use revision-checked saves. See
 [setup details](SETUP.md) for other install methods.
 
 ## Try the editor in your browser
 
 [Open the editable Konpeki example](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
 
-The browser-only playground lets you edit an example or start blank, keep a local
-working copy, import/download editable JSON, export PNG/SVG/PDF and present. It requires
+The browser-only playground lets you review and comment on an example, move,
+resize, delete, correct text, keep a local working copy, import/download editable
+JSON, and copy feedback as a prompt. All pages share a canvas with arrows
+showing their order. The bottom-right button opens reviews in one click: select
+a canvas target, write feedback, and **Add comment** to return to the list with
+**Copy prompt** ready. Click the blue comment button again to return to
+editing. There are no sidebars or toolbars.
+Use the CLI for PNG/SVG/PDF exports. It requires
 no account or AI service. Browser-local data is not cloud backup; download JSON
-to keep or move your work. Continue with your coding agent using that file.
+and copy pending comments before moving or clearing your work. Share the latest
+JSON with your agent when it does not already have the source.
 
 The playground does not connect to an agent. The agent-led workflow above is the
 route from a prompt to a checked and visually inspected composition.
@@ -49,7 +62,7 @@ route from a prompt to a checked and visually inspected composition.
 ## Showcase
 
 Illustrative examples with editable text and vector artwork. Click a preview to
-view it full-size, or download its JSON and choose **Demo Mode → Import** in the
+view it full-size, or download its JSON and drop it onto the canvas in the
 [playground](https://vcfgdev.github.io/konpeki/).
 
 <table>

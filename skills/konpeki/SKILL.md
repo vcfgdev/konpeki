@@ -6,10 +6,11 @@ compatibility: Requires Node.js 24+, npm, and file/command access. Preview is op
 
 # Konpeki
 
-Turn the user's brief into an editable visual, review it, revise it, and deliver
-the requested outputs. People and agents edit the same composition; a browser
-is optional. Infer sensible defaults instead of requiring a questionnaire or
-outline approval. Ask when missing facts or conflicting constraints prevent faithful work.
+Turn the user's brief into a finished visual with editable source, inspect it,
+revise it, and deliver the requested outputs. A browser is optional for comments
+and basic text corrections. Infer the visual form instead of requiring a
+questionnaire, content/intent form, diagram/chart choice or outline approval.
+Ask when missing facts or conflicting constraints prevent faithful work.
 
 ## Resolve the runtime
 
@@ -27,9 +28,10 @@ the runtime.
 
 ## Read only the guidance needed
 
-Start with `AUTHORING.md` → **Requirements** and **Writing tone**. For new work
-or a changed visual direction, also read **Authoring mode**; default is restrained,
-and explicit user direction takes precedence. Consult other sections as needed:
+Start with `AUTHORING.md` → **Requirements**, **Writing tone**, and **Taste and
+creative freedom**. The sole default is restrained; explicit user direction or
+a supplied reference takes precedence over taste, never fidelity or readability.
+Consult other sections as needed:
 
 | Task | Read |
 | --- | --- |
@@ -38,7 +40,7 @@ and explicit user direction takes precedence. Consult other sections as needed:
 | Lay out a chain or one decision | `composition/README.md` → **Semantic process flows**, when available in the resolved runtime; preserve node position overrides |
 | Author custom artwork | `composition/README.md` → **Components and artwork**; without an explicit layout opt-in, topology alone remains a draft |
 | Repair a measurement or export issue | `composition/README.md` → **Agent layout report** or **Fonts, checks, and writers** |
-| Open the canvas or apply notes/pins | `docs/workflow.md` → **Optional preview** |
+| Open the canvas or apply comments/feedback | `docs/workflow.md` → **Optional preview** |
 | Explore a direction or contribute a showcase | `AUTHORING.md` → **Explore an uncertain direction** or **Showcase records** |
 
 ## Create or revise
@@ -50,6 +52,11 @@ the revision alone. Reread the current file before every edit and preserve stabl
 page, component, and vector IDs, deliberate human edits, and newer revisions.
 Keep artwork editable in its owning component. Preserve required facts, sources,
 caveats, relationships, and explicit chart/diagram choices.
+
+Omit unused `contentSlots`, `groups`, `relationships`, and component `slotIds`;
+they default to empty arrays. Reading and paint order each default to component
+array order. Override them only when meaning or stacking differs. See
+`composition/README.md` → **Source defaults**; retain semantic references when needed.
 
 Ordinary work needs the composition and requested exports, not a showcase dossier.
 Keep substantial sources beside the document when needed for future revisions.
@@ -92,12 +99,27 @@ separately; a PNG does not establish PDF fidelity. Do not promise unsupported fo
 Start `node "<cli>" preview "<composition.json>"` only when a human editor is
 useful. Keep it alive with the host's supported service mechanism and share the
 exact capability-bearing session URL through authenticated forwarding when
-remote. Do not publish its token. Browser and file-session exports use the same
-owned scene as the CLI.
+remote. Do not publish its token. All pages share one scrollable canvas, with
+arrows showing their order and a single bottom-right comment button. The browser
+and CLI use the same owned scene; delivery exports come from the CLI.
 
-Notes and pins stay out of exports and guide the next chat revision; they do not
-automatically invoke the agent. Reread the current composition and feedback before
-applying them, preserve newer human edits, then repeat review. Report addressed
-and unresolved feedback without claiming a persisted resolution state.
+Click Comment to enter review mode and open pending reviews. Select a page or
+component, write feedback in the nearby composer, then **Add comment** to return
+to the list with **Copy prompt** ready. Select another canvas target to keep
+commenting. Paste the prompt into the agent conversation; it
+includes all pending comments and their page/component/vector IDs. Copying never
+changes comments or invokes an agent. Clipboard failure offers
+selectable text for manual copying. Closing the composer returns to the list;
+closing the list, clicking the blue comment button, or Escape returns to editing.
+Outside comment mode, people can move, resize, delete and correct native text
+directly, with keyboard undo. No sidebars, design pickers or presentation mode.
+Comments combine intent and revision requests; existing targeted notes remain
+readable. Comments stay in that browser at the same preview address, outside the
+composition and exports. No review sidecar, adapter, or waiting process is needed.
+If the agent lacks the current standalone composition, share its downloaded JSON
+as well as the prompt. Reread the current composition before applying pasted
+feedback, preserve newer human edits, then repeat review. If a target disappeared
+or is ambiguous, ask rather than guessing. Report addressed and unresolved
+feedback; people remove their local comments themselves. There is no Resolve action.
 
 Do not publish, push, or deploy without permission.

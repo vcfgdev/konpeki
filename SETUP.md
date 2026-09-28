@@ -40,4 +40,7 @@ node "<cli>" preview "slides/my-visual/composition.json"
 
 If used, preserve the printed session query and use authenticated forwarding in
 remote workspaces. The human can edit the same revision-checked composition and
-leave notes or pins for a subsequent chat revision. See [the workflow](docs/workflow.md).
+leave comments for a subsequent chat revision. **Copy prompt** copies all pending
+comments with their target IDs; paste it into the agent conversation. Comments
+stay browser-local, not in a new sidecar, and never invoke the agent automatically.
+See [the workflow](docs/workflow.md).
