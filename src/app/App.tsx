@@ -13,7 +13,7 @@ import { FeedbackNotice } from "../components/ui.tsx";
 import { exampleDraft } from "../lib/examples.ts";
 import { fileSessionToken } from "../lib/file-session.ts";
 import { useFileSession } from "../lib/use-file-session.ts";
-import { emptyReview, reviewPrompt, type ReviewState, type ReviewTarget } from "../lib/review.ts";
+import { emptyReview, reviewPrompt, type RevisionNote, type ReviewState, type ReviewTarget } from "../lib/review.ts";
 
 const sessionToken = fileSessionToken();
 function loadInitialDraft() {
@@ -35,8 +35,12 @@ export function App() {
   const [error, setError] = useState("");
   const [fileIdentity, setFileIdentity] = useState<{ key: string; name: string }>();
   const [notice, setNotice] = useState("");
-  const [reviewing, setReviewing] = useState(false);
-  const [target, setTarget] = useState<ReviewTarget>();
+  const [noticePaused, setNoticePaused] = useState(false);
+  const [cleared, setCleared] = useState<{ note: RevisionNote; index: number }[]>([]);
+  const [reviewView, setReviewView] = useState<"closed" | "select" | "queue" | (ReviewTarget & { noteId?: string })>("closed");
+  const target = typeof reviewView === "object" ? reviewView : undefined;
+  const reviewing = reviewView === "select" || !!target;
+  const reviewOpen = reviewView === "queue" || !!target;
   const [reviewSession, setReviewSession] = useState(0);
   const importInput = useRef<HTMLInputElement>(null);
   const reviewButton = useRef<HTMLButtonElement>(null);
@@ -45,6 +49,7 @@ export function App() {
       const comments = loadFileReview(session.commentKey, session.review, session.reviewError);
       setFileIdentity({ key: session.commentKey, name: session.name });
       setBlocked(comments.storageBlocked); setStorageError(comments.error ?? "");
+      setNotice(""); setCleared([]);
       setHistory(createHistory({ draft: session.document, review: comments.review })); closeReview();
     },
     onExternalChange: document => setHistory(current => commitHistory(current, { ...current.present, draft: document, selection: undefined })),
@@ -62,16 +67,16 @@ export function App() {
     return () => clearTimeout(timer);
   }, [draft, localReview, validation, blocked, fileIdentity]);
   useEffect(() => {
-    if (!notice) return;
-    const timer = setTimeout(() => setNotice(""), 3000);
+    if (!notice || noticePaused) return;
+    const timer = setTimeout(() => setNotice(""), notice === "Copied and cleared" ? 8000 : 3000);
     return () => clearTimeout(timer);
-  }, [notice]);
+  }, [notice, noticePaused]);
   useEffect(() => { document.title = `${draft.title} · Konpeki`; }, [draft.title]);
   useEffect(() => {
     function keydown(event: KeyboardEvent) {
       if (event.defaultPrevented || locked) return;
       const editable = event.target instanceof HTMLElement && (event.target.closest("input,textarea,select") || event.target.isContentEditable);
-      if (event.key === "Escape" && reviewing) { event.preventDefault(); closeReview(); return; }
+      if (event.key === "Escape" && reviewView !== "closed") { event.preventDefault(); closeReview(); return; }
       if (editable) return;
       const modifier = event.metaKey || event.ctrlKey;
       if (modifier && !event.altKey) {
@@ -83,7 +88,7 @@ export function App() {
           setHistory(key === "y" || event.shiftKey ? redoHistory : undoHistory);
         }
       }
-      if (reviewing) return;
+      if (reviewing || (event.target instanceof Element && event.target.closest(".revision-notes,.review-launcher"))) return;
       if (["Delete", "Backspace"].includes(event.key) && !modifier && !event.altKey && selection?.componentId) {
         event.preventDefault();
         const issue = componentRemovalIssue(draft, selection.componentId, selection.slideId);
@@ -93,7 +98,7 @@ export function App() {
     }
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [draft, selection, reviewing, locked, review]);
+  }, [draft, selection, reviewView, locked, review]);
 
   function persist(document: Draft, comments: ReviewState) {
     if (loaded.fileSession) {
@@ -120,15 +125,21 @@ export function App() {
       ? { ...page, components: page.components.map(item => item.id === component.id ? component : item) } : page) }, { mergeKey: mergeKey && `${slideId}:${mergeKey}` });
   }
   function closeReview() {
-    setReviewing(false); closeComment();
+    setReviewView("closed");
     requestAnimationFrame(() => reviewButton.current?.focus({ preventScroll: true }));
   }
   function closeComment() {
-    setTarget(undefined);
+    if (review.notes.some(note => !note.resolved)) setReviewView("queue");
+    else closeReview();
   }
-  function comment(next: ReviewTarget) {
+  function startComment() {
+    setNotice(""); setReviewView("select");
+    setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: undefined } }));
+    requestAnimationFrame(() => reviewButton.current?.focus({ preventScroll: true }));
+  }
+  function comment(next: ReviewTarget, noteId?: string) {
     setNotice("");
-    setReviewing(true); setTarget({ slideId: next.slideId, componentId: next.componentId, elementId: next.elementId });
+    setReviewView({ slideId: next.slideId, componentId: next.componentId, elementId: next.elementId, noteId });
     setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: undefined } }));
   }
   function changeLocalReview(change: (value: ReviewState) => ReviewState) {
@@ -137,6 +148,29 @@ export function App() {
     persist(draft, next);
     setHistory(current => commitHistory(current, { ...current.present, review: next }));
     return next;
+  }
+  function copiedComments(copied: RevisionNote[]) {
+    // Identity protects new/restored comments if the document or queue changed
+    // while clipboard permission was pending. Only this exact batch is cleared.
+    const removed = localReview.notes.flatMap((note, index) => copied.includes(note) ? [{ note, index }] : []);
+    if (!removed.length) { setNotice("Copied. The review queue changed; it was kept."); return; }
+    try {
+      changeLocalReview(current => ({ ...current, version: current.version + 1, notes: current.notes.filter(note => !copied.includes(note)) }));
+      setCleared(removed); setNotice("Copied and cleared");
+      closeReview();
+    } catch { setNotice("Copied, but comments could not be cleared. Your queue was kept."); }
+  }
+  function undoClear() {
+    try {
+      changeLocalReview(current => {
+        const notes = [...current.notes];
+        for (const { note, index } of cleared) {
+          if (!notes.some(existing => existing.id === note.id)) notes.splice(index, 0, note);
+        }
+        return { ...current, version: current.version + 1, notes };
+      });
+      setCleared([]); setNotice("Comments restored");
+    } catch { setNotice("Comments could not be restored. Retry after browser storage is available."); }
   }
   function download(value: string, extension: string) {
     const url = URL.createObjectURL(new Blob([value], { type: "application/json" }));
@@ -155,6 +189,7 @@ export function App() {
       const parsed = parseCompositionJSON(await file.text());
       if (!parsed.ok) throw new Error(parsed.message);
       updateDraft(parsed.document, { selection: undefined, review: emptyReview() });
+      setCleared([]);
       setReviewSession(current => current + 1);
       closeReview(); setNotice("Composition opened. Undo restores the previous document and comments.");
     } catch (error) { setNotice(`Could not open: ${error instanceof Error ? error.message : "Invalid file"}`); }
@@ -164,6 +199,7 @@ export function App() {
     try {
       if (loaded.exampleName) clearStoredExampleDraft(loaded.exampleName); else clearStoredDraft();
       setHistory(createHistory({ draft: loaded.exampleName ? structuredClone(exampleDraft(loaded.exampleName)!) : initialGridDraft(), review: emptyReview() }));
+      setCleared([]);
       setReviewSession(current => current + 1);
       setBlocked(false); setStorageError(""); closeReview();
     } catch { setStorageError("Storage remains unavailable. Download your work before reloading."); }
@@ -199,28 +235,35 @@ export function App() {
         const file = event.currentTarget.files?.[0]; if (file) void openComposition(file); event.currentTarget.value = "";
       }} />
     </main>
-    <RevisionNotes key={reviewSession} document={draft} open={reviewing} target={target} review={review}
+    <RevisionNotes key={reviewSession} document={draft} open={reviewOpen} target={target} editId={target?.noteId} review={review}
       disabled={!validation.ok || (loaded.fileSession && fileSession.status !== "saved")} storageBlocked={blocked}
       onSelect={comment}
+      onNew={startComment}
+      onEdit={note => comment(note, note.id)}
       onClose={target ? closeComment : closeReview}
-      onAdd={(next, text) => {
-        changeLocalReview(current => ({ ...current, version: current.version + 1, notes: [...current.notes, { ...next, id: crypto.randomUUID(), text: text.trim(), resolved: false }] }));
-        closeComment();
+      onAdd={(next, text, editId) => {
+        changeLocalReview(current => ({ ...current, version: current.version + 1, notes: editId
+          ? current.notes.map(note => note.id === editId ? { ...note, text: text.trim() } : note)
+          : [...current.notes, { slideId: next.slideId, componentId: next.componentId, elementId: next.elementId, id: crypto.randomUUID(), text: text.trim(), resolved: false }] }));
+        setReviewView("queue");
       }}
       onPreparePrompt={() => reviewPrompt(draft, review, fileIdentity?.name)}
-      onCopied={() => setNotice("Copied—paste into your agent.")}
+      onCopied={copiedComments}
       onRemove={id => { changeLocalReview(current => ({ ...current, version: current.version + 1, notes: current.notes.filter(note => note.id !== id) })); }} />
-    <button ref={reviewButton} type="button" className="review-launcher" aria-label={reviewing ? `Close reviews, ${pending.length} pending reviews` : "Comment"} aria-pressed={reviewing} disabled={locked}
-      aria-haspopup="dialog" aria-expanded={reviewing} aria-controls={reviewing ? "revision-notes" : undefined}
-      title={reviewing ? "Close reviews" : "Open reviews"} onClick={() => {
+    <button ref={reviewButton} type="button" className="review-launcher" aria-label={reviewView === "select" ? "Cancel selection" : reviewOpen ? `Close reviews, ${pending.length} pending reviews` : "Comment"} aria-pressed={reviewing} disabled={locked}
+      aria-haspopup="dialog" aria-expanded={reviewOpen} aria-controls={reviewOpen ? "revision-notes" : undefined}
+      title={reviewView === "select" ? "Select a page or component · Esc to cancel" : reviewOpen ? "Close reviews" : pending.length ? "Open reviews" : "Add comment"} onClick={() => {
         setNotice("");
-        if (reviewing) closeReview();
-        else { setReviewing(true); setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: undefined } })); }
+        if (reviewView !== "closed") closeReview();
+        else if (pending.length) setReviewView("queue");
+        else startComment();
       }}>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-6 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
-      {(reviewing || !!pending.length) && <span className="review-count">{pending.length}</span>}
+      <svg key={reviewing ? "select" : "chat"} viewBox="0 0 24 24" aria-hidden="true">{reviewing
+        ? <path d="M8 3H4a1 1 0 0 0-1 1v4m0 4v4a1 1 0 0 0 1 1h3M12 3h4a1 1 0 0 1 1 1v3m-7 3 10 4-4 2-2 4-4-10Z" />
+        : <path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-8l-6 4v-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" />}</svg>
+      {!!pending.length && <span key={pending.length} className="review-count">{pending.length}</span>}
     </button>
-    <FeedbackNotice kind="toast">{notice}</FeedbackNotice>
+    <FeedbackNotice kind="toast" onPauseChange={setNoticePaused}>{notice && <>{notice}{notice === "Copied and cleared" && cleared.length > 0 && <button type="button" className="toast-undo" onClick={undoClear}>Undo</button>}</>}</FeedbackNotice>
     <FeedbackNotice kind="recovery">{recovery && <><span>{recovery}</span>{!fileSession.opening && <div className="recovery-actions">
       {!validation.ok ? <button onClick={() => setHistory(undoHistory)}>Undo edit</button> : <>
         {!locked && <button onClick={downloadJSON}>Download JSON</button>}

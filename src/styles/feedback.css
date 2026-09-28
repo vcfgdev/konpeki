@@ -69,6 +69,7 @@
   font-size: 20px !important;
   color: inherit;
 }
+.toast-undo { margin-left: 12px; padding: 4px 8px; border: 0; background: transparent; color: var(--accent); font-weight: 500; }
 .toast.error {
   background: #fff7f7;
   color: #8d1717;

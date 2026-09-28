@@ -30,32 +30,40 @@ const choosePage = async id => {
   await wait("document.activeElement.id==='revision-note'");
 };
 const enterReview = async () => {
-  if (await b("eval", "document.querySelector('.review-launcher').getAttribute('aria-pressed')==='false'") === "true") await click("Comment");
+  if (await b("eval", "!!document.querySelector('.workspace.reviewing')") === "true") return;
+  if (await b("eval", "!document.querySelector('.revision-notes')") === "true") await click("Comment");
+  if (await b("eval", "!!document.querySelector('.review-actions')") === "true") await click("New comment");
+  await check("!!document.querySelector('.workspace.reviewing') && !document.querySelector('.revision-notes')");
 };
 const reviewPage = async id => { await enterReview(); await choosePage(id); };
 const addComment = async () => {
   await click("Add comment");
-  await wait("document.querySelector('#comment-heading')?.textContent==='Pending reviews' && !!document.querySelector('.workspace.reviewing')");
+  await wait("document.querySelector('#comment-heading')?.textContent==='Pending reviews' && !document.querySelector('.workspace.reviewing')");
   await check("!document.querySelector('#revision-note') && !document.querySelector('.review-actions .primary').disabled && document.activeElement.id==='revision-notes'");
 };
 const openReviews = async () => {
-  await enterReview();
-  if (await b("eval", "!!document.querySelector('.comment-composer')") === "true") await click("Close comment");
+  if (await b("eval", "!!document.querySelector('.comment-composer')") === "true") await click("Cancel");
+  if (await b("eval", "!document.querySelector('.revision-notes')") === "true") {
+    if (await b("eval", "!!document.querySelector('.workspace.reviewing')") === "true") await b("click", ".review-launcher");
+    await click("Comment");
+  }
   await wait("document.querySelector('#comment-heading')?.textContent==='Pending reviews'");
-  await check("!document.querySelector('.revision-note-resolve,.review-hint') && document.querySelector('.revision-notes').style.cssText==='' && document.querySelectorAll('.review-actions button').length===1");
+  await b("eval", "Promise.allSettled(document.querySelector('.revision-notes').getAnimations().map(a=>a.finished)).then(()=>true)");
+  await check("!document.querySelector('.revision-note-resolve,.review-hint') && document.querySelector('.revision-notes').style.cssText==='' && document.querySelectorAll('.review-actions button').length===2");
 };
 const copyReviews = async () => {
   await openReviews();
   const count = await b("eval", "document.querySelector('.review-count').textContent");
-  await click("Copy prompt");
-  await wait("document.querySelector('.revision-notes')?.getAttribute('aria-busy')==='false' && document.querySelector('.toast.visible')?.textContent.includes('Copied')");
-  await check("!!document.querySelector('.workspace.reviewing') && !!document.querySelector('.review-actions') && !document.querySelector('.comment-copy-fallback')");
+  await click("Copy & clear");
+  await wait("document.querySelector('.toast.visible')?.textContent.includes('Copied and cleared') && document.activeElement.classList.contains('review-launcher')");
+  await check("!document.querySelector('.workspace.reviewing,.revision-notes,.review-count,.revision-pin') && document.querySelector('.review-launcher').getAttribute('aria-expanded')==='false'");
+  // Recover the batch for the subsequent persistence/targeting scenarios.
+  await click("Undo");
   assert.equal(await b("eval", "document.querySelector('.review-count').textContent"), count);
-  await b("click", ".review-launcher");
   await check("!document.querySelector('.workspace.reviewing,.revision-notes') && document.querySelector('.review-launcher').getAttribute('aria-pressed')==='false'");
 };
 const capture = async name => {
-  await b("eval", "document.fonts.ready.then(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))))");
+  await b("eval", "document.fonts.ready.then(()=>Promise.allSettled(document.getAnimations().map(a=>a.finished))).then(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))))");
   await b("screenshot", join(artifacts, `${name}.png`));
 };
 let cdp;
@@ -103,19 +111,21 @@ try {
   await waitForFile(doc => doc.slides[0].name === "Undo isolation");
   const inactiveColor = await b("eval", "getComputedStyle(document.querySelector('.review-launcher')).backgroundColor");
   await click("Comment");
-  await check("!document.querySelector('.review-hint') && document.querySelector('#comment-heading')?.textContent==='Pending reviews'");
-  await check("(()=>{const b=document.querySelector('.review-launcher'),r=b.getBoundingClientRect();return b.textContent==='0'&&b.getAttribute('aria-label')==='Close reviews, 0 pending reviews'&&b.getAttribute('aria-expanded')==='true'&&r.width>r.height&&document.querySelector('.review-count').textContent==='0'})()");
+  await check("!!document.querySelector('.workspace.reviewing') && !document.querySelector('.revision-notes,.review-count,.review-hint')");
+  await check("(()=>{const b=document.querySelector('.review-launcher'),r=b.getBoundingClientRect();return b.textContent===''&&b.getAttribute('aria-label')==='Cancel selection'&&b.getAttribute('aria-expanded')==='false'&&r.width===r.height})()");
   await b("eval", "Promise.all(document.querySelector('.review-launcher').getAnimations().map(a=>a.finished)).then(()=>true)");
   assert.notEqual(await b("eval", "getComputedStyle(document.querySelector('.review-launcher')).backgroundColor"), inactiveColor);
-  await check("!!document.querySelector('.review-empty') && document.querySelector('.review-actions .primary').disabled && document.querySelector('.review-launcher').getAttribute('aria-expanded')==='true'");
-  await capture("empty-reviews");
-  await b("press", "Tab");
-  await check("document.activeElement.getAttribute('aria-label')==='Close reviews' && document.activeElement.matches(':focus-visible') && getComputedStyle(document.activeElement).outlineStyle!=='none'");
-  await capture("review-keyboard-focus");
+  await capture("select-first");
   await b("click", ".review-launcher");
   await check("!document.querySelector('.workspace.reviewing,.revision-notes') && document.querySelector('.review-launcher').getAttribute('aria-expanded')==='false'");
   await reviewPage("cover");
-  await check("document.querySelector('.revision-note-submit button').disabled");
+  await check("document.querySelector('.revision-note-submit .primary').disabled");
+  await b("press", "Tab");
+  await check("document.activeElement.textContent==='Cancel' && document.activeElement.matches(':focus-visible') && getComputedStyle(document.activeElement).outlineStyle!=='none'");
+  await capture("review-keyboard-focus");
+  await click("Cancel");
+  await check("!document.querySelector('.workspace.reviewing,.revision-notes') && document.activeElement.classList.contains('review-launcher')");
+  await reviewPage("cover");
   await capture("empty-composer");
   await b("type", "#revision-note", "x");
   await b("press", "Control+z");
@@ -138,17 +148,44 @@ try {
   assert.deepEqual((await readBrowserReview()).notes.map(n => [n.slideId, n.componentId, n.resolved]), [["cover", undefined, false]]);
   await assert.rejects(readFile(`${path}.review.json`), { code: "ENOENT" });
 
+  // Editing replaces only the text, keeps the note ID, and survives a failed save.
+  const firstNote = (await readBrowserReview()).notes[0];
+  await openReviews(); await click("Edit comment 1");
+  await check(`document.querySelector('#revision-note').value===${JSON.stringify(firstNote.text)}`);
+  await b("fill", "#revision-note", "Use one clear takeaway, not three.");
+  await b("eval", "window.realSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error('Storage full')}");
+  await click("Save comment");
+  await wait("document.querySelector('.comment-error')?.textContent.includes('Storage full')");
+  assert.deepEqual((await readBrowserReview()).notes, [firstNote]);
+  await check("document.querySelector('#revision-note').value==='Use one clear takeaway, not three.'");
+  await b("eval", "Storage.prototype.setItem=window.realSetItem");
+  await b("focus", "#revision-note"); await b("press", "Control+Enter");
+  await wait("!!document.querySelector('.review-actions')");
+  assert.deepEqual((await readBrowserReview()).notes, [{ ...firstNote, text: "Use one clear takeaway, not three." }]);
+  await click("Edit comment 1");
+  await check("document.querySelector('#revision-note').value==='Use one clear takeaway, not three.'");
+  await b("fill", "#revision-note", firstNote.text); await click("Save comment");
+  await wait("!!document.querySelector('.review-actions')");
+  assert.deepEqual((await readBrowserReview()).notes, [firstNote]);
+
+  // Queue keyboard input must not delete a selected component behind the card.
+  await b("click", `${page("cover")} .component-hit[data-component="wordmark"]`);
+  await b("focus", "#revision-notes"); await b("press", "Delete");
+  await check("!!document.querySelector('[data-page=cover] .component-hit[data-component=wordmark]')");
+  assert.equal(await readFile(path, "utf8"), beforeComment);
+
   // Esc keeps drafts, target changes isolate them, review keys never nudge/delete.
   await reviewPage("cover");
   await b("fill", "#revision-note", "Cover draft");
   await openReviews();
   await check("document.querySelectorAll('.revision-note-list li').length===1 && !document.querySelector('#revision-note')");
-  await click("Close reviews");
+  await b("click", ".review-launcher");
   await check("!document.querySelector('.workspace.reviewing,.revision-notes')");
   await wait("document.activeElement.classList.contains('review-launcher')");
   // Existing comments are also reachable in one click, not a mode-only stop.
   await click("Comment");
   await check("document.querySelector('#comment-heading')?.textContent==='Pending reviews' && document.querySelectorAll('.revision-note-list li').length===1");
+  await enterReview();
   await choosePage("cover");
   await check("document.querySelector('#revision-note').value==='Cover draft'");
   await b("click", ".review-launcher");
@@ -166,15 +203,15 @@ try {
   await b("fill", "#revision-note", "Make this title more direct.");
   const belowTitle = `(()=>{const a=document.querySelector('${titleHit}').getBoundingClientRect(),p=document.querySelector('.comment-composer').getBoundingClientRect();return Math.abs(p.top-a.bottom-12)<1&&Math.abs(p.left-a.left)<1})()`;
   await wait(belowTitle);
-  await b("eval", "window.composerTop=document.querySelector('.comment-composer').getBoundingClientRect().top;document.querySelector('.workspace').scrollTop+=40");
-  await wait("Math.abs(document.querySelector('.comment-composer').getBoundingClientRect().top-window.composerTop+40)<1");
+  await b("eval", "window.composerLeft=document.querySelector('.comment-composer').getBoundingClientRect().left;document.querySelector('.workspace').scrollLeft+=40");
+  await wait("Math.abs(document.querySelector('.comment-composer').getBoundingClientRect().left-window.composerLeft+40)<1");
   await capture("anchored-component");
   await b("set", "viewport", "390", "844", "2");
   await wait("(()=>{const p=document.querySelector('.comment-composer').getBoundingClientRect();return p.left>=16&&p.right<=innerWidth-16&&p.top>=16&&p.bottom<document.querySelector('.review-launcher').getBoundingClientRect().top})()");
   await check("document.querySelector('#revision-note').value==='Make this title more direct.'");
   await capture("narrow-anchored-component");
   await b("set", "viewport", "1440", "1000", "2");
-  await b("eval", "document.querySelector('.workspace').scrollTop=0");
+  await b("eval", "document.querySelector('.workspace').scrollTo(0,0)");
   await wait(belowTitle);
   await b("press", "Escape");
   await reviewPage("cover");
@@ -203,7 +240,7 @@ try {
   await check("document.querySelectorAll('.current-comments li').length===1 && !document.querySelector('.comment-history,.comment-help,.review-actions') && !document.querySelector('.revision-notes').textContent.includes('Explain the main takeaway more directly.')");
   await check("(()=>{const r=document.querySelector('.current-comments p').getBoundingClientRect(),p=document.querySelector('.revision-notes').getBoundingClientRect();return r.top>=p.top&&r.bottom<=p.bottom})()");
   await capture("open-saved-comment");
-  await copyReviews(); // Copying never adds or resolves a comment.
+  await copyReviews(); // Undo restores the copied batch without adding duplicates.
   assert.equal((await readBrowserReview()).notes.length, 2);
   await b("click", `${page("notes")} .revision-pin`);
   await b("fill", "#revision-note", "Keep the labels concise."); await addComment();
@@ -260,12 +297,22 @@ try {
   // Direct corrections still save; keyboard history replaces the toolbar.
   const text = original.slides[0].components.find(c => c.kind === "text-block" && !c.customVisual);
   const hit = `${page("cover")} .component-hit[data-component="${text.id}"]`;
-  await click("Comment"); await b("click", hit);
+  await enterReview(); await b("click", hit);
   await b("fill", "#revision-note", "Keep this name."); await addComment();
   await wait("!!document.querySelector('[data-page=cover] .revision-pin')");
   await b("press", "Escape");
   const pinTop = "(()=>{const p=document.querySelector('[data-page=cover]');return p.querySelector('.revision-pin').getBoundingClientRect().top-p.querySelector('.scene-canvas').getBoundingClientRect().top})()";
   const beforeMove = Number(await b("eval", pinTop));
+  const dragPoint = JSON.parse(await b("eval", `(()=>{const r=document.querySelector('${hit}').getBoundingClientRect();return {x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)}})()`));
+  const beforeDrag = await readFile(path, "utf8");
+  await b("mouse", "move", String(dragPoint.x), String(dragPoint.y)); await b("mouse", "down", "left");
+  await b("mouse", "move", String(dragPoint.x), String(dragPoint.y + 1));
+  await wait(`Math.abs(${pinTop}-${beforeMove}-1)<.05`);
+  await b("wait", "350");
+  assert.equal(await readFile(path, "utf8"), beforeDrag, "drag preview does not write the source");
+  await b("mouse", "up", "left");
+  await wait(`Math.abs(${pinTop}-${beforeMove})<.05`);
+  assert.equal(await readFile(path, "utf8"), beforeDrag, "a sub-grid drop restores the marker without changing source");
   await b("click", hit); await b("press", "ArrowDown");
   await waitForFile(doc => doc.slides[0].components.find(c => c.id === text.id).area.row === text.area.row + 1);
   await wait(`${pinTop}>${beforeMove}`);
@@ -333,19 +380,19 @@ try {
   const recoveryReview = await readBrowserReview();
   const beforeRecovery = await readFile(path, "utf8");
   await b("eval", `window.fileFetch=window.fetch;window.fetch=(url,init)=>String(url)==='/__konpeki/session'&&(!init?.method||init.method==='GET')?Promise.resolve(new Response(JSON.stringify({error:'Service unavailable'}),{status:503})):window.fileFetch(url,init)`);
-  await wait("!!document.querySelector('.file-status.error')");
+  await wait("document.querySelector('.workspace').dataset.fileStatus==='error'");
   await copyReviews();
   assert.match(await b("clipboard", "read"), /Keep this name/);
   await openReviews();
   await b("eval", "Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined})");
-  await click("Copy prompt"); await wait("!!document.querySelector('.comment-copy-fallback textarea')");
+  await click("Copy & clear"); await wait("!!document.querySelector('.comment-copy-fallback textarea')");
   await check("document.querySelector('.comment-copy-fallback textarea').value.includes('Keep this name.')");
   await capture("file-error-copy");
   await b("eval", "delete navigator.clipboard;window.fetch=window.fileFetch");
   await b("press", "Escape");
-  await wait("!!document.querySelector('.file-status.saved') && !document.querySelector('.recovery.visible')");
+  await wait("document.querySelector('.workspace').dataset.fileStatus==='saved' && !document.querySelector('.recovery.visible')");
   assert.equal(await readFile(path, "utf8"), beforeRecovery);
-  assert.deepEqual(await readBrowserReview(), recoveryReview);
+  assert.deepEqual((await readBrowserReview()).notes, recoveryReview.notes);
 
   // Delay a real PUT so an intervening disk edit deterministically produces 409.
   await b("eval", "window.fetch=(url,init)=>String(url)==='/__konpeki/session'&&init?.method==='PUT'?new Promise(resolve=>{window.releaseSave=()=>resolve(window.fileFetch(url,init))}):window.fileFetch(url,init)");
@@ -355,24 +402,24 @@ try {
   const conflicting = JSON.parse(beforeRecovery); conflicting.title = "External revision wins";
   await writeFile(path, JSON.stringify(conflicting));
   await b("eval", "window.releaseSave();true");
-  await wait("!!document.querySelector('.file-status.conflict')");
+  await wait("document.querySelector('.workspace').dataset.fileStatus==='conflict'");
   await copyReviews();
   assert.match(await b("clipboard", "read"), /Keep this name/);
   await openReviews();
   await b("eval", "Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined})");
-  await click("Copy prompt"); await wait("!!document.querySelector('.comment-copy-fallback textarea')");
+  await click("Copy & clear"); await wait("!!document.querySelector('.comment-copy-fallback textarea')");
   await check("document.querySelector('.comment-copy-fallback textarea').value.includes('Keep this name.')");
   await capture("file-conflict-copy");
   assert.equal(JSON.parse(await readFile(path, "utf8")).title, "External revision wins");
-  assert.deepEqual(await readBrowserReview(), recoveryReview);
+  assert.deepEqual((await readBrowserReview()).notes, recoveryReview.notes);
   await b("eval", "delete navigator.clipboard;window.fetch=window.fileFetch;window.confirm=()=>true");
   await click("Load file version"); await ready();
-  await wait("document.querySelector('.board-heading h1').textContent==='External revision wins' && !!document.querySelector('.file-status.saved')");
+  await wait("document.querySelector('.board-heading h1').textContent==='External revision wins' && document.querySelector('.workspace').dataset.fileStatus==='saved'");
 
   // Invalid legacy data cannot block local comments or composition autosaving.
   await writeFile(`${path}.review.json`, "{broken");
   await b("reload"); await ready();
-  assert.deepEqual(await readBrowserReview(), recoveryReview);
+  assert.deepEqual((await readBrowserReview()).notes, recoveryReview.notes);
   await check("!document.querySelector('.recovery.visible')");
   await b("dblclick", `${page("cover")} .stage-meta h2`);
   await b("fill", 'input[aria-label="Page name"]', "Local comments take precedence"); await b("press", "Enter");
@@ -439,7 +486,7 @@ try {
   // Clipboard rejection leaves saved comments and a selected manual-copy prompt.
   await command("Browser.setPermission", { origin: base, permission: { name: "clipboard-write" }, setting: "denied" });
   await b("fill", "#revision-note", "Show the failure path too."); await addComment();
-  await openReviews(); await click("Copy prompt");
+  await openReviews(); await click("Copy & clear");
   await wait("!!document.querySelector('.comment-copy-fallback textarea')");
   await check("!document.querySelector('#revision-note') && document.querySelectorAll('.revision-note-list li').length===2");
   await check("(()=>{const t=document.querySelector('.comment-copy-fallback textarea');return t.readOnly&&t.value.includes('Show the failure path too.')&&t.value.includes('Explain the outcome, not the editing tools.')&&t.selectionStart===0&&t.selectionEnd===t.value.length})()");
@@ -453,19 +500,75 @@ try {
   assert.match(await b("clipboard", "read"), /Show the failure path too/);
   await openReviews();
   await b("eval", "Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined})");
-  await click("Copy prompt"); await wait("!!document.querySelector('.comment-copy-fallback textarea')");
+  await click("Copy & clear"); await wait("!!document.querySelector('.comment-copy-fallback textarea')");
   await check(`JSON.parse(localStorage.getItem('${storage}')).review.notes.length===2`);
   await b("eval", "delete navigator.clipboard");
   await b("press", "Escape"); await b("reload"); await ready();
+
+  // Delayed permission clears the captured batch, not comments restored meanwhile.
+  await b("set", "viewport", "1440", "1000", "2");
+  const beforeClear = JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`));
+  await reviewPage("cover"); await b("fill", "#revision-note", "Unsent draft survives copying");
+  await openReviews(); await click("Remove comment 2");
+  await b("eval", "window.writeClipboard=navigator.clipboard.writeText.bind(navigator.clipboard);navigator.clipboard.writeText=text=>new Promise(resolve=>{window.finishCopy=()=>window.writeClipboard(text).then(resolve)})");
+  await click("Copy & clear"); await wait("!!window.finishCopy");
+  await b("press", "Control+z");
+  await check("document.querySelector('.review-count').textContent==='2'");
+  await b("press", "Escape");
+  await b("dblclick", `${page("cover")} .stage-meta h2`);
+  await b("fill", 'input[aria-label="Page name"]', "Newer human title"); await b("press", "Enter");
+  await b("eval", "window.finishCopy();true");
+  await wait("document.querySelector('.toast.visible')?.textContent.includes('Copied and cleared')");
+  assert.deepEqual(JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`)), [beforeClear[1]]);
+  assert.doesNotMatch(await b("clipboard", "read"), /Show the failure path too/);
+  await check(`JSON.parse(localStorage.getItem('${storage}')).document.slides[0].name==='Newer human title'`);
+  await capture("copy-clear-undo");
+  await b("dblclick", `${page("cover")} .stage-meta h2`);
+  await b("fill", 'input[aria-label="Page name"]', "After-copy human title"); await b("press", "Enter");
+  await click("Undo");
+  assert.deepEqual(JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`)), beforeClear);
+  await check(`JSON.parse(localStorage.getItem('${storage}')).document.slides[0].name==='After-copy human title'`);
+  await reviewPage("cover");
+  await check("document.querySelector('#revision-note').value==='Unsent draft survives copying'");
+
+  // Clipboard success alone is insufficient: persist the clear before removing pins.
+  await openReviews(); await click("Copy & clear");
+  await b("eval", "window.realSetItem=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw Error('Storage full')};window.finishCopy();true");
+  await wait("document.querySelector('.toast.visible')?.textContent.includes('Your queue was kept')");
+  await check("!!document.querySelector('.revision-notes') && document.querySelector('.review-launcher').getAttribute('aria-expanded')==='true' && document.querySelector('.review-count').textContent==='2' && document.querySelectorAll('.revision-pin').length===2");
+  assert.deepEqual(JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`)), beforeClear);
+  await capture("copy-clear-storage-failure");
+  await b("eval", "Storage.prototype.setItem=window.realSetItem");
+
+  // An import remounts the review session; its pending copy cannot clear an undo-restored queue.
+  await click("Copy & clear");
+  await b("upload", 'input[type=file]', path); await wait("!document.querySelector('.review-count')");
+  await b("press", "Control+z"); await wait("document.querySelector('.review-count')?.textContent==='2'");
+  await b("eval", "window.finishCopy();true");
+  await b("wait", "350");
+  assert.deepEqual(JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`)), beforeClear);
+  await b("eval", "navigator.clipboard.writeText=window.writeClipboard");
+
+  // Successful clearing dismisses reviews and is durable across reloads.
+  await openReviews(); await click("Copy & clear");
+  await wait("document.querySelector('.toast.visible')?.textContent.includes('Copied and cleared')");
+  await check("!document.querySelector('.revision-notes,.workspace.reviewing,.review-count,.revision-pin') && document.querySelector('.review-launcher').getAttribute('aria-expanded')==='false'");
+  await capture("copied-closed-reviews");
+  await b("reload"); await ready();
+  await check(`JSON.parse(localStorage.getItem('${storage}')).review.notes.length===0 && !document.querySelector('.revision-pin')`);
+  // Keep comments for the remaining responsive-layout scenarios.
+  await b("open", `${base}src/assets/konpeki-mark.png`);
+  await b("eval", `(()=>{const state=JSON.parse(localStorage.getItem('${storage}'));state.review.notes=${JSON.stringify(beforeClear)};localStorage.setItem('${storage}',JSON.stringify(state))})()`);
+  await b("open", `${base}?example=introducing-konpeki`); await ready();
   await openReviews();
   await b("set", "viewport", "390", "844", "2");
-  await wait("[...document.querySelectorAll('.board-page')].every(p=>p.style.left==='0px')");
+  await wait("[...document.querySelectorAll('.board-page')].every((p,i,pages)=>p.style.top===pages[0].style.top&&(!i||parseFloat(p.style.left)>parseFloat(pages[i-1].style.left)))");
   await check("(()=>{const r=document.querySelector('.revision-notes').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight})()");
   await capture("narrow-comments");
   await b("press", "Escape"); await capture("narrow-board");
-  await check("document.querySelector('.workspace').scrollWidth===document.querySelector('.workspace').clientWidth");
-  await b("eval", "document.querySelector('.board-page:last-child').scrollIntoView({block:'center'})");
-  await check("document.querySelector('.board-page:last-child').getBoundingClientRect().bottom < innerHeight");
+  await check("document.querySelector('.workspace').scrollHeight<=document.querySelector('.workspace').clientHeight+1");
+  await b("eval", "document.querySelector('.board-page:last-child').scrollIntoView({block:'nearest',inline:'center'})");
+  await check("(()=>{const r=document.querySelector('.board-page:last-child').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<innerHeight})()");
 
   // A tall list and unbroken text must not push actions outside a short viewport.
   await b("eval", `(()=>{const state=JSON.parse(localStorage.getItem('${storage}'));state.review.notes=Array.from({length:12},(_,i)=>({id:'overflow-'+i,slideId:'cover',text:i===0?'Keep this reference readable: '+ 'LongReference'.repeat(28):'Review '+(i+1)+': Keep the explanation concise and preserve the source facts.',resolved:false}));localStorage.setItem('${storage}',JSON.stringify(state))})()`);
@@ -476,19 +579,28 @@ try {
   await check("(()=>{const p=document.querySelector('.revision-notes');return p.scrollHeight>p.clientHeight&&p.scrollWidth===p.clientWidth&&p.getBoundingClientRect().height<=innerHeight/2})()");
   await capture("long-review-list");
   await b("eval", "document.querySelector('.revision-notes').scrollTop=document.querySelector('.revision-notes').scrollHeight");
-  await check("(()=>{const p=document.querySelector('.revision-notes').getBoundingClientRect(),h=document.querySelector('.revision-notes > header').getBoundingClientRect(),f=document.querySelector('.review-actions').getBoundingClientRect(),last=document.querySelector('.revision-note-list li:last-child').getBoundingClientRect();return h.top>=p.top&&h.bottom<f.top&&f.bottom<=p.bottom&&last.top>=h.bottom&&last.bottom<=f.top&&p.left>=0&&p.right<=innerWidth&&p.bottom<document.querySelector('.review-launcher').getBoundingClientRect().top})()");
+  await check("(()=>{const p=document.querySelector('.revision-notes').getBoundingClientRect(),f=document.querySelector('.review-actions').getBoundingClientRect(),last=document.querySelector('.revision-note-list li:last-child').getBoundingClientRect();return f.bottom<=p.bottom&&last.top>=p.top&&last.bottom<=f.top&&p.left>=0&&p.right<=innerWidth&&p.bottom<document.querySelector('.review-launcher').getBoundingClientRect().top})()");
   await capture("long-review-list-end");
-  // Even a full list leaves canvas space for selecting the next comment target.
-  await b("eval", "document.querySelector('.workspace').scrollTop=0");
+  // New comment removes even a full queue before selecting the next target.
+  await click("New comment");
+  await check("!document.querySelector('.revision-notes') && !!document.querySelector('.workspace.reviewing')");
+  await b("eval", "document.querySelector('.workspace').scrollTo(0,0)");
   await b("click", titleHit);
   await check("!!document.querySelector('.comment-composer') && document.activeElement.id==='revision-note'");
-  await click("Close comment");
+  await click("Cancel");
   await check("document.querySelector('#comment-heading')?.textContent==='Pending reviews'");
-  await click("Close reviews");
+  await b("click", ".review-launcher");
+  await b("set", "media", "light", "reduced-motion");
+  await openReviews();
+  await check("matchMedia('(prefers-reduced-motion: reduce)').matches && getComputedStyle(document.querySelector('.revision-notes')).animationName==='none'");
+  await click("New comment"); await b("click", titleHit);
+  await check("getComputedStyle(document.querySelector('.revision-notes')).animationName==='none' && getComputedStyle(document.querySelector('.review-launcher svg')).animationName==='none'");
+  await b("press", "Escape");
+  await b("set", "media", "light");
   await b("open", base); await wait("!!document.querySelector('.scene-artwork svg')");
   await check("document.querySelectorAll('.board-page').length===1 && !document.querySelector('.component-hit,.page-order > path')");
   await capture("empty-board");
-  console.log("PASS: one-click reviews, add returns to copy-ready overview, pill/close/Escape exit without losing drafts, anchored composer follows selection/scroll/resize, no Resolve or separate Exit action, clipboard contents, no-duplicate retry, denied/unavailable clipboard fallback, browser-local persistence and legacy import, session restart, no sidecar writes, markers/movement/deletion/undo, correction canvas, export isolation, corrupt/full storage, keyboard focus, empty/narrow states, long-list sticky actions and wrapping.");
+  console.log("PASS: select-first entry, compact queue, new-comment selection, saved-comment editing, reduced motion, cancel/Escape draft preservation, anchored composer follows selection/scroll/resize, clipboard contents and safe clearing, no-duplicate retry, denied/unavailable clipboard fallback, browser-local persistence and legacy import, session restart, no sidecar writes, markers/movement/deletion/undo, correction canvas, export isolation, corrupt/full storage, keyboard focus, empty/narrow states, long-list sticky actions and wrapping.");
 } catch (error) {
   await capture("failure").catch(() => {});
   console.error(await b("eval", "JSON.stringify({count:document.querySelector('.review-count')?.textContent,comments:[...document.querySelectorAll('.revision-note-list li p')].map(p=>p.textContent),error:document.querySelector('.recovery.visible')?.textContent,storage:Object.fromEntries(Object.entries(localStorage).filter(([key])=>key.startsWith('konpeki-comments/')))})").catch(() => "Browser diagnostics unavailable"));
