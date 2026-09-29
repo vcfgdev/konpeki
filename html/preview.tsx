@@ -4,6 +4,8 @@ import { PageBoard } from "../src/components/PageBoard.tsx";
 import { reviewPosition } from "../src/lib/review-position.ts";
 import { referenceGuides, type Guide } from "../src/lib/alignment.ts";
 import { inspectHTMLPage, type Diagnostic } from "./inspect.ts";
+import { documentHTML } from "./document.ts";
+import { examples } from "./examples.ts";
 import "@fontsource/ibm-plex-sans/400.css";
 import "@fontsource/ibm-plex-sans/500.css";
 import "../src/styles/base.css";
@@ -17,14 +19,21 @@ type Note = Target & { key: string; text: string };
 type Page = { id: string; name: string; canvas: { width: number; height: number } };
 type Correction = Target & ({ kind: "move"; style: string } | { kind: "delete" });
 const token = new URLSearchParams(location.search).get("session") ?? "";
+const example = examples.find(item => item.id === new URLSearchParams(location.search).get("example")) ?? examples[0];
 async function request(edit?: unknown, revision?: string): Promise<Snapshot> {
+  if (!token) {
+    if (edit) throw new Error("Open a local CLI preview to save source corrections.");
+    const doc = new DOMParser().parseFromString(example.source, "text/html");
+    const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(example.source));
+    return { source: example.source, revision: Array.from(new Uint8Array(hash), n => n.toString(16).padStart(2, "0")).join(""), name: `examples/${example.id}/document.html`, key: `example:${example.id}`, pages: Array.from(doc.querySelectorAll("body > [data-page]"), page => page.id) };
+  }
   const response = await fetch("/__konpeki/html", { method: edit ? "PATCH" : "GET", headers: { "x-konpeki-session": token, "Content-Type": "application/json" }, ...(edit ? { body: JSON.stringify({ edit, revision }) } : {}) });
   const body = await response.json();
   if (!response.ok) throw new Error(body.error);
   return body;
 }
-function HTMLPage({ page, revision, notes, selected, commenting, locked, onSize, onSelect, onComment, onEdit, onBusy, onBlocked }: {
-  page: Page; revision: string; notes: Note[]; selected?: Target; commenting: boolean; locked: boolean;
+function HTMLPage({ page, revision, source, notes, selected, commenting, locked, onSize, onSelect, onComment, onEdit, onBusy, onBlocked }: {
+  page: Page; revision: string; source?: string; notes: Note[]; selected?: Target; commenting: boolean; locked: boolean;
   onSize: (width: number, height: number) => void; onSelect: (target?: Target) => void;
   onComment: (target: Target, anchor: DOMRect) => void; onEdit: (edit: Correction) => void; onBusy: (busy: boolean) => void;
   onBlocked: (message: string) => void;
@@ -32,9 +41,16 @@ function HTMLPage({ page, revision, notes, selected, commenting, locked, onSize,
   const outer = useRef<HTMLDivElement>(null), frame = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState(1), [ready, setReady] = useState(false), [tick, redraw] = useState(0);
   const [hover, setHover] = useState<string>();
+  const [staticURL, setStaticURL] = useState<string>();
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([]), [guides, setGuides] = useState<Guide[]>([]);
   const drag = useRef<{ target: HTMLElement; id: string; x: number; y: number; tx: number; ty: number; style: string; moved: boolean; frame: number; dx: number; dy: number; targets: { x: number[]; y: number[] } } | undefined>(undefined);
-  const url = `/__konpeki/html/${encodeURIComponent(token)}/document/?page=${encodeURIComponent(page.id)}&revision=${revision}`;
+  const url = source === undefined ? `/__konpeki/html/${encodeURIComponent(token)}/document/?page=${encodeURIComponent(page.id)}&revision=${revision}` : staticURL;
+  useEffect(() => {
+    if (source === undefined) return;
+    const objectURL = URL.createObjectURL(new Blob([documentHTML(source, page.id)], { type: "text/html" }));
+    setStaticURL(objectURL);
+    return () => URL.revokeObjectURL(objectURL);
+  }, [source, page.id]);
   useEffect(() => { setReady(false); }, [url]);
   useEffect(() => {
     const p = frame.current?.contentDocument?.getElementById(page.id);
@@ -84,7 +100,7 @@ function HTMLPage({ page, revision, notes, selected, commenting, locked, onSize,
         if (event.button !== 0 || locked || !ready) return;
         const target = hit(event); if (!target) return;
         const value = { page: page.id, id: target.id };
-        if (commenting) { onComment(value, anchor(target.id)); return; }
+        if (commenting || source !== undefined) { onComment(value, anchor(target.id)); return; }
         if (target.id === page.id) { onSelect(undefined); return; }
         onSelect(value); outer.current!.focus({ preventScroll: true });
         const translated = frame.current!.contentWindow!.getComputedStyle(target).translate;
@@ -149,12 +165,12 @@ function Preview() {
       } catch (e) { if (live) setError(String(e)); }
       finally { fetching = false; }
     }
-    void poll(); const timer = setInterval(poll, 1200);
+    void poll(); const timer = token ? setInterval(poll, 1200) : undefined;
     return () => { live = false; clearInterval(timer); };
   }, []);
   useEffect(() => { if (!notice) return; const id = setTimeout(() => setNotice(""), 4500); return () => clearTimeout(id); }, [notice]);
   async function save(edit: Correction | { kind: "undo" }) {
-    if (!current.current || saving) return;
+    if (!token || !current.current || saving) return;
     busy.current = true; setSaving(true); setError("");
     try { setSnapshot(await request(edit, current.current.revision)); setNotice("Saved"); if (edit.kind === "delete") setSelected(undefined); }
     catch (e) { setError(String(e)); setReset(n => n + 1); try { setSnapshot(await request()); } catch {} }
@@ -162,9 +178,9 @@ function Preview() {
   }
   useEffect(() => {
     function key(event: KeyboardEvent) {
-      if ((event.target as HTMLElement).closest("textarea,input,button")) return;
+      if ((event.target as HTMLElement).closest("textarea,input,button,select")) return;
       if (event.key === "Escape") { setView("closed"); setSelected(undefined); }
-      if (saving) return;
+      if (saving || !token) return;
       if ((event.metaKey || event.ctrlKey) && event.key === "z") { event.preventDefault(); void save({ kind: "undo" }); }
       if (["Delete", "Backspace"].includes(event.key) && selected && view === "closed") { event.preventDefault(); void save({ ...selected, kind: "delete" }); }
     }
@@ -213,9 +229,9 @@ function Preview() {
     if (!element.closest(".html-page")) setSelected(undefined);
     if ((view === "queue" && !notes.length) || (target && !text.trim() && !notes.some(n => n.page === target.page && n.id === target.id))) setView("closed");
   }}>
-    <header className="board-heading"><h1>Konpeki</h1></header>
+    <header className="board-heading html-heading"><h1>Konpeki</h1>{!token && <select aria-label="Example" value={example.id} onChange={event => { const url = new URL(location.href); url.searchParams.set("example", event.target.value); location.assign(url); }}>{examples.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select>}</header>
     {!snapshot && <p>{error || "Opening HTML…"}</p>}
-    {snapshot && <PageBoard draft={{ pages }}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} notes={notes} selected={selected} commenting={view === "select"} locked={saving || (view !== "closed" && view !== "select")}
+    {snapshot && <PageBoard draft={{ pages }}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} source={token ? undefined : snapshot.source} notes={notes} selected={selected} commenting={view === "select"} locked={saving || (view !== "closed" && view !== "select")}
       onSize={(width, height) => setSizes(current => current[page.id]?.width === width && current[page.id]?.height === height ? current : { ...current, [page.id]: { width, height } })}
       onSelect={setSelected} onComment={(target, rect) => { setView(target); setAnchor(rect); setFallback(""); }} onEdit={edit => void save(edit)} onBusy={value => { if (!value && saving) return; busy.current = value; }} onBlocked={setError} />}</PageBoard>}
     {(notice || error) && <div className={`feedback-notice toast visible${error ? " error" : ""}`} role="status"><span>{error || notice}</span>{!error && notice === "Copied and cleared" && cleared.length > 0 && <button disabled={saving} onClick={() => { try { persist([...cleared.filter(c => !notes.some(n => n.key === c.key)), ...notes]); setCleared([]); setNotice("Reviews restored"); } catch (e) { setError(String(e)); } }}>Undo</button>}{error && <button onClick={() => setError("")} aria-label="Dismiss error">×</button>}</div>}

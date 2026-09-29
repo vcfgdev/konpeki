@@ -1,3 +1,5 @@
+.html-heading { display: flex; align-items: center; gap: 20px; }
+.html-heading select { width: auto; padding: 5px 26px 5px 10px; border-color: var(--ui-border); font-size: 12px; }
 .html-page { position: relative; width: 100%; background: white; box-shadow: 0 1px 3px #00000016, 0 12px 40px #0000000a; touch-action: none; }
 .html-page iframe { position: absolute; inset: 0; border: 0; transform-origin: top left; pointer-events: none; }
 .html-outline { position: absolute; border: 1.5px solid var(--accent); background: #007bbb06; pointer-events: none; }
