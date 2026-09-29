@@ -39,7 +39,6 @@ konpeki validate composition.json
 konpeki check composition.json
 konpeki inspect composition.json [--page N] [--details]
 konpeki render composition.json [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
-konpeki refine-grid composition.json [--output file.json]
 konpeki preview composition.json [--host host] [--port port] [--json]
 ```
 
@@ -56,15 +55,14 @@ It lowers each selected page once; inspection and checking read that scene.
 Without `--page` it includes all pages. Errors exit 1 but layout diagnostics do
 not suppress the report. See the [report contract](../composition/README.md#agent-layout-report).
 
-`refine-grid` upgrades all pages to grid revision 2 without changing their pixel
-geometry, including aligned groups. It exclusively creates a new JSON file,
-defaulting to `<input-basename>.refined.json`. The input remains untouched.
+New documents use pixel rectangles. The loader converts legacy grid pages
+losslessly; a normal subsequent save writes canonical pixel geometry.
 
 Bundled fonts currently cover Latin, accents, and symbols; unsupported glyphs
 are diagnostics. Contrast is measured from all solid glyph pixels at 2x and has
 a finite-resolution caveat. Scaled chart artwork only triggers review of
 pixel-unit details; it does not prove captions. Type leading comes from explicit
-per-preset tables unless a valid baseline-unit override is authored.
+per-preset tables unless a positive page-pixel override is authored.
 
 ## Packaging
 
@@ -122,10 +120,17 @@ renders all 11 pages without a browser; chart scale is a review warning.
 undo, repeated component IDs across pages, mixed page sizes, group alignment,
 imports (including during a drag), and export. Component moves translate the
 existing SVG, hit targets, handles and comment markers once per animation frame;
-they snap and commit the source only on release. Group offsets stay held until
-drop. Design changes such as theme, artwork
-alignment, and grid refinement now arrive through source imports rather than
-browser settings. `check-notes` starts a disposable file session and verifies
+they commit the source only on release. Keyboard movement and resizing use a
+1-page-pixel step on both axes without column or margin snapping. Group offsets
+stay held until drop. Edge and center reference lines follow the preview without
+changing its coordinates, then disappear on release. Standalone auto-height text
+checks cover padding, rewrapping during horizontal resize, explicit fixed-height
+resize, and Undo. Text-flow coverage checks measured hit boxes, text reflow, deletion/undo,
+persisted correction offsets and comment pins following reflow. Flow heights come
+from shaped line boxes, not visible glyph ink; detailed inspection reports ink
+separately. Page overflow stays a measured diagnostic.
+Design changes such as theme and artwork alignment now arrive through source
+imports rather than browser settings. `check-notes` starts a disposable file session and verifies
 page/component comments, legacy import, browser-local persistence across preview
 restarts, actual clipboard contents, denied/unavailable clipboard fallback,
 no-duplicate retry, no sidecar writes, export isolation, failed-storage draft
@@ -145,7 +150,7 @@ current canvas.
 two-axis wheel scrolling, zoom limits, delta units, a synthetic Safari gesture
 sequence, and corrections/comments while zoomed. It checks frame-batched input,
 easing, reduced motion, aligned page headers and the removed status subtitle.
-Drag checks include sub-grid movement, unchanged SVG identities and source during
+Drag checks include pixel movement, unchanged SVG identities and source during
 preview, release before a queued frame, handle alignment, and exact Undo.
 It also checks near-full-page default sizing, left-to-right order on narrow
 screens, wheel navigation along the fitted row, fixed right gutters, centered

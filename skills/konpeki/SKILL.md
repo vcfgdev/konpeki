@@ -35,7 +35,8 @@ Consult other sections as needed:
 
 | Task | Read |
 | --- | --- |
-| Create a page, change size, or repair placement/text | `composition/README.md` → **Grid and type**; A4 is explicitly paginated |
+| Create a page, change size, or repair placement/text | `composition/README.md` → **Pixels and type**; A4 is explicitly paginated |
+| Compose paragraphs, letters, release notes or reports | `composition/README.md` → **Text flow**, when available in the resolved runtime; use measured stacks rather than fixed paragraph boxes |
 | Choose a diagram, chart, or comparison | `design/semantic-patterns.md`, then `composition/README.md` → **Components and artwork** |
 | Lay out a chain or one decision | `composition/README.md` → **Semantic process flows**, when available in the resolved runtime; preserve node position overrides |
 | Author custom artwork | `composition/README.md` → **Components and artwork**; without an explicit layout opt-in, topology alone remains a draft |
@@ -46,12 +47,30 @@ Consult other sections as needed:
 ## Create or revise
 
 Use `konpeki-composition/v2` at the user's chosen path, or an unused
-`slides/<name>/composition.json`. New pages use `grid.revision: 2`, one-based
-grid areas, and named type steps. Preserve existing grid revisions; never change
-the revision alone. Reread the current file before every edit and preserve stable
+`slides/<name>/composition.json`. New pages use a 256–4096 px `canvas` or optional
+named `preset`, pixel `rect` placement for positioned components, and measured
+stack groups for sequential text. Presets provide default dimensions, margins,
+and typography; an explicit canvas overrides dimensions. Reread the current file
+before every edit and preserve stable
 page, component, and vector IDs, deliberate human edits, and newer revisions.
 Keep artwork editable in its owning component. Preserve required facts, sources,
 caveats, relationships, and explicit chart/diagram choices.
+
+Portable authoring contract: write page objects in the document's top-level
+`pages` array. Never author `slides`, both top-level keys together, or a component
+`intent` field. Legacy `slides` documents are import-only; after loading, save
+the canonical `pages` form without component `intent`. Put visible wording in
+`content` and revision requests in the brief or review comments, not in a
+replacement component field.
+
+Use `rect: {x, y, width, height}` in page pixels. Native single-region text may
+omit height so Konpeki measures line count × leading + twice its padding; custom
+visuals and multiregion text require height. This is a line-layout box, not snug
+glyph ink; use `inspect --details` for separate `inkBounds`. Padding, leading,
+stack gaps, and `flow.offset` are page pixels. Named type steps remain defaults;
+positive numeric `textStyle.size` and vector `font-size` values are supported.
+Editor movement and resize corrections are 1 px on both axes with no grid or
+margin snap. Legacy grid pages import losslessly and save back as pixel geometry.
 
 Omit unused `contentSlots`, `groups`, `relationships`, and component `slotIds`;
 they default to empty arrays. Reading and paint order each default to component
@@ -114,7 +133,8 @@ selectable text for manual copying. Copying never invokes an agent, and clearing
 does not mean the revisions were applied. **Cancel** returns to the queue, or
 closes if it is empty. Clicking the launcher or Escape returns to editing.
 Outside comment mode, people can move, resize, delete and correct native text
-directly, with keyboard undo. No sidebars, design pickers or presentation mode.
+directly, with keyboard undo. Flowing text grows with its content rather than
+showing fixed-height resize handles. No sidebars, design pickers or presentation mode.
 Comments combine intent and revision requests; existing targeted notes remain
 readable. Comments stay in that browser at the same preview address, outside the
 composition and exports. No review sidecar, adapter, or waiting process is needed.

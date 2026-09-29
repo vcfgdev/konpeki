@@ -20,28 +20,43 @@ do not assume 16:9 or invent extra pages. Record the destination in
 For another aspect ratio, recompose deliberately rather than stretching artwork,
 silently cropping evidence or shrinking essential text. Each page can have its own size.
 
-New documents use `grid.revision: 2` with one of the v2 presets: `presentation`,
-`portrait`, `link`, `square`, `article`, `a4`, `explainer` and `gallery`. Choose
-`a4` and destination `custom` for 210×297 mm print documents, including résumés,
-one-pagers, letters and reports. It has print-scale typography and exact PDF
-dimensions; compose each page explicitly, since text does not auto-paginate.
-When reproducing a reference, preserve its destination, content and page count
-unless an adaptation is requested. Revision 2
-doubles columns, not rows. Existing pages without a revision retain their
-original grid. Use `konpeki refine-grid`
-to convert existing areas losslessly; never change the revision alone. Place each
-component with an explicit `area` (`column`, `span`, `row`, `rows`). Starts are
-one-based or `"center"`. Columns and spans may be fractional; rows and heights
-remain integers, and centered heights must match the grid's row parity.
-Canvas corrections use the same baseline-sized step on both axes. Preserve
-their fractional column coordinates rather than rounding them to whole columns.
-Preset changes never recompose a page; adapt areas and copy deliberately. Baseline
-rows are fixed, so more content does not make a component grow.
+New documents use free page-pixel placement. Set `canvas: {width, height}` or
+choose the optional named `preset`: `presentation`, `portrait`, `link`, `square`,
+`article`, `a4`, `explainer`, or `gallery`. A preset supplies dimensions,
+typography, and margins; an explicit canvas overrides its dimensions. Fractional
+canvas dimensions and coordinates are valid. Choose `a4` and destination
+`custom` for 210×297 mm print documents, including résumés, one-pagers, letters,
+and reports. Compose every page break explicitly; text does not auto-paginate.
+When reproducing a reference, preserve its destination, content, and page count
+unless an adaptation is requested. Older grid pages import without geometric
+loss, but subsequent saves use pixel rectangles rather than grid areas.
+Author canonical v2 documents with a top-level `pages` array, never `slides`,
+and do not add component `intent` fields.
+
+For paragraphs, letters, release notes and other sequential text, use a group
+with `layout: "stack"` and ordered `childIds`. Its native text members omit
+`rect`: their measured heights place the following text automatically. The group
+defaults to the page's content margins; give only the group a `rect` when it
+needs a narrower column or a different starting position. Paragraph spacing
+defaults to half the preset body line height, with twice that before heading,
+title and display steps. Use `gap` or a member's `flow.gapBefore` (pixels) only
+when the design needs an override. Do not use empty lines or oversized boxes to
+distribute prose across the page. Leave unused space at the end; inspect overflow
+and compose page breaks deliberately. See the composition contract's **Text flow**.
+
+For deliberately positioned artwork and independent text, use
+`rect: {x, y, width, height}` in page pixels. Native single-region text may omit
+`height`; the scene measures line count × leading + twice the padding. Custom
+visuals and multiregion text require height. The measured box is a line-layout
+box, not a promise of snug visible-glyph bounds; `inspect --details` reports
+glyph ink separately. Canvas movement and resizing advance exactly 1 page pixel
+on either axis, with no column, margin, or baseline snapping. Preset changes do
+not recompose a page; adapt rectangles and copy deliberately.
 
 Declare alignment rather than calculating offsets. Native text accepts
 `appearance.alignment` and `appearance.verticalAlignment`; artwork accepts
 `customVisual.alignment` for horizontal fitting. Values are `start`, `center`,
-or `end`. A group with an `area` and `verticalAlignment` aligns its members as
+or `end`. A group with a `rect` and `verticalAlignment` aligns its members as
 one unit, preserving their relative positions without reflowing them. Left
 alignment and vertical centering are independent choices.
 
@@ -57,9 +72,10 @@ The slide-oriented guidance below also applies to single visual pages where rele
 - Keep all essential content readable at the intended viewing size. Check
   captions and sources as carefully as body text. Do not hide overflow, truncate
   required copy or automatically shrink text to fit.
-- In v2, use the seven named type steps (`fine`, `caption`, `body`, `lead`,
-  `heading`, `title`, `display`) rather than arbitrary sizes. Role defaults may be
-  overridden with `textStyle.step`; padding and leading use baseline units.
+- In v2, the seven named type steps (`fine`, `caption`, `body`, `lead`,
+  `heading`, `title`, `display`) remain useful defaults. `textStyle.step` may
+  override the role default, while `textStyle.size` accepts any positive pixel
+  size. Padding and leading are page pixels and may be fractional.
   Render-check fixed-height text after copy, font, padding or leading changes.
 - Represent relationships honestly: correct arrow directions, clear label/value
   associations, appropriate chart scales and zero baselines for amount bars.
@@ -74,10 +90,11 @@ The slide-oriented guidance below also applies to single visual pages where rele
   outer geometry and stable IDs for its internal lines, shapes, paths and text.
   React may generate SVG in a trusted build step, but convert supported SVG
   primitives into the vector tree rather than making React a second deck source.
-- For v2 vectors, bind colors and fonts to theme roles and use `scale:<step>` for
-  vector font sizes. Keep geometry local to its component. Mark intentional
-  overlap with `layer`, while treating `paintOrder` as authoritative stacking.
-  Do not claim the grid automatically lays out topology or recomposes presets.
+- For v2 vectors, bind colors and fonts to theme roles. Use `scale:<step>` or a
+  positive numeric pixel value for vector font sizes. Keep geometry local to its
+  component. Mark intentional overlap with `layer`, while treating `paintOrder`
+  as authoritative stacking.
+  Do not claim that presets automatically lay out topology or recompose pages.
 
 ## Writing tone
 
