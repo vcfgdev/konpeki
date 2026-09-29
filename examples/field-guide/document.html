@@ -9,7 +9,6 @@
     body { margin: 0; color: #202b3d; background: white; font: 15px/1.55 'IBM Plex Sans', sans-serif; }
     .page { width: 794px; height: 1123px; padding: 58px 64px; display: flex; flex-direction: column; }
     header { padding-bottom: 24px; border-bottom: 1px solid #d6dce4; margin-bottom: 26px; }
-    .eyebrow { color: #2166aa; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 18px; }
     h1 { font-size: 41px; line-height: 1.12; letter-spacing: -.035em; margin: 0 0 16px; max-width: 610px; text-wrap: balance; }
     .intro { margin: 0; max-width: 595px; color: #556074; font-size: 18px; line-height: 1.5; }
     h2 { font-size: 21px; line-height: 1.25; margin: 0 0 12px; letter-spacing: -.02em; }
@@ -29,7 +28,7 @@
     th:first-child, td:first-child { width: 32%; padding-left: 0; }
     ol { margin: 0; padding-left: 21px; }
     li { padding-left: 4px; margin-bottom: 9px; }
-    footer { margin-top: auto; display: flex; justify-content: space-between; gap: 30px; font-size: 12px; color: #556074; }
+    footer { margin-top: auto; flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 30px; font-size: 12px; color: #556074; }
     @page { size: 210mm 297mm; margin: 0; }
     @media print { .page { width: 210mm; height: 297mm; break-after: page; } .page:last-child { break-after: auto; } }
   </style>
@@ -37,7 +36,6 @@
 <body>
   <article id="the-pattern" class="page" data-page>
     <header>
-      <p class="eyebrow" id="guide-label">Engineering field guide / 01</p>
       <h1 id="guide-title">Accepted orders,<br>durable events</h1>
       <p class="intro" id="guide-intro">A transactional outbox keeps a broker outage from losing the confirmation event for an accepted order.</p>
     </header>
@@ -57,11 +55,10 @@
       <h2>At-least-once, not exactly-once</h2>
       <p>Duplicates are part of the contract. The worker must handle them without repeating its database effect. There is <strong>no global ordering guarantee</strong>; do not infer one from the arrows above.</p>
     </section>
-    <footer><span id="scenario-caption" style="translate: 12px -6px;">Illustrative commerce scenario · no production metrics</span><span>01 / 02</span></footer>
+    <footer><span id="scenario-caption">Illustrative commerce scenario · no production metrics</span><span>01 / 02</span></footer>
   </article>
   <article id="the-worker" class="page" data-page>
     <header>
-      <p class="eyebrow" id="worker-label">Engineering field guide / 02</p>
       <h1 id="worker-title">Make retries safe<br>at the consumer</h1>
       <p class="intro" id="worker-intro">Durable publication closes one failure window. An idempotent worker closes the next.</p>
     </header>
