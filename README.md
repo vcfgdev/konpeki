@@ -1,21 +1,26 @@
 ![Konpeki — Create clear visuals with your coding agent](slides/github-cover/cover.png)
 
-**Create finished visuals with your coding agent.** Konpeki combines a concise
-design direction, its own rendering engine, and editable source for covers,
-social graphics, visual explanations and presentations.
+**Create finished visuals with your coding agent.** Give it a brief, source
+material and any visual references. It creates, checks and renders the result,
+then delivers editable composition JSON and the PNG, SVG or PDF files you need.
 
-Give your coding agent source material and a brief. It authors a finished visual
-with editable source and requested exports. If a correction is useful, edit basic
-canvas text or leave comments that combine communication intent with specific
-revision requests, then copy the prompt and paste it into the agent conversation.
+Use Konpeki for covers, social graphics, diagrams, charts, explainers, documents
+and presentations. It provides:
 
-People and agents edit the same v2 composition. The owned scene drives preview,
-checks, and PNG/SVG/PDF output.
+- **Design guidance.** A restrained default that gives way to your brief or
+  reference. The agent chooses the visual form and layout from your material.
+- **A dedicated rendering engine.** Text measurement and layout checks, with
+  one scene driving the browser preview and PNG/SVG/PDF exports.
+- **Editable source.** Text, component placement and vector artwork stay in
+  composition JSON for later revisions.
+
+The agent delivers a finished visual whether or not you open the preview.
+The optional browser canvas is for comments and small layout corrections.
 
 ## Use with your agent
 
 Requires **Node.js 24+**, npm, and a coding agent that can edit files and run
-commands. A browser is optional for review and basic corrections.
+commands.
 
 Install once, choosing your agent when prompted:
 
@@ -29,43 +34,17 @@ Start a new conversation or reload your agent's skills. **Send this to your agen
 
 Replace the example with your own brief and materials. Your agent prepares the
 runtime, creates editable JSON in your workspace, checks it, renders a 2x PNG,
-and inspects the result. A browser preview is optional. First use may require
-installation permission.
+and visually inspects the result before delivery. First use may require
+installation permission. See [setup details](SETUP.md) for other install methods.
 
-Keep revisions in the same conversation. The browser does not require a content
-or intent form, or ask people to choose diagram or chart types. Optional basic
-text corrections remain in the composition. **Copy & clear** copies pending
-comments with their target IDs and clears the copied batch, with **Undo**;
-paste the prompt into your agent. Comments stay local
-to the browser and never invoke an agent or require a review sidecar. File-session
-composition edits still use revision-checked saves. See
-[setup details](SETUP.md) for other install methods.
-
-## Try the editor in your browser
-
-[Open the editable Konpeki example](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
-
-The browser-only playground lets you review and comment on an example, move,
-resize, delete, correct text, keep a local working copy, import/download editable
-JSON, and copy feedback as a prompt. All pages share a canvas with arrows
-showing their order. The bottom-right button starts target selection, or opens
-the queue when comments already exist. Select a canvas target, write feedback,
-and **Add** to open the compact queue. Use **New comment** to select another
-target, the pencil to edit feedback, or **Copy & clear** to hand it off.
-Click the comment button again or press Escape to close. There are no sidebars or toolbars.
-Use the CLI for PNG/SVG/PDF exports. It requires
-no account or AI service. Browser-local data is not cloud backup; download JSON
-and copy pending comments before moving or clearing your work. Share the latest
-JSON with your agent when it does not already have the source.
-
-The playground does not connect to an agent. The agent-led workflow above is the
-route from a prompt to a checked and visually inspected composition.
+Keep revisions in the same conversation. Ask for wording and design changes
+directly, or use the optional preview to point at what should change.
 
 ## Showcase
 
-Illustrative examples with editable text and vector artwork. Click a preview to
-view it full-size, or download its JSON and drop it onto the canvas in the
-[playground](https://vcfgdev.github.io/konpeki/).
+Each example includes composition JSON so your agent can revise its text and
+vector artwork. Click an image to view it full-size, or download the JSON and
+drop it into the [preview](https://vcfgdev.github.io/konpeki/).
 
 <table>
   <tr>
@@ -100,20 +79,57 @@ view it full-size, or download its JSON and drop it onto the canvas in the
 
 [Browse the gallery](slides/README.md) for briefs, sources and more examples.
 
-## Manual npm start
+## Review in the browser
 
-For a manual start, install [Konpeki from npm](https://www.npmjs.com/package/konpeki)
+[Try the Konpeki preview](https://vcfgdev.github.io/konpeki/?example=introducing-konpeki).
+
+All pages sit on one canvas, with arrows showing their order. Pan and zoom to
+inspect the work. You can move, resize or delete components, with alignment
+guides and undo. **Text and design changes go through your agent or source JSON;
+there is no inline text editor.**
+
+To request a revision:
+
+1. Click **Comment**, then select a page or component. You can also double-click
+   a component to open its nearby comment field.
+2. Write what should change and click **Add**. Comments leave numbered markers.
+3. Click **Copy & clear** in the review queue, then paste the prompt into your
+   agent conversation. It includes the comments and their target IDs.
+
+Copying clears the copied batch with an **Undo** option; it does not invoke the
+agent or mean the changes are done. Comments stay in your browser, separate
+from the composition and exports.
+
+A file-backed preview saves layout corrections to the composition JSON and loads
+valid agent revisions. The standalone playground keeps a browser-local copy;
+download its JSON and share it with your agent when needed. Browser storage is
+not a backup. See the [canvas workflow](docs/workflow.md) for shortcuts, saving
+and comment recovery.
+
+## Use the CLI directly
+
+Install [Konpeki from npm](https://www.npmjs.com/package/konpeki)
 in your workspace (run `npm init -y` first in a new, empty directory):
 
 ```sh
 npm install --save-dev konpeki@latest
 curl -fL https://raw.githubusercontent.com/vcfgdev/konpeki/main/slides/introducing-konpeki/composition.json -o introduction.json
+npm exec --no -- konpeki inspect introduction.json
+npm exec --no -- konpeki render introduction.json --page 1 --format png --scale 2 --output introduction-page-1.png
+```
+
+`inspect` reports measured layout and diagnostics. Rendered output still needs
+visual review. `render` also supports SVG and PDF; PDF includes every page unless
+`--page` is supplied. Output files must not already exist.
+
+For an optional file-backed preview:
+
+```sh
 npm exec --no -- konpeki preview introduction.json
 ```
 
-Open the exact URL printed by `preview`. Browser edits save to your downloaded file;
-valid agent edits appear on the same canvas. In a remote environment, use its
-authenticated preview mechanism rather than sharing a local address.
+Open the exact URL printed by `preview`. It grants editing access to that file;
+do not publish it. In a remote environment, use authenticated forwarding.
 
 ## Examples and guides
 
