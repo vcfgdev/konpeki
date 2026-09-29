@@ -64,6 +64,8 @@ Inspect each requested export independently and report unresolved warnings or
 verification limits. Artifact recipients and reviewers do not need Playwright or
 Chromium. A local preview is not a deployed or permanent artifact.
 
-The existing gallery and playground are legacy composition JSON. Do not imply
-that they are converted HTML examples or that the unreleased HTML path is already
-published.
+The [public comment preview](https://vcfgdev.github.io/konpeki/) uses three native
+[HTML examples](../examples/README.md). Click an element to comment, then copy the
+prompt into your agent conversation. Comments are scoped to each example and stay
+in your browser; this static demo does not modify files on GitHub. Use the local
+CLI preview for source corrections. The npm runtime remains unpublished.

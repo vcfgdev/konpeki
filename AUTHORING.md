@@ -13,8 +13,9 @@ the structural and safety rules in [html/README.md](html/README.md).
   page break explicitly; there is no automatic pagination.
 - Keep essential content readable at its intended viewing size. Do not hide
   overflow, truncate required copy, or shrink type until it technically fits.
-- Use licensed local assets and real font weights. Keep images, stylesheets, and
-  fonts beside the document or embed them; verify that they load.
+- Use licensed assets and real font weights. Keep images and stylesheets beside
+  the document or embed them. Use Google Fonts or local/embedded fonts; verify
+  that they load before export.
 - Represent relationships honestly: correct arrow directions, clear label/value
   associations, appropriate chart scales, and zero baselines for amount bars.
   Do not rely on color alone to convey meaning.
@@ -75,8 +76,8 @@ deletion may reflow.
 ## Existing documents and showcases
 
 Composition JSON and its engine remain for existing documents only. Do not choose
-it as an equally recommended route for new work. The current gallery is honestly
-legacy JSON and has not been converted to HTML.
+it as an equally recommended route for new work. See [examples](examples/README.md)
+for representative HTML sources; former JSON examples remain as regression fixtures.
 
 For a contributed showcase, preserve its exact brief and supplied sources without
 private transcripts, credentials, model metadata, or invented history. Ordinary

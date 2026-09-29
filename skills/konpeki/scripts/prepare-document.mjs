@@ -11,7 +11,7 @@ try {
   if (!html && !/\.json$/i.test(input)) throw new Error("Use an .html or .json document path.");
   const compositionPath = resolve(input);
   function validate(path) {
-    // Use the published JS CLI, not TypeScript imports from node_modules.
+    // Use the supplied CLI, not internal TypeScript imports from node_modules.
     const result = spawnSync(process.execPath, [cli, "validate", path], {
       stdio: ["ignore", 2, 2],
     });

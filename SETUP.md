@@ -1,8 +1,8 @@
 # Set up Konpeki
 
-The HTML-first workflow is currently unreleased local-checkout development. The
-published npm version remains **0.4.0** and uses the legacy composition JSON
-workflow. Do not use `konpeki@latest` expecting the HTML commands below.
+Konpeki has not been published to npm. The repository's `0.4.0` version is not an
+available npm release. Use a source checkout for HTML and legacy JSON commands;
+do not use `npm install konpeki` or `konpeki@latest` for this setup.
 
 ## Source-checkout HTML workflow
 
@@ -39,21 +39,21 @@ Use `preview` only when human review is useful. See [docs/workflow.md](docs/work
 The bundled starter is `skills/konpeki/assets/blank.html`. To create it without
 overwriting an existing document, run
 `mise exec -- node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html`.
-`ensure-runtime.mjs --html` probes HTML support without downloading a legacy
-runtime. On minimal Linux images, Chromium also needs its system libraries;
+`ensure-runtime.mjs --html` probes an available runtime without downloading one.
+On minimal Linux images, Chromium also needs its system libraries;
 `mise exec -- pnpm exec playwright install-deps chromium` installs them using the
 host's package manager and may require administrator approval.
 
-## Released legacy workflow
+## Skill and legacy documents
 
-The runtime helper without `--html` still resolves pinned `konpeki@0.4.0` for
-existing JSON documents. This is a compatibility path; the current skill's
-authoring instructions describe the unreleased HTML workflow:
+Install the authoring skill separately from the runtime:
 
 ```sh
 npx skills add vcfgdev/konpeki -g
-node "<installed-skill>/scripts/ensure-runtime.mjs"
 ```
 
-This released path remains available for existing documents and gallery examples;
-it is not the recommended source format for new checkout-based HTML work.
+The helper can find a prepared checkout when the skill is inside that checkout,
+or a compatible local package. A standalone skill does not contain the runtime;
+use the checkout's `bin/konpeki.mjs` if it cannot find one. The same checkout CLI
+accepts existing composition JSON documents. JSON is a compatibility path, not
+the recommended source format for new work.

@@ -35,8 +35,15 @@ is no intermediate composition JSON representation.
 ## Static and portable
 
 Keep images, CSS, and fonts beside the HTML using relative paths, or embed them.
+Google Fonts is the sole remote-resource exception: load its stylesheet from
+`https://fonts.googleapis.com/css2` and font files from `https://fonts.gstatic.com`.
+Do not commit downloaded font binaries to the example collection. Google Fonts
+requires network access when previewing or exporting; CLI inspection reports
+failed requests rather than silently approving a fallback. For offline work,
+keep licensed fonts beside the document or embed them.
+
 Do not use authored JavaScript, embedded applications, interactive controls, or
-remote resources.
+other remote resources.
 
 Page breaks are explicit. Konpeki does not paginate overflow automatically. Make
 every intended PDF page a separate direct-body page.

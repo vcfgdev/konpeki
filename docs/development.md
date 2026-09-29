@@ -16,8 +16,9 @@ Do not install project tools globally.
 The new path treats static HTML as canonical source. Pages are explicit direct
 children of `<body>`, marked with `data-page`, and sized by CSS. Page and target
 IDs are globally unique and stable. Local images, CSS, and fonts live beside the
-HTML or are embedded. Authored JavaScript, embedded applications, controls, and
-remote resources violate the contract.
+HTML or are embedded. Google Fonts stylesheets and font files are the only
+permitted external resources. Authored JavaScript, embedded applications,
+controls, and other remote resources violate the contract.
 
 The intended CLI surface is:
 
@@ -51,11 +52,15 @@ does not reorder source; deletion may reflow. Do not add inline text editing,
 resize, presentation UI, an agent adapter, a waiting process, or a comment
 sidecar. Comments are browser-local and leave through Copy & clear prompts.
 
+The static Pages build reuses the HTML preview with the three bundled examples.
+It has browser-local comments and no source-write API or polling. Local file-backed
+HTML previews retain source corrections. The legacy JSON CLI uses `legacy.html`.
+
 ## Legacy compatibility
 
-Composition JSON commands, engine code, and examples remain for existing
-documents. They are not an equal new-authoring recommendation. The checked-in
-gallery remains legacy JSON and must not be described as converted HTML.
+Composition JSON commands and engine code remain for existing documents. They
+are not an equal new-authoring recommendation. Former JSON examples needed by
+tests live in `composition/fixtures/`; public examples are native HTML.
 
 ## Verification and release status
 
@@ -77,7 +82,7 @@ validation, inspection, PNG/PDF export, and preview there. Checkout imports can
 hide missing package resources. Verify drag/save/undo, stale revisions, comments,
 clipboard failure, and diagnostic states in a real browser as well.
 
-This HTML path is unreleased checkout development. The published package remains
-0.4.0. Do not claim packaging, tests, npm publication, converted examples, or a
+Konpeki has not been published to npm; `0.4.0` is a repository version only.
+Do not claim packaging, tests, npm publication, converted examples, or a
 deployed HTML preview unless those actions actually happen. Never publish, push,
 deploy, or tag without explicit permission.

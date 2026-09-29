@@ -50,12 +50,12 @@ test("a copied skill resolves pinned runtimes without touching project files", a
   const missing = run();
   assert.equal(missing.status, 1);
   assert.equal(missing.stdout, "");
-  assert.match(missing.stderr, /--install/);
+  assert.match(missing.stderr, /has not been published to npm/);
   assert.deepEqual((await readdir(workspace)).sort(), ["AGENTS.md", "package.json"]);
   await assert.rejects(readdir(cache), { code: "ENOENT" });
   const unpublished = run("--html", "--install");
   assert.equal(unpublished.status, 1);
-  assert.match(unpublished.stderr, /HTML authoring is not yet published/);
+  assert.match(unpublished.stderr, /has not been published to npm/);
   await assert.rejects(readdir(cache), { code: "ENOENT" });
 
   await fixture(checkout);
@@ -82,12 +82,11 @@ test("a copied skill resolves pinned runtimes without touching project files", a
   assert.equal(await readFile(join(workspace, "AGENTS.md"), "utf8"), guidance);
 });
 
-test("bootstrap installs into its cache, not an ancestor project or inherited global prefix", async t => {
+test("bootstrap refuses npm installation while unreleased and preserves existing packages", async t => {
   const root = await mkdtemp(join(tmpdir(), "konpeki-install-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const workspace = join(root, "existing project");
   const copied = join(root, "installed skill");
-  const packageRoot = join(root, "fixture package");
   await mkdir(workspace);
   await cp(skill, copied, { recursive: true });
   const manifest = '{"name":"keep-project","private":true}\n';
@@ -98,22 +97,11 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
   await fixture(broken);
   const brokenCLI = 'import "missing-dependency";';
   await writeFile(join(broken, "runtime/konpeki.mjs"), brokenCLI);
-  await fixture(packageRoot);
   const exec = promisify(execFile);
-  const packed = await exec("npm", ["pack", "--json", "--ignore-scripts", "--global=false", "--pack-destination", root], { cwd: packageRoot });
-  const tarball = await readFile(join(root, JSON.parse(packed.stdout)[0].filename));
-  let downloads = 0;
-  const registry = createServer((request, response) => {
-    if (request.url === "/konpeki") {
-      response.setHeader("Content-Type", "application/json");
-      response.end(JSON.stringify({
-        name: "konpeki", "dist-tags": { latest: "0.4.0" },
-        versions: { "0.4.0": { name: "konpeki", version: "0.4.0", bin: { konpeki: "runtime/konpeki.mjs" }, dist: { tarball: `${registryURL}/konpeki.tgz` } } },
-      }));
-    } else if (request.url === "/konpeki.tgz") {
-      downloads++;
-      response.end(tarball);
-    } else { response.writeHead(404); response.end(); }
+  let requests = 0;
+  const registry = createServer((_request, response) => {
+    requests++;
+    response.writeHead(404); response.end();
   });
   registry.listen(0, "127.0.0.1");
   await once(registry, "listening");
@@ -121,7 +109,7 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
   const address = registry.address();
   assert.ok(address && typeof address === "object");
   const registryURL = `http://127.0.0.1:${address.port}`;
-  const installed = await exec(process.execPath, [join(copied, "scripts/ensure-runtime.mjs"), "--install"], {
+  await assert.rejects(exec(process.execPath, [join(copied, "scripts/ensure-runtime.mjs"), "--install"], {
     cwd: workspace,
     env: {
       ...process.env,
@@ -130,10 +118,9 @@ test("bootstrap installs into its cache, not an ancestor project or inherited gl
       npm_config_global: "true", npm_config_prefix: join(root, "global prefix"),
       npm_config_userconfig: join(root, "empty-npmrc"),
     },
-  });
-  const cachedRoot = join(workspace, "nested cache/konpeki/0.4.0/node_modules/konpeki");
-  assert.deepEqual(JSON.parse(installed.stdout), { root: cachedRoot, cli: join(cachedRoot, "runtime/konpeki.mjs"), version: "0.4.0" });
-  assert.equal(downloads, 1, "exercise a real npm install against the disposable registry");
+  }), /has not been published to npm/);
+  assert.equal(requests, 0, "must not probe a registry or download an unpublished runtime");
+  await assert.rejects(readdir(join(workspace, "nested cache")), { code: "ENOENT" });
   assert.equal(await readFile(join(workspace, "package.json"), "utf8"), manifest);
   assert.equal(await readFile(join(workspace, "package-lock.json"), "utf8"), lock);
   assert.equal(await readFile(join(broken, "runtime/konpeki.mjs"), "utf8"), brokenCLI);

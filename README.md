@@ -11,10 +11,10 @@ surface for small geometry corrections and comments.
 
 ## Current status
 
-The published npm version is **0.4.0** and uses composition JSON. The HTML-first
-commands documented here describe local checkout development and are not yet an
-npm release. The existing [gallery](slides/README.md) remains a legacy JSON
-gallery; it has not been converted into HTML examples.
+**Konpeki has not been published to npm.** `0.4.0` is the version in the repository,
+not an available npm release. Run the commands below from a prepared source checkout.
+Existing composition JSON documents remain supported for compatibility; choose
+HTML for new work.
 
 ## HTML-first authoring
 
@@ -24,8 +24,9 @@ page is a direct child of `<body>`, has `data-page`, and has a globally unique,
 stable `id`. Give every editable page element a globally unique, stable `id` as
 well. Define page dimensions in CSS.
 
-Keep local images, stylesheets, and fonts beside the HTML, or embed them. Do not
-author JavaScript, applications, controls, or remote resources. See
+Keep images and stylesheets beside the HTML, or embed them. Fonts may be local,
+embedded, or loaded from Google Fonts. Do not author JavaScript, applications,
+controls, or other remote resources. See
 [HTML authoring](html/README.md) and [authoring guidance](AUTHORING.md).
 
 The intended checkout CLI is:
@@ -57,6 +58,11 @@ PNG and PDF are the primary delivery artifacts. Keep editable HTML and its local
 resources in the agent workspace and share source only when useful or requested.
 Recipients do not need Playwright or Chromium to view exports.
 
+Try the [comment preview](https://vcfgdev.github.io/konpeki/) with three
+[HTML examples](examples/README.md): a cover, a data brief, and a two-page field
+guide. The public demo keeps comments in your browser; use a local CLI preview
+to save moves and deletions to source.
+
 ## Installation
 
 Install the current authoring skill:
@@ -65,9 +71,8 @@ Install the current authoring skill:
 npx skills add vcfgdev/konpeki -g
 ```
 
-Its HTML workflow requires a prepared source checkout until an HTML-capable npm
-release. The published `konpeki@0.4.0` runtime still supports existing JSON
-documents, not HTML. See [SETUP.md](SETUP.md) for both paths.
+Installing the skill does not install the runtime. Both HTML and legacy JSON
+commands currently require a prepared source checkout. See [SETUP.md](SETUP.md).
 
 ## Guides
 
@@ -76,7 +81,7 @@ documents, not HTML. See [SETUP.md](SETUP.md) for both paths.
 - [HTML contract](html/README.md)
 - [Workflow](docs/workflow.md)
 - [Development](docs/development.md)
-- [Legacy JSON gallery](slides/README.md)
+- [HTML examples](examples/README.md)
 - [Contributing](CONTRIBUTING.md) and [security](SECURITY.md)
 
 Konpeki requires no account or hosted AI service. Your coding agent's pricing

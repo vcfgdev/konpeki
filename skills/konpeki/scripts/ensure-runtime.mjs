@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -46,24 +46,9 @@ try {
     : process.env.XDG_CACHE_HOME || join(homedir(), ".cache");
   const cache = resolve(cacheBase, "konpeki", version);
   const cachedRoot = join(cache, "node_modules", "konpeki");
-  let found = (workspace && runtime(workspace)) || runtime(bundled) || runtime(cachedRoot);
-  if (!found) {
-    if (html) throw new Error("HTML authoring is not yet published. Use a prepared Konpeki source checkout; installing 0.4.0 will not enable HTML.");
-    if (!process.argv.includes("--install"))
-      throw new Error(`Konpeki ${version} is not installed. After the host approves installation, rerun with --install. This uses a user cache and leaves project dependencies unchanged.`);
-    mkdirSync(cache, { recursive: true });
-    // Explicit local prefix prevents npm from walking up into an ancestor project.
-    // Resolve "." from the absolute cwd; no user path enters Windows shell text.
-    const result = spawnSync("npm", ["install", "--prefix=.", "--global=false", "--save-exact", "--no-audit", "--no-fund", `konpeki@${version}`], {
-      cwd: cache,
-      stdio: ["inherit", 2, 2],
-      shell: process.platform === "win32",
-    });
-    if (result.error || result.status !== 0)
-      throw new Error("Konpeki installation failed. Check npm/network access and retry; the runtime is not ready.");
-    found = runtime(cachedRoot);
-    if (!found) throw new Error("The installed Konpeki runtime is incomplete or incompatible.");
-  }
+  const found = (workspace && runtime(workspace)) || runtime(bundled) || runtime(cachedRoot);
+  if (!found)
+    throw new Error("Konpeki has not been published to npm. Use a prepared source checkout and its bin/konpeki.mjs; this helper will not download a runtime.");
   console.log(JSON.stringify(found));
 } catch (error) {
   console.error(error.message);

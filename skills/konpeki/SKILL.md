@@ -13,10 +13,10 @@ constraints prevent faithful work.
 
 ## Availability
 
-HTML-first authoring is unreleased checkout development. Published
-`konpeki@0.4.0` is the legacy composition JSON runtime. Do not install or describe
-the published package as if it already supports this workflow. Existing JSON
-documents may continue using their engine, but choose HTML for new checkout work.
+Konpeki has not been published to npm. `0.4.0` is the repository version, not an
+available release. Use a prepared source checkout; installing the skill alone
+does not install the runtime. Existing JSON documents may continue using the
+checkout's compatibility commands, but choose HTML for new work.
 
 ## Read the relevant guidance
 
@@ -32,8 +32,9 @@ Author the user's chosen `document.html` path:
 - every explicit page is a direct child of `<body>` with `data-page`;
 - page and targetable element IDs are globally unique and stable;
 - CSS defines page dimensions, including mixed sizes;
-- local images, stylesheets, and fonts are embedded or kept beside the HTML; and
-- no authored JavaScript, embedded applications, controls, or remote resources.
+- images and stylesheets are embedded or kept beside the HTML;
+- fonts are local, embedded, or loaded from Google Fonts; and
+- no authored JavaScript, embedded applications, controls, or other remote resources.
 
 The HTML is canonical. Do not create composition JSON or another scene/schema as
 an intermediate source. Preserve facts, sources, caveats, IDs, unrelated edits,

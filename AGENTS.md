@@ -2,7 +2,7 @@
 
 Konpeki turns a brief into an agent-authored visual. For new work, static HTML
 and CSS are canonical; PNG and PDF are the primary delivery artifacts. Existing
-composition JSON commands and examples remain supported for legacy documents,
+composition JSON commands remain supported for legacy documents,
 not as an equally recommended authoring path.
 
 ## Choose the relevant guide
@@ -21,8 +21,9 @@ not as an equally recommended authoring path.
 - Author static HTML/CSS with inline SVG. Explicit pages must be direct children
   of `<body>`, use `data-page`, and have globally unique stable IDs. Editable
   elements also need globally unique stable IDs. CSS owns page dimensions.
-- Keep images, CSS, and fonts beside the HTML or embed them. Do not author
-  JavaScript, embedded applications, controls, or remote resources.
+- Keep images and CSS beside the HTML or embed them. Use Google Fonts or local/
+  embedded fonts. Do not author JavaScript, embedded applications, controls, or
+  other remote resources.
 - Preserve unrelated work, human edits, facts, provenance, and stable IDs.
   Reread source before revision; do not overwrite a newer revision.
 - Complete requested authoring, inspection, rendering, and repair unless a
