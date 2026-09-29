@@ -2,8 +2,8 @@
 
 Konpeki turns a brief into a finished agent-authored visual with editable source
 and requested exports. The agent owns the conversation; composition JSON owns
-the document; the browser supports review, comments, optional basic text
-corrections, movement, and deletion on that same document.
+the document; the browser supports review, comments, movement, resizing, and
+deletion. Text and design revisions belong to the agent or source JSON.
 
 ## Choose the relevant guide
 

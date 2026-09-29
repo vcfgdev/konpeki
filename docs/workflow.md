@@ -7,7 +7,7 @@ source; one owned scene drives canvas display, checking, and every export.
 
 1. Give your coding agent the brief, source material, and intended use.
 2. Receive a finished, inspected visual with editable source and requested exports.
-3. Optionally move, resize, delete, correct text, or leave page comments that combine
+3. Optionally move, resize, delete, or leave page/component comments that combine
    communication intent with concrete revision requests.
 4. Click **Copy & clear** in pending reviews, then paste into your agent conversation.
 5. Keep the editable JSON and delivery exports you need. Copy pending comments
@@ -102,17 +102,14 @@ it. Comments do not change the composition.
 
 Outside comment mode, click a component to select it. Drag or use arrow keys to
 move it, drag its corner handles to resize, or press Delete/Backspace to remove
-it. Moving a component follows the pointer continuously; grid snapping and saving
-happen on release, as one undo step. Movement and resizing use equal horizontal
-and vertical steps: 12×12 px on a presentation page, following its baseline.
-Existing geometry is preserved; horizontal corrections can save fractional
-column coordinates in the composition. Double-click native text (or press Enter on
-its selected component) to edit; blur commits and Escape cancels. Ctrl/⌘ Z undoes
-and Ctrl/⌘ Shift Z redoes.
-Text corrections preserve newer geometry and styling from external edits. If
-the text itself changed or its component was removed, the draft stays open with
-a warning; copy it before pressing Escape to load the current source.
-Design changes and custom-artwork text revisions can be requested in comments.
+it. Moving a component follows the pointer continuously and saves on release as
+one undo step. Movement and resizing use a 1-page-pixel step on both axes with no
+grid snapping; reference lines help align edges and centers. Existing fractional
+geometry is preserved. Ctrl/⌘ Z undoes and Ctrl/⌘ Shift Z redoes.
+Double-click a component, including text, or press Enter on its focused target to
+open a comment. Text and design revisions go through the agent or source JSON;
+there is no inline text editor. Comment drafts survive external source changes;
+if their target is removed, the draft remains readable but cannot be submitted.
 
 In the standalone playground, drop a JSON file or press Ctrl/⌘ O to open one.
 Ctrl/⌘ S downloads the composition. Share the latest JSON with your agent if it

@@ -38,7 +38,6 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
   const [renderError, setRenderError] = useState("");
   const [guides, setGuides] = useState<Guide[]>([]);
   const [heldGroup, setHeldGroup] = useState<{ id: string; offset: number; area: Rect }>();
-  const [editing, setEditing] = useState<{ component: CompositionComponent; value: string }>();
   const [renaming, setRenaming] = useState(false), [name, setName] = useState(slide.name);
   const gesture = useRef<{ id: string; x: number; y: number; rect: Rect; scale: number; corner?: Corner; duplicate?: boolean } | undefined>(undefined);
   const nodeGesture = useRef<{ componentId: string; nodeId: string; x: number; y: number; position: { x: number; y: number }; scale: number } | undefined>(undefined);
@@ -191,28 +190,6 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
       return position ? { ...rest, position: { x: Math.round(position.x), y: Math.round(position.y) } } : rest;
     }) } }, `process-node:${componentId}:${nodeId}`);
   }
-  function commitEdit() {
-    if (!editing) return;
-    const original = editing.component;
-    if (original.kind === "text-block" && editing.value !== (original.content ?? "")) {
-      const component = slide.components.find(item => item.id === original.id);
-      if (component?.kind !== "text-block" || component.customVisual) {
-        onNotice("This text component was removed or replaced. Your draft is still open; copy it before pressing Escape to cancel.");
-        return;
-      }
-      if ((component.content ?? "") !== (original.content ?? "") && component.content !== editing.value) {
-        onNotice("This text changed elsewhere. Your draft is still open; copy it before pressing Escape to load the latest text.");
-        return;
-      }
-      if (component.content !== editing.value) onComponent({ ...component, content: editing.value }, `content:${component.id}`);
-    }
-    setEditing(undefined); onEditEnd();
-  }
-  function correct(component: CompositionComponent) {
-    if (editing) { onNotice("Finish or cancel the open text draft first."); return; }
-    if (component.kind === "text-block" && !component.customVisual) setEditing({ component, value: component.content ?? "" });
-    else onComment?.(component.id);
-  }
   function svgTarget(event: { target: EventTarget }) {
     return (event.target as Element).closest<SVGGraphicsElement>("[data-component]");
   }
@@ -227,7 +204,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
   function nudge(event: React.KeyboardEvent, component: CompositionComponent) {
     if (event.key === "Enter") {
       event.preventDefault(); onSelect(component.id);
-      correct(component);
+      onComment?.(component.id);
       return;
     }
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
@@ -262,8 +239,8 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
         {mode === "review" && <button type="button" className="page-comment-hit" aria-label={`Comment on page: ${slide.name}`} onClick={() => onComment?.()} />}
         {interactive && heldGroup && <div className="group-area-outline" aria-hidden="true" style={{ left: `${heldGroup.area.x/slide.canvas.width*100}%`, top: `${heldGroup.area.y/slide.canvas.height*100}%`, width: `${heldGroup.area.width/slide.canvas.width*100}%`, height: `${heldGroup.area.height/slide.canvas.height*100}%` }} />}
         {slide.paintOrder.map(id => slide.components.find(component => component.id === id)!).map(component => <button key={component.id} type="button" data-component={component.id} className={`component-hit ${selected === component.id || commentTarget?.componentId === component.id ? "selected" : ""}`} style={{ left: `${box(component).x/slide.canvas.width*100}%`, top: `${box(component).y/slide.canvas.height*100}%`, width: `${box(component).width/slide.canvas.width*100}%`, height: `${box(component).height/slide.canvas.height*100}%` }} aria-label={`${interactive ? "Select" : "Comment on"} ${componentInstanceLabel(slide.components, component.id)}`} aria-pressed={selected === component.id || commentTarget?.componentId === component.id}
-          title={interactive ? "Drag or use arrow keys to move · Delete to remove · Double-click text to edit" : "Click to comment"}
-          onPointerDown={event => { if (interactive) start(event, component); }} onClick={event => { if (!interactive) onComment?.(component.id); else if (event.detail === 0) onSelect(component.id); }} onDoubleClick={event => { event.stopPropagation(); if (interactive) correct(component); }} onKeyDown={event => { if (interactive) nudge(event, component); }} />)}
+          title={interactive ? "Drag or use arrow keys to move · Delete to remove · Double-click or Enter to comment" : "Click to comment"}
+          onPointerDown={event => { if (interactive) start(event, component); }} onClick={event => { if (!interactive) onComment?.(component.id); else if (event.detail === 0) onSelect(component.id); }} onDoubleClick={event => { event.stopPropagation(); if (interactive) onComment?.(component.id); }} onKeyDown={event => { if (interactive) nudge(event, component); }} />)}
         {interactive && selectedComponent?.rect && (["nw","ne","sw","se"] as Corner[]).map(corner => <button key={corner} type="button" className={`resize-handle resize-${corner}`} style={{ left: `${(box(selectedComponent).x + (corner.endsWith("e") ? box(selectedComponent).width : 0))/slide.canvas.width*100}%`, top: `${(box(selectedComponent).y + (corner.startsWith("s") ? box(selectedComponent).height : 0))/slide.canvas.height*100}%` }} aria-label={`Resize ${componentInstanceLabel(slide.components, selectedComponent.id)} from ${corner}`} onPointerDown={event => start(event, selectedComponent, corner)} onKeyDown={event => keyboardResize(event, selectedComponent, corner)} />)}
         {interactive && selectedComponent && selectedScene?.processNodes?.map(node => <button key={node.id} type="button" className="component-hit process-node-hit" data-process-node={node.id}
           aria-label={`Move step: ${node.label}`} title="Drag or use arrow keys to pin this step. Delete resets automatic placement."
@@ -289,7 +266,6 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
               y: node.box.y - selectedScene.contentBox.y + (event.key === "ArrowDown" ? step : event.key === "ArrowUp" ? -step : 0),
             });
           }} />)}
-        {editing && <textarea className="scene-text-editor" aria-label={`Edit ${componentInstanceLabel(slide.components, editing.component.id)}`} autoFocus value={editing.value} style={{ left: `${box(editing.component).x/slide.canvas.width*100}%`, top: `${box(editing.component).y/slide.canvas.height*100}%`, width: `${box(editing.component).width/slide.canvas.width*100}%`, height: `${box(editing.component).height/slide.canvas.height*100}%` }} onPointerDown={e => e.stopPropagation()} onDoubleClick={e => e.stopPropagation()} onChange={e => setEditing({ ...editing, value: e.target.value })} onBlur={commitEdit} onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); setEditing(undefined); } }} />}
         {interactive && guides.map(guide => <i key={guide.axis} aria-hidden="true" className={`guide guide-${guide.axis}`} style={guide.axis === "x" ? { left: `${guide.value/slide.canvas.width*100}%` } : { top: `${guide.value/slide.canvas.height*100}%` }} />)}
         {revisionNotes.map((note,index) => {
           const component = slide.components.find(item => item.id === note.componentId);

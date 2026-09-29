@@ -200,9 +200,8 @@ try {
     original.pages[0].components.find(item => item.id === "cover-title").rect.y + 24, "release consumes its final coordinates before the next preview frame");
   assert.equal(evaluate("document.querySelector('[data-page=cover] .component-hit.selected').style.translate"), "", "no queued preview survives release");
   b("press", "Control+z"); b("wait", "350"); assert.deepEqual(stored(), original, "immediate release remains one undo step");
-  b("dblclick", hit); b("fill", ".scene-text-editor", "Inline correction at 2×"); capture("zoomed-text");
-  b("press", "Escape");
-  b("click", "button[aria-label=Comment]"); b("click", hit); b("fill", "#revision-note", "A comment at this zoom.");
+  b("dblclick", hit); b("fill", "#revision-note", "A comment at this zoom.");
+  assert.equal(evaluate("document.querySelector('.scene-canvas textarea,.scene-canvas [contenteditable]')===null"), true, "zoomed text opens comments, not an editor");
   near(evaluate("document.querySelector('.revision-notes').getBoundingClientRect().width"), 360, "comment composer stays unscaled");
   const followsTarget = `(()=>{const a=document.querySelector('${hit}').getBoundingClientRect(),p=document.querySelector('.comment-composer').getBoundingClientRect();return p.left>=16&&p.right<=innerWidth-16&&p.top>=16&&p.bottom<document.querySelector('.review-launcher').getBoundingClientRect().top&&[p.top-a.bottom,a.top-p.bottom,p.left-a.right,a.left-p.right].some(gap=>Math.abs(gap-12)<1)})()`;
   b("wait", "--fn", followsTarget);
@@ -213,7 +212,7 @@ try {
   capture("zoomed-anchored-comment");
   wheel(Math.log(1.25) / .004); settle();
   capture("zoomed-comment"); b("press", "Escape");
-  assert.deepEqual(stored(), original, "text cancel and draft comments preserve source");
+  assert.deepEqual(stored(), original, "draft comments preserve source");
   b("set", "viewport", "390", "844", "2"); settle();
   wheel(Math.log(2) / .004, { clientX: 195, clientY: 350 }); near(scale(), 1, "zoom survives responsive resize");
   b("eval", "document.querySelector('.workspace').scrollTo(0,0)");

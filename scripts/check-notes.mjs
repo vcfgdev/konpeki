@@ -354,8 +354,12 @@ try {
   await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).rect.y === text.rect.y);
   await b("press", "Control+Shift+z");
   await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).rect.y === text.rect.y + 1);
-  await b("dblclick", hit); await b("fill", ".scene-text-editor", "Corrected wording"); await b("press", "Tab");
-  await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).content === "Corrected wording");
+  const beforeTextComment = await readFile(path, "utf8");
+  await b("dblclick", hit); await wait("document.activeElement.id==='revision-note'");
+  await b("fill", "#revision-note", "Please correct this wording."); await b("press", "Tab");
+  await check("!document.querySelector('.scene-canvas textarea,.scene-canvas [contenteditable]')");
+  await b("press", "Escape");
+  assert.equal(await readFile(path, "utf8"), beforeTextComment, "text comments do not write composition content");
   await b("click", hit); await b("press", "Delete");
   await waitForFile(doc => !doc.pages[0].components.some(c => c.id === text.id));
   await check("!document.querySelector('[data-page=cover] .revision-pin')");
@@ -363,52 +367,34 @@ try {
   await waitForFile(doc => doc.pages[0].components.some(c => c.id === text.id));
   await wait("!!document.querySelector('[data-page=cover] .revision-pin')");
 
-  // An open text correction merges with newer geometry, not its captured component.
-  await b("dblclick", titleHit); await b("fill", ".scene-text-editor", "Preserve the newer geometry.");
+  // External content and geometry refresh without replacing a local comment draft.
+  await b("dblclick", titleHit); await b("fill", "#revision-note", "Please shorten the headline.");
   const oldTop = await b("eval", `document.querySelector('${titleHit}').style.top`);
   const external = JSON.parse(await readFile(path, "utf8"));
   const externalTitle = external.pages[0].components.find(c => c.id === "cover-title");
   externalTitle.rect.y += 2;
   externalTitle.textStyle.weight = 500;
+  externalTitle.content = "External headline";
   await writeFile(path, JSON.stringify(external));
   await wait(`document.querySelector('${titleHit}').style.top!==${oldTop}`);
-  await b("press", "Tab");
-  await waitForFile(doc => doc.pages[0].components.find(c => c.id === "cover-title").content === "Preserve the newer geometry.");
-  const merged = JSON.parse(await readFile(path, "utf8"));
-  assert.deepEqual(merged.pages[0].components.find(c => c.id === "cover-title"), { ...externalTitle, content: "Preserve the newer geometry." });
-
-  // Competing content never gets overwritten; an unrelated editor cannot eat the draft.
-  await b("dblclick", titleHit); await b("fill", ".scene-text-editor", "My unsent headline");
-  merged.pages[0].components.find(c => c.id === "cover-title").content = "External headline";
-  await writeFile(path, JSON.stringify(merged));
   await wait("!!document.querySelector('[data-page=cover] .scene-artwork [aria-label=\"External headline\"]')");
   await b("press", "Tab");
-  await wait("document.querySelector('.toast.visible')?.textContent.includes('text changed elsewhere')");
-  await check("document.querySelector('.scene-text-editor').value==='My unsent headline'");
-  await capture("text-conflict");
-  await b("dblclick", hit);
-  await check("document.querySelector('.scene-text-editor').value==='My unsent headline'");
-  await b("focus", ".scene-text-editor"); await b("press", "Escape");
-  assert.equal(JSON.parse(await readFile(path, "utf8")).pages[0].components.find(c => c.id === "cover-title").content, "External headline");
+  await check("document.querySelector('#revision-note').value==='Please shorten the headline.' && !document.querySelector('.scene-text-editor')");
+  await capture("comment-during-source-revision");
+  assert.deepEqual(JSON.parse(await readFile(path, "utf8")), external, "comment focus and blur never overwrite agent edits");
 
-  // Merely opening and blurring unchanged text must not revert a newer value.
-  await b("dblclick", titleHit);
-  merged.pages[0].components.find(c => c.id === "cover-title").content = "Newer headline";
-  await writeFile(path, JSON.stringify(merged));
-  await wait("!!document.querySelector('[data-page=cover] .scene-artwork [aria-label=\"Newer headline\"]')");
-  await b("press", "Tab");
-  await check("!document.querySelector('.scene-text-editor')");
-  assert.equal(JSON.parse(await readFile(path, "utf8")).pages[0].components.find(c => c.id === "cover-title").content, "Newer headline");
-  await b("dblclick", titleHit); await b("fill", ".scene-text-editor", "Keep my draft after deletion");
-  const parsed = parseCompositionJSON(JSON.stringify(merged));
+  // A removed target keeps the request recoverable but cannot receive a comment.
+  const parsed = parseCompositionJSON(JSON.stringify(external));
   assert.ok(parsed.ok);
   await writeFile(path, JSON.stringify(toComposition(removeComponent(parsed.document, "cover-title", "cover"))));
   await wait(`!document.querySelector('${titleHit}')`);
-  await b("press", "Tab");
-  await check("document.querySelector('.scene-text-editor').value==='Keep my draft after deletion' && document.querySelector('.toast.visible').textContent.includes('removed or replaced')");
-  await b("focus", ".scene-text-editor"); await b("press", "Escape");
-  await writeFile(path, JSON.stringify(merged));
+  await check("document.querySelector('#revision-note').value==='Please shorten the headline.' && document.querySelector('button[aria-label=\"Add comment\"]').disabled && document.querySelector('.comment-error').textContent.includes('deleted')");
+  await b("press", "Escape");
+  await writeFile(path, JSON.stringify(external));
   await wait(`!!document.querySelector('${titleHit}')`);
+  await b("focus", titleHit); await b("press", "Enter");
+  await check("document.activeElement.id==='revision-note' && document.querySelector('#revision-note').value==='Please shorten the headline.'");
+  await b("press", "Escape");
 
   // File GET failure must not disable either clipboard path for local comments.
   const recoveryReview = await readBrowserReview();

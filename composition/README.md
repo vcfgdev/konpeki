@@ -70,7 +70,7 @@ they differ from component-array order. Nested stacks and automatic pagination
 are not supported. Stack overflow is a `group-overflow` error: no shrinking,
 truncation, hidden extra page, or automatic redistribution of remaining space.
 
-The canvas uses the measured boxes for selection, text correction and comment
+The canvas uses the measured boxes for selection, movement and comment
 pins. Deletion closes the gap. Moving a member saves `flow.offset: {x, y}` in page
 pixels relative to its automatic position, using the normal 1 px correction step;
 it preserves the member's place in the flow rather than inserting blank space.

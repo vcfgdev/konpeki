@@ -58,6 +58,12 @@ not suppress the report. See the [report contract](../composition/README.md#agen
 New documents use pixel rectangles. The loader converts legacy grid pages
 losslessly; a normal subsequent save writes canonical pixel geometry.
 
+The browser is a review and geometry-correction surface. Native and vector text
+both open comments on double-click or Enter; wording changes belong to the agent
+or source JSON. Browser text editing is deferred, with no WIP editor or feature
+flag. Keep shaping, measured text layout, source updates, and export support
+independent of that UI boundary.
+
 Bundled fonts currently cover Latin, accents, and symbols; unsupported glyphs
 are diagnostics. Contrast is measured from all solid glyph pixels at 2x and has
 a finite-resolution caveat. Scaled chart artwork only triggers review of
@@ -116,7 +122,7 @@ Inspect the captured all-page canvas, comment, night, and export states. Asserti
 do not establish visual correctness. `check-grid` uses the scene checks and
 renders all 11 pages without a browser; chart scale is a review warning.
 
-`check-grid-editing` exercises the correction canvas: text, movement, resize,
+`check-grid-editing` exercises the correction canvas: text comments, movement, resize,
 undo, repeated component IDs across pages, mixed page sizes, group alignment,
 imports (including during a drag), and export. Component moves translate the
 existing SVG, hit targets, handles and comment markers once per animation frame;
@@ -125,7 +131,7 @@ they commit the source only on release. Keyboard movement and resizing use a
 stay held until drop. Edge and center reference lines follow the preview without
 changing its coordinates, then disappear on release. Standalone auto-height text
 checks cover padding, rewrapping during horizontal resize, explicit fixed-height
-resize, and Undo. Text-flow coverage checks measured hit boxes, text reflow, deletion/undo,
+resize, and Undo. Text-flow coverage checks measured hit boxes, source-driven reflow, deletion/undo,
 persisted correction offsets and comment pins following reflow. Flow heights come
 from shaped line boxes, not visible glyph ink; detailed inspection reports ink
 separately. Page overflow stays a measured diagnostic.
@@ -137,7 +143,7 @@ no-duplicate retry, no sidecar writes, export isolation, failed-storage draft
 preservation, the launcher and pending count, selection-first entry,
 saved-comment editing and keyboard submission, reduced-motion support,
 draft preservation across dialogs, page-order arrows, and empty/narrow layouts.
-It also verifies text correction during external edits, copying during GET/PUT
+It also verifies comment drafts surviving external text edits and target removal, copying during GET/PUT
 failures, and malformed legacy imports without blocking composition saves.
 Copy & clear coverage includes automatic dismissal, persisted removal, Undo without reverting newer
 composition edits, unsent drafts, clipboard/storage failure, comments restored

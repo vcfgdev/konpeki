@@ -8,7 +8,8 @@ compatibility: Requires Node.js 24+, npm, and file/command access. Preview is op
 
 Turn the user's brief into a finished visual with editable source, inspect it,
 revise it, and deliver the requested outputs. A browser is optional for comments
-and basic text corrections. Infer the visual form instead of requiring a
+and geometry corrections; text revisions belong to the agent or source JSON.
+Infer the visual form instead of requiring a
 questionnaire, content/intent form, diagram/chart choice or outline approval.
 Ask when missing facts or conflicting constraints prevent faithful work.
 
@@ -132,8 +133,10 @@ Clipboard or storage failure keeps the queue; clipboard failure also offers
 selectable text for manual copying. Copying never invokes an agent, and clearing
 does not mean the revisions were applied. **Cancel** returns to the queue, or
 closes if it is empty. Clicking the launcher or Escape returns to editing.
-Outside comment mode, people can move, resize, delete and correct native text
-directly, with keyboard undo. Flowing text grows with its content rather than
+Outside comment mode, people can move, resize and delete components directly,
+with keyboard undo. Double-click or Enter opens a comment for text and artwork
+alike; there is no inline text editor. Revise wording in the source JSON.
+Flowing text grows with its content rather than
 showing fixed-height resize handles. No sidebars, design pickers or presentation mode.
 Comments combine intent and revision requests; existing targeted notes remain
 readable. Comments stay in that browser at the same preview address, outside the

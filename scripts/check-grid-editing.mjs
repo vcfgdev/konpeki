@@ -93,20 +93,29 @@ try {
   drag(hit, 170, 24);
   assert.deepEqual(stored().pages[0].components.find(item=>item.id===text.id).rect,
     { ...text.rect, x: text.rect.x + 170, y: text.rect.y + 25 }, "free drag persists exact independent pixel deltas");
-  b("dblclick", hit); b("wait", ".scene-text-editor");
-  b("dblclick", ".scene-text-editor");
-  assert.equal(evaluate("document.querySelector('.revision-notes')===null"), true, "selecting words does not open comments");
-  b("fill", ".scene-text-editor", "Committed temporary editor text");
-  capture("inline-text-correction"); b("press", "Tab");
-  assert.equal(stored().pages[0].components.find(item=>item.id===text.id).content, "Committed temporary editor text");
-  b("dblclick", hit); b("fill", ".scene-text-editor", "Discard this text"); b("press", "Escape");
-  assert.equal(stored().pages[0].components.find(item=>item.id===text.id).content, "Committed temporary editor text", "Escape cancels the text draft");
+  const beforeComments = stored();
+  b("dblclick", hit); b("wait", "#revision-note");
+  assert.equal(evaluate("document.activeElement?.id"), "revision-note", "native text opens a focused comment composer");
+  assert.equal(evaluate("document.querySelector('.scene-canvas textarea, .scene-canvas [contenteditable]') === null"), true);
+  b("fill", "#revision-note", "Please revise the wording.");
+  capture("native-text-comment"); b("press", "Escape");
+  b("focus", hit); b("press", "Enter");
+  assert.equal(evaluate("document.querySelector('#revision-note').value"), "Please revise the wording.", "Enter reopens the same component's comment draft");
+  b("click", "button[aria-label='Add comment']"); b("press", "Escape");
+  const nativeNote = evaluate("JSON.parse(localStorage.getItem('konpeki-composer/v1')).review.notes.at(-1)");
+  assert.equal(nativeNote.slideId, document.pages[0].id);
+  assert.equal(nativeNote.componentId, text.id, "double-click must not bubble into a page comment");
 
-  // Vector artwork requests open page comments, not a second design editor.
-  b("eval", "document.querySelector('[data-vector-element=label] path').dispatchEvent(new MouseEvent('dblclick',{bubbles:true}))");
+  // Vector and native text share the same comment interaction.
+  b("focus", `.component-hit[data-component='${vector.id}']`); b("press", "Enter");
   assert.equal(evaluate("document.activeElement?.id"), "revision-note");
   assert.equal(evaluate("document.querySelector('.line-handles, .vector-attributes, .scene-text-editor') === null"), true);
+  assert.equal(evaluate("document.querySelector('#revision-note').value"), "", "different components have separate drafts");
+  b("fill", "#revision-note", "Please revise the vector label.");
   capture("scene-interactions");
+  b("click", "button[aria-label='Add comment']"); b("press", "Escape");
+  assert.equal(evaluate("JSON.parse(localStorage.getItem('konpeki-composer/v1')).review.notes.at(-1).componentId"), vector.id);
+  assert.deepEqual(stored(), beforeComments, "commenting never mutates native content, vector text, or geometry");
 
   b("eval", "(async()=>{const {exportComposition}=await import('/src/lib/export-scene.ts');window.png=await exportComposition(JSON.parse(localStorage.getItem('konpeki-composer/v1')).document,'png',0,2)})()");
   const encoded = evaluate("new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.readAsDataURL(window.png)})");
@@ -199,7 +208,7 @@ try {
   assert.deepEqual(stored().pages[0].components[0].rect, expectedPixels.pages[0].components[0].rect, "undo restores imported placement");
 
   const beforeSquare = stored();
-  b("focus", hit); b("press", "Enter");
+  b("focus", hit); b("press", "Space");
   b("focus", ".resize-se"); b("press", "ArrowRight"); b("press", "ArrowDown");
   assert.deepEqual(stored().pages[0].components[0].rect, { ...expectedPixels.pages[0].components[0].rect, width: expectedPixels.pages[0].components[0].rect.width + 1, height: expectedPixels.pages[0].components[0].rect.height + 1 }, "keyboard resize uses one-pixel steps");
   b("press", "Control+z"); b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
@@ -362,7 +371,7 @@ try {
   assertGroupHits(replacement);
 
   const prose = toComposition(addComponent(initialGridDraft(), "text-block"));
-  prose.title = "Content-sized text editing";
+  prose.title = "Content-sized text revisions";
   const prosePage = prose.pages[0], paragraph = prosePage.components[0];
   prosePage.preset = "a4"; prosePage.canvas = { width: 210 / 25.4 * 96, height: 297 / 25.4 * 96 }; prosePage.contentSlots = [];
   delete paragraph.rect; paragraph.slotIds = []; paragraph.content = "First\nSecond\nThird";
@@ -387,8 +396,9 @@ try {
   closeTo(flowBox(paragraph.id).y, firstBox.y + 1);
   closeTo(flowBox("following").y, followingBox.y);
   assert.equal(evaluate("document.querySelectorAll('.resize-handle').length"), 0, "flow text has no fixed-height handles");
-  b("dblclick", flowHit); b("fill", ".scene-text-editor", "First\nSecond\nThird\nFourth");
-  b("click", ".stage-meta h2"); settle();
+  const revisedProse = stored();
+  revisedProse.pages[0].components.find(c => c.id === paragraph.id).content = "First\nSecond\nThird\nFourth";
+  importDocument(revisedProse);
   assert.equal(stored().pages[0].components.find(c => c.id === paragraph.id).content, "First\nSecond\nThird\nFourth");
   closeTo(flowBox(paragraph.id).height, 80); closeTo(flowBox("following").y, followingBox.y + 20);
   b("click", flowHit); b("press", "Delete"); settle();
@@ -410,8 +420,12 @@ try {
   assert.equal(evaluate("document.querySelector('.revision-pin').dataset.component"), "following");
   const pinnedTop = evaluate("document.querySelector('.revision-pin').getBoundingClientRect().top");
   const flowScale = evaluate("document.querySelector('.scene-canvas').getBoundingClientRect().width/document.querySelector('.scene-artwork svg').viewBox.baseVal.width");
-  b("dblclick", flowHit); b("fill", ".scene-text-editor", "First\nSecond\nThird\nFourth\nFifth");
-  b("click", ".stage-meta h2"); stored(); settle();
+  // Load revised source with an existing local review: pins follow measured
+  // reflow, rather than retaining the old paragraph's position.
+  b("eval", `(() => { const state=JSON.parse(localStorage.getItem('konpeki-composer/v1'));
+    state.document.pages[0].components.find(c=>c.id===${JSON.stringify(paragraph.id)}).content=${JSON.stringify("First\nSecond\nThird\nFourth\nFifth")};
+    localStorage.setItem('konpeki-composer/v1',JSON.stringify(state)); })()`);
+  b("reload"); b("wait", ".revision-pin"); stored(); settle();
   closeTo(flowBox("following").y, followingBox.y + 40);
   assert.ok(Math.abs(evaluate("document.querySelector('.revision-pin').getBoundingClientRect().top") - pinnedTop - 20 * flowScale) < .1);
   capture("flow-text-corrected");
@@ -452,8 +466,9 @@ try {
   assert.equal(duplicated.rect.height, undefined, "Alt-drag retains measured text height");
   b("press", "Control+z");
   assert.equal(stored().pages[0].components.length, 2);
-  b("dblclick", autoHit); b("fill", ".scene-text-editor", "A measured title\nwith breathing room.\nA third line.");
-  b("click", ".stage-meta h2"); stored(); settle();
+  const revisedFree = stored();
+  revisedFree.pages[0].components[0].content = "A measured title\nwith breathing room.\nA third line.";
+  importDocument(revisedFree);
   closeTo(flowBox("auto").height, 132);
   assert.equal(stored().pages[0].components[0].rect.height, undefined);
   b("click", autoHit);
@@ -513,7 +528,7 @@ try {
   const legacy = { ...initialDraft(true), schema: "konpeki-composition/v1" };
   assert.equal(parseCompositionJSON(JSON.stringify(legacy)).ok, false, "v1 documents are rejected rather than edited");
   assert.equal(parseCompositionJSON(JSON.stringify({ ...document, schema: "v2" })).ok, false, "schema aliases are rejected");
-  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, text corrections, vector-to-comment interaction, authored theme rendering, exact 2x PNG, centered placement, refined source import, held group offsets through drag/resize/key repeats, release/cancel/blur, authored artwork alignment/undo, content-sized flow/reflow/delete/undo/offsets/comment pins, and v2-only validation");
+  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, native/vector text comments without content mutation, authored theme rendering, exact 2x PNG, centered placement, refined source import, held group offsets through drag/resize/key repeats, release/cancel/blur, authored artwork alignment/undo, content-sized flow/source-reflow/delete/undo/offsets/comment pins, and v2-only validation");
 } finally {
   try { b("close"); } finally { rmSync(scratch, { recursive: true, force: true }); }
 }

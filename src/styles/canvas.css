@@ -51,18 +51,6 @@
 .resize-handle::after { display: block; width: 7px; height: 7px; margin: 7px; border: 1px solid var(--accent); background: white; content: ""; }
 .resize-nw,.resize-se { cursor: nwse-resize; }
 .resize-ne,.resize-sw { cursor: nesw-resize; }
-.scene-text-editor {
-  position: absolute;
-  z-index: 8;
-  box-sizing: border-box;
-  border: 2px solid var(--accent);
-  border-radius: 0;
-  padding: 10px;
-  background: white;
-  color: #151515;
-  font: 16px/1.4 sans-serif;
-  resize: none;
-}
 .group-area-outline { position: absolute; z-index: 1; pointer-events: none; outline: 1px dashed var(--accent); }
 .guide { position: absolute; z-index: 7; pointer-events: none; background: #0974e9; }
 .guide-x { top: 0; bottom: 0; width: 1px; }
