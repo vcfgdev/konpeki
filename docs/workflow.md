@@ -65,7 +65,16 @@ verification limits. Artifact recipients and reviewers do not need Playwright or
 Chromium. A local preview is not a deployed or permanent artifact.
 
 The [public comment preview](https://vcfgdev.github.io/konpeki/) uses three native
-[HTML examples](../examples/README.md). Click an element to comment, then copy the
-prompt into your agent conversation. Comments are scoped to each example and stay
-in your browser; this static demo does not modify files on GitHub. Use the local
-CLI preview for source corrections. The npm runtime remains unpublished.
+[HTML examples](../examples/README.md). Click to select an element. To leave a
+note, double-click a component, or select it and press Enter or C. With no
+selection, C or the Comment button lets you choose a target, including a page.
+The Comment button opens pending reviews when there are any; otherwise it uses
+your selection. Existing comment pins reopen their notes.
+
+Ctrl/Cmd+Enter adds a comment. Esc closes the panel and returns to the selection;
+a second Esc deselects. Clicking outside also dismisses the panel. Drafts survive
+dismissal and stay with their target for the current session; added comments
+persist across reloads.
+Copy the prompt into your agent conversation. Comments are scoped to each example
+and stay in your browser; this static demo does not modify files on GitHub. Use
+the local CLI preview for source corrections. The npm runtime remains unpublished.

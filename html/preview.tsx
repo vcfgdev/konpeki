@@ -71,7 +71,7 @@ function HTMLPage({ page, revision, source, notes, selected, commenting, locked,
     const zoom = bounds.width / page.canvas.width;
     return new DOMRect(bounds.x + r.x * zoom, bounds.y + r.y * zoom, r.width * zoom, r.height * zoom);
   }
-  function hit(event: React.PointerEvent) {
+  function hit(event: React.MouseEvent) {
     const rect = outer.current!.getBoundingClientRect(), zoom = rect.width / page.canvas.width;
     return frame.current?.contentDocument?.elementFromPoint((event.clientX - rect.x) / zoom, (event.clientY - rect.y) / zoom)?.closest<HTMLElement>("[id]");
   }
@@ -97,12 +97,16 @@ function HTMLPage({ page, revision, source, notes, selected, commenting, locked,
     <header className="stage-meta"><span className="page-index">{page.name}</span><h2>{page.id}</h2>{diagnostics.length > 0 && <details className="html-diagnostics"><summary>{diagnostics.length} layout {diagnostics.length === 1 ? "issue" : "issues"}</summary><ul>{diagnostics.map(d => <li key={`${d.code}/${d.target}`}><strong>{d.target}</strong>: {d.message}</li>)}</ul></details>}</header>
     <div className="html-page" ref={outer} tabIndex={0} data-html-page={page.id} style={{ aspectRatio: `${page.canvas.width}/${page.canvas.height}` }}
       onPointerDown={event => {
-        if (event.button !== 0 || locked || !ready) return;
+        if (event.button !== 0) return;
+        // The iframe is a canvas surface, not a native text-selection target.
+        event.preventDefault();
+        if (locked || !ready) return;
         const target = hit(event); if (!target) return;
         const value = { page: page.id, id: target.id };
-        if (commenting || source !== undefined) { onComment(value, anchor(target.id)); return; }
-        if (target.id === page.id) { onSelect(undefined); return; }
+        if (commenting) { onComment(value, anchor(target.id)); return; }
+        if (target.id === page.id) { onSelect(undefined); outer.current!.blur(); return; }
         onSelect(value); outer.current!.focus({ preventScroll: true });
+        if (source !== undefined) return;
         const translated = frame.current!.contentWindow!.getComputedStyle(target).translate;
         // Percentage/3D translations need a defined correction policy; don't silently replace them.
         if (translated !== "none" && !/^-?[\d.]+px(?: -?[\d.]+px)?$/.test(translated)) { onBlocked("Move this element in source; its translation is not a simple pixel offset."); return; }
@@ -116,7 +120,7 @@ function HTMLPage({ page, revision, source, notes, selected, commenting, locked,
         const peers = Array.from(element(page.id)!.querySelectorAll("[id]")).filter(el => el !== target && !el.contains(target) && !target.contains(el) && el.getClientRects().length).map(el => el.getBoundingClientRect());
         const targets = { x: [0, page.canvas.width / 2, page.canvas.width, ...peers.flatMap(r => [r.x, r.x + r.width / 2, r.right])], y: [0, page.canvas.height / 2, page.canvas.height, ...peers.flatMap(r => [r.y, r.y + r.height / 2, r.bottom])] };
         drag.current = { target, id: target.id, x: event.clientX, y: event.clientY, tx, ty, style: target.style.cssText, moved: false, frame: 0, dx: 0, dy: 0, targets };
-        outer.current!.setPointerCapture(event.pointerId); onBusy(true); event.preventDefault();
+        outer.current!.setPointerCapture(event.pointerId); onBusy(true);
       }}
       onPointerMove={event => {
         const d = drag.current;
@@ -126,7 +130,12 @@ function HTMLPage({ page, revision, source, notes, selected, commenting, locked,
         d.moved ||= Math.abs(d.dx) + Math.abs(d.dy) > 2;
         if (d.moved && !d.frame) d.frame = requestAnimationFrame(() => { d.frame = 0; d.target.style.translate = `${d.tx + d.dx}px ${d.ty + d.dy}px`; setGuides(referenceGuides(d.target.getBoundingClientRect(), d.targets)); redraw(n => n + 1); });
       }} onPointerUp={() => stop()} onPointerCancel={() => stop(true)} onLostPointerCapture={() => stop(true)} onPointerLeave={() => setHover(undefined)}
-      onDoubleClick={() => { if (selected?.page === page.id && element(selected.id)) onComment(selected, anchor(selected.id)); }}>
+      onDoubleClick={event => {
+        event.preventDefault();
+        if (locked || !ready) return;
+        const target = hit(event);
+        if (target && target.id !== page.id) onComment({ page: page.id, id: target.id }, anchor(target.id));
+      }}>
       <iframe title={page.id} ref={frame} sandbox="allow-same-origin" src={url} style={{ width: page.canvas.width, height: page.canvas.height, transform: `scale(${scale})` }}
         onLoad={async () => { const doc = frame.current?.contentDocument; if (!doc) return; await doc.fonts.ready; await Promise.all(Array.from(doc.images).map(image => image.decode().catch(() => {}))); const p = doc.getElementById(page.id); if (!p) return; const report = inspectHTMLPage(p); setDiagnostics(report.diagnostics); if (report.width > 0 && report.height > 0 && report.width <= 8192 && report.height <= 8192) onSize(report.width, report.height); setReady(true); redraw(n => n + 1); }} />
       {bounds && <div className="html-outline" style={bounds} aria-hidden="true" />}
@@ -145,6 +154,7 @@ function Preview() {
   const [reset, setReset] = useState(0);
   const [anchor, setAnchor] = useState<DOMRect>();
   const current = useRef(snapshot), busy = useRef(false), loaded = useRef(false), panel = useRef<HTMLElement>(null);
+  const launcher = useRef<HTMLButtonElement>(null), restoreFocus = useRef(false);
   const storedComments = useRef<string | null>(null);
   current.current = snapshot;
   useEffect(() => {
@@ -176,22 +186,64 @@ function Preview() {
     catch (e) { setError(String(e)); setReset(n => n + 1); try { setSnapshot(await request()); } catch {} }
     finally { busy.current = false; setSaving(false); }
   }
+  function selectedPage() {
+    return selected ? document.querySelector<HTMLElement>(`.html-page[data-html-page="${CSS.escape(selected.page)}"]`) : null;
+  }
+  function closePanel() {
+    restoreFocus.current = true; setView("closed");
+  }
+  function openComment(target: Target, rect: DOMRect) {
+    setSelected(target.id === target.page ? undefined : target);
+    setView(target); setAnchor(rect); setFallback("");
+  }
+  function startComment() {
+    const outline = selectedPage()?.querySelector(".html-outline");
+    if (selected && outline) openComment(selected, outline.getBoundingClientRect());
+    else setView("select");
+    setFallback("");
+  }
   useEffect(() => {
     function key(event: KeyboardEvent) {
-      if ((event.target as HTMLElement).closest("textarea,input,button,select")) return;
-      if (event.key === "Escape") { setView("closed"); setSelected(undefined); }
-      if (saving || !token) return;
+      if (event.defaultPrevented || event.isComposing || event.repeat) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        if (view !== "closed") closePanel();
+        else {
+          setSelected(undefined);
+          if (document.activeElement?.matches(".html-page")) (document.activeElement as HTMLElement).blur();
+        }
+        return;
+      }
+      if ((event.target as HTMLElement).closest("textarea,input,select,[contenteditable=true]") || saving) return;
+      if (!event.ctrlKey && !event.metaKey && !event.altKey && (view === "closed" || view === "queue") && event.key.toLowerCase() === "c") {
+        event.preventDefault(); startComment(); return;
+      }
+      if ((event.target as HTMLElement).closest("button")) return;
+      if (view === "closed" && selected && event.key === "Enter" && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        event.preventDefault(); startComment(); return;
+      }
+      if (!token) return;
       if ((event.metaKey || event.ctrlKey) && event.key === "z") { event.preventDefault(); void save({ kind: "undo" }); }
       if (["Delete", "Backspace"].includes(event.key) && selected && view === "closed") { event.preventDefault(); void save({ ...selected, kind: "delete" }); }
     }
     window.addEventListener("keydown", key); return () => window.removeEventListener("keydown", key);
   }, [selected, view, saving]);
   useLayoutEffect(() => {
+    if (saving) return;
+    if (view === "closed" && restoreFocus.current) {
+      restoreFocus.current = false;
+      (selectedPage() ?? launcher.current)?.focus({ preventScroll: true });
+    }
+    if (view === "queue") {
+      const actions = panel.current?.querySelector(".review-actions");
+      (panel.current?.querySelector("textarea") ?? actions?.querySelector<HTMLButtonElement>(".primary:not(:disabled)") ?? actions?.querySelector<HTMLButtonElement>("button:not(:disabled)"))?.focus();
+      return;
+    }
     if (typeof view !== "object" || !panel.current || !anchor) return;
     const position = reviewPosition(anchor, panel.current.getBoundingClientRect(), { x: 0, y: 0, width: innerWidth, height: innerHeight - 80 });
     Object.assign(panel.current.style, { left: `${position.left}px`, top: `${position.top}px`, right: "auto", bottom: "auto" });
     panel.current.querySelector("textarea")?.focus();
-  }, [view, anchor]);
+  }, [view, anchor, notes.length, saving, fallback]);
   function persist(next: Note[]) {
     const key = `html-review:${snapshot!.key}`;
     if (localStorage.getItem(key) !== storedComments.current) throw new Error("Comments changed in another preview. Keep your draft and reload before changing the queue.");
@@ -203,7 +255,7 @@ function Preview() {
     const batch = notes;
     const prompt = [`Revise the HTML document ${JSON.stringify(snapshot!.name)} using these comments.`, "Reread the latest HTML source first. Preserve unrelated edits, stable element IDs and saved CSS position corrections. If a target is missing or ambiguous, ask rather than guessing. Render the HTML in a browser and inspect every affected page before delivery.", ...batch.map((n, i) => `${i + 1}. Page: ${JSON.stringify(n.page)}\nElement: ${JSON.stringify(n.id)}\nComment:\n${n.text}`)].join("\n\n");
     setSaving(true); setError("");
-    try { await navigator.clipboard.writeText(prompt); persist(notes.filter(n => !batch.includes(n))); setCleared(batch); setView("closed"); setNotice("Copied and cleared"); }
+    try { await navigator.clipboard.writeText(prompt); persist(notes.filter(n => !batch.includes(n))); setCleared(batch); closePanel(); setNotice("Copied and cleared"); }
     catch (e) { setError(`Could not copy and clear. Comments were kept. ${e}`); setFallback(prompt); }
     finally { setSaving(false); }
   }
@@ -226,22 +278,25 @@ function Preview() {
   return <main className="workspace" onPointerDown={e => {
     const element = e.target as HTMLElement;
     if (element.closest(".revision-notes,.review-launcher,.html-pin")) return;
-    if (!element.closest(".html-page")) setSelected(undefined);
-    if ((view === "queue" && !notes.length) || (target && !text.trim() && !notes.some(n => n.page === target.page && n.id === target.id))) setView("closed");
+    if (!element.closest(".html-page")) {
+      setSelected(undefined);
+      if (document.activeElement?.matches(".html-page")) (document.activeElement as HTMLElement).blur();
+    }
+    if (view === "queue" || target) setView("closed");
   }}>
     <header className="board-heading html-heading"><h1>Konpeki</h1>{!token && <select aria-label="Example" value={example.id} onChange={event => { const url = new URL(location.href); url.searchParams.set("example", event.target.value); location.assign(url); }}>{examples.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select>}</header>
     {!snapshot && <p>{error || "Opening HTML…"}</p>}
-    {snapshot && <PageBoard draft={{ pages }}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} source={token ? undefined : snapshot.source} notes={notes} selected={selected} commenting={view === "select"} locked={saving || (view !== "closed" && view !== "select")}
+    {snapshot && <PageBoard draft={{ pages }}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} source={token ? undefined : snapshot.source} notes={notes} selected={selected} commenting={view === "select"} locked={saving}
       onSize={(width, height) => setSizes(current => current[page.id]?.width === width && current[page.id]?.height === height ? current : { ...current, [page.id]: { width, height } })}
-      onSelect={setSelected} onComment={(target, rect) => { setView(target); setAnchor(rect); setFallback(""); }} onEdit={edit => void save(edit)} onBusy={value => { if (!value && saving) return; busy.current = value; }} onBlocked={setError} />}</PageBoard>}
-    {(notice || error) && <div className={`feedback-notice toast visible${error ? " error" : ""}`} role="status"><span>{error || notice}</span>{!error && notice === "Copied and cleared" && cleared.length > 0 && <button disabled={saving} onClick={() => { try { persist([...cleared.filter(c => !notes.some(n => n.key === c.key)), ...notes]); setCleared([]); setNotice("Reviews restored"); } catch (e) { setError(String(e)); } }}>Undo</button>}{error && <button onClick={() => setError("")} aria-label="Dismiss error">×</button>}</div>}
-    <button className="review-launcher" aria-label="Comment" aria-pressed={view === "select" || !!target} aria-expanded={view === "queue" || !!target} disabled={!snapshot || saving} onClick={() => { setView(view === "closed" ? notes.length ? "queue" : "select" : "closed"); setFallback(""); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path transform="translate(1.5 .5)" d="M20 11a8 8 0 0 1-8 8H5l-4 3V11a9 9 0 0 1 19 0Z" /></svg>{notes.length > 0 && <span className="review-count">{notes.length}</span>}</button>
+      onSelect={setSelected} onComment={openComment} onEdit={edit => void save(edit)} onBusy={value => { if (!value && saving) return; busy.current = value; }} onBlocked={setError} />}</PageBoard>}
+    {(notice || error) && <div className={`feedback-notice toast visible${error ? " error" : ""}`} role="status"><span>{error || notice}</span>{!error && notice === "Copied and cleared" && cleared.length > 0 && <button disabled={saving} onClick={() => { try { persist([...cleared.filter(c => !notes.some(n => n.key === c.key)), ...notes]); setCleared([]); setNotice("Reviews restored"); } catch (e) { setError(String(e)); } }}>Undo</button>}{error && <button className="toast-dismiss" onClick={() => setError("")} aria-label="Dismiss error"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button>}</div>}
+    <button ref={launcher} className="review-launcher" aria-label="Comment" title="Comment (C)" aria-keyshortcuts="c" aria-pressed={view === "select" || !!target} aria-expanded={view === "queue" || !!target} disabled={!snapshot || saving} onClick={() => { if (view !== "closed") closePanel(); else if (notes.length) { setView("queue"); setFallback(""); } else startComment(); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path transform="translate(1.5 .5)" d="M20 11a8 8 0 0 1-8 8H5l-4 3V11a9 9 0 0 1 19 0Z" /></svg>{notes.length > 0 && <span className="review-count">{notes.length}</span>}</button>
     {(target || view === "queue") && <section ref={panel} className={`revision-notes${target ? " comment-composer" : ""}`} role="dialog" aria-label={target ? "Add comment" : "Pending reviews"} key={draftKey}>
       {target && <header><h2 className="revision-note-scope">{target.id}</h2></header>}
-      <ol className="revision-note-list">{notes.filter(n => !target || n.id === target.id && n.page === target.page).map(n => <li key={n.key}><span className="revision-note-number">{notes.indexOf(n) + 1}</span><span>{n.id}</span><p>{n.text}</p><button disabled={saving} aria-label={`Remove comment ${notes.indexOf(n) + 1}`} onClick={() => { try { persist(notes.filter(note => note !== n)); } catch (e) { setError(String(e)); } }}>×</button></li>)}</ol>
+      <ol className="revision-note-list">{notes.filter(n => !target || n.id === target.id && n.page === target.page).map(n => <li key={n.key}><span className="revision-note-number">{notes.indexOf(n) + 1}</span><span className="revision-note-label" title={n.id}>{n.id}</span><p>{n.text}</p><div className="revision-note-actions"><button className="revision-note-remove" disabled={saving} aria-label={`Remove comment ${notes.indexOf(n) + 1}`} title="Remove comment" onClick={() => { try { persist(notes.filter(note => note !== n)); } catch (e) { setError(String(e)); } }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button></div></li>)}</ol>
       {target ? <form onSubmit={addComment}>
-        <textarea aria-label="What should change?" placeholder="Leave a comment…" value={text} maxLength={4000} onChange={e => setDrafts(v => ({ ...v, [draftKey]: e.target.value }))} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") e.currentTarget.form?.requestSubmit(); }} />
-        <div className="revision-note-submit"><button type="button" className="review-secondary" onClick={() => setView(notes.length ? "queue" : "closed")}>Cancel</button><button className="primary" disabled={!text.trim() || saving}>Add</button></div>
+        <textarea aria-label="What should change?" placeholder="Leave a comment…" value={text} maxLength={4000} onChange={e => setDrafts(v => ({ ...v, [draftKey]: e.target.value }))} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !e.nativeEvent.isComposing && !e.repeat) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }} />
+        <div className="revision-note-submit"><button type="button" className="review-secondary" onClick={closePanel}>Cancel</button><button className="primary" title="Add comment (Ctrl/⌘ + Enter)" disabled={!text.trim() || saving}>Add</button></div>
       </form> : <>{!notes.length && <p className="review-empty">No pending comments</p>}{fallback && <textarea aria-label="Prompt to copy" readOnly value={fallback} onFocus={e => e.currentTarget.select()} />}<footer className="review-actions"><button className="review-secondary" disabled={saving} onClick={() => setView("select")}>New comment</button><button className="primary" disabled={!notes.length || saving} onClick={() => void copy()}>Copy &amp; clear</button></footer></>}
     </section>}
   </main>;

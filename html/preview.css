@@ -1,10 +1,16 @@
 .html-heading { display: flex; align-items: center; gap: 20px; }
 .html-heading select { width: auto; padding: 5px 26px 5px 10px; border-color: var(--ui-border); font-size: 12px; }
-.html-page { position: relative; width: 100%; background: white; box-shadow: 0 1px 3px #00000016, 0 12px 40px #0000000a; touch-action: none; }
+.html-page { position: relative; width: 100%; background: white; box-shadow: 0 1px 3px #00000016, 0 12px 40px #0000000a; touch-action: none; -webkit-user-select: none; user-select: none; }
+/* Component outlines indicate focus without making the page look selected too. */
+.html-page:has(.html-outline):focus-visible { outline: none; }
 .html-page iframe { position: absolute; inset: 0; border: 0; transform-origin: top left; pointer-events: none; }
 .html-outline { position: absolute; border: 1.5px solid var(--accent); background: #007bbb06; pointer-events: none; }
-.html-pin { position: absolute; z-index: 3; border: 2px solid white; background: #007bbb; color: white; border-radius: 50%; min-width: 22px; height: 22px; padding: 0 4px; font-size: 11px; }
-.revision-note-list li > button { grid-column: 3; grid-row: 1; }
+.html-pin { position: absolute; z-index: 3; display: grid; place-items: center; border: 2px solid white; background: #007bbb; color: white; border-radius: 50%; min-width: 22px; height: 22px; padding: 0 4px; font-size: 11px; line-height: 1; }
+.html-pin:hover:not(:disabled) { border-color: white; background: #006da7; color: white; }
+.revision-note-list li { align-items: center; }
+.revision-note-label { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.toast-dismiss { display: grid; place-items: center; }
+.toast-dismiss svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
 .revision-notes > form > textarea { margin-top: 10px; }
 .html-guide { position: absolute; z-index: 2; pointer-events: none; border-color: #d43c8a; border-style: dashed; border-width: 0; }
 .html-guide.x { top: 0; height: 100%; border-left-width: 1px; }
