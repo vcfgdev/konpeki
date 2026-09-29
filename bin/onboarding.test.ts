@@ -53,6 +53,10 @@ test("a copied skill resolves pinned runtimes without touching project files", a
   assert.match(missing.stderr, /--install/);
   assert.deepEqual((await readdir(workspace)).sort(), ["AGENTS.md", "package.json"]);
   await assert.rejects(readdir(cache), { code: "ENOENT" });
+  const unpublished = run("--html", "--install");
+  assert.equal(unpublished.status, 1);
+  assert.match(unpublished.stderr, /HTML authoring is not yet published/);
+  await assert.rejects(readdir(cache), { code: "ENOENT" });
 
   await fixture(checkout);
   await rm(join(checkout, "runtime"), { recursive: true });
@@ -220,4 +224,22 @@ test("init preserves invalid files and orphaned reviews and writes nothing when 
   await writeFile(join(copied, "assets/blank.json"), "{}");
   assert.equal(run().status, 1);
   await assert.rejects(readFile(path), { code: "ENOENT" });
+});
+
+test("HTML initialization preserves revised source and needs no browser installation", async t => {
+  const root = await mkdtemp(join(tmpdir(), "konpeki-html-init-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const script = fileURLToPath(new URL("scripts/prepare-document.mjs", skill));
+  const path = join(root, "document.html");
+  const run = () => spawnSync(process.execPath, [script, cli, path], { encoding: "utf8", env: { ...process.env, PLAYWRIGHT_BROWSERS_PATH: join(root, "no-browsers") } });
+  const initial = run();
+  assert.equal(initial.status, 0, initial.stderr);
+  assert.deepEqual(JSON.parse(initial.stdout), { documentPath: path, created: true });
+  const revised = (await readFile(path, "utf8")).replace("Untitled visual", "Keep this title");
+  await writeFile(path, revised);
+  const reopened = run();
+  assert.equal(reopened.status, 0, reopened.stderr);
+  assert.deepEqual(JSON.parse(reopened.stdout), { documentPath: path, created: false });
+  assert.equal(await readFile(path, "utf8"), revised);
+  assert.deepEqual(await readdir(root), ["document.html"]);
 });

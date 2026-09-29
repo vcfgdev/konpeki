@@ -6,7 +6,9 @@ import { fileURLToPath } from "node:url";
 try {
   const [cli, input, ...extra] = process.argv.slice(2);
   if (!cli || !input || extra.length)
-    throw new Error("Usage: node prepare-document.mjs <cli> <composition.json>");
+    throw new Error("Usage: node prepare-document.mjs <cli> <document.html|composition.json>");
+  const html = /\.html?$/i.test(input);
+  if (!html && !/\.json$/i.test(input)) throw new Error("Use an .html or .json document path.");
   const compositionPath = resolve(input);
   function validate(path) {
     // Use the published JS CLI, not TypeScript imports from node_modules.
@@ -20,7 +22,7 @@ try {
   if (!existsSync(compositionPath)) {
     if (existsSync(`${compositionPath}.review.json`))
       throw new Error("Review data exists without its composition. Restore the document or choose a new path.");
-    const template = fileURLToPath(new URL("../assets/blank.json", import.meta.url));
+    const template = fileURLToPath(new URL(html ? "../assets/blank.html" : "../assets/blank.json", import.meta.url));
     validate(template);
     const blank = readFileSync(template);
     mkdirSync(dirname(compositionPath), { recursive: true });
@@ -33,7 +35,7 @@ try {
     }
   }
   validate(compositionPath);
-  console.log(JSON.stringify({ compositionPath, created }));
+  console.log(JSON.stringify({ ...(html ? { documentPath: compositionPath } : { compositionPath }), created }));
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
