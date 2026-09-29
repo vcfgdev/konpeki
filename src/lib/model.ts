@@ -7,10 +7,10 @@ import {
   type Rect,
 } from "../../composition/runtime.ts";
 import { componentLabels } from "../../composition/document.ts";
+import { closest, referenceGuides, type Guide } from "./alignment.ts";
 
 export * from "../../composition/document.ts";
-
-export type Guide = { axis: "x" | "y"; value: number };
+export type { Guide } from "./alignment.ts";
 
 export function componentInstanceLabel(
   components: CompositionComponent[],
@@ -60,28 +60,9 @@ function alignmentTargets(
   };
 }
 
-function closest(points: number[], targets: number[], threshold: number) {
-  let match: { delta: number; target: number } | undefined;
-  for (const point of points)
-    for (const target of targets) {
-      const delta = target - point;
-      if (
-        Math.abs(delta) <= threshold &&
-        (!match || Math.abs(delta) < Math.abs(match.delta))
-      )
-        match = { delta, target };
-    }
-  return match;
-}
-
 /** Visual references only: never move an authored rectangle to a target. */
 export function alignmentGuides(rect: Rect, others: Rect[], bounds: CanvasSize, padding?: CompositionSlide["innerPadding"], threshold = 2): Guide[] {
-  const targets = alignmentTargets(others, bounds, padding);
-  return (["x", "y"] as const).flatMap(axis => {
-    const size = axis === "x" ? rect.width : rect.height;
-    const match = closest([rect[axis], rect[axis] + size / 2, rect[axis] + size], targets[axis], threshold);
-    return match ? [{ axis, value: match.target }] : [];
-  });
+  return referenceGuides(rect, alignmentTargets(others, bounds, padding), threshold);
 }
 
 export function snapRect(

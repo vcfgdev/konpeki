@@ -1,8 +1,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import type { Draft } from "../lib/model.ts";
 import { layoutPages } from "../lib/page-board.ts";
 
-export function PageBoard({ draft, children }: { draft: Draft; children: (page: Draft["pages"][number], index: number) => ReactNode }) {
+export function PageBoard<Page extends { id: string; name: string; canvas: { width: number; height: number } }>({ draft, children }: { draft: { pages: Page[] }; children: (page: Page, index: number) => ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [space, setSpace] = useState({ width: 0, height: 0 });
