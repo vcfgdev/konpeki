@@ -34,7 +34,7 @@ async function launch(t: TestContext, path: string, args: string[] = [], executa
 test("preview readiness identifies the right document and collision-free session", async t => {
   const root = await mkdtemp(join(tmpdir(), "konpeki-preview-cli-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const original = JSON.parse(await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), "utf8"));
+  const original = JSON.parse(await readFile(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url), "utf8"));
   const sessions = [];
   for (const [title, args] of [
     ["Product announcement", []],
@@ -49,6 +49,8 @@ test("preview readiness identifies the right document and collision-free session
     assert.equal(ready.compositionPath, path);
     const url = new URL(ready.url);
     assert.equal(url.hostname, "127.0.0.1");
+    assert.equal(url.pathname, "/legacy.html");
+    assert.match(await (await fetch(url)).text(), /src="\/src\/main.tsx"/);
     assert.ok(Number(url.port) > 0);
     const endpoint = new URL("/__konpeki/session", url);
     assert.equal((await fetch(endpoint)).status, 403, "readiness must not remove session protection");
@@ -69,7 +71,7 @@ test("an explicitly occupied port fails cleanly rather than reporting a false re
   t.after(() => new Promise<void>(resolve => server.close(() => resolve())));
   const address = server.address();
   assert.ok(address && typeof address === "object");
-  const process = await launch(t, fileURLToPath(new URL("../slides/introducing-konpeki/composition.json", import.meta.url)), ["--port", String(address.port)]);
+  const process = await launch(t, fileURLToPath(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url)), ["--port", String(address.port)]);
   await assert.rejects(process.ready, /already in use/);
   assert.equal((await process.exited)[0], 1);
   assert.equal(process.output(), "");
@@ -93,7 +95,7 @@ test("installed preview serves hoisted fonts and HarfBuzz without exposing neigh
     },
   });
   const compositionPath = join(root, "composition.json");
-  await copyFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), compositionPath);
+  await copyFile(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url), compositionPath);
   await writeFile(join(root, "private.txt"), "private neighboring file");
   await writeFile(join(packageRoot, ".env"), "PRIVATE=test-fixture");
   await writeFile(join(packageRoot, "composition.json.review.json"), "private review fixture");

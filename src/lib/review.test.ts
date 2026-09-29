@@ -5,7 +5,7 @@ import { resolveDocument } from "../../composition/grid.ts";
 import { assertComposition } from "../../composition/validate.ts";
 import { emptyReview, reviewPrompt } from "./review.ts";
 
-const document = resolveDocument(assertComposition(JSON.parse(readFileSync(new URL("../../slides/introducing-konpeki/composition.json", import.meta.url), "utf8"))));
+const document = resolveDocument(assertComposition(JSON.parse(readFileSync(new URL("../../composition/fixtures/introducing-konpeki/composition.json", import.meta.url), "utf8"))));
 
 test("copy prompt preserves requests and scoped IDs, includes every pending note and never resolves them", () => {
   const review = { ...emptyReview(), notes: [

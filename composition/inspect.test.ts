@@ -13,7 +13,7 @@ const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 const near = (actual: number, expected: number) => assert.ok(Math.abs(actual - expected) < 1e-8, `${actual} != ${expected}`);
 
 test("summary shows components and settled groups without repeating scene items or copy", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/github-cover/composition.json", import.meta.url), "utf8")));
   const page = document.pages[0], scene = lowerPage(document, page, fonts), before = structuredClone(scene);
   const report = summarizePage(page, scene), json = JSON.stringify(report);
   assert.deepEqual(report.components.map(component => component.id), page.paintOrder);
@@ -98,7 +98,7 @@ test("inspection preserves fitted label anchors, element IDs and interleaved pai
 });
 
 test("inspection uses settled group geometry and reports authored pixel rectangles", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/github-cover/composition.json", import.meta.url), "utf8")));
   const page = document.pages[0], original = structuredClone(document);
   const report = inspectPage(page, lowerPage(document, page, fonts), fonts);
   const group = report.groups.find(group => group.id === "brand-stack")!;

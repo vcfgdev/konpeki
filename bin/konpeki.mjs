@@ -66,7 +66,7 @@ async function preview(input) {
   const address = server.httpServer?.address();
   const actualPort = address && typeof address === "object" ? address.port : port;
   const displayHost = host === "0.0.0.0" || host === "::" ? "localhost" : host;
-  const url = `http://${displayHost.includes(":") ? `[${displayHost}]` : displayHost}:${actualPort}/?session=${encodeURIComponent(token)}`;
+  const url = `http://${displayHost.includes(":") ? `[${displayHost}]` : displayHost}:${actualPort}/legacy.html?session=${encodeURIComponent(token)}`;
   if (json) console.log(JSON.stringify({ type: "ready", compositionPath, url }));
   else {
     console.log(`Konpeki is editing ${compositionPath}`);

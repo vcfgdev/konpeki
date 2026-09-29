@@ -110,7 +110,7 @@ async function diskMatches(predicate) {
 const metrics = {};
 try {
   await server.listen();
-  await b("open", `http://127.0.0.1:${server.httpServer.address().port}/?session=feedback-test`);
+  await b("open", `http://127.0.0.1:${server.httpServer.address().port}/legacy.html?session=feedback-test`);
   await b("set", "viewport", "1556", "1030", "2");
   await wait("!!document.querySelector('#revision-note:not(:disabled)')");
   await click("Select Text block");

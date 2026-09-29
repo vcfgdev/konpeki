@@ -13,7 +13,7 @@ const context = await loadNodeFontContext(new URL("../fonts/", import.meta.url))
 const manifest = JSON.parse(readFileSync(new URL("../fonts/manifest.json", import.meta.url)));
 const b = (...args) => execFileSync("agent-browser", ["--session", "text-layout-check", ...args], { encoding: "utf8", maxBuffer: 16 << 20 }).trim();
 try {
-  b("open", base); b("set", "viewport", "1280", "720", "2"); b("wait", ".canvas");
+  b("open", new URL("legacy.html", base).href); b("set", "viewport", "1280", "720", "2"); b("wait", ".canvas");
   const browser = JSON.parse(b("eval", `(() => { const cases=${JSON.stringify(cases)},fonts=${JSON.stringify(manifest.fonts)};
     const style=document.head.appendChild(document.createElement('style'));style.textContent=fonts.map(f=>'@font-face{font-family:"'+f.family+'";font-style:'+f.style+';font-weight:'+f.weight+';src:url("/fonts/'+f.file+'") format("truetype")}').join('');
     return Promise.all(fonts.map(f=>document.fonts.load(f.style+' '+f.weight+' 20px "'+f.family+'"'))).then(() => {

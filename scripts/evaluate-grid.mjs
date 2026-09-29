@@ -9,11 +9,11 @@ import { validateComposition } from "../composition/validate.ts";
 const [base = "http://localhost:4318", output = "/tmp/konpeki-grid-evaluation", baselineRef = "a7143746947608c1f0e596996e0ba4012bf5a3d2"] = process.argv.slice(2);
 const presets = ["presentation", "portrait", "link"];
 const sources = [
-  ["architecture", "slides/gallery/architecture.json"],
-  ["sankey", "slides/gallery/sankey.json"],
-  ["release", "slides/gallery/release.json"],
-  ["explainer", "slides/gallery/explainer.json"],
-  ["intro", "slides/introducing-konpeki/composition.json"],
+  ["architecture", "composition/fixtures/gallery/architecture.json"],
+  ["sankey", "composition/fixtures/gallery/sankey.json"],
+  ["release", "composition/fixtures/gallery/release.json"],
+  ["explainer", "composition/fixtures/gallery/explainer.json"],
+  ["intro", "composition/fixtures/introducing-konpeki/composition.json"],
 ];
 const variants = join(output, "variants");
 const captures = join(output, "captures");

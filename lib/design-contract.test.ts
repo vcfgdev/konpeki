@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import ts from 'typescript';
 
@@ -33,28 +33,22 @@ function readDesign(source: string) {
 }
 
 test('active Design exports are literal and have the pinned upstream shape', () => {
-  const root = new URL('../slides/', import.meta.url);
-  for (const entry of readdirSync(root, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const file = new URL(`${entry.name}/index.tsx`, root);
-    if (!existsSync(file)) continue;
-    const value = readDesign(readFileSync(file, 'utf8'));
-    if (value === undefined) continue; // Multi-theme/source-only studies may omit design.
-    assert(value && typeof value === 'object');
-    assert.deepEqual(Object.keys(value).sort(), ['fonts', 'palette', 'radius', 'typeScale']);
-    for (const [group, keys] of [['palette', ['bg', 'text', 'accent']], ['fonts', ['display', 'body']]] as const) {
-      const tokens: Literal = value[group];
-      assert(tokens && typeof tokens === 'object');
-      assert.deepEqual(Object.keys(tokens).sort(), [...keys].sort());
-      for (const key of keys) assert.equal(typeof tokens[key], 'string', `${entry.name}: ${group}.${key}`);
-    }
-    const scale = value.typeScale;
-    assert(scale && typeof scale === 'object');
-    assert.deepEqual(Object.keys(scale).sort(), ['body', 'hero']);
-    assert(typeof scale.hero === 'number' && scale.hero > 0);
-    assert(typeof scale.body === 'number' && scale.body > 0);
-    assert(typeof value.radius === 'number' && value.radius >= 0);
+  const file = new URL('../composition/fixtures/architecture/index.tsx', import.meta.url);
+  const value = readDesign(readFileSync(file, 'utf8'));
+  assert(value && typeof value === 'object');
+  assert.deepEqual(Object.keys(value).sort(), ['fonts', 'palette', 'radius', 'typeScale']);
+  for (const [group, keys] of [['palette', ['bg', 'text', 'accent']], ['fonts', ['display', 'body']]] as const) {
+    const tokens: Literal = value[group];
+    assert(tokens && typeof tokens === 'object');
+    assert.deepEqual(Object.keys(tokens).sort(), [...keys].sort());
+    for (const key of keys) assert.equal(typeof tokens[key], 'string', `architecture: ${group}.${key}`);
   }
+  const scale = value.typeScale;
+  assert(scale && typeof scale === 'object');
+  assert.deepEqual(Object.keys(scale).sort(), ['body', 'hero']);
+  assert(typeof scale.hero === 'number' && scale.hero > 0);
+  assert(typeof scale.body === 'number' && scale.body > 0);
+  assert(typeof value.radius === 'number' && value.radius >= 0);
 });
 
 test('literal Design parsing works independently of installed decks', () => {

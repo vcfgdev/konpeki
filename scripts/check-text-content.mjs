@@ -7,7 +7,7 @@ function browser(...args) { return execFileSync("agent-browser", ["--session", "
 function click(name) { browser("find", "role", "button", "click", "--name", name, "--exact"); }
 function evaluate(code) { return browser("eval", code); }
 try {
-  browser("open", `${base}/?example=introducing-konpeki`);
+  browser("open", new URL("legacy.html?example=introducing-konpeki", base).href);
   browser("set", "viewport", "1556", "1030", "2");
   click("Select Text block 1"); browser("press", "Enter");
   browser("fill", ".inline-intent-editor", "Human revision");
@@ -29,7 +29,7 @@ try {
   block.content = "Agent revision of manual text";
   const file = join(mkdtempSync(join(tmpdir(), "native-text-")), "returned.json");
   writeFileSync(file, JSON.stringify(document));
-  browser("open", base);
+  browser("open", new URL("legacy.html", base).href);
   browser("upload", 'input[type="file"]', file);
   browser("wait", "--text", "Page 07");
   click("Page 07"); click("Select Text block"); browser("press", "Enter");

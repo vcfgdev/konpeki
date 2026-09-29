@@ -7,7 +7,7 @@ import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const url = new URL(
-  "?example=introducing-konpeki",
+  "legacy.html?example=introducing-konpeki",
   process.argv[2] ?? "http://localhost:4318",
 ).href;
 const artifacts = resolve(process.argv[3] ?? ".amp/in/artifacts/playground");

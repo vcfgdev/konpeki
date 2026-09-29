@@ -14,7 +14,7 @@ import { checkPage } from "./check.ts";
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 const baseline = JSON.parse(readFileSync(new URL("./fixtures/text-layout-browser-baseline.json", import.meta.url), "utf8"));
 for (const name of ["architecture", "sankey", "release", "explainer", "intro"]) {
-  const path = name === "intro" ? "../slides/introducing-konpeki/composition.json" : `../slides/gallery/${name}.json`;
+  const path = name === "intro" ? "./fixtures/introducing-konpeki/composition.json" : `./fixtures/gallery/${name}.json`;
   const document = assertComposition(JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8")));
   for (const page of document.pages) test(`${name}/${page.id}: deterministic scene snapshot`, t => {
     const before = structuredClone(document), scene = lowerPage(document, page, fonts);
@@ -149,7 +149,7 @@ test("titles bottom-align multiline copy inside padding; body copy stays at the 
 
 test("restores the reviewed title offsets without moving subtitles", () => {
   for (const [name, id, offset] of [["sankey", "title", 44], ["explainer", "headline", 44], ["architecture", "headline", 20]] as const) {
-    const document = assertComposition(JSON.parse(readFileSync(new URL(`../slides/gallery/${name}.json`, import.meta.url), "utf8")));
+    const document = assertComposition(JSON.parse(readFileSync(new URL(`./fixtures/gallery/${name}.json`, import.meta.url), "utf8")));
     const scene = lowerPage(document, document.pages[0], fonts);
     const title = scene.items.find(item => item.kind === "text" && item.componentId === id);
     assert.ok(title?.kind === "text" && title.clip);
@@ -240,7 +240,7 @@ test("group shape bounds follow curve extrema and fit, and ignore invisible geom
 });
 
 test("cover stack stays left-aligned and vertically centered when the audience gains a line", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/github-cover/composition.json", import.meta.url), "utf8")));
   const page = document.pages[0], group = page.groups.find(group => group.id === "brand-stack")!;
   for (const changed of [false, true]) {
     const audience = page.components.find(item => item.id === "audience")!;
@@ -262,7 +262,7 @@ test("cover stack stays left-aligned and vertically centered when the audience g
 });
 
 test("held group offsets move shapes, text, clips and hit boxes together without changing the document", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/github-cover/composition.json", import.meta.url), "utf8")));
   const page = document.pages[0], before = lowerPage(document, page, fonts);
   const offsets = new Map([["brand-stack", before.components[0].box.y - page.components[0].rect!.y]]);
   for (const [id, delta] of [["brand-mark", -24], ["audience", 48]] as const) {

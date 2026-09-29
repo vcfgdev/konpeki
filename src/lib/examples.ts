@@ -1,7 +1,7 @@
 import { validateComposition } from "../../composition/validate.ts";
 import { resolveDocument } from "../../composition/grid.ts";
 import type { Draft } from "./model.ts";
-import introducingKonpeki from "../../slides/introducing-konpeki/composition.json" with { type: "json" };
+import introducingKonpeki from "../../composition/fixtures/introducing-konpeki/composition.json" with { type: "json" };
 
 export function exampleDraft(name: string | null): Draft | undefined {
   if (name === "introducing-konpeki") {

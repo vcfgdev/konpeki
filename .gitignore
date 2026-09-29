@@ -3,7 +3,6 @@ runtime/
 node_modules/
 fonts/*.ttf
 fonts/LICENSE-*.txt
-experiments/html-preview/fonts/
 .amp/in/
 .amp/portals/
 .DS_Store

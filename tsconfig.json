@@ -13,7 +13,6 @@
     "types": ["node", "vite/client"]
   },
   "include": [
-    "slides",
     "lib",
     "design",
     "composition",

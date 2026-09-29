@@ -48,7 +48,7 @@ function drag(selector, dx, dy, during = () => {}) {
 }
 
 try {
-  b("open", base); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
+  b("open", new URL("legacy.html", base).href); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
   // A fresh v2 draft is intentionally blank; import content before querying it.
   const legacyDocument = toComposition(addComponent(addComponent(initialGridDraft(), "text-block"), "image"));
   const legacyPage = legacyDocument.pages[0];
@@ -235,7 +235,7 @@ try {
   assert.deepEqual(stored().pages[0].components[0].rect, { ...block.rect, y: block.rect.y + 1 });
   capture("centered-text-correction");
 
-  const cover = JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8"));
+  const cover = JSON.parse(readFileSync(new URL("../composition/fixtures/github-cover/composition.json", import.meta.url), "utf8"));
   importDocument(cover);
   assert.equal(stored().pages[0].preset, "link");
   capture("fine-grid-cover");

@@ -48,7 +48,7 @@ test("scaled chart is review-only and makes no caption claim", () => {
 });
 
 test("reproduces fixed-height overflow, scaled Sankey, and dark 400 contrast", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/gallery/sankey.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/gallery/sankey.json", import.meta.url), "utf8")));
   const page = document.pages[0];
   const chart = page.components.find(component => component.id === "chart")!;
   chart.customVisual!.elements.find(element => element.id === "flow-value-2")!.attributes.fill = "theme:ink";
@@ -65,7 +65,7 @@ test("reproduces fixed-height overflow, scaled Sankey, and dark 400 contrast", (
 });
 
 test("unauthored topology is visibly neutral and introduces no contrast or clipping errors", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/gallery/sankey.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/gallery/sankey.json", import.meta.url), "utf8")));
   const page = document.pages[0], chart = page.components.find(component => component.id === "chart")!;
   delete chart.customVisual;
   const scene = lowerPage(document, page, fonts);
@@ -80,14 +80,14 @@ test("unauthored topology is visibly neutral and introduces no contrast or clipp
 });
 
 test("packaged cover is a finished v2 link page with no scene diagnostics", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/github-cover/composition.json", import.meta.url), "utf8")));
   const scene = lowerPage(document, document.pages[0], fonts);
   assert.deepEqual([scene.width, scene.height], [1200, 630]);
   assert.deepEqual(checkPageNode(scene, fonts), []);
 });
 
 test("A4 page totals do not clip slash ink below the em box", () => {
-  const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
+  const document = assertComposition(JSON.parse(readFileSync(new URL("./fixtures/github-cover/composition.json", import.meta.url), "utf8")));
   const page = document.pages[0];
   page.preset = "a4";
   page.canvas = { width: 210 / 25.4 * 96, height: 297 / 25.4 * 96 };

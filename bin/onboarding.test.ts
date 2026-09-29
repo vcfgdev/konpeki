@@ -169,7 +169,7 @@ test("copied init creates an empty document, reopens without rewriting, and hand
   const copied = join(root, "installed skill");
   await cp(skill, copied, { recursive: true });
   const script = join(copied, "scripts/prepare-document.mjs");
-  const path = join(root, "user project/slides/new page/composition.json");
+  const path = join(root, "user project/examples/new page/composition.json");
   const run = (path: string) => spawnSync(process.execPath, [script, cli, path], { encoding: "utf8" });
   const created = run(path);
   assert.equal(created.status, 0, created.stderr);
@@ -180,7 +180,7 @@ test("copied init creates an empty document, reopens without rewriting, and hand
   assert.deepEqual(blank.pages[0].components, []);
   assert.deepEqual(await readdir(dirname(path)), ["composition.json"], "init must not create review state or start a listener");
 
-  const example = JSON.parse(await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), "utf8"));
+  const example = JSON.parse(await readFile(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url), "utf8"));
   const edited = `  ${JSON.stringify({ ...example, title: "Keep my human edits" }, null, 3)}\n\n`;
   const feedback = '{"keep":"my review state"}\n';
   await writeFile(path, edited);

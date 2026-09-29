@@ -10,7 +10,7 @@ import { emptyReview } from "../src/lib/review.ts";
 test("review sidecars are API-only, including temporary and /@fs/ paths", async t => {
   const root = await mkdtemp(join(tmpdir(), "konpeki-private-review-"));
   const path = join(root, "composition.json");
-  await writeFile(path, await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url)));
+  await writeFile(path, await readFile(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url)));
   const legacy = JSON.stringify({ ...emptyReview(), notes: [{ id: "old-note", slideId: "cover", text: "Private feedback", resolved: false }] });
   await writeFile(`${path}.review.json`, legacy);
   await writeFile(`${path}.review.json.test.tmp`, "Private temporary data");
@@ -50,7 +50,7 @@ test("review sidecars are API-only, including temporary and /@fs/ paths", async 
 test("browser comment identity survives revisions and tokens but isolates different files", async t => {
   const root = await mkdtemp(join(tmpdir(), "konpeki-comment-identity-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const raw = await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), "utf8");
+  const raw = await readFile(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url), "utf8");
   const identities = [];
   const revisions = [];
   for (const [file, token, content] of [["first.json", "first-token", raw], ["first.json", "new-token", raw + "\n"], ["second.json", "new-token", raw + "\n"]]) {
@@ -78,7 +78,7 @@ test("browser comment identity survives revisions and tokens but isolates differ
 test("malformed legacy comments warn without blocking document reads or revision-checked saves", async t => {
   const root = await mkdtemp(join(tmpdir(), "konpeki-legacy-warning-"));
   const path = join(root, "composition.json");
-  await writeFile(path, await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url)));
+  await writeFile(path, await readFile(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url)));
   const server = await createServer({ root, configFile: false, logLevel: "silent", server: { host: "127.0.0.1", port: 0 }, plugins: [fileSessionPlugin({ compositionPath: path, token: "test-token" })] });
   t.after(async () => { await server.close(); await rm(root, { recursive: true, force: true }); });
   await server.listen();

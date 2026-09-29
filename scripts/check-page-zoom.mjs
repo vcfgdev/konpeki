@@ -33,7 +33,7 @@ const anchor = () => evaluate(`(() => {
 })()`);
 let cdp;
 try {
-  b("open", `${base}/?example=introducing-konpeki`); b("set", "viewport", "1440", "1000", "2");
+  b("open", new URL("legacy.html?example=introducing-konpeki", base).href); b("set", "viewport", "1440", "1000", "2");
   b("wait", "--fn", "document.querySelectorAll('.scene-artwork svg').length===7 && !!localStorage.getItem('konpeki-composer/examples/v1/introducing-konpeki')");
   assert.equal(evaluate("!!document.querySelector('.board-heading p')"), false, "the status subtitle is removed");
   assert.equal(evaluate("[...document.querySelectorAll('.stage-meta')].every(header=>{const n=header.querySelector('.page-index').getBoundingClientRect(),t=header.querySelector('h2').getBoundingClientRect();return Math.abs(n.top-t.top)<.1&&Math.abs(n.bottom-t.bottom)<.1&&t.left>n.right})"), true, "page number and title share one baseline and size");

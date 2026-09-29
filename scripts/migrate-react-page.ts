@@ -13,7 +13,7 @@ if (process.argv.includes("--help")) {
 }
 
 const root = process.cwd();
-const input = resolve(root, process.argv[2] ?? "slides/architecture/index.tsx");
+const input = resolve(root, process.argv[2] ?? "composition/fixtures/architecture/index.tsx");
 const pageSelection = process.argv[3] ?? "all";
 const output = resolve(
   root,

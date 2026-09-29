@@ -15,7 +15,7 @@ const scratch = await mkdtemp(join(tmpdir(), "konpeki-comments-"));
 const path = join(scratch, "composition.json");
 const artifacts = resolve(process.argv[2] ?? "/tmp/konpeki-comments");
 await mkdir(artifacts, { recursive: true });
-const original = JSON.parse(await readFile("slides/introducing-konpeki/composition.json", "utf8"));
+const original = JSON.parse(await readFile("composition/fixtures/introducing-konpeki/composition.json", "utf8"));
 await writeFile(path, JSON.stringify(original));
 let server = await createServer({ server: { host: "127.0.0.1", port: 0 }, plugins: [fileSessionPlugin({ compositionPath: path, token: "comments-test" })] });
 const b = async (...args) => (await exec("agent-browser", ["--session", "comments-check", ...args], { maxBuffer: 8 * 1024 * 1024 })).stdout.trim();
@@ -95,7 +95,7 @@ try {
   const session = await (await fetch(`${base}__konpeki/session`, { headers: { "x-konpeki-session": "comments-test" } })).json();
   const fileStorage = `konpeki-comments/v1/${session.commentKey}`;
   const readBrowserReview = async () => JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${fileStorage}'))`));
-  await b("open", `${base}?session=comments-test`);
+  await b("open", `${base}legacy.html?session=comments-test`);
   await b("set", "viewport", "1440", "1000", "2");
   await ready();
   await check("!document.querySelector('.left-sidebar,.right-panel,.component-dock,select,textarea')");
@@ -291,7 +291,7 @@ try {
   // otherwise recreate the record between removeItem and a separate reload.
   await b("open", `${base}src/assets/konpeki-mark.png`);
   await b("eval", `localStorage.removeItem('${fileStorage}')`);
-  await b("open", `${base}?session=comments-test`); await ready();
+  await b("open", `${base}legacy.html?session=comments-test`); await ready();
   await wait("document.querySelector('.review-count')?.textContent==='3'");
   await openReviews();
   await b("click", ".revision-note-list li:last-child .revision-note-target");
@@ -446,7 +446,7 @@ try {
   await waitForFile(doc => doc.pages[0].name === "Local comments take precedence");
   await b("open", `${base}src/assets/konpeki-mark.png`);
   await b("eval", `localStorage.removeItem('${fileStorage}')`);
-  await b("open", `${base}?session=comments-test`); await ready();
+  await b("open", `${base}legacy.html?session=comments-test`); await ready();
   await wait("document.querySelector('.recovery.visible')?.textContent.includes('Legacy comments could not be imported')");
   await b("dblclick", `${page("cover")} .stage-meta h2`);
   await b("fill", 'input[aria-label="Page name"]', "Composition remains editable"); await b("press", "Enter");
@@ -468,7 +468,7 @@ try {
   await server.close();
   server = await createServer({ server: { host: "127.0.0.1", port: Number(new URL(base).port), strictPort: true }, plugins: [fileSessionPlugin({ compositionPath: path, token: "restarted-test" })] });
   await server.listen();
-  await b("open", `${base}?session=restarted-test`); await ready();
+  await b("open", `${base}legacy.html?session=restarted-test`); await ready();
   assert.deepEqual(await readBrowserReview(), savedReview);
   await check("document.querySelectorAll('.revision-pin').length===2");
   assert.equal(await readFile(`${path}.review.json`, "utf8"), legacyBytes);
@@ -480,7 +480,7 @@ try {
   await b("eval", `localStorage.setItem('${fileStorage}', ${JSON.stringify(JSON.stringify(savedReview))})`);
 
   // Browser-only feedback survives reload and undoes imports; JSON contains no comments.
-  await b("open", `${base}?example=introducing-konpeki`); await ready();
+  await b("open", `${base}legacy.html?example=introducing-konpeki`); await ready();
   const storage = "konpeki-composer/examples/v1/introducing-konpeki";
   await reviewPage("cover"); await b("fill", "#revision-note", "Explain the outcome, not the editing tools."); await addComment();
   await wait("document.querySelector('.review-count')?.textContent==='1'");
@@ -579,7 +579,7 @@ try {
   // Keep comments for the remaining responsive-layout scenarios.
   await b("open", `${base}src/assets/konpeki-mark.png`);
   await b("eval", `(()=>{const state=JSON.parse(localStorage.getItem('${storage}'));state.review.notes=${JSON.stringify(beforeClear)};localStorage.setItem('${storage}',JSON.stringify(state))})()`);
-  await b("open", `${base}?example=introducing-konpeki`); await ready();
+  await b("open", `${base}legacy.html?example=introducing-konpeki`); await ready();
   await openReviews();
   await b("set", "viewport", "390", "844", "2");
   await wait("[...document.querySelectorAll('.board-page')].every((p,i,pages)=>p.style.top===pages[0].style.top&&(!i||parseFloat(p.style.left)>parseFloat(pages[i-1].style.left)))");
@@ -617,7 +617,7 @@ try {
   await check("getComputedStyle(document.querySelector('.revision-notes')).animationName==='none' && getComputedStyle(document.querySelector('.review-launcher svg')).animationName==='none'");
   await b("press", "Escape");
   await b("set", "media", "light");
-  await b("open", base); await wait("!!document.querySelector('.scene-artwork svg')");
+  await b("open", `${base}legacy.html`); await wait("!!document.querySelector('.scene-artwork svg')");
   await check("document.querySelectorAll('.board-page').length===1 && !document.querySelector('.component-hit,.page-order > path')");
   await capture("empty-board");
   console.log("PASS: select-first entry, compact queue, new-comment selection, saved-comment editing, reduced motion, cancel/Escape draft preservation, anchored composer follows selection/scroll/resize, clipboard contents and safe clearing, no-duplicate retry, denied/unavailable clipboard fallback, browser-local persistence and legacy import, session restart, no sidecar writes, markers/movement/deletion/undo, correction canvas, export isolation, corrupt/full storage, keyboard focus, empty/narrow states, long-list sticky actions and wrapping.");

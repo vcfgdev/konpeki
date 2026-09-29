@@ -8,13 +8,13 @@ import { resolve } from "node:path";
 const [base = "http://localhost:4318", output = "composition/fixtures/text-layout-browser-baseline.json"] = process.argv.slice(2);
 const files = ["architecture", "sankey", "release", "explainer", "intro"].map(name => ({
   name,
-  path: resolve(name === "intro" ? "slides/introducing-konpeki/composition.json" : `slides/gallery/${name}.json`),
+  path: resolve(name === "intro" ? "composition/fixtures/introducing-konpeki/composition.json" : `composition/fixtures/gallery/${name}.json`),
 }));
 const b = (...args) => execFileSync("agent-browser", ["--session", "text-baseline", ...args], { encoding: "utf8", maxBuffer: 32 << 20 }).trim();
 const click = name => b("find", "role", "button", "click", "--name", name, "--exact");
 const pages = [];
 try {
-  b("open", base);
+  b("open", new URL("legacy.html", base).href);
   b("set", "viewport", "1920", "1080", "2");
   b("wait", ".canvas");
   for (const file of files) {

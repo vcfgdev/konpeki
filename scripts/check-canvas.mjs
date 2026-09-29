@@ -9,7 +9,7 @@ import { initialDraft } from "../composition/document.ts";
 import { parseEditableSvg } from "../composition/vector.ts";
 import { assertComposition } from "../composition/validate.ts";
 
-const url = process.argv[2] ?? "http://localhost:4318";
+const url = new URL("legacy.html", process.argv[2] ?? "http://localhost:4318").href;
 const artifacts = resolve(process.argv[3] ?? ".amp/in/artifacts");
 const scratch = mkdtempSync(join(tmpdir(), "konpeki-check-"));
 mkdirSync(artifacts, { recursive: true });

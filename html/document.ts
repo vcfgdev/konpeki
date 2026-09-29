@@ -1,6 +1,14 @@
 import { parse, parseFragment, serialize, type DefaultTreeAdapterMap } from "parse5";
 
-export const documentPolicy = "default-src 'none'; script-src 'none'; style-src 'unsafe-inline' 'self'; font-src 'self' data:; img-src 'self' data:; base-uri 'none'; form-action 'none'";
+export const documentPolicy = "default-src 'none'; script-src 'none'; style-src 'unsafe-inline' 'self' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; base-uri 'none'; form-action 'none'";
+
+/** The only external resources permitted by CLI inspection/export. */
+export function isGoogleFontResource(url: string, resourceType: string) {
+  const resource = new URL(url);
+  if (resource.protocol !== "https:" || resource.port || resource.username || resource.password) return false;
+  return resourceType === "stylesheet" && resource.hostname === "fonts.googleapis.com" && ["/css", "/css2"].includes(resource.pathname)
+    || resourceType === "font" && resource.hostname === "fonts.gstatic.com" && resource.pathname.startsWith("/s/");
+}
 
 /** A view of the source, never a serialization written back to it. Keep every
  * page in the DOM so nth-child selectors and shared SVG definitions stay stable. */

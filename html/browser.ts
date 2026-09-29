@@ -2,6 +2,7 @@ import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
 import { documentServer } from "./server.ts";
 import { inspectHTMLPage, type Diagnostic } from "./inspect.ts";
+import { isGoogleFontResource } from "./document.ts";
 
 export async function browserDocument(input: string, options: { page?: number; format?: string; scale?: number; details?: boolean } = {}) {
   if (options.format !== undefined && !["png", "pdf"].includes(options.format)) throw new Error("HTML exports support PNG and PDF. Whole-page SVG export is not supported.");
@@ -17,9 +18,12 @@ export async function browserDocument(input: string, options: { page?: number; f
     try { browser = await chromium.launch({ headless: true }); }
     catch { throw new Error("Chromium could not start. Run `konpeki browser install` to install the pinned browser; Linux also needs Chromium's system libraries."); }
     const context = await browser.newContext({ viewport: { width: 794, height: 1123 }, deviceScaleFactor: scale, serviceWorkers: "block" });
-    // No external network, including requests hidden in CSS. The HTTP server
-    // serves only the selected source and allowlisted assets within its folder.
-    await context.route("**/*", route => route.request().url().startsWith(`${server.origin}${server.prefix}/`) ? route.continue() : route.abort());
+    // Local document assets plus Google Fonts; other external requests, including
+    // those hidden in CSS, remain blocked.
+    await context.route("**/*", route => {
+      const request = route.request();
+      return request.url().startsWith(`${server.origin}${server.prefix}/`) || isGoogleFontResource(request.url(), request.resourceType()) ? route.continue() : route.abort();
+    });
     const tab = await context.newPage(), pages = [], diagnostics: Diagnostic[] = [];
     const failed = new Set<string>();
     tab.on("requestfailed", request => failed.add(request.url()));
@@ -48,7 +52,7 @@ export async function browserDocument(input: string, options: { page?: number; f
       const report = await element.evaluate(inspectHTMLPage);
       if (Math.abs(report.width - initial.width) > .75 || Math.abs(report.height - initial.height) > .75)
         throw new Error("Page dimensions depend on the viewport. Give pages a fixed CSS width and height; their content may use responsive layout.");
-      for (const resource of failed) report.diagnostics.push({ code: "missing-resource", severity: "error", page: id, target: id, message: `Resource did not load: ${resource.startsWith(`${server.origin}${server.prefix}/document/`) ? resource.slice(`${server.origin}${server.prefix}/document/`.length) : new URL(resource).pathname}. Use local images, fonts and CSS beside the HTML.` });
+      for (const resource of failed) report.diagnostics.push({ code: "missing-resource", severity: "error", page: id, target: id, message: `Resource did not load: ${resource.startsWith(`${server.origin}${server.prefix}/document/`) ? resource.slice(`${server.origin}${server.prefix}/document/`.length) : new URL(resource).origin + new URL(resource).pathname}. Use local assets or check access to Google Fonts.` });
       diagnostics.push(...report.diagnostics);
       pages.push({ pageNumber: index + 1, ...report, ...(options.details ? {} : { text: undefined }) });
       if (options.format === "png") {

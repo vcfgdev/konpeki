@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 const base = process.argv[2] ?? "http://localhost:4318";
 const scratch = mkdtempSync(join(tmpdir(), "konpeki-themes-"));
-const deck = JSON.parse(readFileSync(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), "utf8"));
+const deck = JSON.parse(readFileSync(new URL("../composition/fixtures/introducing-konpeki/composition.json", import.meta.url), "utf8"));
 deck.theme = { id: "precision", mode: "paper" };
 deck.pages[0].components[0].customVisual = { format: "vector", description: "Legacy vector fixture", viewBox: { x: 0, y: 0, width: 820, height: 177 }, elements: [{ id: "brand-line-1", kind: "text", text: "Konpeki", attributes: { x: 0, y: 120, fill: "theme:accent", "font-family": "theme:heading-font" } }] };
 const element = deck.pages[0].components[0].customVisual.elements[0];
@@ -32,7 +32,7 @@ function savedTheme(expected) {
   browser("wait", "--fn", `JSON.stringify(JSON.parse(localStorage.getItem('konpeki-composer/v1'))?.document.theme) === ${JSON.stringify(JSON.stringify(expected))}`);
 }
 try {
-  browser("open", base);
+  browser("open", new URL("legacy.html", base).href);
   browser("set", "viewport", "1556", "1030", "2");
   browser("upload", 'input[type="file"]', file);
   browser("wait", "--text", "text element exceeds");

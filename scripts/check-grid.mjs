@@ -11,7 +11,7 @@ import { checkPageNode } from "../composition/check-node.ts";
 const args = process.argv.slice(2), output = resolve(args.find(value => !value.startsWith("--")) ?? "/tmp/konpeki-grid-review");
 const baseline = process.env.KONPEKI_GRID_BASELINE;
 const files = ["architecture", "sankey", "release", "explainer", "intro"].map(name => ({ name,
-  path: baseline ? join(baseline, `${name}.json`) : resolve(name === "intro" ? "slides/introducing-konpeki/composition.json" : `slides/gallery/${name}.json`),
+  path: baseline ? join(baseline, `${name}.json`) : resolve(name === "intro" ? "composition/fixtures/introducing-konpeki/composition.json" : `composition/fixtures/gallery/${name}.json`),
 }));
 mkdirSync(output, { recursive: true });
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));

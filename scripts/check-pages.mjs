@@ -33,7 +33,7 @@ const checkCompactPanels = () => evaluate(`{
   }
 }`);
 try {
-  browser("open", new URL("?example=introducing-konpeki", base).href);
+  browser("open", new URL("legacy.html?example=introducing-konpeki", base).href);
   browser("set", "viewport", "1556", "1030", "2");
   evaluate("document.fonts.ready");
   settlePanels();
@@ -100,7 +100,7 @@ try {
   }`);
   capture("page-settings-scrolled.png");
   console.log("PASS: full page settings fit without scrolling at 1556×1030; shorter windows scroll only the inspector and retain bottom padding.");
-  browser("open", base);
+  browser("open", new URL("legacy.html", base).href);
   browser("set", "viewport", "1280", "900", "2");
   evaluate("document.fonts.ready");
   settlePanels();

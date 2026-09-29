@@ -12,10 +12,10 @@ import { renderPDF } from "../composition/pdf.ts";
 import { renderSVG } from "../composition/svg.ts";
 
 const documents = [
-  "slides/gallery/architecture.json", "slides/gallery/sankey.json",
-  "slides/gallery/release.json", "slides/gallery/explainer.json",
-  "slides/introducing-konpeki/composition.json",
-  "slides/github-cover/composition.json",
+  "composition/fixtures/gallery/architecture.json", "composition/fixtures/gallery/sankey.json",
+  "composition/fixtures/gallery/release.json", "composition/fixtures/gallery/explainer.json",
+  "composition/fixtures/introducing-konpeki/composition.json",
+  "composition/fixtures/github-cover/composition.json",
 ];
 const keep = process.argv.includes("--keep");
 const root = resolve(import.meta.dirname, "..");

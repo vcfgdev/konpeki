@@ -47,7 +47,7 @@ async function exports(document, name) {
   console.log(`${name}: no diagnostics, PDF text retained, PDF/PNG RMSE ${rmse}`);
 }
 try {
-  b("open", base); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
+  b("open", new URL("legacy.html", base).href); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
   const document = JSON.parse(readFileSync(new URL("../skills/konpeki/assets/blank.json", import.meta.url), "utf8"));
   document.title = "Semantic process flow";
   const page = document.pages[0]; page.name = "Order handling";

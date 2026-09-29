@@ -158,7 +158,7 @@ test("handoff and shipped pages round-trip without derived rectangles", () => {
   const handoff = compileHandoff(pixelFixture());
   assert.match(handoff, /137\.25/); assert.doesNotMatch(handoff, /preferredRect/);
   for (const path of ["gallery/architecture.json", "gallery/sankey.json", "gallery/release.json", "gallery/explainer.json", "introducing-konpeki/composition.json"]) {
-    const document = assertComposition(JSON.parse(readFileSync(new URL(`../slides/${path}`, import.meta.url), "utf8")));
+    const document = assertComposition(JSON.parse(readFileSync(new URL(`./fixtures/${path}`, import.meta.url), "utf8")));
     assert.equal(document.schema, gridSchema);
     assert.deepEqual(toComposition(resolveDocument(document)), document);
   }

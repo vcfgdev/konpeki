@@ -11,7 +11,7 @@ the resources below for a specific need; none impose a composition or reading or
 | Colors only | [palettes](palettes/README.md) | Base, eight light/dark palettes, Mineral/Botanical light candidates |
 | Typography + colors | [themes](themes/README.md) | Ready theme roles; no content or layout |
 | Art direction | [Technical product language](visual-languages/technical-product.md) | How imagery, emphasis and diagrams work together |
-| Add a deck | [Deck directory guide](../slides/README.md) | Routes, prompt records and example deliverables |
+| Study representative output | [HTML examples](../examples/README.md) | Native HTML sources and local CLI commands |
 
 Start freely when no example fits. Reuse implementation, not composition.
 A case-specific check is not a design rule.

@@ -42,7 +42,7 @@ jobs:
           for format in png pdf; do
             mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" render "$RUNNER_TEMP/smoke/document.html" --format "$format" --output "$RUNNER_TEMP/smoke/html-export.$format"
           done
-          cp slides/introducing-konpeki/composition.json "$RUNNER_TEMP/smoke/composition.json"
+          cp composition/fixtures/introducing-konpeki/composition.json "$RUNNER_TEMP/smoke/composition.json"
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" validate "$RUNNER_TEMP/smoke/composition.json"
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" check "$RUNNER_TEMP/smoke/composition.json"
           for format in png svg pdf; do
