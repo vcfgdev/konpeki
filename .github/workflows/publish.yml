@@ -25,6 +25,7 @@ jobs:
       - name: Install PDF conformance tools
         run: sudo apt-get update && sudo apt-get install -y poppler-utils imagemagick
       - run: mise exec -- pnpm install --frozen-lockfile
+      - run: mise exec -- pnpm exec playwright install --with-deps chromium
       - run: mise exec -- pnpm check
       - run: mise exec -- pnpm test
       - run: mise exec -- pnpm build
@@ -35,6 +36,12 @@ jobs:
           mkdir -p "$RUNNER_TEMP/release" "$RUNNER_TEMP/smoke"
           mise exec -- npm pack --pack-destination "$RUNNER_TEMP/release"
           mise exec -- npm install --prefix "$RUNNER_TEMP/smoke" --no-audit --no-fund "$RUNNER_TEMP/release/konpeki-$GITHUB_REF_NAME.tgz"
+          cp skills/konpeki/assets/blank.html "$RUNNER_TEMP/smoke/document.html"
+          mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" validate "$RUNNER_TEMP/smoke/document.html"
+          mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" inspect "$RUNNER_TEMP/smoke/document.html"
+          for format in png pdf; do
+            mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" render "$RUNNER_TEMP/smoke/document.html" --format "$format" --output "$RUNNER_TEMP/smoke/html-export.$format"
+          done
           cp slides/introducing-konpeki/composition.json "$RUNNER_TEMP/smoke/composition.json"
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" validate "$RUNNER_TEMP/smoke/composition.json"
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" check "$RUNNER_TEMP/smoke/composition.json"

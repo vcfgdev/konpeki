@@ -18,6 +18,8 @@ for (const required of [
   "plugin.json", "skills/konpeki/SKILL.md",
   "skills/konpeki/scripts/ensure-runtime.mjs",
   "skills/konpeki/scripts/prepare-document.mjs", "skills/konpeki/assets/blank.json",
+  "skills/konpeki/assets/blank.html", "html/README.md", "html/index.html",
+  "html/preview.tsx", "html/preview.css", "html/inspect.ts", "src/lib/alignment.ts",
   "runtime/konpeki.mjs",
   "index.html", "vite.config.ts", "src/main.tsx", "src/assets/konpeki-mark.png",
   "public/og.png",

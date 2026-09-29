@@ -17,6 +17,7 @@
     "lib",
     "design",
     "composition",
+    "html",
     "src",
     "bin",
     "vite.config.ts"

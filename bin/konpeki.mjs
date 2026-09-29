@@ -14,14 +14,16 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function usage() {
   console.error(`Usage:
-  konpeki preview <composition.json> [--host <host>] [--port <port>] [--json]
-  konpeki validate <composition.json>
-  konpeki check <composition.json>
-  konpeki inspect <composition.json> [--page N] [--details]
-  konpeki render <composition.json> [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
+  konpeki browser install
+  konpeki preview <document.html> [--host <host>] [--port <port>] [--json]
+  konpeki validate <document.html>
+  konpeki check <document.html>
+  konpeki inspect <document.html> [--page N] [--details]
+  konpeki render <document.html> [--page N] [--format png|pdf] [--scale 2] [--output file]
 
 Pages are one-based. Inspect and PDF include all pages unless --page is supplied.
-Scale affects PNG only. Outputs must not already exist.`);
+Scale affects PNG only. Outputs must not already exist.
+Legacy composition JSON remains readable by these commands, including its SVG export.`);
 }
 
 function option(name, fallback) {
@@ -119,6 +121,36 @@ async function inspect(input) {
   if (!ok) process.exitCode = 1;
 }
 
+async function html(command, input) {
+  if (command === "preview") {
+    const port = Number(option("--port", "4318"));
+    if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error("Port must be an integer from 0 to 65535.");
+    const { previewHTML } = await import("../html/server.ts");
+    const { url } = await previewHTML(resolve(input), option("--host", "127.0.0.1"), port, root);
+    console.log(process.argv.includes("--json") ? JSON.stringify({ type: "ready", documentPath: resolve(input), url }) : `Konpeki is reviewing ${resolve(input)}\n${url}\nPress Ctrl+C to stop.`);
+  } else if (command === "validate") {
+    const { fileSource } = await import("../html/source.ts");
+    const snapshot = await fileSource(resolve(input)).read();
+    console.log(`${snapshot.name}: valid (${snapshot.revision})`);
+  } else if (["inspect", "check", "render"].includes(command)) {
+    const { browserDocument } = await import("../html/browser.ts");
+    const page = option("--page"), format = option("--format", "png");
+    const { bytes, report } = await browserDocument(resolve(input), {
+      page: page === undefined ? undefined : Number(page), details: process.argv.includes("--details"),
+      ...(command === "render" ? { format, scale: Number(option("--scale", "2")) } : {}),
+    });
+    if (command === "render") {
+      for (const diagnostic of report.diagnostics) console.error(`${diagnostic.severity}: ${diagnostic.page}/${diagnostic.target}: ${diagnostic.message}`);
+      const output = resolve(option("--output", input.replace(/\.html?$/i, "") + (page ? `-page-${page}` : "") + `.${format}`));
+      await writeFile(output, bytes, { flag: "wx" });
+      console.log(output);
+    } else {
+      console.log(JSON.stringify(command === "check" ? { ok: report.ok, diagnostics: report.diagnostics } : report, null, 2));
+      if (!report.ok) process.exitCode = 1;
+    }
+  } else { usage(); process.exitCode = 1; }
+}
+
 const command = process.argv[2];
 const input = process.argv[3];
 if (!command || !input) {
@@ -126,7 +158,14 @@ if (!command || !input) {
   process.exitCode = 1;
 } else {
   try {
-    if (command === "preview") await preview(input);
+    if (command === "browser" && input === "install") {
+      const { spawnSync } = await import("node:child_process");
+      const cli = resolve(dirname(fileURLToPath(import.meta.resolve("playwright/package.json"))), "cli.js");
+      const result = spawnSync(process.execPath, [cli, "install", "chromium"], { stdio: "inherit" });
+      if (result.error) throw result.error;
+      process.exitCode = result.status ?? 1;
+    } else if (/\.html?$/i.test(input)) await html(command, input);
+    else if (command === "preview") await preview(input);
     else if (command === "validate") await validate(input);
     else if (command === "render") await render(input);
     else if (command === "check") await check(input);
