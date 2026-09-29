@@ -24,7 +24,7 @@ try {
   click("Download");
   const json = JSON.parse(evaluate("window.downloadBlob.text()"));
   const document = JSON.parse(json);
-  const block = document.slides.at(-1).components[0];
+  const block = document.pages.at(-1).components[0];
   if (block.content !== "Manual text\nSecond line" || block.customVisual) throw Error("Manual text not native");
   block.content = "Agent revision of manual text";
   const file = join(mkdtempSync(join(tmpdir(), "native-text-")), "returned.json");

@@ -9,7 +9,7 @@ const schema: any = structuredClone(compositionVocabulary);
 schema.$id = "https://vcfgdev.github.io/konpeki/composition/v2/schema.json";
 schema.title = gridSchema;
 schema.properties.schema.const = gridSchema;
-const slide = schema.properties.slides.items;
+const slide = schema.properties.pages.items;
 delete slide.properties.canvas;
 delete slide.properties.innerPadding;
 slide.required = slide.required.map((key: string) => key === "canvas" ? "grid" : key);
@@ -34,7 +34,13 @@ const area = {
 };
 slide.properties.groups.items.properties.area = area;
 slide.properties.groups.items.properties.verticalAlignment = { enum: ["start", "center", "end"] };
-slide.properties.groups.items.dependentRequired = { area: ["verticalAlignment"], verticalAlignment: ["area"] };
+slide.properties.groups.items.properties.layout = { const: "stack" };
+slide.properties.groups.items.properties.gap = { type: "number", minimum: 0, maximum: 4096 };
+slide.properties.groups.items.allOf = [{
+  if: { required: ["layout"] },
+  then: { not: { required: ["verticalAlignment"] } },
+  else: { dependentRequired: { area: ["verticalAlignment"], verticalAlignment: ["area"] }, not: { required: ["gap"] } },
+}];
 for (const component of slide.properties.components.items.oneOf) {
   delete component.properties.preferredRect;
   component.required = component.required.map((key: string) => key === "preferredRect" ? "area" : key);
@@ -48,6 +54,15 @@ for (const component of slide.properties.components.items.oneOf) {
   component.properties.padding = { type: "integer", minimum: 0, maximum: 24 };
   const style = component.properties.textStyle;
   if (style) {
+    component.required = component.required.filter((key: string) => key !== "area");
+    component.properties.flow = {
+      type: "object", additionalProperties: false,
+      properties: {
+        gapBefore: { type: "number", minimum: 0, maximum: 4096 },
+        offset: { type: "object", additionalProperties: false, required: ["x", "y"],
+          properties: { x: { type: "number", minimum: -4096, maximum: 4096 }, y: { type: "number", minimum: -4096, maximum: 4096 } } },
+      },
+    };
     component.properties.appearance.properties.verticalAlignment = { enum: ["start", "center", "end"] };
     delete style.properties.size;
     delete style.properties.lineHeight;
@@ -94,4 +109,38 @@ for (const component of slide.properties.components.items.oneOf) {
     },
   ];
 }
+// Older grid pages remain an import format. New pages author pixel geometry.
+const legacySlide = structuredClone(slide);
+const vocabularySlide: any = (compositionVocabulary.properties.pages as any).items;
+delete slide.properties.grid;
+slide.required = slide.required.filter((key: string) => key !== "grid");
+slide.properties.canvas = structuredClone(vocabularySlide.properties.canvas);
+for (const axis of ["width", "height"]) slide.properties.canvas.properties[axis].type = "number";
+slide.properties.preset = { enum: Object.keys(gridPresets) };
+slide.properties.innerPadding = structuredClone(vocabularySlide.properties.innerPadding);
+slide.anyOf = [{ required: ["canvas"] }, { required: ["preset"] }];
+const rect = structuredClone(vocabularySlide.properties.components.items.oneOf[0].properties.preferredRect);
+const group = slide.properties.groups.items;
+delete group.properties.area;
+group.properties.rect = rect;
+group.allOf = [{
+  if: { required: ["layout"] },
+  then: { not: { required: ["verticalAlignment"] } },
+  else: { dependentRequired: { rect: ["verticalAlignment"], verticalAlignment: ["rect"] }, not: { required: ["gap"] } },
+}];
+for (const component of slide.properties.components.items.oneOf) {
+  delete component.properties.area;
+  component.required = component.required.map((key: string) => key === "area" ? "rect" : key);
+  component.properties.rect = structuredClone(rect);
+  component.properties.padding = { type: "number", minimum: 0, maximum: 4096 };
+  if (component.properties.textStyle) {
+    component.properties.rect.required = ["x", "y", "width"];
+    component.properties.textStyle.properties.size = { type: "number", minimum: 1, maximum: 4096 };
+    component.properties.textStyle.properties.leading = { type: "number", exclusiveMinimum: 0, maximum: 4096 };
+  }
+  component.properties.customVisual.properties.elements.items.properties.attributes.properties["font-size"] = {
+    anyOf: [{ enum: typeSteps.map(t => `scale:${t}`) }, { type: "number", minimum: 1, maximum: 4096 }],
+  };
+}
+schema.properties.pages.items = { oneOf: [slide, legacySlide] };
 export { schema as schemaV2 };

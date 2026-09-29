@@ -6,7 +6,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { addComponent, initialDraft, initialGridDraft, parseCompositionJSON } from "../composition/document.ts";
-import { refineGrid, toComposition } from "../composition/grid.ts";
+import { pixelPage, toComposition } from "../composition/grid.ts";
 import { assertComposition } from "../composition/validate.ts";
 import { loadNodeFontContext } from "../composition/fonts.ts";
 import { lowerPage } from "../composition/lower.ts";
@@ -24,8 +24,8 @@ const stored = () => {
 };
 const capture = name => { settle(); b("screenshot", resolve(output, `${name}.png`)); };
 
-function importDocument(document) {
-  assertComposition(document);
+function importDocument(document, validate = true) {
+  if (validate) assertComposition(document);
   const path = join(scratch, "scene.json");
   writeFileSync(path, JSON.stringify(document));
   b("upload", "input[type=file]", path);
@@ -50,12 +50,25 @@ function drag(selector, dx, dy, during = () => {}) {
 try {
   b("open", base); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
   // A fresh v2 draft is intentionally blank; import content before querying it.
-  const document = toComposition(addComponent(addComponent(initialGridDraft(), "text-block"), "image"));
-  delete document.slides[0].grid.revision; // Exercise old documents before upgrading.
-  document.title = "Lowered scene editing regression";
-  const [text, vector] = document.slides[0].components;
-  text.area = { column: 2, span: 4, row: 8, rows: 10 }; text.content = "Editable baseline text"; text.padding = 1;
-  vector.area = { column: 7, span: 4, row: 8, rows: 18 }; vector.padding = 1;
+  const legacyDocument = toComposition(addComponent(addComponent(initialGridDraft(), "text-block"), "image"));
+  const legacyPage = legacyDocument.pages[0];
+  legacyPage.grid = { preset: "presentation" }; delete legacyPage.preset; delete legacyPage.canvas; delete legacyPage.innerPadding;
+  legacyDocument.title = "Legacy grid import regression";
+  const [legacyText, legacyVector] = legacyDocument.pages[0].components;
+  delete legacyText.rect; delete legacyVector.rect;
+  legacyText.area = { column: 7, span: 4, row: 8, rows: 18 }; legacyText.content = "Editable baseline text"; legacyText.padding = 1;
+  legacyText.textStyle = { step: "body" };
+  legacyVector.area = { ...legacyText.area }; legacyVector.padding = 1;
+  const expectedPixels = { ...legacyDocument, pages: legacyDocument.pages.map(pixelPage) };
+  const { pages, ...legacyEnvelope } = legacyDocument;
+  importDocument({ ...legacyEnvelope, slides: pages.map(page => ({ ...page,
+    components: page.components.map(component => ({ ...component, intent: "Old instruction must disappear" })) })) });
+  assert.deepEqual(stored(), expectedPixels, "legacy slides/grid import saves pages/pixels without intent");
+  capture("legacy-import");
+  const document = stored(); document.title = "Lowered scene editing regression";
+  const [text, vector] = document.pages[0].components;
+  text.rect.x += .25; // Existing fractional source geometry must survive corrections.
+  text.content = "Editable baseline text"; text.padding = 1;
   vector.customVisual = { format: "vector", description: "Line and editable label", viewBox: { x: 0, y: 0, width: 400, height: 200 }, elements: [
     { id: "panel", kind: "rect", attributes: { x: 0, y: 0, width: 400, height: 200, fill: "theme:wash" } },
     { id: "route", kind: "line", attributes: { x1: 35, y1: 45, x2: 350, y2: 145, stroke: "theme:accent", "stroke-width": 6 } },
@@ -63,8 +76,7 @@ try {
   ] };
   // Components are deliberately not in paint order. The overlapping text must
   // be the frontmost hit target because paintOrder, not array order, owns stack.
-  text.area = { ...vector.area };
-  document.slides[0].paintOrder = [vector.id, text.id];
+  document.pages[0].paintOrder = [vector.id, text.id];
   importDocument(document);
 
   assert.deepEqual(evaluate("[...document.querySelectorAll('.component-hit')].map(node=>node.dataset.component)"), [vector.id, text.id]);
@@ -74,19 +86,21 @@ try {
 
   const hit = `.component-hit[data-component='${text.id}']`;
   b("focus", hit); b("press", "ArrowDown");
-  assert.equal(stored().slides[0].components.find(item=>item.id===text.id).area.row, 9, "arrow key nudges one baseline");
-  b("press", "Control+z"); assert.equal(stored().slides[0].components.find(item=>item.id===text.id).area.row, 8);
-  b("press", "Control+Shift+z"); assert.equal(stored().slides[0].components.find(item=>item.id===text.id).area.row, 9);
+  assert.equal(stored().pages[0].components.find(item=>item.id===text.id).rect.y, text.rect.y + 1, "arrow key nudges exactly one page pixel");
+  assert.equal(stored().pages[0].components.find(item=>item.id===text.id).rect.x, text.rect.x, "nudge retains fractional source geometry");
+  b("press", "Control+z"); assert.deepEqual(stored().pages[0].components.find(item=>item.id===text.id).rect, text.rect);
+  b("press", "Control+Shift+z"); assert.equal(stored().pages[0].components.find(item=>item.id===text.id).rect.y, text.rect.y + 1);
   drag(hit, 170, 24);
-  assert.ok(Math.abs(stored().slides[0].components.find(item=>item.id===text.id).area.column - 8.12) < 1e-10, "168px drag persists without rounding back to a whole column");
+  assert.deepEqual(stored().pages[0].components.find(item=>item.id===text.id).rect,
+    { ...text.rect, x: text.rect.x + 170, y: text.rect.y + 25 }, "free drag persists exact independent pixel deltas");
   b("dblclick", hit); b("wait", ".scene-text-editor");
   b("dblclick", ".scene-text-editor");
   assert.equal(evaluate("document.querySelector('.revision-notes')===null"), true, "selecting words does not open comments");
   b("fill", ".scene-text-editor", "Committed temporary editor text");
   capture("inline-text-correction"); b("press", "Tab");
-  assert.equal(stored().slides[0].components.find(item=>item.id===text.id).content, "Committed temporary editor text");
+  assert.equal(stored().pages[0].components.find(item=>item.id===text.id).content, "Committed temporary editor text");
   b("dblclick", hit); b("fill", ".scene-text-editor", "Discard this text"); b("press", "Escape");
-  assert.equal(stored().slides[0].components.find(item=>item.id===text.id).content, "Committed temporary editor text", "Escape cancels the text draft");
+  assert.equal(stored().pages[0].components.find(item=>item.id===text.id).content, "Committed temporary editor text", "Escape cancels the text draft");
 
   // Vector artwork requests open page comments, not a second design editor.
   b("eval", "document.querySelector('[data-vector-element=label] path').dispatchEvent(new MouseEvent('dblclick',{bubbles:true}))");
@@ -108,10 +122,10 @@ try {
 
   // All pages coexist, with repeated component IDs but different clip geometry.
   const deck = structuredClone(document);
-  const second = structuredClone(deck.slides[0]);
+  const second = structuredClone(deck.pages[0]);
   second.id = "different-clips"; second.name = "Different clips";
-  second.components[0].area = { column: 1, span: 3, row: 40, rows: 12 };
-  deck.slides.push(second);
+  second.components[0].rect = { ...second.components[0].rect, x: 72, y: 540, width: 426, height: 144 };
+  deck.pages.push(second);
   importDocument(deck);
   b("wait", "--fn", "document.querySelectorAll('.scene-artwork svg').length===2");
   assert.equal(evaluate(`(() => {
@@ -123,20 +137,20 @@ try {
       svg.contains(document.getElementById(node.getAttribute('clip-path').slice(5, -1)))))`), true, "clips resolve inside their own page");
   const secondHit = `[data-page="different-clips"] ${hit}`;
   b("click", secondHit); b("press", "ArrowDown");
-  assert.equal(stored().slides[1].components[0].area.row, 41);
-  assert.deepEqual(stored().slides[0], deck.slides[0], "same ID on another page is untouched");
+  assert.equal(stored().pages[1].components[0].rect.y, 541);
+  assert.deepEqual(stored().pages[0], deck.pages[0], "same ID on another page is untouched");
   b("press", "Delete");
-  assert.equal(stored().slides[1].components.length, 1);
-  assert.equal(stored().slides[0].components.length, 2);
+  assert.equal(stored().pages[1].components.length, 1);
+  assert.equal(stored().pages[0].components.length, 2);
   b("press", "Control+z"); b("press", "Control+z");
-  assert.deepEqual(stored().slides, deck.slides, "undo restores the correct page");
+  assert.deepEqual(stored().pages, deck.pages, "undo restores the correct page");
   capture("all-pages-corrections");
 
   // Print pages retain their dimensions on a scrollable canvas.
   const print = toComposition(addComponent(initialGridDraft(), "text-block"));
   print.title = "A4 viewport regression";
-  print.slides[0].grid = { preset: "a4", revision: 2 };
-  print.slides[0].components[0].area = { column: 1, span: 12, row: 1, rows: 12 };
+  print.pages[0] = pixelPage({ ...print.pages[0], grid: { preset: "a4", revision: 2 },
+    components: print.pages[0].components.map(component => ({ ...component, area: { column: 1, span: 12, row: 1, rows: 12 } })) });
   importDocument(print);
   const fit = selector => {
     const rect = evaluate(`document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().toJSON()`);
@@ -147,7 +161,7 @@ try {
   fit(".scene-canvas");
   capture("a4-editor");
   const mixed = structuredClone(deck);
-  mixed.slides.push({ ...structuredClone(print.slides[0]), id: "portrait" });
+  mixed.pages.push({ ...structuredClone(print.pages[0]), id: "portrait" });
   importDocument(mixed);
   const sizes = evaluate("[...document.querySelectorAll('.scene-canvas')].map(p=>{const r=p.getBoundingClientRect();return r.width/r.height})");
   assert.ok(Math.abs(sizes[0] - 16/9) < .001 && Math.abs(sizes[2] - 210/297) < .001);
@@ -163,70 +177,63 @@ try {
   })()`);
   assert.deepEqual(printSize, [1588, 2246], "browser and CLI share the rounded A4 raster size");
 
-  importDocument(document);
+  importDocument(expectedPixels);
   const geometry = () => evaluate("[...document.querySelectorAll('.component-hit')].map(node=>[node.dataset.component,node.style.left,node.style.top,node.style.width,node.style.height])");
   const beforeUpgrade = geometry();
-  const refined = { ...document, slides: document.slides.map(refineGrid) };
-  importDocument(refined);
-  assert.equal(stored().slides[0].grid.revision, 2);
-  assert.equal(stored().slides[0].components[0].area.column, 13);
-  assert.equal(stored().slides[0].components[0].area.span, 8);
-  assert.deepEqual(geometry(), beforeUpgrade, "importing a refined document preserves pixel hit boxes");
+  assert.equal(stored().pages[0].grid, undefined);
+  assert.deepEqual(stored().pages[0].components[0].rect, expectedPixels.pages[0].components[0].rect);
+  assert.deepEqual(geometry(), beforeUpgrade, "importing a legacy grid document preserves pixel hit boxes");
   assert.equal(evaluate("[...document.querySelectorAll('button')].some(node=>node.textContent==='Use finer grid')"), false);
   b("press", "Control+z");
-  assert.equal(stored().slides[0].grid.revision, undefined, "undo restores the original grid");
-  assert.deepEqual(geometry(), beforeUpgrade);
+  assert.equal(stored().title, "Lowered scene editing regression", "pixel migration import remains one undoable source replacement");
   b("press", "Control+Shift+z");
-  assert.equal(stored().slides[0].grid.revision, 2);
+  assert.equal(stored().pages[0].grid, undefined);
   assert.deepEqual(geometry(), beforeUpgrade);
-  capture("fine-grid-corrections");
+  capture("legacy-grid-import");
   b("focus", hit); b("press", "ArrowRight");
-  assert.equal(stored().slides[0].components[0].area.column, 13.16);
+  assert.equal(stored().pages[0].components[0].rect.x, expectedPixels.pages[0].components[0].rect.x + 1);
   const newLeft = Number.parseFloat(geometry().find(item=>item[0]===text.id)[1]);
   const oldLeft = Number.parseFloat(beforeUpgrade.find(item=>item[0]===text.id)[1]);
-  assert.ok(Math.abs((newLeft-oldLeft)*1920/100-12)<.001, "horizontal nudge matches the 12px vertical baseline");
+  assert.ok(Math.abs((newLeft-oldLeft)*1920/100-1)<.001, "horizontal nudge is exactly one page pixel");
   b("press", "Control+z");
-  assert.equal(stored().slides[0].components[0].area.column, 13, "wait for the undone placement to persist");
+  assert.deepEqual(stored().pages[0].components[0].rect, expectedPixels.pages[0].components[0].rect, "undo restores imported placement");
 
   const beforeSquare = stored();
-  drag(hit, 13, 13);
-  assert.deepEqual(stored().slides[0].components[0].area, { column: 13.16, span: 8, row: 9, rows: 18 }, "equal diagonal input moves 12px on each axis");
-  capture("square-step-drag");
-  b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
-  drag(".resize-se", 13, 13);
-  assert.deepEqual(stored().slides[0].components[0].area, { column: 13, span: 8.16, row: 8, rows: 19 }, "pointer resize uses square steps too");
-  b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
+  b("focus", hit); b("press", "Enter");
   b("focus", ".resize-se"); b("press", "ArrowRight"); b("press", "ArrowDown");
-  assert.deepEqual(stored().slides[0].components[0].area, { column: 13, span: 8.16, row: 8, rows: 19 }, "keyboard resize matches pointer steps");
+  assert.deepEqual(stored().pages[0].components[0].rect, { ...expectedPixels.pages[0].components[0].rect, width: expectedPixels.pages[0].components[0].rect.width + 1, height: expectedPixels.pages[0].components[0].rect.height + 1 }, "keyboard resize uses one-pixel steps");
   b("press", "Control+z"); b("press", "Control+z"); assert.deepEqual(stored(), beforeSquare);
   b("reload"); b("wait", ".scene-artwork svg:not([aria-busy])"); settle();
-  assert.equal(stored().slides[0].grid.revision, 2, "reload retains grid revision");
+  assert.equal(stored().pages[0].grid, undefined, "reload retains pixel state");
   assert.deepEqual(geometry(), beforeUpgrade);
 
-  const centered = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const centered = structuredClone(expectedPixels);
   centered.title = "Centered placement editing regression";
-  const block = centered.slides[0].components[0];
-  block.area = { column: "center", span: 8, row: "center", rows: 10 };
+  const block = centered.pages[0].components[0];
+  centered.pages[0].components = [block]; centered.pages[0].paintOrder = [block.id];
+  centered.pages[0].readingOrder = [{ kind: "component", id: block.id }];
+  centered.pages[0].contentSlots = centered.pages[0].contentSlots.filter(slot => block.slotIds.includes(slot.id));
+  block.rect = { x: 672, y: 480, width: 576, height: 120 };
   block.content = "Konpeki"; block.textStyle = { step: "title" };
-  block.appearance.alignment = "center"; block.appearance.verticalAlignment = "center";
+  block.appearance.alignment = "center";
   importDocument(centered);
   const centeredHit = `.component-hit[data-component='${block.id}']`;
   b("click", centeredHit);
   b("wait", "--fn", "getComputedStyle(document.querySelector('.component-hit.selected')).backgroundColor === 'rgba(0, 0, 0, 0)'");
   assert.equal(evaluate("document.querySelector('select, input[name=span]') === null"), true, "placement controls are not design forms");
-  assert.deepEqual(stored().slides[0].components[0].area, block.area);
+  assert.deepEqual(stored().pages[0].components[0].rect, block.rect);
   b("focus", centeredHit); b("press", "ArrowDown");
-  assert.deepEqual(stored().slides[0].components[0].area, { column: "center", span: 8, row: 36, rows: 10 });
+  assert.deepEqual(stored().pages[0].components[0].rect, { ...block.rect, y: block.rect.y + 1 });
   capture("centered-text-correction");
 
   const cover = JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8"));
   importDocument(cover);
-  assert.equal(stored().slides[0].grid.revision, 2);
+  assert.equal(stored().pages[0].preset, "link");
   capture("fine-grid-cover");
   const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
   const assertGroupHits = current => {
     settle();
-    const expected = lowerPage(current, current.slides[0], fonts);
+    const expected = lowerPage(current, current.pages[0], fonts);
     for (const component of expected.components) {
       const top = evaluate(`parseFloat(document.querySelector('.component-hit[data-component="${component.id}"]').style.top) * ${expected.height} / 100`);
       assert.ok(Math.abs(top - component.box.y) < .001, `${component.id}: hit target follows scene, including group offset`);
@@ -265,24 +272,24 @@ try {
       capture("group-offset-held");
     }
   });
-  assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 53);
+  assert.equal(stored().pages[0].components.find(item => item.id === "audience").rect.y, 467);
   assertMovement({ audience: 24, "brand-mark": -24, brand: -24, promise: -24 }, "group settles once on drop");
   assert.equal(evaluate("document.querySelector('.group-area-outline') === null"), true);
   assertGroupHits(stored()); capture("group-offset-settled");
   b("press", "Control+z"); settle(); assertMovement({}, "one undo restores the whole gesture");
 
   b("focus", audienceHit);
-  for (const distance of [8, 16]) {
+  for (const distance of [1, 2]) {
     b("keydown", "ArrowDown"); settle();
     assertMovement({ audience: distance }, "held key repeats use the original group offset");
   }
   b("keyup", "ArrowDown"); settle();
-  assertMovement({ audience: 8, "brand-mark": -8, brand: -8, promise: -8 }, "key release settles the group");
-  assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 49);
+  assertMovement({ audience: 1, "brand-mark": -1, brand: -1, promise: -1 }, "key release settles the one-pixel correction");
+  assert.equal(stored().pages[0].components.find(item => item.id === "audience").rect.y, 421, "two held repeats retain both one-pixel source edits");
   b("press", "Control+z"); settle(); assertMovement({}, "held keys form one undo step");
-  b("keydown", "ArrowUp"); settle(); assertMovement({ audience: -8 }, "upward nudge stays held");
+  b("keydown", "ArrowUp"); settle(); assertMovement({ audience: -1 }, "upward nudge stays held");
   b("focus", ".review-launcher"); b("keyup", "ArrowUp"); settle();
-  assertMovement({ audience: -4, "brand-mark": 4, brand: 4, promise: 4 }, "blur releases held keys");
+  assertMovement({ audience: -.5, "brand-mark": .5, brand: .5, promise: .5 }, "blur recenters the group after a one-pixel edge move");
   b("focus", audienceHit); b("press", "Control+z"); settle(); assertMovement({}, "blur preserves undo");
 
   for (const cancel of ["pointercancel", "lostpointercapture"]) {
@@ -300,13 +307,13 @@ try {
       assertMovement({ audience: 12, "brand-mark": -12, brand: -12, promise: -12 }, `${cancel} releases the offset and stops further moves`);
       assert.equal(evaluate("document.querySelector('.group-area-outline') === null"), true);
     });
-    assert.equal(stored().slides[0].components.find(item => item.id === "audience").area.row, 50);
+    assert.equal(stored().pages[0].components.find(item => item.id === "audience").rect.y, 443);
     b("press", "Control+z"); settle(); assertMovement({}, `${cancel} preserves undo`);
   }
 
   b("click", ".component-hit[data-component=brand-mark]");
   drag(".resize-se", 0, 16, () => assertMovement({}, "resize keeps all origins fixed until drop"));
-  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").area.rows, 10);
+  assert.equal(stored().pages[0].components.find(item => item.id === "brand-mark").rect.height, 80);
   assertGroupHits(stored());
   b("press", "Control+z"); settle(); assertMovement({}, "resize undo restores the stack");
   b("focus", ".resize-se"); b("keydown", "ArrowDown"); settle();
@@ -316,22 +323,22 @@ try {
 
   const brandHit = ".component-hit[data-component=brand]";
   b("focus", brandHit); b("press", "ArrowDown");
-  assert.equal(stored().slides[0].components.find(item => item.id === "brand").area.row, 24, "group nudge changes authored row by exactly one");
+  assert.equal(stored().pages[0].components.find(item => item.id === "brand").rect.y, 228, "group nudge changes authored y by exactly one pixel");
   drag(brandHit, 0, 16);
   const movedCover = stored();
-  assert.equal(movedCover.slides[0].components.find(item => item.id === "brand").area.row, 26, "multi-move drag does not accumulate the group offset");
+  assert.equal(movedCover.pages[0].components.find(item => item.id === "brand").rect.y, 244, "multi-move drag does not accumulate the group offset");
   assertGroupHits(movedCover);
   b("press", "Control+z"); b("press", "Control+z");
   assertGroupHits(stored());
   b("click", brandHit);
   capture("centered-cover-editor");
 
-  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "start");
+  assert.equal(stored().pages[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "start");
   for (const [alignment, x] of [["center", 286], ["end", 524], ["start", 48]]) {
     const aligned = stored();
-    aligned.slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment = alignment;
+    aligned.pages[0].components.find(item => item.id === "brand-mark").customVisual.alignment = alignment;
     importDocument(aligned);
-    assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, alignment);
+    assert.equal(stored().pages[0].components.find(item => item.id === "brand-mark").customVisual.alignment, alignment);
     settle();
     assert.equal(evaluate("document.querySelector('[data-vector-element=mark-silhouette] path').transform.baseVal.consolidate().matrix.e"), x,
       "artwork uses the selected fit alignment, not a new authored area");
@@ -339,25 +346,174 @@ try {
     if (alignment === "end") capture("right-aligned-artwork");
   }
   b("focus", ".component-hit[data-component=brand-mark]"); b("press", "Control+z");
-  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "end");
+  assert.equal(stored().pages[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "end");
   b("press", "Control+Shift+z");
-  assert.equal(stored().slides[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "start");
+  assert.equal(stored().pages[0].components.find(item => item.id === "brand-mark").customVisual.alignment, "start");
   capture("left-aligned-artwork");
 
   const replacement = stored();
   replacement.title = "Source replaced during drag";
-  const replacementBrand = replacement.slides[0].components.find(item => item.id === "brand");
+  const replacementBrand = replacement.pages[0].components.find(item => item.id === "brand");
   replacementBrand.content = "Newer source";
-  replacementBrand.area.row += 1;
+  replacementBrand.rect.y += 1;
   drag(brandHit, 0, 48, fraction => { if (fraction === .5) importDocument(replacement); });
   assert.deepEqual(stored(), replacement, "a stale drag cannot overwrite imported geometry or text");
   assert.equal(evaluate("[...document.querySelectorAll('.component-hit')].every(hit=>!hit.style.translate)"), true);
   assertGroupHits(replacement);
 
-  const legacy = initialDraft(true);
+  const prose = toComposition(addComponent(initialGridDraft(), "text-block"));
+  prose.title = "Content-sized text editing";
+  const prosePage = prose.pages[0], paragraph = prosePage.components[0];
+  prosePage.preset = "a4"; prosePage.canvas = { width: 210 / 25.4 * 96, height: 297 / 25.4 * 96 }; prosePage.contentSlots = [];
+  delete paragraph.rect; paragraph.slotIds = []; paragraph.content = "First\nSecond\nThird";
+  paragraph.appearance = { role: "body" }; paragraph.textStyle = { step: "body" };
+  prosePage.components = [paragraph, { ...structuredClone(paragraph), id: "following", content: "Following paragraph" }];
+  prosePage.groups = [{ id: "prose", layout: "stack", rect: { x: 186.67, y: 72, width: 550, height: 920 }, childIds: [paragraph.id, "following"] }];
+  prosePage.paintOrder = ["following", paragraph.id];
+  prosePage.readingOrder = [{ kind: "group", id: "prose" }];
+  importDocument(prose);
+  const flowHit = `.component-hit[data-component="${paragraph.id}"]`;
+  const flowBox = id => evaluate(`(() => {
+    const hit=document.querySelector('.component-hit[data-component="'+${JSON.stringify(id)}+'"]');
+    const view=document.querySelector('.scene-artwork svg').viewBox.baseVal;
+    return {x:parseFloat(hit.style.left)*view.width/100,y:parseFloat(hit.style.top)*view.height/100,
+      width:parseFloat(hit.style.width)*view.width/100,height:parseFloat(hit.style.height)*view.height/100};
+  })()`);
+  const closeTo = (actual, expected) => assert.ok(Math.abs(actual - expected) < .01, `${actual} ≠ ${expected}`);
+  const firstBox = flowBox(paragraph.id), followingBox = flowBox("following");
+  closeTo(firstBox.height, 60); closeTo(followingBox.y - firstBox.y, 70);
+  b("focus", flowHit); b("press", "ArrowDown"); settle();
+  assert.deepEqual(stored().pages[0].components.find(c => c.id === paragraph.id).flow.offset, { x: 0, y: 1 });
+  closeTo(flowBox(paragraph.id).y, firstBox.y + 1);
+  closeTo(flowBox("following").y, followingBox.y);
+  assert.equal(evaluate("document.querySelectorAll('.resize-handle').length"), 0, "flow text has no fixed-height handles");
+  b("dblclick", flowHit); b("fill", ".scene-text-editor", "First\nSecond\nThird\nFourth");
+  b("click", ".stage-meta h2"); settle();
+  assert.equal(stored().pages[0].components.find(c => c.id === paragraph.id).content, "First\nSecond\nThird\nFourth");
+  closeTo(flowBox(paragraph.id).height, 80); closeTo(flowBox("following").y, followingBox.y + 20);
+  b("click", flowHit); b("press", "Delete"); settle();
+  assert.equal(stored().pages[0].components.length, 1);
+  closeTo(flowBox("following").y, firstBox.y);
+  b("press", "Control+z"); settle();
+  assert.equal(stored().pages[0].components.length, 2);
+  closeTo(flowBox(paragraph.id).height, 80); closeTo(flowBox(paragraph.id).y, firstBox.y + 1);
+  drag(flowHit, 8, 12);
+  const movedFlow = stored().pages[0].components.find(c => c.id === paragraph.id);
+  assert.deepEqual(movedFlow.flow.offset, { x: 8, y: 13 });
+  assert.equal(movedFlow.area, undefined);
+  closeTo(flowBox(paragraph.id).x, firstBox.x + 8); closeTo(flowBox(paragraph.id).y, firstBox.y + 13);
+  b("press", "Control+z"); stored(); settle();
+  closeTo(flowBox(paragraph.id).x, firstBox.x);
+  b("click", ".review-launcher"); b("click", ".component-hit[data-component=following]"); b("fill", "#revision-note", "Review this flowing paragraph");
+  b("click", "button[aria-label='Add comment']"); b("click", ".review-launcher");
+  b("wait", ".revision-pin");
+  assert.equal(evaluate("document.querySelector('.revision-pin').dataset.component"), "following");
+  const pinnedTop = evaluate("document.querySelector('.revision-pin').getBoundingClientRect().top");
+  const flowScale = evaluate("document.querySelector('.scene-canvas').getBoundingClientRect().width/document.querySelector('.scene-artwork svg').viewBox.baseVal.width");
+  b("dblclick", flowHit); b("fill", ".scene-text-editor", "First\nSecond\nThird\nFourth\nFifth");
+  b("click", ".stage-meta h2"); stored(); settle();
+  closeTo(flowBox("following").y, followingBox.y + 40);
+  assert.ok(Math.abs(evaluate("document.querySelector('.revision-pin').getBoundingClientRect().top") - pinnedTop - 20 * flowScale) < .1);
+  capture("flow-text-corrected");
+
+  const free = assertComposition({ schema: "konpeki-composition/v2", title: "Free placement, measured text",
+    pages: [{ id: "free", name: "Alignment without a grid", canvas: { width: 1200, height: 800 },
+      audience: "Readers", question: "How should text fit?", intendedViewingSize: "custom", components: [
+        { id: "auto", kind: "text-block", content: "A measured title\nwith breathing room.",
+          rect: { x: 80, y: 160, width: 440 }, padding: 12, textStyle: { size: 28, leading: 36 }, appearance: { role: "body" } },
+        { id: "fixed", kind: "text-block", content: "A fixed-height box\nwith no added padding.",
+          rect: { x: 80, y: 430, width: 260, height: 96 }, textStyle: { size: 24, leading: 32 }, appearance: { role: "body" } },
+      ] }],
+  });
+  importDocument(free);
+  const autoHit = '.component-hit[data-component="auto"]';
+  closeTo(flowBox("auto").height, 96); // two 36px lines, 12px padding on each side
+  b("click", autoHit); b("press", "ArrowRight"); b("press", "ArrowDown");
+  assert.deepEqual(stored().pages[0].components[0].rect, { x: 81, y: 161, width: 440 });
+  b("press", "Control+z"); b("press", "Control+z");
+  let movedBy;
+  drag(autoHit, 300, 270, (fraction, delta) => {
+    if (fraction !== 1) return;
+    movedBy = delta;
+    const guides = evaluate("[...document.querySelectorAll('.guide')].map(g=>({axis:g.classList.contains('guide-x')?'x':'y',value:parseFloat(g.style.left||g.style.top)}))");
+    assert.deepEqual(guides, [{ axis: "x", value: 50 }, { axis: "y", value: 53.75 }]);
+    assert.deepEqual(stored().pages[0].components[0].rect, free.pages[0].components[0].rect, "guides never commit source during preview");
+    capture("pixel-alignment-guides");
+  });
+  assert.deepEqual(stored().pages[0].components[0].rect,
+    { x: 80 + Math.round(movedBy.x), y: 160 + Math.round(movedBy.y), width: 440 });
+  assert.equal(evaluate("document.querySelectorAll('.guide').length"), 0, "reference lines disappear on release");
+  b("press", "Control+z");
+  // agent-browser mouse commands omit held modifiers; decorate the real down.
+  b("eval", "document.addEventListener('pointerdown',event=>Object.defineProperty(event,'altKey',{value:true}),{capture:true,once:true})");
+  drag(autoHit, 100, 20);
+  const duplicated = stored().pages[0].components.find(c => c.id === "auto-copy");
+  assert.ok(duplicated, "Alt-drag creates a copy");
+  assert.equal(duplicated.rect.height, undefined, "Alt-drag retains measured text height");
+  b("press", "Control+z");
+  assert.equal(stored().pages[0].components.length, 2);
+  b("dblclick", autoHit); b("fill", ".scene-text-editor", "A measured title\nwith breathing room.\nA third line.");
+  b("click", ".stage-meta h2"); stored(); settle();
+  closeTo(flowBox("auto").height, 132);
+  assert.equal(stored().pages[0].components[0].rect.height, undefined);
+  b("click", autoHit);
+  drag(".resize-se", -250, 0, () => {
+    assert.equal(stored().pages[0].components[0].rect.height, undefined, "repeated horizontal resize events must not fix measured height");
+  });
+  assert.ok(flowBox("auto").height > 132, "a narrower box rewraps and grows");
+  b("focus", ".resize-se");
+  const measuredHeight = flowBox("auto").height;
+  b("press", "ArrowDown");
+  closeTo(stored().pages[0].components[0].rect.height, measuredHeight + 1);
+  b("press", "Control+z");
+  assert.equal(stored().pages[0].components[0].rect.height, undefined, "undo restores automatic height");
+  capture("pixel-measured-text");
+
+  for (const [preset, margin, width] of [[undefined, 72, 1200], ["presentation", 72, 1920], ["a4", 56, 210 / 25.4 * 96]]) {
+    const margins = structuredClone(free);
+    margins.title = `Implicit ${preset ?? "canvas-only"} margins`;
+    if (preset) { margins.pages[0].preset = preset; delete margins.pages[0].canvas; }
+    importDocument(margins);
+    drag(autoHit, margin - 80, 0, fraction => {
+      if (fraction !== 1) return;
+      const value = evaluate("parseFloat(document.querySelector('.guide-x')?.style.left)");
+      closeTo(value * width / 100, margin);
+      if (preset === "a4") capture("a4-margin-guide");
+    });
+    assert.equal(stored().pages[0].innerPadding, undefined, "guide defaults do not become authored margins");
+  }
+
+  const alignedText = structuredClone(free);
+  alignedText.title = "Identical centering, automatic and fixed height";
+  const [automatic, fixed] = alignedText.pages[0].components;
+  automatic.appearance.verticalAlignment = "center";
+  fixed.content = automatic.content; fixed.appearance = structuredClone(automatic.appearance);
+  fixed.padding = automatic.padding; fixed.textStyle = structuredClone(automatic.textStyle);
+  fixed.rect = { x: 660, y: 160, width: 440, height: 96 };
+  importDocument(alignedText);
+  const inkTop = id => evaluate(`document.querySelector('.scene-artwork [data-component="'+${JSON.stringify(id)}+'"]').getBoundingClientRect().top`);
+  closeTo(inkTop("auto"), inkTop("fixed"));
+  b("click", autoHit); capture("centered-auto-and-fixed-text");
+
+  const thin = structuredClone(free);
+  thin.title = "Subpixel correction geometry";
+  thin.pages[0].components = [{ id: "hairline", kind: "image", appearance: {}, slotIds: [],
+    rect: { x: 100.25, y: 170.5, width: .5, height: 40 }, customVisual: { format: "vector", description: "Thin rule",
+      viewBox: { x: 0, y: 0, width: .5, height: 40 }, elements: [{ id: "rule", kind: "rect", attributes: { x: 0, y: 0, width: .5, height: 40, fill: "theme:ink" } }] } }];
+  thin.pages[0].paintOrder = ["hairline"]; thin.pages[0].readingOrder = [{ kind: "component", id: "hairline" }];
+  importDocument(thin);
+  const thinHit = '.component-hit[data-component="hairline"]';
+  b("focus", thinHit); b("press", "Space"); b("press", "ArrowRight");
+  assert.deepEqual(stored().pages[0].components[0].rect, { x: 101.25, y: 170.5, width: .5, height: 40 });
+  b("focus", ".resize-se"); b("press", "ArrowDown");
+  assert.deepEqual(stored().pages[0].components[0].rect, { x: 101.25, y: 170.5, width: .5, height: 41 });
+  b("press", "Control+z"); b("press", "Control+z");
+  assert.deepEqual(stored().pages[0].components[0].rect, thin.pages[0].components[0].rect);
+
+  const legacy = { ...initialDraft(true), schema: "konpeki-composition/v1" };
   assert.equal(parseCompositionJSON(JSON.stringify(legacy)).ok, false, "v1 documents are rejected rather than edited");
   assert.equal(parseCompositionJSON(JSON.stringify({ ...document, schema: "v2" })).ok, false, "schema aliases are rejected");
-  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, text corrections, vector-to-comment interaction, authored theme rendering, exact 2x PNG, centered placement, refined source import, held group offsets through drag/resize/key repeats, release/cancel/blur, authored artwork alignment/undo, and v2-only validation");
+  console.log("PASS lowered scene metadata, paint-order hits, keyboard/drag/undo, text corrections, vector-to-comment interaction, authored theme rendering, exact 2x PNG, centered placement, refined source import, held group offsets through drag/resize/key repeats, release/cancel/blur, authored artwork alignment/undo, content-sized flow/reflow/delete/undo/offsets/comment pins, and v2-only validation");
 } finally {
   try { b("close"); } finally { rmSync(scratch, { recursive: true, force: true }); }
 }

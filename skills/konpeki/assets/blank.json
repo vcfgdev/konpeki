@@ -5,10 +5,12 @@
     "id": "plex",
     "mode": "paper"
   },
-  "slides": [
+  "pages": [
     {
       "id": "slide-1",
       "name": "Page 01",
+      "canvas": { "width": 1920, "height": 1080 },
+      "innerPadding": { "top": 72, "right": 112, "bottom": 0, "left": 112 },
       "pageNumber": {
         "style": "none",
         "color": "muted"
@@ -22,10 +24,7 @@
       "readingOrder": [],
       "paintOrder": [],
       "relationships": [],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      }
+      "preset": "presentation"
     }
   ]
 }

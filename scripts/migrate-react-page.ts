@@ -62,7 +62,7 @@ try {
     schema: compositionSchema,
     title: `${title} — migrated React deck`,
     theme: { id: "plex", mode: "paper" },
-    slides: indexes.map((pageIndex, outputIndex) => {
+    pages: indexes.map((pageIndex, outputIndex) => {
       const source = renderToStaticMarkup(createElement(pages[pageIndex]));
       const parsed = parseEditableSvg(source);
       const id = `migrated-page-${outputIndex + 1}`;
@@ -89,9 +89,8 @@ try {
           {
             id,
             kind: "diagram",
-            preferredRect: { x: 0, y: 0, width: 1920, height: 1080 },
+            rect: { x: 0, y: 0, width: 1920, height: 1080 },
             slotIds: [slotId],
-            intent: "A former React page converted to editable vector elements.",
             appearance: { type: "architecture", border: "none" },
             customVisual: {
               format: "vector",

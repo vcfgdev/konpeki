@@ -6,13 +6,20 @@
     "id": "plex",
     "mode": "paper"
   },
-  "slides": [
+  "pages": [
     {
       "id": "github-cover",
       "name": "GitHub repository cover",
-      "grid": {
-        "preset": "link",
-        "revision": 2
+      "preset": "link",
+      "canvas": {
+        "width": 1200,
+        "height": 630
+      },
+      "innerPadding": {
+        "top": 51,
+        "right": 48,
+        "bottom": 51,
+        "left": 48
       },
       "pageNumber": {
         "style": "none",
@@ -29,16 +36,16 @@
           "slotIds": [
             "brand-content"
           ],
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": 23,
-            "rows": 11
+          "rect": {
+            "x": 48,
+            "y": 227,
+            "width": 540,
+            "height": 88
           },
           "textStyle": {
             "step": "display",
             "weight": 600,
-            "leading": 10,
+            "leading": 80,
             "color": "ink",
             "font": "heading"
           },
@@ -55,11 +62,11 @@
           "slotIds": [
             "brand-mark-content"
           ],
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": 14,
-            "rows": 8
+          "rect": {
+            "x": 48,
+            "y": 155,
+            "width": 540,
+            "height": 64
           },
           "customVisual": {
             "format": "vector",
@@ -90,11 +97,11 @@
           "slotIds": [
             "promise-content"
           ],
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": 40,
-            "rows": 7
+          "rect": {
+            "x": 48,
+            "y": 363,
+            "width": 540,
+            "height": 56
           },
           "textStyle": {
             "step": "heading",
@@ -116,11 +123,11 @@
           "slotIds": [
             "audience-content"
           ],
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": 47,
-            "rows": 6
+          "rect": {
+            "x": 48,
+            "y": 419,
+            "width": 540,
+            "height": 48
           },
           "textStyle": {
             "step": "lead",
@@ -141,11 +148,11 @@
           "slotIds": [
             "visual-family-content"
           ],
-          "area": {
-            "column": 5,
-            "span": 4,
-            "row": "center",
-            "rows": 58
+          "rect": {
+            "x": 612,
+            "y": 83,
+            "width": 540,
+            "height": 464
           },
           "customVisual": {
             "format": "vector",
@@ -561,11 +568,11 @@
             "promise",
             "audience"
           ],
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": "center",
-            "rows": 66
+          "rect": {
+            "x": 48,
+            "y": 51,
+            "width": 540,
+            "height": 528
           },
           "verticalAlignment": "center"
         }

@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { fileSessionPlugin } from "./session-plugin.ts";
 import { renderDocument, renderFonts } from "./render.ts";
-import { refineGrid } from "../composition/grid.ts";
 import {
   readCompositionFile,
 } from "./session-store.ts";
@@ -20,7 +19,6 @@ function usage() {
   konpeki check <composition.json>
   konpeki inspect <composition.json> [--page N] [--details]
   konpeki render <composition.json> [--page N] [--format png|svg|pdf] [--scale 2] [--output file]
-  konpeki refine-grid <composition.json> [--output file.json]
 
 Pages are one-based. Inspect and PDF include all pages unless --page is supplied.
 Scale affects PNG only. Outputs must not already exist.`);
@@ -80,14 +78,6 @@ async function validate(input) {
   console.log(`${result.name}: valid (${result.revision})`);
 }
 
-async function refine(input) {
-  const { document } = await readCompositionFile(resolve(input));
-  const refined = { ...document, slides: document.slides.map(refineGrid) };
-  const output = resolve(option("--output", input.replace(/\.json$/i, "") + ".refined.json"));
-  await writeFile(output, JSON.stringify(refined, null, 2) + "\n", { flag: "wx" });
-  console.log(output);
-}
-
 async function render(input) {
   const { document } = await readCompositionFile(resolve(input));
   const format = option("--format", "png"), selected = option("--page");
@@ -102,7 +92,7 @@ async function check(input) {
   const [{ lowerPage }, { checkPageNode }, fonts] = await Promise.all([
     import("../composition/lower.ts"), import("../composition/check-node.ts"), renderFonts(),
   ]);
-  const diagnostics = document.slides.flatMap(page => checkPageNode(lowerPage(document, page, fonts), fonts));
+  const diagnostics = document.pages.flatMap(page => checkPageNode(lowerPage(document, page, fonts), fonts));
   const ok = !diagnostics.some(item => item.severity === "error");
   console.log(JSON.stringify({ ok, diagnostics }, null, 2));
   if (!ok) process.exitCode = 1;
@@ -112,13 +102,13 @@ async function inspect(input) {
   const { document, revision } = await readCompositionFile(resolve(input));
   const selected = process.argv.includes("--page") ? Number(option("--page")) : undefined;
   const details = process.argv.includes("--details");
-  if (selected !== undefined && (!Number.isInteger(selected) || selected < 1 || selected > document.slides.length))
-    throw new Error(`Page must be an integer from 1 to ${document.slides.length}.`);
+  if (selected !== undefined && (!Number.isInteger(selected) || selected < 1 || selected > document.pages.length))
+    throw new Error(`Page must be an integer from 1 to ${document.pages.length}.`);
   const [{ lowerPage }, { inspectPage, summarizePage }, { checkPageNode }, fonts] = await Promise.all([
     import("../composition/lower.ts"), import("../composition/inspect.ts"), import("../composition/check-node.ts"), renderFonts(),
   ]);
   const diagnostics = [];
-  const pages = document.slides.flatMap((page, index) => {
+  const pages = document.pages.flatMap((page, index) => {
     if (selected !== undefined && selected !== index + 1) return [];
     const scene = lowerPage(document, page, fonts);
     diagnostics.push(...checkPageNode(scene, fonts));
@@ -141,7 +131,6 @@ if (!command || !input) {
     else if (command === "render") await render(input);
     else if (command === "check") await check(input);
     else if (command === "inspect") await inspect(input);
-    else if (command === "refine-grid") await refine(input);
     else {
       usage();
       process.exitCode = 1;

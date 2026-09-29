@@ -1,10 +1,10 @@
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import type { CompositionComponent, Rect } from "../../composition/runtime.ts";
-import { areaRect, gridMetrics, snapArea, toComposition } from "../../composition/grid.ts";
+import { pageMetrics, toComposition } from "../../composition/grid.ts";
 import { lowerPage } from "../../composition/lower.ts";
 import { renderSVG } from "../../composition/svg.ts";
 import type { ScenePage } from "../../composition/scene.ts";
-import { componentInstanceLabel, getSlide, snapRect, snapResizeRect, transformComponentRect, type Draft, type Guide } from "../lib/model.ts";
+import { alignmentGuides, componentInstanceLabel, getSlide, transformComponentRect, type Draft, type Guide } from "../lib/model.ts";
 import { sceneFonts } from "../lib/scene-fonts.ts";
 import type { RevisionNote, ReviewTarget } from "../lib/review.ts";
 
@@ -53,7 +53,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
     setRenderError("");
     void sceneFonts().then(fonts => {
       const document = toComposition(draft);
-      const page = document.slides.find(item => item.id === activeSlideId)!;
+      const page = document.pages.find(item => item.id === activeSlideId)!;
       const scene = lowerPage(document, page, fonts, renderGroup && new Map([[renderGroup.id, renderGroup.offset]]));
       const next = renderSVG(scene, fonts, undefined, sceneId);
       if (!stale) setRendered({ markup: next, components: scene.components });
@@ -79,14 +79,34 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
   }, [onEditEnd]);
 
   const box = (component: CompositionComponent) => rendered.components.find(item => item.id === component.id)?.box ?? component.preferredRect;
+  const editBox = (component: CompositionComponent) => component.rect
+    ? { ...component.preferredRect, height: box(component).height } : box(component);
   function holdGroup(component: CompositionComponent) {
-    const group = slide.groups.find(group => group.area && group.verticalAlignment && group.childIds.includes(component.id));
-    if (!group || !slide.grid) return;
-    const held = { id: group.id, offset: box(component).y - component.preferredRect.y, area: areaRect(slide.grid, group.area!) };
+    const group = slide.groups.find(group => group.rect && group.verticalAlignment && group.childIds.includes(component.id));
+    if (!group) return;
+    const held = { id: group.id, offset: box(component).y - component.preferredRect.y, area: group.rect! };
     setHeldGroup(current => current ?? held);
   }
   function changed(component: CompositionComponent, rect: Rect) {
-    onComponent(transformComponentRect(component, component.preferredRect, rect, slide.grid), `geometry:${component.id}`);
+    const previous = editBox(component);
+    // Wrapping may change measured height during a horizontal resize. Compare
+    // vertical intent to the gesture's starting height, not that new measurement.
+    if (gesture.current?.corner && component.rect?.height === undefined)
+      previous.height = gesture.current.rect.height;
+    const next = transformComponentRect(component, previous, rect, slide.canvas);
+    if (next === component) clearPreview();
+    else onComponent(next, `geometry:${component.id}`);
+  }
+  function constrain(rect: Rect, original?: Rect): Rect {
+    if (!original) return { ...rect,
+      x: Math.max(0, Math.min(slide.canvas.width - rect.width, rect.x)),
+      y: Math.max(0, Math.min(slide.canvas.height - rect.height, rect.y)),
+    };
+    const minimumWidth = Math.min(1, original.width), minimumHeight = Math.min(1, original.height);
+    const right = Math.max(minimumWidth, Math.min(slide.canvas.width, rect.x + rect.width));
+    const bottom = Math.max(minimumHeight, Math.min(slide.canvas.height, rect.y + rect.height));
+    const x = Math.max(0, Math.min(right - minimumWidth, rect.x)), y = Math.max(0, Math.min(bottom - minimumHeight, rect.y));
+    return { x, y, width: right - x, height: bottom - y };
   }
   function clearPreview() {
     cancelAnimationFrame(previewFrame.current); previewFrame.current = 0;
@@ -95,6 +115,15 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
       else node.style.removeProperty("translate");
     }
     preview.current = undefined;
+    setGuides(current => current.length ? [] : current);
+  }
+  function showGuides(id: string, rect: Rect) {
+    const component = slide.components.find(item => item.id === id)!;
+    const authored = editBox(component), visible = box(component);
+    const scale = root.current!.getBoundingClientRect().width / slide.canvas.width;
+    const next = alignmentGuides({ ...rect, x: rect.x + visible.x - authored.x, y: rect.y + visible.y - authored.y },
+      slide.components.filter(item => item.id !== id).map(box), slide.canvas, pageMetrics(slide).margin, 2 / scale);
+    setGuides(current => current.length === next.length && current.every((guide, index) => guide.axis === next[index].axis && guide.value === next[index].value) ? current : next);
   }
   function paintPreview() {
     previewFrame.current = 0;
@@ -106,15 +135,16 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
       if (node instanceof SVGElement) node.setAttribute("transform", `translate(${dx} ${dy})`);
       else node.style.translate = `${dx * current.cssScale}px ${dy * current.cssScale}px`;
     }
+    showGuides(active.id, current.rect);
   }
   function start(event: ReactPointerEvent, component: CompositionComponent, corner?: Corner) {
     if (event.button !== 0) return;
     event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); onSelect(component.id);
     // Pointer deltas apply to authored geometry. Capturing it here keeps the
     // derived group offset out of the document and stable throughout the drag.
-    gesture.current = { id: component.id, x: event.clientX, y: event.clientY, rect: component.preferredRect, corner, duplicate: event.altKey && !corner, scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
+    gesture.current = { id: component.id, x: event.clientX, y: event.clientY, rect: editBox(component), corner, duplicate: event.altKey && !corner && !!component.rect, scale: root.current!.getBoundingClientRect().width / slide.canvas.width };
     clearPreview();
-    if (!corner && !event.altKey) preview.current = { document: draft, cssScale: parseFloat(getComputedStyle(root.current!).width) / slide.canvas.width, nodes: [] };
+    if (!corner && !gesture.current.duplicate) preview.current = { document: draft, cssScale: parseFloat(getComputedStyle(root.current!).width) / slide.canvas.width, nodes: [] };
     if (!gesture.current.duplicate) holdGroup(component);
   }
   function move(event: ReactPointerEvent) {
@@ -131,19 +161,12 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
     if (active.duplicate && Math.hypot(dx, dy) < 3) return;
     const proposed = active.corner ? resize(active.rect, dx, dy, active.corner) : { ...active.rect, x: active.rect.x + dx, y: active.rect.y + dy };
     if (preview.current) {
-      const padding = slide.innerPadding;
-      preview.current.rect = { ...proposed,
-        x: Math.max(padding?.left ?? 0, Math.min(slide.canvas.width - (padding?.right ?? 0) - proposed.width, proposed.x)),
-        y: Math.max(padding?.top ?? 0, Math.min(slide.canvas.height - (padding?.bottom ?? 0) - proposed.height, proposed.y)),
-      };
+      preview.current.rect = constrain(proposed);
       if (!previewFrame.current) previewFrame.current = requestAnimationFrame(paintPreview);
       return;
     }
-    const others = slide.components.filter(item => item.id !== active.id).map(box);
-    const result = slide.grid ? { rect: areaRect(slide.grid, snapArea(slide.grid, proposed, component.area)), guides: [] } : active.corner
-      ? snapResizeRect(proposed, others, 14, { left: active.corner.endsWith("w"), right: active.corner.endsWith("e"), top: active.corner.startsWith("n"), bottom: active.corner.startsWith("s") }, slide.canvas, slide.innerPadding)
-      : snapRect(proposed, others, 14, slide.canvas, slide.innerPadding);
-    setGuides(result.guides);
+    const result = { rect: constrain(proposed, active.corner ? active.rect : undefined) };
+    showGuides(active.id, result.rect);
     if (active.duplicate) { active.duplicate = false; component = onDuplicate?.(component.id, result.rect); if (!component) gesture.current = undefined; else active.id = component.id; return; }
     changed(component, result.rect);
   }
@@ -153,12 +176,11 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
     cancelAnimationFrame(previewFrame.current); previewFrame.current = 0;
     const component = active && slide.components.find(item => item.id === active.id);
     if (active && component && current?.rect && current.document === draft) {
-      const rect = slide.grid ? areaRect(slide.grid, snapArea(slide.grid, current.rect, component.area))
-        : snapRect(current.rect, slide.components.filter(item => item.id !== component.id).map(box), 14, slide.canvas, slide.innerPadding).rect;
+      const rect = current.rect;
       if (rect.x !== active.rect.x || rect.y !== active.rect.y) changed(component, rect);
       else clearPreview();
     } else if (active) clearPreview();
-    setHeldGroup(undefined); setGuides([]); onEditEnd();
+    setHeldGroup(undefined); setGuides(current => current.length ? [] : current); onEditEnd();
   }
   function positionNode(componentId: string, nodeId: string, position?: { x: number; y: number }) {
     const component = slide.components.find(item => item.id === componentId);
@@ -211,23 +233,20 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault();
     holdGroup(component);
-    const r = component.preferredRect;
-    const metrics = slide.grid && gridMetrics(slide.grid);
-    const horizontalStep = metrics?.baseline ?? 10;
-    const dx = event.key === "ArrowRight" ? horizontalStep : event.key === "ArrowLeft" ? -horizontalStep : 0;
-    const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
-    const next = snapRect({ ...r, x: r.x + dx, y: r.y + dy }, [], 0, slide.canvas, slide.innerPadding).rect;
+    const r = editBox(component);
+    const dx = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+    const dy = event.key === "ArrowDown" ? 1 : event.key === "ArrowUp" ? -1 : 0;
+    const next = constrain({ ...r, x: r.x + dx, y: r.y + dy });
     changed(component, next);
   }
   function keyboardResize(event: React.KeyboardEvent, component: CompositionComponent, corner: Corner) {
     if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
     event.preventDefault(); event.stopPropagation();
     holdGroup(component);
-    const metrics = slide.grid && gridMetrics(slide.grid);
-    const horizontalStep = metrics?.baseline ?? 10;
-    const dx = event.key === "ArrowRight" ? horizontalStep : event.key === "ArrowLeft" ? -horizontalStep : 0;
-    const dy = event.key === "ArrowDown" ? metrics?.baseline ?? 10 : event.key === "ArrowUp" ? -(metrics?.baseline ?? 10) : 0;
-    const next = snapResizeRect(resize(component.preferredRect, dx, dy, corner), [], 0, { left: corner.endsWith("w"), right: corner.endsWith("e"), top: corner.startsWith("n"), bottom: corner.startsWith("s") }, slide.canvas, slide.innerPadding).rect;
+    const dx = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+    const dy = event.key === "ArrowDown" ? 1 : event.key === "ArrowUp" ? -1 : 0;
+    const original = editBox(component);
+    const next = constrain(resize(original, dx, dy, corner), original);
     changed(component, next); onNotice(`Size ${Math.round(next.width)} by ${Math.round(next.height)}`);
   }
 
@@ -245,7 +264,7 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
         {slide.paintOrder.map(id => slide.components.find(component => component.id === id)!).map(component => <button key={component.id} type="button" data-component={component.id} className={`component-hit ${selected === component.id || commentTarget?.componentId === component.id ? "selected" : ""}`} style={{ left: `${box(component).x/slide.canvas.width*100}%`, top: `${box(component).y/slide.canvas.height*100}%`, width: `${box(component).width/slide.canvas.width*100}%`, height: `${box(component).height/slide.canvas.height*100}%` }} aria-label={`${interactive ? "Select" : "Comment on"} ${componentInstanceLabel(slide.components, component.id)}`} aria-pressed={selected === component.id || commentTarget?.componentId === component.id}
           title={interactive ? "Drag or use arrow keys to move · Delete to remove · Double-click text to edit" : "Click to comment"}
           onPointerDown={event => { if (interactive) start(event, component); }} onClick={event => { if (!interactive) onComment?.(component.id); else if (event.detail === 0) onSelect(component.id); }} onDoubleClick={event => { event.stopPropagation(); if (interactive) correct(component); }} onKeyDown={event => { if (interactive) nudge(event, component); }} />)}
-        {interactive && selectedComponent && (["nw","ne","sw","se"] as Corner[]).map(corner => <button key={corner} type="button" className={`resize-handle resize-${corner}`} style={{ left: `${(box(selectedComponent).x + (corner.endsWith("e") ? box(selectedComponent).width : 0))/slide.canvas.width*100}%`, top: `${(box(selectedComponent).y + (corner.startsWith("s") ? box(selectedComponent).height : 0))/slide.canvas.height*100}%` }} aria-label={`Resize ${componentInstanceLabel(slide.components, selectedComponent.id)} from ${corner}`} onPointerDown={event => start(event, selectedComponent, corner)} onKeyDown={event => keyboardResize(event, selectedComponent, corner)} />)}
+        {interactive && selectedComponent?.rect && (["nw","ne","sw","se"] as Corner[]).map(corner => <button key={corner} type="button" className={`resize-handle resize-${corner}`} style={{ left: `${(box(selectedComponent).x + (corner.endsWith("e") ? box(selectedComponent).width : 0))/slide.canvas.width*100}%`, top: `${(box(selectedComponent).y + (corner.startsWith("s") ? box(selectedComponent).height : 0))/slide.canvas.height*100}%` }} aria-label={`Resize ${componentInstanceLabel(slide.components, selectedComponent.id)} from ${corner}`} onPointerDown={event => start(event, selectedComponent, corner)} onKeyDown={event => keyboardResize(event, selectedComponent, corner)} />)}
         {interactive && selectedComponent && selectedScene?.processNodes?.map(node => <button key={node.id} type="button" className="component-hit process-node-hit" data-process-node={node.id}
           aria-label={`Move step: ${node.label}`} title="Drag or use arrow keys to pin this step. Delete resets automatic placement."
           style={{ left: `${node.box.x/slide.canvas.width*100}%`, top: `${node.box.y/slide.canvas.height*100}%`, width: `${node.box.width/slide.canvas.width*100}%`, height: `${node.box.height/slide.canvas.height*100}%` }}
@@ -264,14 +283,14 @@ export function Canvas({ mode = "edit", draft, activeSlideId, pageNumber, select
             }
             if (!event.key.startsWith("Arrow")) return;
             event.preventDefault(); event.stopPropagation(); holdGroup(selectedComponent);
-            const step = slide.grid ? gridMetrics(slide.grid).baseline : 10;
+            const step = 1;
             positionNode(selectedComponent.id, node.id, {
               x: node.box.x - selectedScene.contentBox.x + (event.key === "ArrowRight" ? step : event.key === "ArrowLeft" ? -step : 0),
               y: node.box.y - selectedScene.contentBox.y + (event.key === "ArrowDown" ? step : event.key === "ArrowUp" ? -step : 0),
             });
           }} />)}
         {editing && <textarea className="scene-text-editor" aria-label={`Edit ${componentInstanceLabel(slide.components, editing.component.id)}`} autoFocus value={editing.value} style={{ left: `${box(editing.component).x/slide.canvas.width*100}%`, top: `${box(editing.component).y/slide.canvas.height*100}%`, width: `${box(editing.component).width/slide.canvas.width*100}%`, height: `${box(editing.component).height/slide.canvas.height*100}%` }} onPointerDown={e => e.stopPropagation()} onDoubleClick={e => e.stopPropagation()} onChange={e => setEditing({ ...editing, value: e.target.value })} onBlur={commitEdit} onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); setEditing(undefined); } }} />}
-        {interactive && guides.map((guide,index) => <i key={index} className={`guide guide-${guide.axis}`} style={guide.axis === "x" ? { left: `${guide.value/slide.canvas.width*100}%` } : { top: `${guide.value/slide.canvas.height*100}%` }} />)}
+        {interactive && guides.map(guide => <i key={guide.axis} aria-hidden="true" className={`guide guide-${guide.axis}`} style={guide.axis === "x" ? { left: `${guide.value/slide.canvas.width*100}%` } : { top: `${guide.value/slide.canvas.height*100}%` }} />)}
         {revisionNotes.map((note,index) => {
           const component = slide.components.find(item => item.id === note.componentId);
           if (note.slideId !== slide.id || note.resolved || note.componentId && !component) return null;

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { canonicalJSON } from "../../composition/compile.ts";
-import { gridMetrics, resolveArea, resolveDocument, toComposition } from "../../composition/grid.ts";
+import { resolveDocument, toComposition } from "../../composition/grid.ts";
 import { fixtures } from "../../composition/fixtures.ts";
 import { canvasPadding } from "../../composition/types.ts";
 import { validateComposition } from "../../composition/validate.ts";
@@ -29,16 +29,16 @@ import {
   storageKey,
 } from "./storage.ts";
 import { exampleDraft } from "./examples.ts";
-const firstSlide = (draft: ReturnType<typeof initialDraft>) => draft.slides[0];
+const firstSlide = (draft: ReturnType<typeof initialDraft>) => draft.pages[0];
 
 test("Konpeki introduction is a seven-slide composition with native text and editable vectors", () => {
   const deck = exampleDraft("introducing-konpeki")!;
   assert.equal(deck.title, "Introducing Konpeki");
-  assert.equal(deck.slides.length, 7);
+  assert.equal(deck.pages.length, 7);
   assert.equal(validateComposition(toComposition(deck)).ok, true);
-  assert.deepEqual(new Set(deck.slides.flatMap((slide) => slide.components.map((c) => c.kind))),
+  assert.deepEqual(new Set(deck.pages.flatMap((slide) => slide.components.map((c) => c.kind))),
     new Set(["text-block", "diagram", "image"]));
-  assert.ok(deck.slides.every((slide) => slide.components.every((c) => c.customVisual?.format === "vector" || (c.kind === "text-block" && typeof c.content === "string"))));
+  assert.ok(deck.pages.every((slide) => slide.components.every((c) => c.customVisual?.format === "vector" || (c.kind === "text-block" && typeof c.content === "string"))));
   const opened = parseCompositionJSON(canonicalJSON(toComposition(deck)));
   assert.equal(opened.ok, true);
   if (opened.ok) assert.deepEqual(opened.document, deck);
@@ -49,9 +49,9 @@ test("starter geometry has independent bands and a complete source slot", () => 
   const slide = firstSlide(draft);
   assert.deepEqual(
     slide.components.map((component) => component.preferredRect.y),
-    [72, 276, 276, 924],
+    [72, 280, 280, 992],
   );
-  assert.deepEqual(slide.innerPadding, { top: 72, right: 72, bottom: 72, left: 72 });
+  assert.deepEqual(slide.innerPadding, { top: 72, right: 112, bottom: 0, left: 112 });
   assert.ok(
     slide.components.every(
       (component) =>
@@ -61,7 +61,7 @@ test("starter geometry has independent bands and a complete source slot", () => 
   );
   const headline = slide.components[0];
   const footnote = slide.components[3];
-  assert.equal(headline.preferredRect.height, 84);
+  assert.equal(headline.preferredRect.height, 88);
   assert.deepEqual(
     {
       x: headline.preferredRect.x,
@@ -79,7 +79,7 @@ test("starter geometry has independent bands and a complete source slot", () => 
   );
   assert.equal(
     footnote.preferredRect.y + footnote.preferredRect.height,
-    1008,
+    1080,
   );
   assert.deepEqual(slide.contentSlots.at(-1), {
     id: "text-block-4-content",
@@ -97,39 +97,39 @@ test("slide addition creates an independent valid slide in deck order", () => {
   original.title = "";
   const result = addSlide(original);
   assert.ok(result.slideId);
-  assert.ok(result.draft.slides.some((slide) => slide.id === result.slideId));
+  assert.ok(result.draft.pages.some((slide) => slide.id === result.slideId));
   assert.deepEqual(
-    result.draft.slides.map((slide) => [slide.id, slide.name]),
+    result.draft.pages.map((slide) => [slide.id, slide.name]),
     [
       ["slide-1", "Slide 01"],
       ["slide-2", "Page 02"],
     ],
   );
-  assert.deepEqual(result.draft.slides[1].components, []);
-  assert.deepEqual(result.draft.slides[1].contentSlots, []);
-  assert.deepEqual(result.draft.slides[1].readingOrder, []);
-  assert.deepEqual(result.draft.slides[1].paintOrder, []);
+  assert.deepEqual(result.draft.pages[1].components, []);
+  assert.deepEqual(result.draft.pages[1].contentSlots, []);
+  assert.deepEqual(result.draft.pages[1].readingOrder, []);
+  assert.deepEqual(result.draft.pages[1].paintOrder, []);
   const changed = addComponent(result.draft, "diagram", undefined, result.slideId);
   assert.equal(
-    changed.slides[0].components.some((component) => component.kind === "diagram"),
+    changed.pages[0].components.some((component) => component.kind === "diagram"),
     false,
   );
   assert.equal(
-    changed.slides[1].components.some((component) => component.kind === "diagram"),
+    changed.pages[1].components.some((component) => component.kind === "diagram"),
     true,
   );
   changed.title = "Deck";
   assert.equal(validateComposition(toComposition(changed)).ok, true);
 
   const invalid = initialDraft();
-  invalid.slides[0].components = [];
+  invalid.pages[0].components = [];
   assert.deepEqual(addSlide(invalid), { draft: invalid, slideId: "" });
 });
 
 test("slide removal preserves order and refuses to remove the final slide", () => {
   const deck = addSlide(addSlide(initialDraft()).draft).draft;
   const next = removeSlide(deck, "slide-2");
-  assert.deepEqual(next.slides.map((slide) => slide.id), ["slide-1", "slide-3"]);
+  assert.deepEqual(next.pages.map((slide) => slide.id), ["slide-1", "slide-3"]);
   assert.equal(validateComposition(toComposition(next)).ok, true);
   const single = initialDraft();
   assert.equal(removeSlide(single, "slide-1"), single);
@@ -377,11 +377,11 @@ test("deletion retains slots that are shared with a surviving component", () => 
 
 test("duplicate creates fresh component and slot identities with remapped topology", () => {
   const draft = structuredClone(fixtures["branching-process-return"]);
-  const source = draft.slides[0].components.find(
+  const source = draft.pages[0].components.find(
     (component) => component.kind === "diagram",
   )!;
   const next = duplicateComponent(draft, source.id);
-  const copy = next.slides[0].components.find(
+  const copy = next.pages[0].components.find(
     (component) => component.id !== source.id && component.kind === "diagram",
   )!;
   assert.notDeepEqual(copy.slotIds, source.slotIds);
@@ -400,7 +400,7 @@ test("duplicate creates fresh component and slot identities with remapped topolo
 
 test("derived diagram node geometry is rejected rather than authored or transformed", () => {
   const document = structuredClone(fixtures["branching-process-return"]);
-  const source = document.slides[0].components.find((component) => component.kind === "diagram")!;
+  const source = document.pages[0].components.find((component) => component.kind === "diagram")!;
   if (source.kind !== "diagram" || !source.topology)
     throw new Error("Topology missing");
   source.preferredRect = { x: 100, y: 200, width: 800, height: 400 };
@@ -418,11 +418,8 @@ test("duplicate placement and labels distinguish repeated components", () => {
   const visuals = firstSlide(next).components.filter(
     (component) => component.kind === "chart",
   );
-  assert.notDeepEqual(visuals[1].area, visuals[0].area);
-  const metrics = gridMetrics(firstSlide(next).grid!);
-  const area = resolveArea(firstSlide(next).grid!, visuals[1].area!);
-  assert.equal(visuals[1].preferredRect.x, metrics.margin + (area.column - 1) * (metrics.columnWidth + metrics.gutter));
-  assert.equal(visuals[1].preferredRect.y, metrics.marginY + (area.row - 1) * metrics.baseline);
+  assert.deepEqual(visuals[1].rect, { x: 160, y: 328, width: 1080, height: 530 });
+  assert.deepEqual(visuals[1].preferredRect, visuals[1].rect);
   assert.deepEqual(
     visuals.map((component) =>
       componentInstanceLabel(firstSlide(next).components, component.id),
@@ -438,8 +435,8 @@ test("repeated additions offset from the latest component", () => {
     (component) =>
       component.kind === "text-block" && component.appearance.role === "body",
   );
-  assert.equal(new Set(blocks.map(component => `${component.area!.column}:${component.area!.row}`)).size, blocks.length);
-  assert.ok(blocks.every(component => resolveArea(firstSlide(second).grid!, component.area!).row + component.area!.rows - 1 <= 78), "new blocks remain inside the bounded page");
+  assert.equal(new Set(blocks.map(component => `${component.rect!.x}:${component.rect!.y}`)).size, blocks.length);
+  assert.ok(blocks.every(component => component.preferredRect.y + component.preferredRect.height <= 1080), "new blocks remain inside the bounded page");
   assert.equal(validateComposition(toComposition(second)).ok, true);
 });
 
@@ -482,8 +479,8 @@ test("composition JSON import/export is canonical and lossless", () => {
   const document = addSlide(
     structuredClone(fixtures["architecture-ownership"]),
   ).draft;
-  document.slides[1].name = "Decision";
-  document.slides[0].components[1].customVisual = {
+  document.pages[1].name = "Decision";
+  document.pages[0].components[1].customVisual = {
     format: "vector",
     elements: [{ id: "circle", kind: "circle", attributes: { cx: 160, cy: 90, r: 72, fill: "theme:accent" } }],
     viewBox: { x: 0, y: 0, width: 320, height: 180 },

@@ -10,21 +10,20 @@ function packet(title: string, kind: 'text-block' | 'chart' | 'diagram', instruc
     ...body.appearance,
     type: diagramType,
   };
-  body.intent = instruction;
   draft.title = title;
-  const slide = draft.slides[0];
+  const slide = draft.pages[0];
   const replacedId = slide.components[1].id;
   body.preferredRect = { ...slide.components[1].preferredRect };
-  body.area = slide.components[1].area;
+  body.rect = { ...slide.components[1].rect! };
   slide.components[1] = body;
-  slide.contentSlots.splice(1, 1, ...createContentSlots(body));
+  slide.contentSlots.splice(1, 1, ...createContentSlots(body).map(slot => ({ ...slot, instruction })));
   slide.contentSlots = slide.contentSlots.map(slot => "targets" in slot ? { ...slot, targets: slot.targets.map(target => target === replacedId ? body.id : target) } : slot);
   slide.readingOrder = slide.components.map(c => ({ kind: 'component', id: c.id }));
   slide.paintOrder = slide.components.map(c => c.id);
   return draft;
 }
 function withTopology(document: CompositionDocument, topology: ExplicitTopology) {
-  const slide = document.slides[0];
+  const slide = document.pages[0];
   const component = slide.components[1];
   if (component.kind !== 'diagram') throw new Error('Topology requires a diagram');
   const old = component.slotIds;
@@ -36,10 +35,10 @@ function withTopology(document: CompositionDocument, topology: ExplicitTopology)
 }
 const latency = packet('Observed candidate latency is lower, but missing runs and staging scope limit the conclusion', 'chart', 'Fictional Atlas: control median 420 ms / 60 runs; candidate median 310 ms / 55 observed runs. Five consecutive missing runs are not zero. Fixed staging workload, not peak production. Source AR-27, 8 September 2026.');
 const comparison = packet('Compare the options without filling unavailable values', 'text-block', 'Use the same criteria for both options. Operational support for B is unavailable, not zero. Distinguish target from observation; exclude security review. Keep the recommendation conditional and preserve its revisit trigger.');
-const comparisonBlock = comparison.slides[0].components[1];
+const comparisonBlock = comparison.pages[0].components[1];
 if (comparisonBlock.kind !== 'text-block') throw new Error('Comparison requires a text block');
 comparisonBlock.appearance = { ...comparisonBlock.appearance, layout: 'two-column', purpose: 'comparison', treatment: 'plain' };
-comparison.slides[0].contentSlots[1].role = 'comparison-item';
+comparison.pages[0].contentSlots[1].role = 'comparison-item';
 const process = withTopology(packet('Keep pending separate from approved', 'diagram', 'Preserve the approval branch, pending return, and terminal security transfer. Do not invent a follow-on after transfer.', 'process'), {
   kind: 'explicit', nodes: ['submitted', 'review', 'approved', 'pending', 'security'].map(id => ({ id, slotId: `${id}-step` })),
   edges: [{ from: 'submitted', to: 'review' }, { from: 'review', to: 'approved', label: 'approved' }, { from: 'review', to: 'pending', label: 'incomplete' }, { from: 'pending', to: 'review', label: 'resubmit' }, { from: 'review', to: 'security', label: 'transfer' }],
@@ -53,13 +52,13 @@ const architecture = withTopology(packet('Show ownership and the complete pollin
     { from: 'worker', to: 'api', label: 'completion' }, { from: 'browser', to: 'gateway', label: 'later poll' }, { from: 'gateway', to: 'api', label: 'later poll' },
   ],
 });
-architecture.slides[0].relationships.push({ id: 'qualification', kind: 'qualifies', direction: 'forward', from: { nodeId: 'text-block-3' }, to: { nodeId: 'diagram-2', slotId: 'queue-entity' }, label: 'Preserve retry uncertainty' });
+architecture.pages[0].relationships.push({ id: 'qualification', kind: 'qualifies', direction: 'forward', from: { nodeId: 'text-block-3' }, to: { nodeId: 'diagram-2', slotId: 'queue-entity' }, label: 'Preserve retry uncertainty' });
 const overfull = packet('Do not silently drop required routing-decision content', 'text-block', 'All supplied decision criteria, alternatives, constraints, owners, risks, unresolved questions, evidence and sources are required. If these cannot fit readably on one slide, ask for a scope decision; do not conceal content or shrink it.');
-const overfullBlock = overfull.slides[0].components[1];
+const overfullBlock = overfull.pages[0].components[1];
 if (overfullBlock.kind !== 'text-block') throw new Error('Overfull fixture requires a text block');
 overfullBlock.appearance = { ...overfullBlock.appearance, layout: 'two-column', purpose: 'comparison', treatment: 'plain' };
-overfull.slides[0].contentSlots[1].role = 'comparison-item';
-overfull.slides[0].contentSlots[1].instruction = Array.from({ length: 24 }, (_, i) => `Required constraint ${i + 1}: preserve the supplied evidence, owner, scope and caveat; missing specifics must be requested.`).join('\n');
+overfull.pages[0].contentSlots[1].role = 'comparison-item';
+overfull.pages[0].contentSlots[1].instruction = Array.from({ length: 24 }, (_, i) => `Required constraint ${i + 1}: preserve the supplied evidence, owner, scope and caveat; missing specifics must be requested.`).join('\n');
 export const fixtures: Record<string, CompositionDocument> = {
   'long-headline-qualification': latency,
   'comparison-with-missing-value': comparison,

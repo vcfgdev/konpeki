@@ -39,7 +39,7 @@ export async function saveCompositionFile(
       revision: currentRevision,
     });
   }
-  const value = `${canonicalJSON(document)}\n`;
+  const value = `${canonicalJSON(validation.document)}\n`;
   const temporary = join(
     dirname(compositionPath),
     `.${basename(compositionPath)}.${process.pid}.${randomBytes(6).toString("hex")}.tmp`,

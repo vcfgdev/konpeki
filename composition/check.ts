@@ -4,7 +4,7 @@ export { textInkBounds } from "./scene.ts";
 
 export type DiagnosticSeverity = "error" | "warning";
 export interface Diagnostic {
-  code: "native-overflow" | "clipped-label" | "missing-glyph" | "draft-placeholder" | "chart-scale" | "text-contrast" | "group-overflow" | "process-layout";
+  code: "native-overflow" | "clipped-label" | "missing-glyph" | "draft-placeholder" | "chart-scale" | "text-contrast" | "group-overflow" | "component-overflow" | "process-layout";
   severity: DiagnosticSeverity;
   pageId: string;
   componentId?: string;
@@ -41,9 +41,12 @@ export function checkPage(scene: ScenePage, fonts: FontContext): Diagnostic[] {
   }
   for (const group of scene.groups ?? []) if (outside(group.bounds, group.box))
     diagnostics.push({ code: "group-overflow", severity: "error", pageId: scene.pageId, groupId: group.id,
-      message: "Aligned group contents exceed its area; recompose the members or enlarge the area.",
+      message: "Group contents exceed its area; recompose the members or enlarge the area.",
       evidence: { bounds: group.bounds, area: group.box } });
   for (const component of scene.components) {
+    if (outside(component.box, { x: 0, y: 0, width: scene.width, height: scene.height }))
+      diagnostics.push({ code: "component-overflow", severity: "error", pageId: scene.pageId, componentId: component.id,
+        message: "Component extends beyond the page; move it or compose a page break.", evidence: { box: component.box } });
     for (const issue of component.processIssues ?? []) diagnostics.push({ code: "process-layout", severity: "error",
       pageId: scene.pageId, componentId: component.id, elementId: issue.elementId, message: issue.message,
       evidence: { nodes: component.processNodes, contentBox: component.contentBox } });

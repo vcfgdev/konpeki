@@ -47,12 +47,12 @@ test("scaled chart is review-only and makes no caption claim", () => {
   assert.doesNotMatch(warning.message, /caption/i);
 });
 
-test("reproduces the port's fixed-row overflow, scaled Sankey, and dark 400 contrast", () => {
+test("reproduces fixed-height overflow, scaled Sankey, and dark 400 contrast", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/gallery/sankey.json", import.meta.url), "utf8")));
-  const page = document.slides[0];
+  const page = document.pages[0];
   const chart = page.components.find(component => component.id === "chart")!;
   chart.customVisual!.elements.find(element => element.id === "flow-value-2")!.attributes.fill = "theme:ink";
-  page.components.find(component => component.id === "title")!.area.rows = 1;
+  page.components.find(component => component.id === "title")!.rect!.height = 12;
   const diagnostics = checkPageNode(lowerPage(document, page, fonts), fonts);
   assert.ok(diagnostics.some(item => item.code === "native-overflow" && item.componentId === "title"));
   assert.ok(diagnostics.some(item => item.code === "chart-scale" && item.componentId === "chart" && item.severity === "warning"));
@@ -66,12 +66,12 @@ test("reproduces the port's fixed-row overflow, scaled Sankey, and dark 400 cont
 
 test("unauthored topology is visibly neutral and introduces no contrast or clipping errors", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/gallery/sankey.json", import.meta.url), "utf8")));
-  const page = document.slides[0], chart = page.components.find(component => component.id === "chart")!;
+  const page = document.pages[0], chart = page.components.find(component => component.id === "chart")!;
   delete chart.customVisual;
   const scene = lowerPage(document, page, fonts);
   const items = scene.items.filter(item => item.componentId === "chart");
   assert.deepEqual(items.filter(item => item.kind === "text").map(item => item.source), [
-    "Draft chart", "", "Artwork not authored", "6 nodes · 5 recorded edges",
+    "Draft chart", "Artwork not authored", "6 nodes · 5 recorded edges",
   ]);
   assert.deepEqual(items.filter(item => item.kind === "shape").map(item => item.tag), ["rect"], "no inferred arrows or node arrangement");
   const diagnostics = checkPageNode(scene, fonts);
@@ -81,15 +81,16 @@ test("unauthored topology is visibly neutral and introduces no contrast or clipp
 
 test("packaged cover is a finished v2 link page with no scene diagnostics", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
-  const scene = lowerPage(document, document.slides[0], fonts);
+  const scene = lowerPage(document, document.pages[0], fonts);
   assert.deepEqual([scene.width, scene.height], [1200, 630]);
   assert.deepEqual(checkPageNode(scene, fonts), []);
 });
 
 test("A4 page totals do not clip slash ink below the em box", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
-  const page = document.slides[0];
-  page.grid = { preset: "a4", revision: 2 };
+  const page = document.pages[0];
+  page.preset = "a4";
+  page.canvas = { width: 210 / 25.4 * 96, height: 297 / 25.4 * 96 };
   page.components = [];
   page.paintOrder = [];
   page.groups = [];

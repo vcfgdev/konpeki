@@ -14,14 +14,14 @@ test("CLI inspect emits deterministic, revision-bound reports with selected-page
   const path = join(directory, "document.json");
   const cli = (...args: string[]) => spawnSync(process.execPath, [new URL("./konpeki.mjs", import.meta.url).pathname, ...args], { encoding: "utf8" });
   const document = toComposition(addComponent(initialGridDraft(), "text-block"));
-  const first = document.slides[0], component = first.components[0];
+  const first = document.pages[0], component = first.components[0];
   assert.ok(component.kind === "text-block");
-  component.area = { column: 2, span: 4, row: 3, rows: 8 }; component.content = "Fits.";
+  component.rect = { x: 147, y: 96, width: 276, height: 96 }; component.content = "Fits.";
   first.pageNumber = { style: "01", color: "ink" };
-  const second = structuredClone(first); second.id = "overfull"; second.grid = { preset: "portrait", revision: 2 };
+  const second = structuredClone(first); second.id = "overfull"; second.preset = "portrait"; second.canvas = { width: 1080, height: 1350 };
   const overfull = second.components[0]; assert.ok(overfull.kind === "text-block");
-  overfull.area.rows = 1; overfull.content = "H\nH\n漢";
-  document.slides.push(second);
+  overfull.rect!.height = 12; overfull.content = "H\nH\n漢";
+  document.pages.push(second);
   const source = JSON.stringify(document);
   await writeFile(path, source);
 

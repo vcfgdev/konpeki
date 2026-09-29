@@ -884,7 +884,7 @@ exports[`explainer/explainer: deterministic scene snapshot 1`] = `
 
 exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
 {
-  "digest": "dd9baccffcccc02d5e741ae6a086165cb7376dcec236cbfd23ae40b3c901927c",
+  "digest": "43e53e767483e016f12a189bcf524045a5f656d1de5b0571cf236e3a30e015f0",
   "size": [
     1920,
     1080
@@ -1195,16 +1195,16 @@ exports[`intro/brief-to-page: deterministic scene snapshot 1`] = `
       },
       "lines": [
         {
-          "text": "In a file-backed preview, add a component and describe its intent. ",
+          "text": "In a file-backed preview, leave a comment on a component, then ",
           "x": 0,
           "baseline": 24.364,
-          "width": 709.032
+          "width": 693.672
         },
         {
-          "text": "Ask your agent in chat to draft from that saved layout.",
+          "text": "copy the prompt to your agent to request the next revision.",
           "x": 0,
           "baseline": 56.364000000000004,
-          "width": 579.168
+          "width": 633.1679999999999
         }
       ]
     },

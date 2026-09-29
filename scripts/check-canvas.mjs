@@ -37,8 +37,8 @@ function checkLayerInsertion() {
   const dispatch = (source) => evaluate(`(async () => { ${source}; await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); })()`);
   const saved = JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'));
   const fixture = { version: 2, document: initialDraft() };
-  const [a, b, c, d] = [...fixture.document.slides[0].paintOrder].reverse();
-  const slide = fixture.document.slides[0];
+  const [a, b, c, d] = [...fixture.document.pages[0].paintOrder].reverse();
+  const slide = fixture.document.pages[0];
   slide.groups = [{ id: "review-group", label: "Review group", childIds: [a, c] }];
   slide.readingOrder = [{ kind: "group", id: "review-group" }, { kind: "component", id: b }, { kind: "component", id: d }];
   assertComposition(fixture.document);
@@ -80,7 +80,7 @@ function checkLayerInsertion() {
     check(`JSON.stringify([...document.querySelectorAll('.layer-row')].map(row => row.dataset.layer)) === ${JSON.stringify(JSON.stringify(expected))}`, "drop order differs from the preview");
     check("!document.querySelector('[data-drop-edge], .layer-row.dragging')", "drop must clear all drag feedback");
     const expectedDoc = structuredClone(fixture.document);
-    expectedDoc.slides[0].paintOrder = [...expected].reverse();
+    expectedDoc.pages[0].paintOrder = [...expected].reverse();
     browser("wait", "--fn", `JSON.stringify(JSON.parse(localStorage.getItem('konpeki-composer/v1')).document) === ${JSON.stringify(JSON.stringify(expectedDoc))}`);
     if (boundary !== null) browser("press", "Control+z");
   }
@@ -106,8 +106,8 @@ function checkDoubleClickEditing(cases) {
     check(`document.activeElement.matches('.inline-intent-editor') && document.activeElement.getAttribute('aria-label').endsWith(${JSON.stringify(field === "content" ? "text" : "intent")})`, `${kind} double-click opened wrong editor`);
     browser("fill", ".inline-intent-editor", `Edited ${kind}`);
     browser("press", "Escape");
-    browser("wait", "--fn", `JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[${index + 1}].components[0][${JSON.stringify(field)}] === ${JSON.stringify(`Edited ${kind}`)}`);
-    before.slides[index + 1].components[0][field] = `Edited ${kind}`;
+    browser("wait", "--fn", `JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[${index + 1}].components[0][${JSON.stringify(field)}] === ${JSON.stringify(`Edited ${kind}`)}`);
+    before.pages[index + 1].components[0][field] = `Edited ${kind}`;
     assert.deepEqual(JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document, before, `${kind} inline edit changed unrelated content or artwork`);
   }
 }
@@ -262,8 +262,8 @@ try {
       browser("press", "Enter");
       check('document.querySelectorAll(".chart-type-options button[aria-pressed=true]").length === 1 && document.querySelector(".chart-type-options button.selected").textContent.trim() === "Pie" && document.querySelector(".chart-type-field > summary").textContent === "Template"', "keyboard template selection must exclusively select Pie without changing the section heading");
       click("YOLO");
-      browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.selection === "auto" && JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.template === "pie"');
-      check('JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.template === "pie" && document.querySelector("[name=content-intent]").value === "Illustrative workflow comparison" && document.querySelectorAll(".chart-type-options button.selected").length === 1 && document.querySelector(".chart-type-options button.selected").textContent.trim() === "YOLO"', "YOLO must preserve the chart form and intent, and clear the explicit highlight");
+      browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[3].components[0].appearance.selection === "auto" && JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[3].components[0].appearance.template === "pie"');
+      check('JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[3].components[0].appearance.template === "pie" && document.querySelector("[name=content-intent]").value === "Illustrative workflow comparison" && document.querySelectorAll(".chart-type-options button.selected").length === 1 && document.querySelector(".chart-type-options button.selected").textContent.trim() === "YOLO"', "YOLO must preserve the chart form and intent, and clear the explicit highlight");
       browser("click", ".chart-type-field > summary");
     }
   }
@@ -289,11 +289,11 @@ try {
   check('document.querySelector(".action-island").inert', "collapsed sidebar must disable actions");
   click("Expand left panel");
   check('!document.querySelector(".action-island").inert', "expanded sidebar must restore actions");
-  browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1"))?.document.slides.length === 6');
+  browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1"))?.document.pages.length === 6');
   const json = JSON.parse(evaluate('JSON.stringify(JSON.parse(localStorage.getItem("konpeki-composer/v1")).document)'));
   const saved = JSON.parse(json);
-  assert.equal(saved.slides[2].components[0].appearance.selection, "explicit");
-  if (saved.slides.length !== 6) throw Error("Wrong slide count after creation");
+  assert.equal(saved.pages[2].components[0].appearance.selection, "explicit");
+  if (saved.pages.length !== 6) throw Error("Wrong slide count after creation");
   const file = join(scratch, "roundtrip.json");
   writeFileSync(file, json);
   openDocument(file);
@@ -325,7 +325,7 @@ try {
     '<text x="100" y="100" font-size="38">Stage</text><text x="640" y="100" font-size="38">Owner</text><path d="M80 125H1100M80 240H1100M80 355H1100M80 470H1100" stroke="#52666f" stroke-width="2"/><text x="100" y="205" font-size="32">Draft</text><text x="640" y="205" font-size="32">Human</text><text x="100" y="320" font-size="32">Revise</text><text x="640" y="320" font-size="32">Agent</text><text x="100" y="435" font-size="32">Approve</text><text x="640" y="435" font-size="32">Human</text>',
   ];
   for (const [index, source] of artwork.entries()) {
-    saved.slides[index + 1].components[0].customVisual = {
+    saved.pages[index + 1].components[0].customVisual = {
       format: "vector", description: `Completed ${cases[index][0]} test artwork`,
       ...parseEditableSvg(`<svg viewBox="0 0 1200 600" fill="#13242c" font-family="IBM Plex Sans">${source}</svg>`),
     };
@@ -338,7 +338,7 @@ try {
   console.log("PASS: double-click edits text content or component intent for all five draft and finished vector kinds without altering artwork.");
   // Omitted selection remains an explicit form requirement for imported artwork.
   const importedArtwork = structuredClone(saved);
-  for (const slide of importedArtwork.slides) for (const component of slide.components) {
+  for (const slide of importedArtwork.pages) for (const component of slide.components) {
     if (component.kind === "diagram" || component.kind === "chart") delete component.appearance.selection;
   }
   const importedFile = join(scratch, "imported-artwork.json");
@@ -354,9 +354,9 @@ try {
     browser("click", ".diagram-type-field > summary");
     for (const selection of ["explicit", "auto", "explicit"]) {
       click(selection === "auto" ? "YOLO" : label);
-      browser("wait", "--fn", `JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[${pageIndex}].components[0].appearance.selection === ${JSON.stringify(selection)} && JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[${pageIndex}].components[0].appearance[${JSON.stringify(key)}] === ${JSON.stringify(value)}`);
-      const actual = JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document.slides[pageIndex].components[0];
-      const expected = structuredClone(importedArtwork.slides[pageIndex].components[0]);
+      browser("wait", "--fn", `JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[${pageIndex}].components[0].appearance.selection === ${JSON.stringify(selection)} && JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[${pageIndex}].components[0].appearance[${JSON.stringify(key)}] === ${JSON.stringify(value)}`);
+      const actual = JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document.pages[pageIndex].components[0];
+      const expected = structuredClone(importedArtwork.pages[pageIndex].components[0]);
       expected.appearance[key] = value;
       expected.appearance.selection = selection;
       assert.deepEqual(actual, expected, `${kind} requirement change altered artwork, intent, topology or geometry`);
@@ -374,7 +374,7 @@ try {
     assert.deepEqual(restored, JSON.parse(persisted), `${kind} finished-artwork roundtrip changed`);
   }
   const sankey = structuredClone(saved);
-  const sankeyChart = sankey.slides[3].components[0];
+  const sankeyChart = sankey.pages[3].components[0];
   sankeyChart.appearance.template = "sankey";
   sankeyChart.topology = { kind: "explicit", nodes: sankeyChart.slotIds.map(id => ({ id, slotId: id })), edges: [] };
   const sankeyFile = join(scratch, "sankey-topology.json");
@@ -386,12 +386,12 @@ try {
   check('document.querySelectorAll(".chart-type-options [role=group] button").length === 8 && [...document.querySelectorAll(".chart-type-options [role=group] button")].every(button => button.textContent.trim() === "Sankey" ? !button.disabled : button.disabled)', "Sankey topology guard missing");
   click("Sankey");
   click("YOLO");
-  browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.slides[3].components[0].appearance.selection === "auto"');
-  assert.deepEqual(JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document.slides[3].components[0], sankeyChart);
+  browser("wait", "--fn", 'JSON.parse(localStorage.getItem("konpeki-composer/v1")).document.pages[3].components[0].appearance.selection === "auto"');
+  assert.deepEqual(JSON.parse(JSON.parse(evaluate('localStorage.getItem("konpeki-composer/v1")'))).document.pages[3].components[0], sankeyChart);
   capture("finished-sankey-topology");
   for (const finished of [false, true]) {
     const themed = structuredClone(saved);
-    if (!finished) delete themed.slides[3].components[0].customVisual;
+    if (!finished) delete themed.pages[3].components[0].customVisual;
     const file = join(scratch, "themed-chart.json");
     writeFileSync(file, JSON.stringify(themed));
     openDocument(file);
@@ -489,7 +489,7 @@ try {
   browser("press", "Escape");
   console.log("PASS: element double-click focuses path attributes or nested editable text, reopens the inspector, and preserves outside-mode intent editing.");
   for (const fit of ["contain", "cover", "stretch"]) {
-    const component = saved.slides[2].components[0];
+    const component = saved.pages[2].components[0];
     component.preferredRect = { x: 160, y: 150, width: 800, height: 780 };
     component.customVisual = {
       format: "vector", description: "Transformed line drag regression", fit,

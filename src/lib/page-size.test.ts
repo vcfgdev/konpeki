@@ -3,23 +3,23 @@ import assert from "node:assert/strict";
 import { addComponent, addSlide, duplicateComponent, initialDraft, parseCompositionJSON, snapRect, snapResizeRect } from "./model.ts";
 import { pagePresets, pageSizeIssue, resizePage } from "./page-size.ts";
 import { validateComposition } from "../../composition/validate.ts";
-import { resolveDocument, toComposition, toGridComponent } from "../../composition/grid.ts";
+import { resolveDocument, toComposition } from "../../composition/grid.ts";
 import { canonicalJSON, compileHandoff } from "../../composition/compile.ts";
 import { commitHistory, createHistory, undoHistory, redoHistory } from "./history.ts";
 
 test("presets support all five kinds, duplication, and JSON round trips", () => {
   for (const size of pagePresets) {
     let doc = initialDraft(true);
-    doc.slides[0] = resizePage(doc.slides[0], size);
-    assert.deepEqual(doc.slides[0].canvas, { width: size.width, height: size.height });
-    assert.deepEqual(doc.slides[0].components, []);
+    doc.pages[0] = resizePage(doc.pages[0], size);
+    assert.deepEqual(doc.pages[0].canvas, { width: size.width, height: size.height });
+    assert.deepEqual(doc.pages[0].components, []);
     for (const kind of ["text-block", "diagram", "chart", "image", "table"] as const) {
       doc = addComponent(doc, kind, { x: size.width, y: size.height });
-      const component = doc.slides[0].components.at(-1)!;
+      const component = doc.pages[0].components.at(-1)!;
       assert.equal(component.kind, kind);
       doc = duplicateComponent(doc, component.id);
     }
-    assert.equal(doc.slides[0].components.length, 10);
+    assert.equal(doc.pages[0].components.length, 10);
     assert.equal(validateComposition(toComposition(doc)).ok, true);
     const parsed = parseCompositionJSON(canonicalJSON(toComposition(doc)));
     assert.ok(parsed.ok);
@@ -27,24 +27,23 @@ test("presets support all five kinds, duplication, and JSON round trips", () => 
   }
 });
 
-test("preset resize preserves authored areas and supports undo/redo", () => {
+test("resize preserves authored pixels, typography and preset while supporting undo/redo", () => {
   const doc = initialDraft(true);
-  const original = addComponent(doc, "text-block").slides[0];
-  const wide = resizePage(original, { width: 1600, height: 600 }, "article");
+  const original = addComponent(doc, "text-block").pages[0];
+  const wide = resizePage(original, { width: 1600, height: 1000 }, "article");
   assert.notEqual(wide, original);
-  assert.equal(wide.grid?.preset, "article");
-  assert.equal(wide.grid?.revision, 2);
-  assert.deepEqual(wide.components.map(component => component.area), original.components.map(component => component.area));
-  assert.equal(pageSizeIssue(original, { width: 1600, height: 600 }), undefined);
+  assert.equal(wide.preset, original.preset);
+  assert.deepEqual(wide.components, original.components);
+  assert.equal(pageSizeIssue(original, { width: 1600, height: 1000 }), undefined);
   const square = resizePage(original, { width: 1080, height: 1080 }, "social");
-  assert.deepEqual(square.components.map(toGridComponent), original.components.map(toGridComponent));
-  assert.notDeepEqual(square.components[0].preferredRect, original.components[0].preferredRect);
+  assert.deepEqual(square.components, original.components);
   assert.deepEqual(original.canvas, { width: 1920, height: 1080 });
   const history = commitHistory(createHistory(original), square);
   assert.deepEqual(undoHistory(history).present, original);
   assert.deepEqual(redoHistory(undoHistory(history)).present, square);
-  for (const width of [0, 255, 4097, 1080.5, NaN, Infinity])
+  for (const width of [0, 255, 4097, NaN, Infinity])
     assert.ok(pageSizeIssue(original, { width, height: 1080 }));
+  assert.equal(pageSizeIssue(original, { width: 1080.5, height: 777.25 }), undefined);
 });
 
 test("page bounds govern moves, resizes, schema validation and handoff", () => {
@@ -54,35 +53,31 @@ test("page bounds govern moves, resizes, schema validation and handoff", () => {
   assert.deepEqual(snapResizeRect({ x: 1000, y: 530, width: 900, height: 800 }, [], 0, undefined, bounds).rect,
     { x: 1000, y: 530, width: 200, height: 100 });
   let doc = initialDraft(true);
-  doc.slides[0] = resizePage(doc.slides[0], bounds, "social");
+  doc.pages[0] = resizePage(doc.pages[0], bounds, "social");
   doc = addComponent(doc, "text-block");
   assert.match(compileHandoff(doc), /Surface: 1200×630 pixels; destination: social/);
-  assert.match(compileHandoff(doc), /Components choose area \{column, span, row, rows\}/);
+  assert.match(compileHandoff(doc), /rect/);
   const wire = toComposition(doc);
-  wire.slides[0].components[0].area.column = 9;
+  wire.pages[0].components[0].rect!.x = 1100;
   assert.equal(validateComposition(wire).ok, false);
-  assert.ok(pageSizeIssue(initialDraft(true).slides[0], { width: 4096, height: 4096 }));
+  assert.equal(pageSizeIssue(initialDraft(true).pages[0], { width: 4096, height: 4096 }), undefined);
 });
 
 test("new pages remain independent and empty", () => {
   const doc = initialDraft();
   const next = addSlide(doc).draft;
-  assert.deepEqual(next.slides[1].components, []);
-  next.slides[1] = resizePage(next.slides[1], { width: 1600, height: 600 });
-  assert.deepEqual(next.slides[0], doc.slides[0]);
+  assert.deepEqual(next.pages[1].components, []);
+  next.pages[1] = resizePage(next.pages[1], { width: 1600, height: 600 });
+  assert.deepEqual(next.pages[0], doc.pages[0]);
 });
 
-test("preset switching checks component and group bounds against the page's grid revision", () => {
-  const doc = addComponent(initialDraft(true), "text-block"), page = doc.slides[0];
-  page.components[0].area = { column: 6, span: 3, row: 1, rows: 10 };
-  page.groups = [{ id: "aligned", childIds: [page.components[0].id], area: { column: 5, span: 4, row: 1, rows: 20 }, verticalAlignment: "center" }];
+test("resizing checks component and group pixel bounds without retyping or rescaling", () => {
+  const doc = addComponent(initialDraft(true), "text-block"), page = doc.pages[0];
+  page.components[0].rect = { x: 700, y: 50, width: 300, height: 100 };
+  page.groups = [{ id: "aligned", childIds: [page.components[0].id], rect: { x: 650, y: 40, width: 500, height: 200 }, verticalAlignment: "center" }];
   const size = { width: 1200, height: 630 }, next = resizePage(page, size);
-  assert.deepEqual(next.grid, { preset: "link", revision: 2 });
-  assert.deepEqual(next.components[0].preferredRect, { x: 753, y: 51, width: 399, height: 80 });
-  assert.equal(validateComposition(toComposition({ ...doc, slides: [next] })).ok, true);
-  page.groups[0].area!.column = 6;
-  assert.ok(pageSizeIssue(page, size), "groups cannot extend beyond column 8");
-  page.groups[0].area!.column = 5;
-  page.grid!.revision = 1;
-  assert.ok(pageSizeIssue(page, size), "the same areas do not fit the original four columns");
+  assert.deepEqual(next.components[0], page.components[0]);
+  assert.equal(validateComposition(toComposition({ ...doc, pages: [next] })).ok, true);
+  page.groups[0].rect!.x = 701;
+  assert.ok(pageSizeIssue(page, size), "groups cannot extend beyond the canvas");
 });

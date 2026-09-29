@@ -171,8 +171,8 @@ try {
       handleDx:(handleAfter.left-handleBefore.left)/${target.scale},handleDy:(handleAfter.top-handleBefore.top)/${target.scale},
       sameSVG:svgs.every((svg,i)=>svg===document.querySelectorAll('.scene-artwork svg')[i])};
   })()`);
-  near(dragBurst.dx, 13, "drag follows a sub-grid horizontal delta at 2x", .02);
-  near(dragBurst.dy, 17, "drag follows a sub-grid vertical delta at 2x", .02);
+  near(dragBurst.dx, 13, "drag follows a free horizontal pixel delta at 2x", .02);
+  near(dragBurst.dy, 17, "drag follows an independent vertical pixel delta at 2x", .02);
   near(dragBurst.handleDx, 13, "resize handles follow the preview", .02);
   near(dragBurst.handleDy, 17, "resize handles follow both preview axes", .02);
   assert.equal(dragBurst.writes, 1, "60 pointer events paint one preview frame");
@@ -180,8 +180,10 @@ try {
   b("wait", "350"); assert.deepEqual(stored(), original, "preview never persists intermediate geometry");
   capture("zoomed-drag-preview");
   console.log(`Drag burst: 60 events handled in ${dragBurst.eventBurstMs.toFixed(1)} ms; ${dragBurst.writes} preview update, no SVG replacement.`);
+  const nativeDropDy = Math.round((Math.round(target.y + 24 * target.scale) - Math.round(target.y)) / target.scale);
   b("mouse", "move", String(Math.round(target.x)), String(Math.round(target.y + 24 * target.scale))); b("mouse", "up", "left"); b("wait", "350");
-  assert.equal(stored().slides[0].components.find(item => item.id === "cover-title").area.row, 19, "24 authored pixels moves two baseline rows at 2x");
+  assert.equal(stored().pages[0].components.find(item => item.id === "cover-title").rect.y,
+    original.pages[0].components.find(item => item.id === "cover-title").rect.y + nativeDropDy, "drop persists the exact authored pixel delta at 2x");
   assert.equal(evaluate("document.querySelector('[data-page=cover] .component-hit.selected').style.translate"), "", "drop removes the temporary transform");
   b("press", "Control+z"); b("wait", "350"); assert.deepEqual(stored(), original, "zoomed drag undo is exact");
 
@@ -194,7 +196,8 @@ try {
     hit.dispatchEvent(new PointerEvent('pointerup',{...init,clientY:${Math.round(target.y) + 24 * target.scale}}));
   })()`);
   b("mouse", "up", "left"); b("wait", "350");
-  assert.equal(stored().slides[0].components.find(item => item.id === "cover-title").area.row, 19, "release consumes its final coordinates before the next preview frame");
+  assert.equal(stored().pages[0].components.find(item => item.id === "cover-title").rect.y,
+    original.pages[0].components.find(item => item.id === "cover-title").rect.y + 24, "release consumes its final coordinates before the next preview frame");
   assert.equal(evaluate("document.querySelector('[data-page=cover] .component-hit.selected').style.translate"), "", "no queued preview survives release");
   b("press", "Control+z"); b("wait", "350"); assert.deepEqual(stored(), original, "immediate release remains one undo step");
   b("dblclick", hit); b("fill", ".scene-text-editor", "Inline correction at 2×"); capture("zoomed-text");

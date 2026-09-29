@@ -7,7 +7,7 @@
     "mode": "paper",
     "typography": "plex-sans"
   },
-  "slides": [
+  "pages": [
     {
       "id": "explainer",
       "name": "Folio — preventing a stale overwrite",
@@ -25,7 +25,6 @@
           "slotIds": [
             "headline-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "A stale save must not\nerase a newer edit.",
           "textStyle": {
             "weight": 600,
@@ -45,11 +44,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 2,
-            "rows": 15
+          "rect": {
+            "x": 60,
+            "y": 74,
+            "width": 1080,
+            "height": 180
           }
         },
         {
@@ -58,7 +57,6 @@
           "slotIds": [
             "setup-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "In fictional Folio, Leena and Omar both read document 42:\n“Launch notes”, revision 7. Then each changes the title.",
           "textStyle": {
             "weight": 400,
@@ -78,11 +76,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 19,
-            "rows": 8
+          "rect": {
+            "x": 60,
+            "y": 278,
+            "width": 1080,
+            "height": 96
           }
         },
         {
@@ -91,7 +89,6 @@
           "slotIds": [
             "mechanism-title-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Check the revision and write in one atomic update.",
           "textStyle": {
             "weight": 600,
@@ -111,11 +108,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 30,
-            "rows": 4
+          "rect": {
+            "x": 60,
+            "y": 410,
+            "width": 1080,
+            "height": 48
           }
         },
         {
@@ -124,7 +121,6 @@
           "slotIds": [
             "mechanism-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Match document ID + expected revision, write the title, increment the\nrevision. Success means one row changed. Every title writer must use\nthis contract; never reuse a revision, even after restoration.",
           "textStyle": {
             "weight": 400,
@@ -144,11 +140,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 35,
-            "rows": 11
+          "rect": {
+            "x": 60,
+            "y": 470,
+            "width": 1080,
+            "height": 132
           }
         },
         {
@@ -157,7 +153,6 @@
           "slotIds": [
             "two-saves-content"
           ],
-          "intent": "Leena's save expects revision 7 and changes one row to revision 8. Omar's later save expects 7, changes zero rows, returns HTTP 409 Conflict, and preserves Leena's title. The two arrows are save requests, in top-to-bottom order.",
           "appearance": {
             "type": "process",
             "selection": "explicit",
@@ -414,11 +409,11 @@
               }
             ]
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 50,
-            "rows": 37
+          "rect": {
+            "x": 60,
+            "y": 650,
+            "width": 1080,
+            "height": 444
           }
         },
         {
@@ -427,7 +422,6 @@
           "slotIds": [
             "recovery-title-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "After the conflict, show both versions.",
           "textStyle": {
             "weight": 600,
@@ -447,11 +441,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 90,
-            "rows": 5
+          "rect": {
+            "x": 60,
+            "y": 1130,
+            "width": 1080,
+            "height": 60
           }
         },
         {
@@ -460,7 +454,6 @@
           "slotIds": [
             "recovery-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Fetch revision 8. Let Omar keep Leena’s title, revise it, or deliberately\nreplace it. Any new save uses the fetched revision and can conflict\nagain. Never silently retry Omar’s stale title with a newer revision.",
           "textStyle": {
             "weight": 400,
@@ -480,11 +473,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 96,
-            "rows": 11
+          "rect": {
+            "x": 60,
+            "y": 1202,
+            "width": 1080,
+            "height": 132
           }
         },
         {
@@ -493,7 +486,6 @@
           "slotIds": [
             "limits-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Why atomic? Separate checks can both pass before either write.\nScope: one document; no deletion. This does not merge edits or make\nmulti-document changes atomic. A lost success response can look like\na later conflict: revision checks alone do not deduplicate requests.",
           "textStyle": {
             "weight": 400,
@@ -513,11 +505,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 112,
-            "rows": 12
+          "rect": {
+            "x": 60,
+            "y": 1394,
+            "width": 1080,
+            "height": 144
           }
         }
       ],
@@ -625,9 +617,16 @@
         "recovery",
         "limits"
       ],
-      "grid": {
-        "preset": "explainer",
-        "revision": 2
+      "preset": "explainer",
+      "canvas": {
+        "width": 1200,
+        "height": 1600
+      },
+      "innerPadding": {
+        "top": 62,
+        "right": 60,
+        "bottom": 62,
+        "left": 60
       }
     }
   ]

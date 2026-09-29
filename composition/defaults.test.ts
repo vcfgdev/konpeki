@@ -7,7 +7,7 @@ import { renderDocument } from "../bin/render.ts";
 
 function fullDocument() {
   const document = toComposition(initialDraft());
-  const slide = document.slides[0];
+  const slide = document.pages[0];
   slide.components = [...slide.components].reverse();
   for (const component of slide.components) {
     component.slotIds = [];
@@ -24,7 +24,7 @@ function fullDocument() {
 test("omitted bookkeeping defaults without mutating frozen source and renders identically", async () => {
   const full = fullDocument();
   const shortened: any = structuredClone(full);
-  const slide = shortened.slides[0];
+  const slide = shortened.pages[0];
   delete slide.contentSlots;
   delete slide.groups;
   delete slide.relationships;
@@ -39,7 +39,7 @@ test("omitted bookkeeping defaults without mutating frozen source and renders id
   assert.equal(result.ok, true);
   if (!result.ok) return;
   assert.deepEqual(result.document, full);
-  const normalized = result.document.slides[0];
+  const normalized = result.document.pages[0];
   assert.deepEqual(normalized.contentSlots, []);
   assert.deepEqual(normalized.groups, []);
   assert.deepEqual(normalized.relationships, []);
@@ -56,7 +56,7 @@ test("omitted bookkeeping defaults without mutating frozen source and renders id
 
 test("explicit reading and paint orders are preserved independently", () => {
   const document = fullDocument();
-  const slide = document.slides[0];
+  const slide = document.pages[0];
   slide.readingOrder = [...slide.readingOrder].reverse();
   slide.paintOrder = [...slide.paintOrder];
   const expectedReading = structuredClone(slide.readingOrder);
@@ -64,41 +64,41 @@ test("explicit reading and paint orders are preserved independently", () => {
   const result = validateComposition(document);
   assert.equal(result.ok, true);
   if (result.ok) {
-    assert.deepEqual(result.document.slides[0].readingOrder, expectedReading);
-    assert.deepEqual(result.document.slides[0].paintOrder, expectedPaint);
+    assert.deepEqual(result.document.pages[0].readingOrder, expectedReading);
+    assert.deepEqual(result.document.pages[0].paintOrder, expectedPaint);
   }
 
   // Neither default may be copied from the other explicit order.
   for (const omitted of ["readingOrder", "paintOrder"] as const) {
     const source: any = fullDocument();
-    const ids = source.slides[0].components.map((component: any) => component.id);
-    source.slides[0].readingOrder = [...ids].reverse().map(id => ({ kind: "component", id }));
-    source.slides[0].paintOrder = [...ids].reverse();
-    delete source.slides[0][omitted];
+    const ids = source.pages[0].components.map((component: any) => component.id);
+    source.pages[0].readingOrder = [...ids].reverse().map(id => ({ kind: "component", id }));
+    source.pages[0].paintOrder = [...ids].reverse();
+    delete source.pages[0][omitted];
     const normalized = validateComposition(source);
     assert.equal(normalized.ok, true);
     if (!normalized.ok) continue;
-    assert.deepEqual(normalized.document.slides[0].readingOrder.map(entry => entry.id), omitted === "readingOrder" ? ids : [...ids].reverse());
-    assert.deepEqual(normalized.document.slides[0].paintOrder, omitted === "paintOrder" ? ids : [...ids].reverse());
+    assert.deepEqual(normalized.document.pages[0].readingOrder.map(entry => entry.id), omitted === "readingOrder" ? ids : [...ids].reverse());
+    assert.deepEqual(normalized.document.pages[0].paintOrder, omitted === "paintOrder" ? ids : [...ids].reverse());
   }
 });
 
 test("explicit invalid values and unresolved references still fail", () => {
   const emptyOrder = fullDocument();
-  emptyOrder.slides[0].readingOrder = [];
+  emptyOrder.pages[0].readingOrder = [];
   assert.equal(validateComposition(emptyOrder).ok, false);
 
   for (const key of ["groups", "relationships", "contentSlots", "readingOrder", "paintOrder"] as const) {
     const document: any = fullDocument();
-    document.slides[0][key] = null;
+    document.pages[0][key] = null;
     assert.equal(validateComposition(document).ok, false, key);
   }
 
   const unknownSlot = fullDocument();
-  unknownSlot.slides[0].components[0].slotIds = ["missing"];
+  unknownSlot.pages[0].components[0].slotIds = ["missing"];
   assert.equal(validateComposition(unknownSlot).ok, false);
 
   const unassignedSlot = fullDocument();
-  unassignedSlot.slides[0].contentSlots = [{ id: "orphan", label: "Orphan", required: true, instruction: "Keep", role: "body" }];
+  unassignedSlot.pages[0].contentSlots = [{ id: "orphan", label: "Orphan", required: true, instruction: "Keep", role: "body" }];
   assert.equal(validateComposition(unassignedSlot).ok, false);
 });

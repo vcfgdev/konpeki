@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -26,6 +26,26 @@ test("file sessions save atomically and reject stale revisions", async () => {
       (error: Error & { code?: string; revision?: string }) =>
         error.code === "REVISION_CONFLICT" && error.revision === saved.revision,
     );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("file sessions import old slides but only write canonical pages without intent", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "konpeki-session-legacy-"));
+  const path = join(directory, "composition.json");
+  try {
+    const expected = toComposition(initialDraft());
+    const { pages, ...rest } = expected;
+    const legacy = { ...rest, slides: pages.map(page => ({ ...page,
+      components: page.components.map(component => ({ ...component, intent: "Old instruction" })) })) };
+    const raw = canonicalJSON(legacy);
+    await writeFile(path, raw);
+    const opened = await readCompositionFile(path);
+    assert.deepEqual(opened.document, expected);
+    assert.equal(await readFile(path, "utf8"), raw, "opening is read-only");
+    await saveCompositionFile(path, opened.revision, legacy);
+    assert.equal(await readFile(path, "utf8"), `${canonicalJSON(expected)}\n`);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

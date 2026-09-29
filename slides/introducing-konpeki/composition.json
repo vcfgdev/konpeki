@@ -1,17 +1,15 @@
 {
   "authoringMode": "default",
   "schema": "konpeki-composition/v2",
-  "slides": [
+  "pages": [
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
-          "area": {
-            "column": 1,
-            "row": 5,
-            "rows": 6,
-            "span": 2
-          },
           "customVisual": {
             "description": "Konpeki blue brush mark",
             "elements": [
@@ -34,6 +32,12 @@
           },
           "id": "mark",
           "kind": "image",
+          "rect": {
+            "height": 72,
+            "width": 126,
+            "x": 72,
+            "y": 120
+          },
           "slotIds": [
             "mark-slot"
           ]
@@ -45,15 +49,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 3,
-            "row": 6,
-            "rows": 5,
-            "span": 6
-          },
           "content": "Konpeki",
           "id": "wordmark",
           "kind": "text-block",
+          "rect": {
+            "height": 60,
+            "width": 426,
+            "x": 222,
+            "y": 132
+          },
           "slotIds": [
             "wordmark-slot"
           ],
@@ -71,22 +75,22 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 17,
-            "rows": 26,
-            "span": 12
-          },
           "content": "Create clear visuals\nwith your coding agent.",
           "id": "cover-title",
           "kind": "text-block",
+          "rect": {
+            "height": 312,
+            "width": 876,
+            "x": 72,
+            "y": 264
+          },
           "slotIds": [
             "cover-title-slot"
           ],
           "textStyle": {
             "color": "ink",
             "font": "heading",
-            "leading": 8,
+            "leading": 96,
             "step": "display",
             "weight": 600
           }
@@ -98,15 +102,15 @@
             "role": "subtitle",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 47,
-            "rows": 12,
-            "span": 10
-          },
           "content": "Your agent drafts covers, social graphics, visual explanations and presentations. You and your agent edit the same page.",
           "id": "cover-lead",
           "kind": "text-block",
+          "rect": {
+            "height": 144,
+            "width": 726,
+            "x": 72,
+            "y": 624
+          },
           "slotIds": [
             "cover-lead-slot"
           ],
@@ -118,12 +122,6 @@
           }
         },
         {
-          "area": {
-            "column": 13,
-            "row": 10,
-            "rows": 57,
-            "span": 10
-          },
           "customVisual": {
             "description": "Four page sizes Konpeki supports: presentation, square post, portrait post and link preview, each sketched with typical components.",
             "elements": [
@@ -545,6 +543,12 @@
           },
           "id": "page-family",
           "kind": "image",
+          "rect": {
+            "height": 684,
+            "width": 726,
+            "x": 972,
+            "y": 180
+          },
           "slotIds": [
             "page-family-slot"
           ]
@@ -587,12 +591,14 @@
           "role": "image"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "cover",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "Konpeki",
       "pageNumber": {
@@ -606,6 +612,7 @@
         "cover-lead",
         "page-family"
       ],
+      "preset": "presentation",
       "question": "What is Konpeki?",
       "readingOrder": [
         {
@@ -633,6 +640,10 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -641,15 +652,15 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 2,
-            "rows": 8,
-            "span": 24
-          },
           "content": "Give your agent a brief. It returns an editable page.",
           "id": "flow-title",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 84
+          },
           "slotIds": [
             "flow-title-slot"
           ],
@@ -667,15 +678,15 @@
             "role": "subtitle",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 11,
-            "rows": 4,
-            "span": 18
-          },
           "content": "Konpeki is a skill for your coding agent plus a canvas you both work on.",
           "id": "flow-lead",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 1326,
+            "x": 72,
+            "y": 192
+          },
           "slotIds": [
             "flow-lead-slot"
           ],
@@ -694,12 +705,6 @@
             "emphasis": "primary",
             "selection": "explicit",
             "type": "process"
-          },
-          "area": {
-            "column": 1,
-            "row": 22,
-            "rows": 6,
-            "span": 6
           },
           "customVisual": {
             "description": "Step 1: Your brief. Arrow continues to the next step.",
@@ -766,6 +771,12 @@
           },
           "id": "flow-diagram",
           "kind": "diagram",
+          "rect": {
+            "height": 72,
+            "width": 426,
+            "x": 72,
+            "y": 324
+          },
           "slotIds": [
             "flow-diagram-slot"
           ]
@@ -777,15 +788,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 30,
-            "rows": 4,
-            "span": 6
-          },
           "content": "Your brief",
           "id": "step1-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 426,
+            "x": 72,
+            "y": 420
+          },
           "slotIds": [
             "step1-head-slot"
           ],
@@ -803,15 +814,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 35,
-            "rows": 17,
-            "span": 6
-          },
           "content": "Notes, source material and where the visual will be used.",
           "id": "step1-body",
           "kind": "text-block",
+          "rect": {
+            "height": 204,
+            "width": 426,
+            "x": 72,
+            "y": 480
+          },
           "slotIds": [
             "step1-body-slot"
           ],
@@ -830,12 +841,6 @@
             "emphasis": "primary",
             "selection": "explicit",
             "type": "process"
-          },
-          "area": {
-            "column": 7,
-            "row": 22,
-            "rows": 6,
-            "span": 6
           },
           "customVisual": {
             "description": "Step 2: Your coding agent. Arrow continues to the next step.",
@@ -902,6 +907,12 @@
           },
           "id": "flow-step-2",
           "kind": "diagram",
+          "rect": {
+            "height": 72,
+            "width": 426,
+            "x": 522,
+            "y": 324
+          },
           "slotIds": [
             "flow-step-2-slot"
           ]
@@ -913,15 +924,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 30,
-            "rows": 4,
-            "span": 6
-          },
           "content": "Your coding agent",
           "id": "step2-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 426,
+            "x": 522,
+            "y": 420
+          },
           "slotIds": [
             "step2-head-slot"
           ],
@@ -939,15 +950,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 35,
-            "rows": 17,
-            "span": 6
-          },
           "content": "Follows Konpeki's authoring guide and writes composition.json in your workspace.",
           "id": "step2-body",
           "kind": "text-block",
+          "rect": {
+            "height": 204,
+            "width": 426,
+            "x": 522,
+            "y": 480
+          },
           "slotIds": [
             "step2-body-slot"
           ],
@@ -966,12 +977,6 @@
             "emphasis": "primary",
             "selection": "explicit",
             "type": "process"
-          },
-          "area": {
-            "column": 13,
-            "row": 22,
-            "rows": 6,
-            "span": 6
           },
           "customVisual": {
             "description": "Step 3: Check and render. Arrow continues to the next step.",
@@ -1038,6 +1043,12 @@
           },
           "id": "flow-step-3",
           "kind": "diagram",
+          "rect": {
+            "height": 72,
+            "width": 426,
+            "x": 972,
+            "y": 324
+          },
           "slotIds": [
             "flow-step-3-slot"
           ]
@@ -1049,15 +1060,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 13,
-            "row": 30,
-            "rows": 4,
-            "span": 6
-          },
           "content": "Check and render",
           "id": "step3-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 426,
+            "x": 972,
+            "y": 420
+          },
           "slotIds": [
             "step3-head-slot"
           ],
@@ -1075,15 +1086,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 13,
-            "row": 35,
-            "rows": 17,
-            "span": 6
-          },
           "content": "The agent runs checks, renders a PNG and repairs problems it finds.",
           "id": "step3-body",
           "kind": "text-block",
+          "rect": {
+            "height": 204,
+            "width": 426,
+            "x": 972,
+            "y": 480
+          },
           "slotIds": [
             "step3-body-slot"
           ],
@@ -1102,12 +1113,6 @@
             "emphasis": "primary",
             "selection": "explicit",
             "type": "process"
-          },
-          "area": {
-            "column": 19,
-            "row": 22,
-            "rows": 6,
-            "span": 6
           },
           "customVisual": {
             "description": "Step 4: Your page.",
@@ -1150,6 +1155,12 @@
           },
           "id": "flow-step-4",
           "kind": "diagram",
+          "rect": {
+            "height": 72,
+            "width": 426,
+            "x": 1422,
+            "y": 324
+          },
           "slotIds": [
             "flow-step-4-slot"
           ]
@@ -1161,15 +1172,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 19,
-            "row": 30,
-            "rows": 4,
-            "span": 6
-          },
           "content": "Your page",
           "id": "step4-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 426,
+            "x": 1422,
+            "y": 420
+          },
           "slotIds": [
             "step4-head-slot"
           ],
@@ -1187,15 +1198,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 19,
-            "row": 35,
-            "rows": 17,
-            "span": 6
-          },
           "content": "Edit it, Present it, or export PNG, SVG, PDF and editable JSON.",
           "id": "step4-body",
           "kind": "text-block",
+          "rect": {
+            "height": 204,
+            "width": 426,
+            "x": 1422,
+            "y": 480
+          },
           "slotIds": [
             "step4-body-slot"
           ],
@@ -1207,12 +1218,6 @@
           }
         },
         {
-          "area": {
-            "column": 1,
-            "row": 56,
-            "rows": 1,
-            "span": 24
-          },
           "customVisual": {
             "description": "Divider between the main flow and the alternatives below it.",
             "elements": [
@@ -1241,6 +1246,12 @@
           "id": "flow-divider",
           "kind": "image",
           "layer": "background",
+          "rect": {
+            "height": 12,
+            "width": 1776,
+            "x": 72,
+            "y": 732
+          },
           "slotIds": [
             "flow-divider-slot"
           ]
@@ -1252,15 +1263,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 59,
-            "rows": 4,
-            "span": 10
-          },
           "content": "Prefer to sketch first?",
           "id": "sketch-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 726,
+            "x": 72,
+            "y": 768
+          },
           "slotIds": [
             "sketch-head-slot"
           ],
@@ -1278,15 +1289,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 64,
-            "rows": 9,
-            "span": 10
-          },
-          "content": "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.",
+          "content": "In a file-backed preview, leave a comment on a component, then copy the prompt to your agent to request the next revision.",
           "id": "sketch-body",
           "kind": "text-block",
+          "rect": {
+            "height": 108,
+            "width": 726,
+            "x": 72,
+            "y": 828
+          },
           "slotIds": [
             "sketch-body-slot"
           ],
@@ -1304,15 +1315,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 13,
-            "row": 59,
-            "rows": 4,
-            "span": 12
-          },
           "content": "No separate setup step",
           "id": "firstuse-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 876,
+            "x": 972,
+            "y": 768
+          },
           "slotIds": [
             "firstuse-head-slot"
           ],
@@ -1330,15 +1341,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 13,
-            "row": 64,
-            "rows": 9,
-            "span": 12
-          },
           "content": "With your approval, the skill installs the runtime in a user cache, not in your project.",
           "id": "firstuse-body",
           "kind": "text-block",
+          "rect": {
+            "height": 108,
+            "width": 876,
+            "x": 972,
+            "y": 828
+          },
           "slotIds": [
             "firstuse-body-slot"
           ],
@@ -1465,7 +1476,7 @@
         },
         {
           "id": "sketch-body-slot",
-          "instruction": "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.",
+          "instruction": "In a file-backed preview, leave a comment on a component, then copy the prompt to your agent to request the next revision.",
           "label": "sketch-body",
           "required": true,
           "role": "body"
@@ -1485,12 +1496,14 @@
           "role": "body"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "brief-to-page",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "From brief to page",
       "pageNumber": {
@@ -1518,6 +1531,7 @@
         "firstuse-head",
         "firstuse-body"
       ],
+      "preset": "presentation",
       "question": "What does my agent do with Konpeki?",
       "readingOrder": [
         {
@@ -1601,6 +1615,10 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -1609,15 +1627,15 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 2,
-            "rows": 8,
-            "span": 24
-          },
           "content": "You and your agent edit the same file.",
           "id": "share-title",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 84
+          },
           "slotIds": [
             "share-title-slot"
           ],
@@ -1635,15 +1653,15 @@
             "role": "subtitle",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 11,
-            "rows": 7,
-            "span": 20
-          },
           "content": "The page lives in composition.json. The browser canvas\nand your agent both read and write it.",
           "id": "share-lead",
           "kind": "text-block",
+          "rect": {
+            "height": 84,
+            "width": 1476,
+            "x": 72,
+            "y": 192
+          },
           "slotIds": [
             "share-lead-slot"
           ],
@@ -1662,12 +1680,6 @@
             "emphasis": "primary",
             "selection": "explicit",
             "type": "data-flow"
-          },
-          "area": {
-            "column": 1,
-            "row": 20,
-            "rows": 40,
-            "span": 24
           },
           "customVisual": {
             "description": "Browser canvas and coding agent on either side of composition.json. Arrows: canvas saves edits to the file and loads new revisions; agent writes validated revisions and rereads before revising.",
@@ -2200,6 +2212,12 @@
           },
           "id": "share-diagram",
           "kind": "diagram",
+          "rect": {
+            "height": 480,
+            "width": 1776,
+            "x": 72,
+            "y": 300
+          },
           "slotIds": [
             "share-diagram-slot"
           ]
@@ -2211,15 +2229,15 @@
             "role": "caption",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 65,
-            "rows": 8,
-            "span": 24
-          },
           "content": "A revision hash stops either side from overwriting a newer change.\nWhen your agent updates the file, your previous version stays in Undo.",
           "id": "share-note",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 840
+          },
           "slotIds": [
             "share-note-slot"
           ],
@@ -2261,12 +2279,14 @@
           "role": "body"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "shared-file",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "One shared file",
       "pageNumber": {
@@ -2279,6 +2299,7 @@
         "share-diagram",
         "share-note"
       ],
+      "preset": "presentation",
       "question": "Can I edit what the agent made?",
       "readingOrder": [
         {
@@ -2302,6 +2323,10 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -2310,15 +2335,15 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 2,
-            "rows": 8,
-            "span": 24
-          },
           "content": "Every page is built from five editable components.",
           "id": "comp-title",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 84
+          },
           "slotIds": [
             "comp-title-slot"
           ],
@@ -2330,12 +2355,6 @@
           }
         },
         {
-          "area": {
-            "column": 3,
-            "row": 16,
-            "rows": 18,
-            "span": 20
-          },
           "customVisual": {
             "description": "Five schematic icons: text lines, a small node diagram, a bar chart, a framed picture and a table.",
             "elements": [
@@ -2743,6 +2762,12 @@
           },
           "id": "comp-icons",
           "kind": "image",
+          "rect": {
+            "height": 216,
+            "width": 1476,
+            "x": 222,
+            "y": 252
+          },
           "slotIds": [
             "comp-icons-slot"
           ]
@@ -2754,15 +2779,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 3,
-            "row": 37,
-            "rows": 4,
-            "span": 4
-          },
           "content": "Text block",
           "id": "comp1-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 276,
+            "x": 222,
+            "y": 504
+          },
           "slotIds": [
             "comp1-head-slot"
           ],
@@ -2780,15 +2805,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 3,
-            "row": 42,
-            "rows": 14,
-            "span": 4
-          },
           "content": "Headlines, body copy and captions with consistent type roles.",
           "id": "comp1-body",
           "kind": "text-block",
+          "rect": {
+            "height": 168,
+            "width": 276,
+            "x": 222,
+            "y": 564
+          },
           "slotIds": [
             "comp1-body-slot"
           ],
@@ -2806,15 +2831,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 37,
-            "rows": 4,
-            "span": 4
-          },
           "content": "Diagram",
           "id": "comp2-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 276,
+            "x": 522,
+            "y": 504
+          },
           "slotIds": [
             "comp2-head-slot"
           ],
@@ -2832,15 +2857,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 42,
-            "rows": 14,
-            "span": 4
-          },
           "content": "Nodes and connections for processes, systems and flows.",
           "id": "comp2-body",
           "kind": "text-block",
+          "rect": {
+            "height": 168,
+            "width": 276,
+            "x": 522,
+            "y": 564
+          },
           "slotIds": [
             "comp2-body-slot"
           ],
@@ -2858,15 +2883,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 11,
-            "row": 37,
-            "rows": 4,
-            "span": 4
-          },
           "content": "Chart",
           "id": "comp3-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 276,
+            "x": 822,
+            "y": 504
+          },
           "slotIds": [
             "comp3-head-slot"
           ],
@@ -2884,15 +2909,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 11,
-            "row": 42,
-            "rows": 14,
-            "span": 4
-          },
           "content": "Bar, line, Sankey and other forms for the data you supply.",
           "id": "comp3-body",
           "kind": "text-block",
+          "rect": {
+            "height": 168,
+            "width": 276,
+            "x": 822,
+            "y": 564
+          },
           "slotIds": [
             "comp3-body-slot"
           ],
@@ -2910,15 +2935,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 15,
-            "row": 37,
-            "rows": 4,
-            "span": 4
-          },
           "content": "Image",
           "id": "comp4-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 276,
+            "x": 1122,
+            "y": 504
+          },
           "slotIds": [
             "comp4-head-slot"
           ],
@@ -2936,15 +2961,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 15,
-            "row": 42,
-            "rows": 14,
-            "span": 4
-          },
           "content": "Licensed pictures, brand marks and illustrations.",
           "id": "comp4-body",
           "kind": "text-block",
+          "rect": {
+            "height": 168,
+            "width": 276,
+            "x": 1122,
+            "y": 564
+          },
           "slotIds": [
             "comp4-body-slot"
           ],
@@ -2962,15 +2987,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 19,
-            "row": 37,
-            "rows": 4,
-            "span": 4
-          },
           "content": "Table",
           "id": "comp5-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 276,
+            "x": 1422,
+            "y": 504
+          },
           "slotIds": [
             "comp5-head-slot"
           ],
@@ -2988,15 +3013,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 19,
-            "row": 42,
-            "rows": 14,
-            "span": 4
-          },
           "content": "Rows and columns derived from your content.",
           "id": "comp5-body",
           "kind": "text-block",
+          "rect": {
+            "height": 168,
+            "width": 276,
+            "x": 1422,
+            "y": 564
+          },
           "slotIds": [
             "comp5-body-slot"
           ],
@@ -3014,15 +3039,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 66,
-            "rows": 10,
-            "span": 24
-          },
           "content": "Diagram, Chart and Table start as structural drafts. Finished artwork\nbecomes editable vector shapes with stable IDs, drawn from your source data,\nso you can select and change any line or label.",
           "id": "comp-note",
           "kind": "text-block",
+          "rect": {
+            "height": 120,
+            "width": 1776,
+            "x": 72,
+            "y": 852
+          },
           "slotIds": [
             "comp-note-slot"
           ],
@@ -3127,12 +3152,14 @@
           "role": "body"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "components",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "Five components",
       "pageNumber": {
@@ -3154,6 +3181,7 @@
         "comp5-body",
         "comp-note"
       ],
+      "preset": "presentation",
       "question": "What is a page made of?",
       "readingOrder": [
         {
@@ -3213,6 +3241,10 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -3221,15 +3253,15 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 2,
-            "rows": 8,
-            "span": 24
-          },
           "content": "Point at what to change. Continue in chat.",
           "id": "notes-title",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 84
+          },
           "slotIds": [
             "notes-title-slot"
           ],
@@ -3241,12 +3273,6 @@
           }
         },
         {
-          "area": {
-            "column": 1,
-            "row": 17,
-            "rows": 47,
-            "span": 12
-          },
           "customVisual": {
             "description": "Schematic editor: Notes panel with two numbered notes and an Add note button; a page on the canvas with matching pins on the title and a selected chart bar.",
             "elements": [
@@ -3646,6 +3672,12 @@
           },
           "id": "notes-ui",
           "kind": "image",
+          "rect": {
+            "height": 564,
+            "width": 876,
+            "x": 72,
+            "y": 264
+          },
           "slotIds": [
             "notes-ui-slot"
           ]
@@ -3657,15 +3689,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 15,
-            "row": 17,
-            "rows": 4,
-            "span": 2
-          },
           "content": "1",
           "id": "nstep1-num",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 126,
+            "x": 1122,
+            "y": 264
+          },
           "slotIds": [
             "nstep1-num-slot"
           ],
@@ -3683,15 +3715,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 17,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Select a target",
           "id": "nstep1-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 264
+          },
           "slotIds": [
             "nstep1-head-slot"
           ],
@@ -3709,15 +3741,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 21,
-            "rows": 7,
-            "span": 8
-          },
           "content": "A page, a component or a single vector shape inside it.",
           "id": "nstep1-body",
           "kind": "text-block",
+          "rect": {
+            "height": 84,
+            "width": 576,
+            "x": 1272,
+            "y": 312
+          },
           "slotIds": [
             "nstep1-body-slot"
           ],
@@ -3735,15 +3767,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 15,
-            "row": 29,
-            "rows": 4,
-            "span": 2
-          },
           "content": "2",
           "id": "nstep2-num",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 126,
+            "x": 1122,
+            "y": 408
+          },
           "slotIds": [
             "nstep2-num-slot"
           ],
@@ -3761,15 +3793,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 29,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Add notes",
           "id": "nstep2-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 408
+          },
           "slotIds": [
             "nstep2-head-slot"
           ],
@@ -3787,15 +3819,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 33,
-            "rows": 7,
-            "span": 8
-          },
           "content": "Write what should change. Notes stay attached to their targets beside the file.",
           "id": "nstep2-body",
           "kind": "text-block",
+          "rect": {
+            "height": 84,
+            "width": 576,
+            "x": 1272,
+            "y": 456
+          },
           "slotIds": [
             "nstep2-body-slot"
           ],
@@ -3813,15 +3845,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 15,
-            "row": 41,
-            "rows": 4,
-            "span": 2
-          },
           "content": "3",
           "id": "nstep3-num",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 126,
+            "x": 1122,
+            "y": 552
+          },
           "slotIds": [
             "nstep3-num-slot"
           ],
@@ -3839,15 +3871,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 41,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Continue in chat",
           "id": "nstep3-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 552
+          },
           "slotIds": [
             "nstep3-head-slot"
           ],
@@ -3865,15 +3897,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 45,
-            "rows": 7,
-            "span": 8
-          },
           "content": "Ask your agent to read the saved composition and its open notes.",
           "id": "nstep3-body",
           "kind": "text-block",
+          "rect": {
+            "height": 84,
+            "width": 576,
+            "x": 1272,
+            "y": 600
+          },
           "slotIds": [
             "nstep3-body-slot"
           ],
@@ -3891,15 +3923,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 15,
-            "row": 52,
-            "rows": 4,
-            "span": 2
-          },
           "content": "4",
           "id": "nstep4-num",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 126,
+            "x": 1122,
+            "y": 684
+          },
           "slotIds": [
             "nstep4-num-slot"
           ],
@@ -3917,15 +3949,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 52,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Your agent revises",
           "id": "nstep4-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 684
+          },
           "slotIds": [
             "nstep4-head-slot"
           ],
@@ -3943,15 +3975,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 57,
-            "rows": 7,
-            "span": 8
-          },
           "content": "It applies the changes, runs checks, renders a PNG and inspects the result.",
           "id": "nstep4-body",
           "kind": "text-block",
+          "rect": {
+            "height": 84,
+            "width": 576,
+            "x": 1272,
+            "y": 744
+          },
           "slotIds": [
             "nstep4-body-slot"
           ],
@@ -3969,15 +4001,15 @@
             "role": "caption",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 68,
-            "rows": 8,
-            "span": 24
-          },
           "content": "Notes need a file-backed preview. They do not start an agent automatically.\nContinue in the same conversation; resolve notes after reviewing the changes.",
           "id": "notes-limit",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 876
+          },
           "slotIds": [
             "notes-limit-slot"
           ],
@@ -4096,12 +4128,14 @@
           "role": "body"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "notes",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "Revision notes",
       "pageNumber": {
@@ -4125,6 +4159,7 @@
         "nstep4-body",
         "notes-limit"
       ],
+      "preset": "presentation",
       "question": "How do I ask for changes?",
       "readingOrder": [
         {
@@ -4192,6 +4227,10 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -4200,15 +4239,15 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 2,
-            "rows": 8,
-            "span": 24
-          },
           "content": "Try it in the browser. Keep working with your agent.",
           "id": "where-title",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 84
+          },
           "slotIds": [
             "where-title-slot"
           ],
@@ -4220,12 +4259,6 @@
           }
         },
         {
-          "area": {
-            "column": 1,
-            "row": 16,
-            "rows": 43,
-            "span": 24
-          },
           "customVisual": {
             "description": "Table rules: a heading rule, row separators and a closing rule.",
             "elements": [
@@ -4302,6 +4335,12 @@
           "id": "where-rules",
           "kind": "image",
           "layer": "background",
+          "rect": {
+            "height": 516,
+            "width": 1776,
+            "x": 72,
+            "y": 252
+          },
           "slotIds": [
             "where-rules-slot"
           ]
@@ -4313,15 +4352,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 17,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Browser playground",
           "id": "where-h1",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 522,
+            "y": 264
+          },
           "slotIds": [
             "where-h1-slot"
           ],
@@ -4339,15 +4378,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 17,
-            "rows": 4,
-            "span": 8
-          },
           "content": "With your coding agent",
           "id": "where-h2",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 264
+          },
           "slotIds": [
             "where-h2-slot"
           ],
@@ -4365,15 +4404,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 24,
-            "rows": 6,
-            "span": 4
-          },
           "content": "Start from",
           "id": "where-r1-label",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 276,
+            "x": 72,
+            "y": 348
+          },
           "slotIds": [
             "where-r1-label-slot"
           ],
@@ -4391,15 +4430,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 24,
-            "rows": 6,
-            "span": 8
-          },
           "content": "An example page, or a blank one",
           "id": "where-r1-browser",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 522,
+            "y": 348
+          },
           "slotIds": [
             "where-r1-browser-slot"
           ],
@@ -4417,15 +4456,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 24,
-            "rows": 6,
-            "span": 8
-          },
           "content": "Your brief and materials",
           "id": "where-r1-agent",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 1272,
+            "y": 348
+          },
           "slotIds": [
             "where-r1-agent-slot"
           ],
@@ -4443,15 +4482,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 34,
-            "rows": 6,
-            "span": 4
-          },
           "content": "Saved to",
           "id": "where-r2-label",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 276,
+            "x": 72,
+            "y": 468
+          },
           "slotIds": [
             "where-r2-label-slot"
           ],
@@ -4469,15 +4508,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 34,
-            "rows": 6,
-            "span": 8
-          },
           "content": "This browser only; no cloud sync",
           "id": "where-r2-browser",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 522,
+            "y": 468
+          },
           "slotIds": [
             "where-r2-browser-slot"
           ],
@@ -4495,15 +4534,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 34,
-            "rows": 6,
-            "span": 8
-          },
           "content": "composition.json in your workspace",
           "id": "where-r2-agent",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 1272,
+            "y": 468
+          },
           "slotIds": [
             "where-r2-agent-slot"
           ],
@@ -4521,15 +4560,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 43,
-            "rows": 6,
-            "span": 4
-          },
           "content": "Changes",
           "id": "where-r3-label",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 276,
+            "x": 72,
+            "y": 576
+          },
           "slotIds": [
             "where-r3-label-slot"
           ],
@@ -4547,15 +4586,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 43,
-            "rows": 6,
-            "span": 8
-          },
           "content": "Edit by hand",
           "id": "where-r3-browser",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 522,
+            "y": 576
+          },
           "slotIds": [
             "where-r3-browser-slot"
           ],
@@ -4573,15 +4612,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 43,
-            "rows": 6,
-            "span": 8
-          },
           "content": "Edit by hand, or ask for changes in chat",
           "id": "where-r3-agent",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 1272,
+            "y": 576
+          },
           "slotIds": [
             "where-r3-agent-slot"
           ],
@@ -4599,15 +4638,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 52,
-            "rows": 6,
-            "span": 4
-          },
           "content": "Get it out",
           "id": "where-r4-label",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 276,
+            "x": 72,
+            "y": 684
+          },
           "slotIds": [
             "where-r4-label-slot"
           ],
@@ -4625,15 +4664,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 7,
-            "row": 52,
-            "rows": 6,
-            "span": 8
-          },
           "content": "Download JSON, PNG, SVG or PDF",
           "id": "where-r4-browser",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 522,
+            "y": 684
+          },
           "slotIds": [
             "where-r4-browser-slot"
           ],
@@ -4651,15 +4690,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 52,
-            "rows": 6,
-            "span": 8
-          },
           "content": "Render PNG, SVG or PDF; preview is optional",
           "id": "where-r4-agent",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 576,
+            "x": 1272,
+            "y": 684
+          },
           "slotIds": [
             "where-r4-agent-slot"
           ],
@@ -4677,15 +4716,15 @@
             "role": "caption",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 65,
-            "rows": 6,
-            "span": 24
-          },
           "content": "To switch, download JSON from the playground and give it to your agent.\nThe two copies don't sync afterwards.",
           "id": "where-note",
           "kind": "text-block",
+          "rect": {
+            "height": 72,
+            "width": 1776,
+            "x": 72,
+            "y": 840
+          },
           "slotIds": [
             "where-note-slot"
           ],
@@ -4818,12 +4857,14 @@
           "role": "body"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "browser-or-agent",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "Browser or agent",
       "pageNumber": {
@@ -4849,6 +4890,7 @@
         "where-r4-agent",
         "where-note"
       ],
+      "preset": "presentation",
       "question": "Where should I start, and where is my work saved?",
       "readingOrder": [
         {
@@ -4924,6 +4966,10 @@
     },
     {
       "audience": "Developers meeting Konpeki for the first time",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -4932,15 +4978,15 @@
             "role": "title",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 2,
-            "rows": 8,
-            "span": 24
-          },
           "content": "Start with one install and a brief.",
           "id": "start-title",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1776,
+            "x": 72,
+            "y": 84
+          },
           "slotIds": [
             "start-title-slot"
           ],
@@ -4952,12 +4998,6 @@
           }
         },
         {
-          "area": {
-            "column": 1,
-            "row": 22,
-            "rows": 30,
-            "span": 14
-          },
           "customVisual": {
             "description": "Background panels for the install command and the example brief.",
             "elements": [
@@ -5002,6 +5042,12 @@
           "id": "start-boxes",
           "kind": "image",
           "layer": "background",
+          "rect": {
+            "height": 360,
+            "width": 1026,
+            "x": 72,
+            "y": 324
+          },
           "slotIds": [
             "start-boxes-slot"
           ]
@@ -5013,15 +5059,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 17,
-            "rows": 4,
-            "span": 14
-          },
           "content": "1  Install the skill once",
           "id": "start-s1",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 1026,
+            "x": 72,
+            "y": 264
+          },
           "slotIds": [
             "start-s1-slot"
           ],
@@ -5039,16 +5085,16 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 22,
-            "rows": 8,
-            "span": 14
-          },
           "content": "npx skills add vcfgdev/konpeki -g",
           "id": "start-cmd",
           "kind": "text-block",
-          "padding": 2,
+          "padding": 24,
+          "rect": {
+            "height": 96,
+            "width": 1026,
+            "x": 72,
+            "y": 324
+          },
           "slotIds": [
             "start-cmd-slot"
           ],
@@ -5066,15 +5112,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 34,
-            "rows": 4,
-            "span": 14
-          },
           "content": "2  Send your agent a brief",
           "id": "start-s2",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 1026,
+            "x": 72,
+            "y": 468
+          },
           "slotIds": [
             "start-s2-slot"
           ],
@@ -5092,16 +5138,16 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 40,
-            "rows": 12,
-            "span": 14
-          },
           "content": "Use Konpeki to create a one-page explainer of how a browser, API and database work together.",
           "id": "start-brief",
           "kind": "text-block",
-          "padding": 2,
+          "padding": 24,
+          "rect": {
+            "height": 144,
+            "width": 1026,
+            "x": 72,
+            "y": 540
+          },
           "slotIds": [
             "start-brief-slot"
           ],
@@ -5119,15 +5165,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "row": 55,
-            "rows": 8,
-            "span": 14
-          },
           "content": "Your agent writes the file, checks it, renders a PNG and inspects it.\nKeep revising in the same conversation.",
           "id": "start-s2-note",
           "kind": "text-block",
+          "rect": {
+            "height": 96,
+            "width": 1026,
+            "x": 72,
+            "y": 720
+          },
           "slotIds": [
             "start-s2-note-slot"
           ],
@@ -5145,15 +5191,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 17,
-            "rows": 4,
-            "span": 8
-          },
           "content": "You need",
           "id": "need-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 264
+          },
           "slotIds": [
             "need-head-slot"
           ],
@@ -5171,15 +5217,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 23,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Node.js 24+ and npm",
           "id": "need-1",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 336
+          },
           "slotIds": [
             "need-1-slot"
           ],
@@ -5197,15 +5243,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 28,
-            "rows": 7,
-            "span": 8
-          },
           "content": "A coding agent that can edit files and run commands",
           "id": "need-2",
           "kind": "text-block",
+          "rect": {
+            "height": 84,
+            "width": 576,
+            "x": 1272,
+            "y": 396
+          },
           "slotIds": [
             "need-2-slot"
           ],
@@ -5223,15 +5269,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 37,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Optional: a browser for the editor",
           "id": "need-3",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 504
+          },
           "slotIds": [
             "need-3-slot"
           ],
@@ -5249,15 +5295,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 43,
-            "rows": 4,
-            "span": 8
-          },
           "content": "Want an empty canvas first?",
           "id": "init-head",
           "kind": "text-block",
+          "rect": {
+            "height": 48,
+            "width": 576,
+            "x": 1272,
+            "y": 576
+          },
           "slotIds": [
             "init-head-slot"
           ],
@@ -5275,15 +5321,15 @@
             "role": "body",
             "rule": "none"
           },
-          "area": {
-            "column": 17,
-            "row": 49,
-            "rows": 10,
-            "span": 8
-          },
           "content": "Ask your agent to open a blank Konpeki file in the editor, without generating artwork.",
           "id": "init-body",
           "kind": "text-block",
+          "rect": {
+            "height": 120,
+            "width": 576,
+            "x": 1272,
+            "y": 648
+          },
           "slotIds": [
             "init-body-slot"
           ],
@@ -5388,12 +5434,14 @@
           "role": "body"
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "start",
+      "innerPadding": {
+        "bottom": 72,
+        "left": 72,
+        "right": 72,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "Get started",
       "pageNumber": {
@@ -5415,6 +5463,7 @@
         "init-head",
         "init-body"
       ],
+      "preset": "presentation",
       "question": "How do I start?",
       "readingOrder": [
         {

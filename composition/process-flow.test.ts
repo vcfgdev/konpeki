@@ -13,12 +13,12 @@ import { renderSVG } from "./svg.ts";
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 function fixture(direction: "right" | "down" = "right") {
   const document: GridDocument = JSON.parse(readFileSync(new URL("../skills/konpeki/assets/blank.json", import.meta.url), "utf8"));
-  const page = document.slides[0];
+  const page = document.pages[0];
   page.contentSlots = ["Receive request", "Capacity available?", "Reserve stock", "Notify customer"].map((label, i) => ({
     id: `s${i}`, label, role: "process-step", required: true, instruction: "Illustrative order handling",
   }));
   const flow: Extract<GridComponent, { kind: "diagram" }> = {
-    id: "flow", kind: "diagram", area: { column: 1, span: 24, row: 1, rows: 78 },
+    id: "flow", kind: "diagram", rect: { x: 72, y: 72, width: 1776, height: 936 },
     appearance: { type: "process" }, slotIds: page.contentSlots.map(slot => slot.id), processFlow: { direction },
     topology: { kind: "explicit", nodes: page.contentSlots.map((slot, i) => ({ id: `n${i}`, slotId: slot.id })),
       edges: [{ id: "receive", from: "n0", to: "n1" }, { id: "reserve", from: "n1", to: "n2", label: "Yes" }, { id: "notify", from: "n1", to: "n3", label: "No" }] },
@@ -103,9 +103,11 @@ test("longer copy and inserting a step preserve pinned placement, IDs and wire r
   assert.ok(pinned.box.height > before.components[0].processNodes!.find(node => node.id === "n2")!.box.height);
   assert.notDeepEqual(route(after, "reserve"), route(before, "reserve"));
   const resolved = resolveDocument(document);
-  assert.deepEqual(toComposition(resolved), document, "derived geometry never enters saved JSON");
-  const component = resolved.slides[0].components[0];
-  const moved = transformComponentRect(component, component.preferredRect, { ...component.preferredRect, y: component.preferredRect.y + 12, height: component.preferredRect.height - 12 }, page.grid);
+  const saved = toComposition(resolved);
+  assert.equal("preferredRect" in saved.pages[0].components[0], false, "derived geometry never enters saved JSON");
+  assert.deepEqual(saved.pages[0].components[0].rect, flow.rect);
+  const component = resolved.pages[0].components[0];
+  const moved = transformComponentRect(component, component.preferredRect, { ...component.preferredRect, y: component.preferredRect.y + 12, height: component.preferredRect.height - 12 }, page.canvas);
   assert.ok(moved.kind === "diagram");
   assert.deepEqual(moved.topology!.nodes.find(node => node.id === "n2")!.position, { x: 1260, y: 190 });
   delete flow.topology!.nodes[2].position;
@@ -114,12 +116,13 @@ test("longer copy and inserting a step preserve pinned placement, IDs and wire r
 
 test("crowding and unsafe overrides report errors without shrinking or omitting content", () => {
   const { document, page, flow } = fixture();
-  flow.area.rows = 5;
+  assert.ok(flow.rect);
+  flow.rect.height = 60;
   let scene = lowerPage(document, page, fonts);
   assert.ok(checkPageNode(scene, fonts).some(d => d.code === "process-layout" && d.severity === "error"));
   assert.equal(scene.items.filter(item => item.kind === "text").length, 6);
   assert.ok(scene.items.filter(item => item.kind === "text").every(item => item.fontSize === 24));
-  flow.area.rows = 78;
+  flow.rect.height = 936;
   flow.topology!.nodes[2].position = { x: 20, y: 20 };
   flow.topology!.nodes[3].position = { x: 20, y: 20 };
   scene = lowerPage(document, page, fonts);

@@ -155,8 +155,8 @@ test("the portable init template matches the editor's canonical blank document",
   const blank = JSON.parse(await readFile(new URL("assets/blank.json", skill), "utf8"));
   assert.deepEqual(blank, toComposition(initialDraft(true)), "update the portable template when the blank-document contract changes");
   assert.equal(validateComposition(blank).ok, true);
-  assert.equal(blank.slides.length, 1);
-  assert.deepEqual(blank.slides[0].components, []);
+  assert.equal(blank.pages.length, 1);
+  assert.deepEqual(blank.pages[0].components, []);
 });
 
 test("copied init creates an empty document, reopens without rewriting, and handles concurrent creation", async t => {
@@ -172,8 +172,8 @@ test("copied init creates an empty document, reopens without rewriting, and hand
   assert.deepEqual(JSON.parse(created.stdout), { compositionPath: path, created: true });
   const blank = JSON.parse(await readFile(path, "utf8"));
   assert.equal(blank.title, "Untitled composition");
-  assert.equal(blank.slides.length, 1);
-  assert.deepEqual(blank.slides[0].components, []);
+  assert.equal(blank.pages.length, 1);
+  assert.deepEqual(blank.pages[0].components, []);
   assert.deepEqual(await readdir(dirname(path)), ["composition.json"], "init must not create review state or start a listener");
 
   const example = JSON.parse(await readFile(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), "utf8"));

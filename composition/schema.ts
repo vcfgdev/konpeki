@@ -249,7 +249,6 @@ const components = componentKinds.map((kind) => {
       kind: { const: kind },
       preferredRect: rect,
       slotIds: ids,
-      intent: string,
       customVisual,
       ...(kind === "text-block" ? {
         content: { type: "string", maxLength: 50000 },
@@ -311,7 +310,7 @@ export const compositionVocabulary = {
         mode: enumeration(themeModes),
         typography: enumeration(typographyIds),
       }, ["id", "mode"]),
-      slides: array(
+      pages: array(
         object(
           {
           id: text,
@@ -421,6 +420,6 @@ export const compositionVocabulary = {
         1,
       ),
     },
-    ["schema", "title", "slides"],
+    ["schema", "title", "pages"],
   ),
 };

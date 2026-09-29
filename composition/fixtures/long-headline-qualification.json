@@ -1,8 +1,11 @@
 {
-  "schema": "konpeki-composition/v2",
-  "slides": [
+  "pages": [
     {
       "audience": "Decision makers",
+      "canvas": {
+        "height": 1080,
+        "width": 1920
+      },
       "components": [
         {
           "appearance": {
@@ -17,16 +20,15 @@
             "titleStyle": "prominent",
             "treatment": "plain"
           },
-          "area": {
-            "column": 1,
-            "row": 1,
-            "rows": 7,
-            "span": 22
-          },
           "content": "Text",
           "id": "text-block-1",
-          "intent": "State the decision or takeaway.",
           "kind": "text-block",
+          "rect": {
+            "height": 88,
+            "width": 1696,
+            "x": 112,
+            "y": 72
+          },
           "slotIds": [
             "text-block-1-content"
           ],
@@ -47,15 +49,14 @@
             "selection": "auto",
             "template": "grouped-bar"
           },
-          "area": {
-            "column": 1,
-            "row": 18,
-            "rows": 44,
-            "span": 14
-          },
           "id": "chart-2",
-          "intent": "Fictional Atlas: control median 420 ms / 60 runs; candidate median 310 ms / 55 observed runs. Five consecutive missing runs are not zero. Fixed staging workload, not peak production. Source AR-27, 8 September 2026.",
           "kind": "chart",
+          "rect": {
+            "height": 530,
+            "width": 1080,
+            "x": 112,
+            "y": 280
+          },
           "slotIds": [
             "chart-2-content"
           ]
@@ -73,16 +74,15 @@
             "titleStyle": "plain",
             "treatment": "strong"
           },
-          "area": {
-            "column": 17,
-            "row": 18,
-            "rows": 35,
-            "span": 8
-          },
           "content": "Text",
           "id": "text-block-3",
-          "intent": "Explain the implication or recommended action.",
           "kind": "text-block",
+          "rect": {
+            "height": 420,
+            "width": 560,
+            "x": 1248,
+            "y": 280
+          },
           "slotIds": [
             "text-block-3-content"
           ],
@@ -105,16 +105,15 @@
             "titleStyle": "plain",
             "treatment": "plain"
           },
-          "area": {
-            "column": 1,
-            "row": 72,
-            "rows": 7,
-            "span": 22
-          },
           "content": "Text",
           "id": "text-block-4",
-          "intent": "Add the source, scope, and any important caveat.",
           "kind": "text-block",
+          "rect": {
+            "height": 88,
+            "width": 1696,
+            "x": 112,
+            "y": 992
+          },
           "slotIds": [
             "text-block-4-content"
           ],
@@ -160,12 +159,14 @@
           ]
         }
       ],
-      "grid": {
-        "preset": "presentation",
-        "revision": 2
-      },
       "groups": [],
       "id": "slide-1",
+      "innerPadding": {
+        "bottom": 0,
+        "left": 112,
+        "right": 112,
+        "top": 72
+      },
       "intendedViewingSize": "presentation",
       "name": "Slide 01",
       "pageNumber": {
@@ -178,6 +179,7 @@
         "text-block-3",
         "text-block-4"
       ],
+      "preset": "presentation",
       "question": "What should the audience understand or decide?",
       "readingOrder": [
         {
@@ -200,6 +202,7 @@
       "relationships": []
     }
   ],
+  "schema": "konpeki-composition/v2",
   "theme": {
     "id": "plex",
     "mode": "paper"

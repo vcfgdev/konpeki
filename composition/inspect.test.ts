@@ -14,7 +14,7 @@ const near = (actual: number, expected: number) => assert.ok(Math.abs(actual - e
 
 test("summary shows components and settled groups without repeating scene items or copy", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
-  const page = document.slides[0], scene = lowerPage(document, page, fonts), before = structuredClone(scene);
+  const page = document.pages[0], scene = lowerPage(document, page, fonts), before = structuredClone(scene);
   const report = summarizePage(page, scene), json = JSON.stringify(report);
   assert.deepEqual(report.components.map(component => component.id), page.paintOrder);
   assert.equal(report.components.length, 5);
@@ -35,7 +35,7 @@ test("summary shows components and settled groups without repeating scene items 
 });
 
 test("inspection reports page-space lines and ink, not local coordinates or glyph arrays", () => {
-  const page = toComposition(initialGridDraft()).slides[0];
+  const page = toComposition(initialGridDraft()).pages[0];
   const fontId = "ibm-plex-sans-latin-400-normal";
   const glyph = (x: number, y: number, start: number) => ({ fontId, glyphId: 36, x, y, xAdvance: 14,
     yAdvance: 0, xOffset: 0, yOffset: 0, clusterStart: start, clusterEnd: start + 1 });
@@ -77,7 +77,7 @@ test("inspection reports page-space lines and ink, not local coordinates or glyp
 
 test("inspection preserves fitted label anchors, element IDs and interleaved paint order", () => {
   const document = toComposition(addComponent(initialGridDraft(), "image"));
-  const page = document.slides[0], component = page.components[0];
+  const page = document.pages[0], component = page.components[0];
   page.grid = { preset: "presentation" };
   component.area = { column: 2, span: 2, row: 4, rows: 10 };
   component.customVisual = { format: "vector", description: "Asymmetric fit", viewBox: { x: 10, y: 20, width: 200, height: 80 }, elements: [
@@ -97,29 +97,31 @@ test("inspection preserves fitted label anchors, element IDs and interleaved pai
   assert.deepEqual(label.clip, { x: 222, y: 108, width: 276, height: 120 });
 });
 
-test("inspection uses settled group geometry and keeps authored centered areas", () => {
+test("inspection uses settled group geometry and reports authored pixel rectangles", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
-  const page = document.slides[0], original = structuredClone(document);
+  const page = document.pages[0], original = structuredClone(document);
   const report = inspectPage(page, lowerPage(document, page, fonts), fonts);
   const group = report.groups.find(group => group.id === "brand-stack")!;
   near(group.bounds!.y + group.bounds!.height / 2, 315);
-  assert.equal(report.grid.marginY, 51);
+  assert.equal(report.preset, "link");
   for (const component of report.components.filter(item => group.childIds.includes(item.id))) {
+    assert.ok("rect" in component);
     assert.equal(component.box.x, 48);
-    assert.notEqual(component.box.y, 51 + (Number(component.resolvedArea.row) - 1) * 8, "use the scene, not just grid areas");
+    assert.notEqual(component.box.y, component.rect.y, "use settled scene geometry, not only authored rectangles");
   }
   assert.deepEqual(document, original);
-  const centered = page.components.find(component => component.id === "visual-family")!;
-  centered.area.row = "center"; centered.area.rows = 20;
-  const result = inspectPage(page, lowerPage(document, page, fonts), fonts).components.find(item => item.id === centered.id)!;
-  assert.equal(result.area.row, "center");
-  assert.equal(result.resolvedArea.row, 24);
-  assert.equal(result.box.y, 235);
+  const visual = page.components.find(component => component.id === "visual-family")!;
+  assert.ok(visual.rect);
+  visual.rect = { x: 611.5, y: 71.25, width: 540.5, height: 487.75 };
+  const result = inspectPage(page, lowerPage(document, page, fonts), fonts).components.find(item => item.id === visual.id)!;
+  assert.ok("rect" in result);
+  assert.deepEqual(result.rect, visual.rect);
+  assert.deepEqual(result.box, visual.rect);
 });
 
 test("native multicolumn regions remain distinct and include exact breaks and fallback fonts", () => {
   const document = toComposition(addComponent(initialGridDraft(), "text-block"));
-  const page = document.slides[0], component = page.components[0];
+  const page = document.pages[0], component = page.components[0];
   page.grid = { preset: "presentation" };
   assert.ok(component.kind === "text-block");
   component.area = { column: 2, span: 6, row: 4, rows: 20 }; component.padding = 2;

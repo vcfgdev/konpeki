@@ -19,7 +19,7 @@ const b = (...args) => execFileSync("agent-browser", ["--session", "kp-flow", ..
 const evaluate = code => JSON.parse(b("eval", code));
 const settle = () => b("wait", "350");
 const stored = () => { settle(); return evaluate("JSON.parse(localStorage.getItem('konpeki-composer/v1')).document"); };
-const flowOf = document => document.slides[0].components.find(component => component.id === "flow");
+const flowOf = document => document.pages[0].components.find(component => component.id === "flow");
 const positionOf = document => flowOf(document).topology.nodes.find(node => node.id === "backorder").position;
 const selectFlow = () => b("click", ".component-hit[data-component='flow']", "--force");
 function importDocument(document) {
@@ -31,7 +31,7 @@ function importDocument(document) {
 }
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 async function exports(document, name) {
-  const scene = lowerPage(document, document.slides[0], fonts);
+  const scene = lowerPage(document, document.pages[0], fonts);
   assert.deepEqual(checkPageNode(scene, fonts), [], `${name} must pass scene checks`);
   const svg = renderSVG(scene, fonts), path = resolve(output, name);
   writeFileSync(`${path}.json`, JSON.stringify(document, null, 2));
@@ -39,7 +39,7 @@ async function exports(document, name) {
   writeFileSync(`${path}.png`, new Resvg(svg, { fitTo: { mode: "zoom", value: 2 }, font: { loadSystemFonts: false } }).render().asPng());
   writeFileSync(`${path}.pdf`, await renderPDF([scene], fonts));
   const extracted = execFileSync("pdftotext", [`${path}.pdf`, "-"], { encoding: "utf8" }).replace(/\s+/g, " ");
-  for (const slot of document.slides[0].contentSlots) assert.ok(extracted.includes(slot.label), `PDF must retain ${slot.label}`);
+  for (const slot of document.pages[0].contentSlots) assert.ok(extracted.includes(slot.label), `PDF must retain ${slot.label}`);
   execFileSync("pdftoppm", ["-singlefile", "-r", "192", "-png", `${path}.pdf`, join(scratch, name)]);
   const diff = spawnSync("compare", ["-metric", "RMSE", `${path}.png`, join(scratch, `${name}.png`), "null:"], { encoding: "utf8" });
   const rmse = Number(/\(([\d.]+)\)/.exec(diff.stderr)?.[1]);
@@ -50,11 +50,11 @@ try {
   b("open", base); b("set", "viewport", "1600", "1000", "2"); b("wait", ".scene-canvas");
   const document = JSON.parse(readFileSync(new URL("../skills/konpeki/assets/blank.json", import.meta.url), "utf8"));
   document.title = "Semantic process flow";
-  const page = document.slides[0]; page.name = "Order handling";
+  const page = document.pages[0]; page.name = "Order handling";
   const steps = [["receive", "Receive order"], ["stock", "Stock available?"], ["reserve", "Reserve stock"], ["backorder", "Offer backorder"], ["confirm", "Confirm delivery"]];
   page.contentSlots = steps.map(([id, label]) => ({ id: `${id}-slot`, label, required: true, role: "process-step", instruction: "Illustrative example" }));
-  page.components = [{ id: "title", kind: "text-block", slotIds: ["headline"], content: "Check stock before promising delivery", appearance: { role: "title", verticalAlignment: "start" }, area: { column: 1, span: 24, row: 1, rows: 8 } },
-    { id: "flow", kind: "diagram", slotIds: page.contentSlots.map(slot => slot.id), appearance: { type: "process" }, area: { column: 1, span: 24, row: 12, rows: 60 }, processFlow: { direction: "right" },
+  page.components = [{ id: "title", kind: "text-block", slotIds: ["headline"], content: "Check stock before promising delivery", appearance: { role: "title", verticalAlignment: "start" }, rect: { x: 72, y: 72, width: 1776, height: 96 } },
+    { id: "flow", kind: "diagram", slotIds: page.contentSlots.map(slot => slot.id), appearance: { type: "process" }, rect: { x: 72, y: 204, width: 1776, height: 720 }, processFlow: { direction: "right" },
       topology: { kind: "explicit", nodes: steps.map(([id]) => ({ id, slotId: `${id}-slot` })), edges: [
         { id: "check", from: "receive", to: "stock" }, { id: "yes", from: "stock", to: "reserve", label: "Yes" },
         { id: "no", from: "stock", to: "backorder", label: "No" }, { id: "confirm-order", from: "reserve", to: "confirm" },
@@ -69,7 +69,7 @@ try {
   b("press", "Control+z"); assert.equal(positionOf(stored()), undefined);
   b("press", "Control+Shift+z"); assert.deepEqual(positionOf(stored()), nudged);
   b("focus", selector); b("press", "Delete"); assert.equal(positionOf(stored()), undefined);
-  assert.equal(stored().slides[0].components.length, 2, "Delete resets node, never deletes the component");
+  assert.equal(stored().pages[0].components.length, 2, "Delete resets node, never deletes the component");
   const point = evaluate(`(() => {const r=document.querySelector('${selector}').getBoundingClientRect(),c=document.querySelector('.scene-canvas').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,scale:c.width/1920};})()`);
   const startX = Math.round(point.x), startY = Math.round(point.y);
   const endX = Math.round(point.x + 18 * point.scale), endY = Math.round(point.y + 30 * point.scale);
@@ -77,12 +77,12 @@ try {
   b("mouse", "move", String(endX), String(endY)); settle(); b("mouse", "up", "left");
   const moved = stored(), pinned = positionOf(moved); assert.ok(pinned);
   assert.ok(Math.abs(pinned.x - nudged.x - (endX - startX) / point.scale) <= 1);
-  assert.ok(Math.abs(pinned.y - nudged.y + 12 - (endY - startY) / point.scale) <= 1, "drag delta vs 12px keyboard nudge");
-  b("reload"); settle(); selectFlow(); assert.deepEqual(positionOf(stored()), pinned);
+  assert.ok(Math.abs(pinned.y - nudged.y + 1 - (endY - startY) / point.scale) <= 1, "drag delta vs one-pixel keyboard nudge");
+  b("reload"); settle(); b("wait", "--fn", "document.querySelector('.scene-artwork [data-component=flow]') !== null"); selectFlow(); assert.deepEqual(positionOf(stored()), pinned);
   b("screenshot", resolve(output, "canvas-pinned.png"));
 
   // Agent revision of the latest saved human document, not the original input.
-  const revised = structuredClone(moved), revisedPage = revised.slides[0], flow = flowOf(revised);
+  const revised = structuredClone(moved), revisedPage = revised.pages[0], flow = flowOf(revised);
   revisedPage.contentSlots.find(slot => slot.id === "reserve-slot").label = "Reserve stock before confirming the delivery date";
   revisedPage.contentSlots.push({ id: "audit-slot", label: "Record request", role: "process-step", required: true, instruction: "Illustrative audit step" });
   flow.slotIds.push("audit-slot"); flow.topology.nodes.push({ id: "audit", slotId: "audit-slot" });
@@ -102,9 +102,9 @@ try {
   const night = structuredClone(document); night.theme.mode = "night";
   importDocument(night); await exports(night, "process-night");
   b("screenshot", resolve(output, "canvas-night.png"));
-  const crowded = structuredClone(document); flowOf(crowded).area.rows = 5;
+  const crowded = structuredClone(document); flowOf(crowded).rect.height = 60;
   importDocument(crowded); selectFlow();
-  assert.ok(checkPageNode(lowerPage(crowded, crowded.slides[0], fonts), fonts).some(d => d.code === "process-layout"));
+  assert.ok(checkPageNode(lowerPage(crowded, crowded.pages[0], fonts), fonts).some(d => d.code === "process-layout"));
   b("screenshot", resolve(output, "canvas-overflow.png"));
   importDocument(document); await exports(document, "process-default");
   console.log("PASS: drag, nudge, undo/redo, reset, reload, agent revision preserves pinned coordinates, both directions, night and overflow states.");

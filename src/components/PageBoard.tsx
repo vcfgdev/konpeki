@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { Draft } from "../lib/model.ts";
 import { layoutPages } from "../lib/page-board.ts";
 
-export function PageBoard({ draft, children }: { draft: Draft; children: (page: Draft["slides"][number], index: number) => ReactNode }) {
+export function PageBoard({ draft, children }: { draft: Draft; children: (page: Draft["pages"][number], index: number) => ReactNode }) {
   const root = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [space, setSpace] = useState({ width: 0, height: 0 });
@@ -87,14 +87,14 @@ export function PageBoard({ draft, children }: { draft: Draft; children: (page: 
       for (const type of ["gesturestart", "gesturechange", "gestureend"]) viewport.removeEventListener(type, gesture);
     };
   }, []);
-  const layout = layoutPages(draft.slides.map(page => page.canvas), space.width, space.height);
+  const layout = layoutPages(draft.pages.map(page => page.canvas), space.width, space.height);
   return <div ref={root} className="page-board" style={{ minHeight: space.height }} aria-label="All pages in reading order">
     {space.width > 0 && <div ref={content} className="page-board-content" style={{ width: layout.width, height: layout.height, zoom: 1 }}>
       <svg className="page-order" width={layout.width} height={layout.height} aria-hidden="true">
         <defs><marker id={marker} markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1 7 4 1 7" /></marker></defs>
-        {layout.arrows.map((path, index) => <path key={draft.slides[index].id} data-from={draft.slides[index].id} data-to={draft.slides[index + 1].id} d={path} markerEnd={`url(#${marker})`} />)}
+        {layout.arrows.map((path, index) => <path key={draft.pages[index].id} data-from={draft.pages[index].id} data-to={draft.pages[index + 1].id} d={path} markerEnd={`url(#${marker})`} />)}
       </svg>
-      {draft.slides.map((page, index) => {
+      {draft.pages.map((page, index) => {
         const box = layout.pages[index];
         return <article key={page.id} className="board-page" data-page={page.id} aria-label={`Page ${index + 1}: ${page.name}`}
           style={{ left: box.x, top: box.y - 32, width: box.width }}>

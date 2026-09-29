@@ -7,10 +7,8 @@ export const roleSteps: Record<Contract.TextRole, TypeStep> = {
   title: "title", subtitle: "lead", body: "body", caption: "caption", footnote: "fine",
 };
 
-// Fixed baseline rows keep a bounded page deterministic before fonts load. All
-// dimensions live here, never in authored component placement.
-// Type sizes and default line heights are hand-tuned in page pixels. Leading
-// need not consume a whole layout row; explicit overrides still use baseline units.
+// Preset dimensions and typography are defaults, not placement constraints.
+// Column/baseline data is retained only to import older grid documents exactly.
 export const gridPresets = {
   presentation: { width: 1920, height: 1080, columns: 12, gutter: 24, margin: 72, baseline: 12, scale: [20, 24, 28, 36, 44, 60, 76], lineHeights: [28, 32, 40, 46, 52, 68, 84] },
   portrait: { width: 1080, height: 1350, columns: 6, gutter: 24, margin: 60, baseline: 12, scale: [18, 22, 28, 34, 44, 60, 76], lineHeights: [24, 28, 36, 44, 52, 68, 84] },
@@ -29,20 +27,26 @@ export type GridPreset = keyof typeof gridPresets;
 export type PageGrid = { preset: GridPreset; revision?: 1 | 2 };
 export type GridArea = { column: number | "center"; span: number; row: number | "center"; rows: number };
 export type NumericGridArea = GridArea & { column: number; row: number };
-export type GridGroup = Contract.ManipulationGroup & { area?: GridArea; verticalAlignment?: Contract.Alignment };
-export type GridPlacement = { area: GridArea; layer?: "background" | "overlay"; padding?: number };
+export type GridGroup = Contract.ManipulationGroup & { rect?: Contract.Rect; area?: GridArea; verticalAlignment?: Contract.Alignment; layout?: "stack"; gap?: number };
+export type GridPlacement = {
+  rect?: Omit<Contract.Rect, "height"> & { height?: number }; area?: GridArea; layer?: "background" | "overlay"; padding?: number;
+  flow?: { gapBefore?: number; offset?: { x: number; y: number } };
+};
 type OnGrid<C> = C extends Contract.CompositionComponent
   ? Omit<C, "preferredRect" | "textStyle" | "customVisual"> & GridPlacement &
     { customVisual?: Extract<Contract.CustomVisual, { format: "vector" }> } &
-    (C extends Contract.TextBlockComponent ? { textStyle?: Omit<NonNullable<C["textStyle"]>, "size" | "lineHeight"> & { step?: TypeStep; leading?: number } } : {})
+    (C extends Contract.TextBlockComponent ? { textStyle?: Omit<NonNullable<C["textStyle"]>, "lineHeight"> & { step?: TypeStep; leading?: number } } : {})
   : never;
 export type GridComponent = OnGrid<Contract.CompositionComponent>;
 export type GridSlide = Omit<Contract.CompositionSlide, "canvas" | "innerPadding" | "components" | "groups"> & {
-  grid: PageGrid;
+  canvas?: Contract.CanvasSize;
+  preset?: GridPreset;
+  innerPadding?: Contract.CompositionSlide["innerPadding"];
+  grid?: PageGrid;
   components: GridComponent[];
   groups: GridGroup[];
 };
-export type GridDocument = Omit<Contract.CompositionDocument, "slides"> & { slides: GridSlide[] };
+export type GridDocument = Omit<Contract.CompositionDocument, "pages"> & { pages: GridSlide[] };
 export type WireDocument = GridDocument;
 
 // Derived geometry exists only in memory for selection, thumbnails and legacy
@@ -51,12 +55,13 @@ export type ResolvedComponent = Contract.CompositionComponent & Partial<GridPlac
   textStyle?: Contract.TextBlockComponent["textStyle"] & { step?: TypeStep; leading?: number };
 };
 export type ResolvedSlide = Omit<Contract.CompositionSlide, "components" | "groups"> & {
+  preset?: GridPreset;
   grid?: PageGrid;
   components: ResolvedComponent[];
   groups: GridGroup[];
 };
-export type ResolvedDocument = Omit<Contract.CompositionDocument, "slides"> & {
-  slides: ResolvedSlide[];
+export type ResolvedDocument = Omit<Contract.CompositionDocument, "pages"> & {
+  pages: ResolvedSlide[];
 };
 
 export function gridMetrics(grid: PageGrid) {
@@ -67,21 +72,35 @@ export function gridMetrics(grid: PageGrid) {
   return { ...p, columns, rows, marginY: (p.height - rows * p.baseline) / 2, columnWidth: (width - p.gutter * (columns - 1)) / columns };
 }
 
-/** Double column resolution without moving content. Reapplying is a no-op. */
-export function refineGrid(slide: GridSlide): GridSlide {
-  if (slide.grid.revision === 2) return slide;
-  // With unchanged gutters the pitch halves, not the column width.
-  const refine = (area: GridArea): GridArea => ({ ...area,
-    column: area.column === "center" ? "center" : area.column * 2 - 1, span: area.span * 2,
-  });
-  return { ...slide, grid: { ...slide.grid, revision: 2 },
-    components: slide.components.map(component => ({ ...component, area: refine(component.area) })),
-    groups: slide.groups.map(group => group.area ? { ...group, area: refine(group.area) } : group),
+export function pageMetrics(page: Pick<GridSlide, "preset" | "grid" | "canvas" | "innerPadding">) {
+  const defaults = gridPresets[page.preset ?? page.grid?.preset ?? "presentation"];
+  const canvas = page.canvas ?? defaults;
+  const margin = page.innerPadding ?? { top: defaults.margin, right: defaults.margin, bottom: defaults.margin, left: defaults.margin };
+  return { ...defaults, width: canvas.width, height: canvas.height, margin };
+}
+
+export function groupRect(page: GridSlide, group?: GridGroup): Contract.Rect {
+  if (group?.rect) return group.rect;
+  const p = pageMetrics(page);
+  return { x: p.margin.left, y: p.margin.top, width: p.width - p.margin.left - p.margin.right, height: p.height - p.margin.top - p.margin.bottom };
+}
+
+/** Import legacy placement without quantization or changing typography. */
+export function pixelPage(page: GridSlide): GridSlide {
+  if (!page.grid) return page;
+  const { grid, ...rest } = page, p = gridMetrics(grid);
+  return { ...rest, preset: grid.preset, canvas: { width: p.width, height: p.height },
+    innerPadding: { top: p.marginY, right: p.margin, bottom: p.marginY, left: p.margin },
+    components: page.components.map(({ area, padding, ...component }) => ({ ...component,
+      ...(area ? { rect: areaRect(grid, area) } : {}),
+      ...(padding === undefined ? {} : { padding: padding * p.baseline }),
+      ...(component.kind === "text-block" && component.textStyle?.leading !== undefined
+        ? { textStyle: { ...component.textStyle, leading: component.textStyle.leading * p.baseline } } : {}),
+    })),
+    groups: page.groups.map(({ area, ...group }) => ({ ...group, ...(area ? { rect: areaRect(grid, area) } : {}) })),
   };
 }
-export function typeSize(grid: PageGrid, step: TypeStep) {
-  return gridPresets[grid.preset].scale[typeSteps.indexOf(step)];
-}
+
 export function areaIssue(grid: PageGrid, area: GridArea): string | undefined {
   const p = gridMetrics(grid);
   for (const [position, span, count] of [["column", "span", p.columns], ["row", "rows", p.rows]] as const) {
@@ -110,65 +129,51 @@ export function areaRect(grid: PageGrid, area: GridArea): Contract.Rect {
     height: area.rows * p.baseline,
   };
 }
-export function snapArea(grid: PageGrid, rect: Contract.Rect, origin?: GridArea): NumericGridArea {
-  const p = gridMetrics(grid);
-  const clamp = (n: number, max: number) => Math.max(1, Math.min(max, n));
-  const pitch = p.columnWidth + p.gutter;
-  const before = origin && areaRect(grid, origin);
-  // Corrections use the vertical baseline on both axes. Measure deltas from the
-  // authored area so selecting or moving vertically never shifts older layouts.
-  const span = clamp(origin && before ? origin.span + Math.round((rect.width - before.width) / p.baseline) * p.baseline / pitch
-    : Math.round((rect.width + p.gutter) / pitch), p.columns);
-  const rows = clamp(Math.round(rect.height / p.baseline), p.rows);
-  return {
-    column: clamp(origin && before ? resolveArea(grid, origin).column + Math.round((rect.x - before.x) / p.baseline) * p.baseline / pitch
-      : Math.round((rect.x - p.margin) / pitch + 1), p.columns - span + 1),
-    span,
-    row: clamp(Math.round((rect.y - p.marginY) / p.baseline + 1), p.rows - rows + 1),
-    rows,
-  };
-}
-export function resolveComponent(component: GridComponent, grid: PageGrid): ResolvedComponent {
-  const result = { ...component, preferredRect: areaRect(grid, component.area) } as ResolvedComponent;
+export function resolveComponent(component: GridComponent, page: GridSlide, flowBox = groupRect(page)): ResolvedComponent {
+  // Flow rectangles here are placeholders until fonts load. The scene, never
+  // this estimate, owns measured text geometry and editor hit targets.
+  const result = { ...component, preferredRect: component.rect ? { ...component.rect, height: component.rect.height ?? 0 } : flowBox } as ResolvedComponent;
   if (component.kind === "text-block" && result.kind === "text-block") {
     const step = component.textStyle?.step ?? roleSteps[component.appearance.role];
-    const size = typeSize(grid, step);
-    const preset = gridPresets[grid.preset];
-    const height = component.textStyle?.leading === undefined
-      ? preset.lineHeights[typeSteps.indexOf(step)] : component.textStyle.leading * preset.baseline;
-    result.textStyle = { ...component.textStyle, size, lineHeight: height / size };
+    const preset = pageMetrics(page);
+    const size = component.textStyle?.size ?? preset.scale[typeSteps.indexOf(step)];
+    const height = component.textStyle?.leading ?? (component.textStyle?.size === undefined ? preset.lineHeights[typeSteps.indexOf(step)] : size * 1.4);
+    // Keep authored size/leading intact; only lineHeight is derived for legacy UI.
+    result.textStyle = { ...component.textStyle, lineHeight: height / size };
   }
   return result;
 }
 export function resolveSlide(slide: GridSlide): ResolvedSlide {
-  const p = gridMetrics(slide.grid);
-  return { ...slide, canvas: { width: p.width, height: p.height }, innerPadding: { top: p.marginY, right: p.margin, bottom: p.marginY, left: p.margin }, components: slide.components.map(c => resolveComponent(c, slide.grid)) };
+  const page = pixelPage(slide), p = pageMetrics(page);
+  return { ...page, canvas: { width: p.width, height: p.height },
+    components: page.components.map(c => resolveComponent(c, page, groupRect(page, page.groups.find(g => g.layout === "stack" && g.childIds.includes(c.id))))) };
 }
 export function resolveDocument(document: WireDocument): ResolvedDocument {
-  return { ...document, slides: document.slides.map(resolveSlide) };
+  return { ...document, pages: document.pages.map(resolveSlide) };
 }
 export function toGridComponent(component: ResolvedComponent): GridComponent {
   const { preferredRect: _, ...rest } = component;
   if (rest.kind === "text-block" && rest.textStyle) {
-    const { size: _, lineHeight: __, ...style } = rest.textStyle;
+    const { lineHeight: _, ...style } = rest.textStyle;
     if (Object.values(style).some(value => value !== undefined)) rest.textStyle = style;
     else delete rest.textStyle;
   }
   return rest as GridComponent;
 }
 export function toComposition(document: ResolvedDocument): WireDocument {
-  return { ...document, schema: gridSchema, slides: document.slides.map(({ canvas: _, innerPadding: __, ...slide }) => ({
-    ...slide, grid: slide.grid!, components: slide.components.map(toGridComponent),
+  return { ...document, schema: gridSchema, pages: document.pages.map(slide => ({
+    ...slide, components: slide.components.map(toGridComponent),
   })) };
 }
 
 /** An advisory estimate, not a font measurement or a taste score. */
 export function lineLengthWarnings(document: GridDocument) {
-  return document.slides.flatMap(slide => slide.components.flatMap(component => {
+  return document.pages.map(pixelPage).flatMap(slide => slide.components.flatMap(component => {
     if (component.kind !== "text-block" || component.customVisual || !component.content) return [];
     const step = component.textStyle?.step ?? roleSteps[component.appearance.role];
-    const width = areaRect(slide.grid, component.area).width - 2 * (component.padding ?? 0) * gridPresets[slide.grid.preset].baseline;
-    const capacity = Math.floor(width / (typeSize(slide.grid, step) * 0.5));
+    const box = component.rect ?? groupRect(slide, slide.groups.find(g => g.childIds.includes(component.id)));
+    const width = box.width - 2 * (component.padding ?? 0);
+    const capacity = Math.floor(width / ((component.textStyle?.size ?? pageMetrics(slide).scale[typeSteps.indexOf(step)]) * 0.5));
     const characters = Math.min(capacity, Math.max(...component.content.split("\n").map(line => [...line].length)));
     return characters > 75 ? [{ slideId: slide.id, componentId: component.id, characters }] : [];
   }));

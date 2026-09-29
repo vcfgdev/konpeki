@@ -9,10 +9,10 @@ export async function exportComposition(document: GridDocument, format: ExportFo
   const fonts = await sceneFonts();
   if (format === "pdf") {
     const { renderPDF } = await import("../../composition/pdf.ts");
-    const bytes = await renderPDF(document.slides.map(page => lowerPage(document, page, fonts)), fonts);
+    const bytes = await renderPDF(document.pages.map(page => lowerPage(document, page, fonts)), fonts);
     return new Blob([bytes.slice().buffer as ArrayBuffer], { type: "application/pdf" });
   }
-  const scene = lowerPage(document, document.slides[pageIndex], fonts);
+  const scene = lowerPage(document, document.pages[pageIndex], fonts);
   const svg = renderSVG(scene, fonts);
   if (format === "svg") return new Blob([svg], { type: "image/svg+xml" });
   // Match resvg's rounded 1x viewport while preserving the exact viewBox.

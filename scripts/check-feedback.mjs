@@ -17,7 +17,7 @@ const scratch = await mkdtemp(join(tmpdir(), "konpeki-feedback-"));
 const path = join(scratch, "composition.json");
 const draft = addComponent(initialDraft(true), "text-block");
 draft.title = "Feedback review";
-draft.slides[0].components[0].content = "A long heading that no longer fits inside this text component.";
+draft.pages[0].components[0].content = "A long heading that no longer fits inside this text component.";
 await writeFile(path, JSON.stringify(draft));
 let failNotes = false;
 let failSave = false;
@@ -123,11 +123,11 @@ try {
     await b("click", 'input[aria-label="Page name"]');
     assert.equal(await evaluate('document.activeElement?.getAttribute("aria-label")'), "Page name");
     await b("press", "Enter");
-    await diskMatches(document => document.slides[0].name === "Renamed with Enter");
+    await diskMatches(document => document.pages[0].name === "Renamed with Enter");
     await b("dblclick", ".stage-meta h2");
     await field("Page name", "Renamed with outside click");
     await click("Settings");
-    await diskMatches(document => document.slides[0].name === "Renamed with outside click");
+    await diskMatches(document => document.pages[0].name === "Renamed with outside click");
     assert.equal(await evaluate('!!document.querySelector("input[aria-label=\\"Page name\\"]")'), false);
     await click("Select Text block");
   }
@@ -143,7 +143,7 @@ try {
       focused: true, outline: "rgb(177, 61, 61)", offset: "-1px", shadow: "none",
     });
     assert.equal(metrics.fontBeforeY, metrics.fontAfterY);
-    assert.equal((await documentOnDisk()).slides[0].components[0].textStyle?.size ?? 36, 36);
+    assert.equal((await documentOnDisk()).pages[0].components[0].textStyle?.size ?? 36, 36);
     await b("press", "Escape");
     assert.equal(await evaluate(`document.querySelector('${fontSelector}').value`), "36");
     for (const invalid of [7, 241, ""]) {
@@ -160,11 +160,11 @@ try {
     }
     for (const valid of [8, 240, 36]) {
       await commit("Font size", valid);
-      await diskMatches(document => document.slides[0].components[0].textStyle.size === valid);
+      await diskMatches(document => document.pages[0].components[0].textStyle.size === valid);
     }
     await field("Line height", 1.7);
     await b("press", "Tab");
-    await diskMatches(document => document.slides[0].components[0].textStyle.lineHeight === 1.7);
+    await diskMatches(document => document.pages[0].components[0].textStyle.lineHeight === 1.7);
     await commit("Line height", 1.4);
     await commit("Font size", 42);
     await wait("!document.querySelector('.file-status.saving') && !document.querySelector('.recovery.visible')");
@@ -186,7 +186,7 @@ try {
       await b("mouse", "down", "left");
       await b("mouse", "up", "left");
       await wait("!document.querySelector('[data-component].selected')");
-      await diskMatches(document => document.slides[0].components[0].textStyle.size === size);
+      await diskMatches(document => document.pages[0].components[0].textStyle.size === size);
       await click("Select Text block");
       assert.equal(await evaluate(`document.querySelector('${fontSelector}').value`), String(size));
     }
@@ -411,7 +411,7 @@ try {
     }
     await b("set", "viewport", "1556", "1030", "2");
     const vectors = addComponent(await documentOnDisk(), "diagram");
-    const diagram = vectors.slides[0].components.at(-1);
+    const diagram = vectors.pages[0].components.at(-1);
     diagram.preferredRect.width = 100;
     diagram.preferredRect.height = 50;
     diagram.customVisual = {
@@ -434,11 +434,11 @@ try {
     assert.equal(await evaluate("document.querySelector('.custom-visual-summary select').value"), "overflow-label");
     await commit("Width", 110);
     await commit("Height", 60);
-    await diskMatches(document => document.slides[0].components.at(-1).preferredRect.height === 60);
-    assert.equal((await documentOnDisk()).slides[0].components.at(-1).preferredRect.width, 110);
+    await diskMatches(document => document.pages[0].components.at(-1).preferredRect.height === 60);
+    assert.equal((await documentOnDisk()).pages[0].components.at(-1).preferredRect.width, 110);
     await b("fill", 'input[name="vector-fill"]', "theme:invalid");
     await wait("!!document.querySelector('.recovery.visible')");
-    assert.equal((await documentOnDisk()).slides[0].components.at(-1).customVisual.elements[0].attributes.fill, "theme:ink");
+    assert.equal((await documentOnDisk()).pages[0].components.at(-1).customVisual.elements[0].attributes.fill, "theme:ink");
     await click("Undo edit");
     await wait("!document.querySelector('.recovery.visible')");
     await b("set", "media", "light", "reduced-motion");

@@ -23,7 +23,7 @@ const check = expression => b("eval", `if(!(${expression}))throw Error(${JSON.st
 const wait = expression => b("wait", "--fn", expression);
 const click = name => b("find", "role", "button", "click", "--name", name, "--exact");
 const page = id => `[data-page="${id}"]`;
-const ready = () => wait(`document.querySelectorAll('.scene-artwork svg').length===${original.slides.length} && !document.querySelector('.workspace[inert]')`);
+const ready = () => wait(`document.querySelectorAll('.scene-artwork svg').length===${original.pages.length} && !document.querySelector('.workspace[inert]')`);
 const choosePage = async id => {
   await b("focus", `${page(id)} .page-comment-hit`);
   await b("press", "Enter");
@@ -68,7 +68,7 @@ const capture = async name => {
 };
 let cdp;
 let requestId = 0;
-function command(method, params) {
+function command(method, params, sessionId) {
   return new Promise((resolve, reject) => {
     const id = ++requestId;
     const timer = setTimeout(() => { cdp.removeEventListener("message", receive); reject(new Error(`CDP timed out: ${method}`)); }, 10000);
@@ -79,7 +79,7 @@ function command(method, params) {
       if (response.error) reject(new Error(JSON.stringify(response.error))); else resolve(response.result);
     }
     cdp.addEventListener("message", receive);
-    cdp.send(JSON.stringify({ id, method, params }));
+    cdp.send(JSON.stringify({ id, method, params, sessionId }));
   });
 }
 async function waitForFile(predicate) {
@@ -100,15 +100,15 @@ try {
   await ready();
   await check("!document.querySelector('.left-sidebar,.right-panel,.component-dock,select,textarea')");
   await check("document.querySelectorAll('button:not(.component-hit):not([inert] button)').length===1");
-  await check(`document.querySelectorAll('.board-page').length===${original.slides.length} && document.querySelectorAll('.page-order > path').length===${original.slides.length - 1}`);
-  await check(`JSON.stringify([...document.querySelectorAll('.page-order > path')].map(p=>[p.dataset.from,p.dataset.to]))===${JSON.stringify(JSON.stringify(original.slides.slice(1).map((p, i) => [original.slides[i].id, p.id])))}`);
+  await check(`document.querySelectorAll('.board-page').length===${original.pages.length} && document.querySelectorAll('.page-order > path').length===${original.pages.length - 1}`);
+  await check(`JSON.stringify([...document.querySelectorAll('.page-order > path')].map(p=>[p.dataset.from,p.dataset.to]))===${JSON.stringify(JSON.stringify(original.pages.slice(1).map((p, i) => [original.pages[i].id, p.id])))}`);
   await capture("page-board");
 
   // Establish document undo history, then prove native comment undo is isolated.
   await b("dblclick", `${page("cover")} .stage-meta h2`);
   await b("fill", 'input[aria-label="Page name"]', "Undo isolation");
   await b("press", "Enter");
-  await waitForFile(doc => doc.slides[0].name === "Undo isolation");
+  await waitForFile(doc => doc.pages[0].name === "Undo isolation");
   const inactiveColor = await b("eval", "getComputedStyle(document.querySelector('.review-launcher')).backgroundColor");
   await click("Comment");
   await check("!!document.querySelector('.workspace.reviewing') && !document.querySelector('.revision-notes,.review-count,.review-hint')");
@@ -172,6 +172,35 @@ try {
   await b("click", `${page("cover")} .component-hit[data-component="wordmark"]`);
   await b("focus", "#revision-notes"); await b("press", "Delete");
   await check("!!document.querySelector('[data-page=cover] .component-hit[data-component=wordmark]')");
+  assert.equal(await readFile(path, "utf8"), beforeComment);
+
+  // Only an empty queue dismisses outside; panel controls and drafts stay usable.
+  await b("click", ".board-heading h1");
+  await check("!!document.querySelector('.review-actions')");
+  await click("Remove comment 1"); await wait("!!document.querySelector('.review-empty')");
+  await b("click", ".review-empty");
+  await check("!!document.querySelector('.review-empty')");
+  await click("New comment"); await choosePage("cover");
+  await b("fill", "#revision-note", "Draft kept while the queue is empty");
+  await b("click", ".board-heading h1");
+  await check("document.querySelector('#revision-note')?.value==='Draft kept while the queue is empty'");
+  await click("Cancel"); await b("press", "Control+z");
+  await openReviews(); await click("Remove comment 1");
+  await wait("!!document.querySelector('.review-empty')");
+  // Component pointer handlers stop propagation; outside dismissal must still run.
+  await b("click", `${page("cover")} .component-hit[data-component="wordmark"]`);
+  await check("!document.querySelector('.revision-notes,.workspace.reviewing') && document.querySelector('.review-launcher').getAttribute('aria-expanded')==='false'");
+  await check("document.activeElement.matches('.component-hit[data-component=wordmark]')");
+  await b("press", "Control+z");
+  await openReviews(); await click("Remove comment 1");
+  await wait("!!document.querySelector('.review-empty')");
+  await b("click", ".review-launcher");
+  await check("!document.querySelector('.revision-notes,.workspace.reviewing')");
+  await reviewPage("cover");
+  await check("document.querySelector('#revision-note').value==='Draft kept while the queue is empty'");
+  await b("press", "Escape"); await b("press", "Control+z");
+  await wait(`JSON.parse(localStorage.getItem('${fileStorage}')).notes.length===1`);
+  assert.deepEqual((await readBrowserReview()).notes, [firstNote]);
   assert.equal(await readFile(path, "utf8"), beforeComment);
 
   // Esc keeps drafts, target changes isolate them, review keys never nudge/delete.
@@ -295,7 +324,7 @@ try {
   await b("press", "Escape");
 
   // Direct corrections still save; keyboard history replaces the toolbar.
-  const text = original.slides[0].components.find(c => c.kind === "text-block" && !c.customVisual);
+  const text = original.pages[0].components.find(c => c.kind === "text-block" && !c.customVisual);
   const hit = `${page("cover")} .component-hit[data-component="${text.id}"]`;
   await enterReview(); await b("click", hit);
   await b("fill", "#revision-note", "Keep this name."); await addComment();
@@ -306,46 +335,51 @@ try {
   const dragPoint = JSON.parse(await b("eval", `(()=>{const r=document.querySelector('${hit}').getBoundingClientRect();return {x:Math.round(r.x+r.width/2),y:Math.round(r.y+r.height/2)}})()`));
   const beforeDrag = await readFile(path, "utf8");
   await b("mouse", "move", String(dragPoint.x), String(dragPoint.y)); await b("mouse", "down", "left");
-  await b("mouse", "move", String(dragPoint.x), String(dragPoint.y + 1));
-  await wait(`Math.abs(${pinTop}-${beforeMove}-1)<.05`);
+  // The CLI mouse command accepts only integers; CDP preserves subpixel input.
+  const { targetInfos } = await command("Target.getTargets");
+  const targetId = targetInfos.find(target => target.type === "page" && target.url.startsWith(base)).targetId;
+  const { sessionId } = await command("Target.attachToTarget", { targetId, flatten: true });
+  await command("Input.dispatchMouseEvent", { type: "mouseMoved", x: dragPoint.x, y: dragPoint.y + .25, button: "left", buttons: 1 }, sessionId);
+  await command("Target.detachFromTarget", { sessionId });
+  await wait(`Math.abs(${pinTop}-${beforeMove})<.5`);
   await b("wait", "350");
   assert.equal(await readFile(path, "utf8"), beforeDrag, "drag preview does not write the source");
   await b("mouse", "up", "left");
   await wait(`Math.abs(${pinTop}-${beforeMove})<.05`);
-  assert.equal(await readFile(path, "utf8"), beforeDrag, "a sub-grid drop restores the marker without changing source");
+  assert.equal(await readFile(path, "utf8"), beforeDrag, "a sub-half-page-pixel drop restores the marker without changing source");
   await b("click", hit); await b("press", "ArrowDown");
-  await waitForFile(doc => doc.slides[0].components.find(c => c.id === text.id).area.row === text.area.row + 1);
+  await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).rect.y === text.rect.y + 1);
   await wait(`${pinTop}>${beforeMove}`);
   await b("press", "Control+z");
-  await waitForFile(doc => doc.slides[0].components.find(c => c.id === text.id).area.row === text.area.row);
+  await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).rect.y === text.rect.y);
   await b("press", "Control+Shift+z");
-  await waitForFile(doc => doc.slides[0].components.find(c => c.id === text.id).area.row === text.area.row + 1);
+  await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).rect.y === text.rect.y + 1);
   await b("dblclick", hit); await b("fill", ".scene-text-editor", "Corrected wording"); await b("press", "Tab");
-  await waitForFile(doc => doc.slides[0].components.find(c => c.id === text.id).content === "Corrected wording");
+  await waitForFile(doc => doc.pages[0].components.find(c => c.id === text.id).content === "Corrected wording");
   await b("click", hit); await b("press", "Delete");
-  await waitForFile(doc => !doc.slides[0].components.some(c => c.id === text.id));
+  await waitForFile(doc => !doc.pages[0].components.some(c => c.id === text.id));
   await check("!document.querySelector('[data-page=cover] .revision-pin')");
   await b("press", "Control+z");
-  await waitForFile(doc => doc.slides[0].components.some(c => c.id === text.id));
+  await waitForFile(doc => doc.pages[0].components.some(c => c.id === text.id));
   await wait("!!document.querySelector('[data-page=cover] .revision-pin')");
 
   // An open text correction merges with newer geometry, not its captured component.
   await b("dblclick", titleHit); await b("fill", ".scene-text-editor", "Preserve the newer geometry.");
   const oldTop = await b("eval", `document.querySelector('${titleHit}').style.top`);
   const external = JSON.parse(await readFile(path, "utf8"));
-  const externalTitle = external.slides[0].components.find(c => c.id === "cover-title");
-  externalTitle.area.row += 2;
+  const externalTitle = external.pages[0].components.find(c => c.id === "cover-title");
+  externalTitle.rect.y += 2;
   externalTitle.textStyle.weight = 500;
   await writeFile(path, JSON.stringify(external));
   await wait(`document.querySelector('${titleHit}').style.top!==${oldTop}`);
   await b("press", "Tab");
-  await waitForFile(doc => doc.slides[0].components.find(c => c.id === "cover-title").content === "Preserve the newer geometry.");
+  await waitForFile(doc => doc.pages[0].components.find(c => c.id === "cover-title").content === "Preserve the newer geometry.");
   const merged = JSON.parse(await readFile(path, "utf8"));
-  assert.deepEqual(merged.slides[0].components.find(c => c.id === "cover-title"), { ...externalTitle, content: "Preserve the newer geometry." });
+  assert.deepEqual(merged.pages[0].components.find(c => c.id === "cover-title"), { ...externalTitle, content: "Preserve the newer geometry." });
 
   // Competing content never gets overwritten; an unrelated editor cannot eat the draft.
   await b("dblclick", titleHit); await b("fill", ".scene-text-editor", "My unsent headline");
-  merged.slides[0].components.find(c => c.id === "cover-title").content = "External headline";
+  merged.pages[0].components.find(c => c.id === "cover-title").content = "External headline";
   await writeFile(path, JSON.stringify(merged));
   await wait("!!document.querySelector('[data-page=cover] .scene-artwork [aria-label=\"External headline\"]')");
   await b("press", "Tab");
@@ -355,16 +389,16 @@ try {
   await b("dblclick", hit);
   await check("document.querySelector('.scene-text-editor').value==='My unsent headline'");
   await b("focus", ".scene-text-editor"); await b("press", "Escape");
-  assert.equal(JSON.parse(await readFile(path, "utf8")).slides[0].components.find(c => c.id === "cover-title").content, "External headline");
+  assert.equal(JSON.parse(await readFile(path, "utf8")).pages[0].components.find(c => c.id === "cover-title").content, "External headline");
 
   // Merely opening and blurring unchanged text must not revert a newer value.
   await b("dblclick", titleHit);
-  merged.slides[0].components.find(c => c.id === "cover-title").content = "Newer headline";
+  merged.pages[0].components.find(c => c.id === "cover-title").content = "Newer headline";
   await writeFile(path, JSON.stringify(merged));
   await wait("!!document.querySelector('[data-page=cover] .scene-artwork [aria-label=\"Newer headline\"]')");
   await b("press", "Tab");
   await check("!document.querySelector('.scene-text-editor')");
-  assert.equal(JSON.parse(await readFile(path, "utf8")).slides[0].components.find(c => c.id === "cover-title").content, "Newer headline");
+  assert.equal(JSON.parse(await readFile(path, "utf8")).pages[0].components.find(c => c.id === "cover-title").content, "Newer headline");
   await b("dblclick", titleHit); await b("fill", ".scene-text-editor", "Keep my draft after deletion");
   const parsed = parseCompositionJSON(JSON.stringify(merged));
   assert.ok(parsed.ok);
@@ -423,14 +457,14 @@ try {
   await check("!document.querySelector('.recovery.visible')");
   await b("dblclick", `${page("cover")} .stage-meta h2`);
   await b("fill", 'input[aria-label="Page name"]', "Local comments take precedence"); await b("press", "Enter");
-  await waitForFile(doc => doc.slides[0].name === "Local comments take precedence");
+  await waitForFile(doc => doc.pages[0].name === "Local comments take precedence");
   await b("open", `${base}src/assets/konpeki-mark.png`);
   await b("eval", `localStorage.removeItem('${fileStorage}')`);
   await b("open", `${base}?session=comments-test`); await ready();
   await wait("document.querySelector('.recovery.visible')?.textContent.includes('Legacy comments could not be imported')");
   await b("dblclick", `${page("cover")} .stage-meta h2`);
   await b("fill", 'input[aria-label="Page name"]', "Composition remains editable"); await b("press", "Enter");
-  await waitForFile(doc => doc.slides[0].name === "Composition remains editable");
+  await waitForFile(doc => doc.pages[0].name === "Composition remains editable");
   await check(`localStorage.getItem('${fileStorage}')===null`);
   assert.equal(await readFile(`${path}.review.json`, "utf8"), "{broken");
   await capture("legacy-import-warning");
@@ -521,13 +555,13 @@ try {
   await wait("document.querySelector('.toast.visible')?.textContent.includes('Copied and cleared')");
   assert.deepEqual(JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`)), [beforeClear[1]]);
   assert.doesNotMatch(await b("clipboard", "read"), /Show the failure path too/);
-  await check(`JSON.parse(localStorage.getItem('${storage}')).document.slides[0].name==='Newer human title'`);
+  await check(`JSON.parse(localStorage.getItem('${storage}')).document.pages[0].name==='Newer human title'`);
   await capture("copy-clear-undo");
   await b("dblclick", `${page("cover")} .stage-meta h2`);
   await b("fill", 'input[aria-label="Page name"]', "After-copy human title"); await b("press", "Enter");
   await click("Undo");
   assert.deepEqual(JSON.parse(await b("eval", `JSON.parse(localStorage.getItem('${storage}')).review.notes`)), beforeClear);
-  await check(`JSON.parse(localStorage.getItem('${storage}')).document.slides[0].name==='After-copy human title'`);
+  await check(`JSON.parse(localStorage.getItem('${storage}')).document.pages[0].name==='After-copy human title'`);
   await reviewPage("cover");
   await check("document.querySelector('#revision-note').value==='Unsent draft survives copying'");
 

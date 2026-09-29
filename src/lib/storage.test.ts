@@ -51,11 +51,33 @@ test("an example working copy survives reload", () => {
   });
 });
 
+test("legacy saved pages migrate without losing browser corrections or comments", () => {
+  withStorage([], data => {
+    const draft = initialDraft();
+    draft.title = "Human-edited document";
+    const review = { ...emptyReview(), notes: [{ id: "keep-note", slideId: draft.pages[0].id,
+      componentId: draft.pages[0].components[0].id, text: "Keep this correction", resolved: false }] };
+    persistExampleDraft("legacy", draft, review);
+    const expected = data.get(exampleStorageKey("legacy"))!;
+    const saved = JSON.parse(expected);
+    saved.document.slides = saved.document.pages;
+    delete saved.document.pages;
+    saved.document.slides[0].components[0].intent = "Discard old instruction";
+    const raw = JSON.stringify(saved);
+    data.set(exampleStorageKey("legacy"), raw);
+    const loaded = loadExampleDraft("legacy", initialDraft(true));
+    assert.deepEqual(loaded, { draft, review, storageBlocked: false });
+    assert.equal(data.get(exampleStorageKey("legacy")), raw, "loading does not overwrite stored data");
+    persistExampleDraft("legacy", loaded.draft, loaded.review);
+    assert.equal(data.get(exampleStorageKey("legacy")), expected, "next save is canonical and retains comments");
+  });
+});
+
 test("comments persist with their document but never enter artwork JSON", () => {
   withStorage([], data => {
     const draft = initialDraft();
     const review = { ...emptyReview(), version: 3, notes: [
-      { id: "page-comment", slideId: draft.slides[0].id, text: "Explain the failure case", resolved: false },
+      { id: "page-comment", slideId: draft.pages[0].id, text: "Explain the failure case", resolved: false },
       { id: "old-target", slideId: "deleted-page", componentId: "old-component", text: "Keep this context", resolved: true },
     ] };
     persistExampleDraft("first", draft, review);

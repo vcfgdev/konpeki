@@ -2,86 +2,82 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { canonicalJSON } from "../../composition/compile.ts";
-import { refineGrid } from "../../composition/grid.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const runtimeRoot = join(here, "../..");
 const cover = JSON.parse(readFileSync(join(runtimeRoot, "slides/github-cover/composition.json"), "utf8"));
-// Borrow the mark artwork, not the cover's cell alignment.
-const { alignment: _coverAlignment, ...markVisual } = cover.slides[0].components.find((c) => c.id === "brand-mark").customVisual;
+// Borrow the mark artwork, not the cover's placement.
+const { alignment: _coverAlignment, ...markVisual } = cover.pages[0].components.find((c) => c.id === "brand-mark").customVisual;
 
 const INK = "theme:ink", MUTED = "theme:muted", ACCENT = "theme:accent", WASH = "theme:wash",
   DIVIDER = "theme:divider", SURFACE = "theme:surface", BG = "theme:background", ON_ACCENT = "theme:on-accent";
 const HEAD = "theme:heading-font", BODY = "theme:body-font";
 
-const area = (column, span, row, rows) => ({ column, span, row, rows });
-const AREAS = {
+const rect = (x, y, width, height) => ({ x, y, width, height });
+const RECTS = {
   cover: {
-    mark: area(1, 1, 5, 6), wordmark: area(2, 3, 6, 5),
-    "cover-title": area(1, 6, 17, 26), "cover-lead": area(1, 5, 47, 12),
-    "page-family": area(7, 5, 10, 57),
+    mark: rect(72, 120, 126, 72), wordmark: rect(222, 132, 426, 60),
+    "cover-title": rect(72, 264, 876, 312), "cover-lead": rect(72, 624, 726, 144),
+    "page-family": rect(972, 180, 726, 684),
   },
   "brief-to-page": {
-    "flow-title": area(1, 12, 2, 8), "flow-lead": area(1, 9, 11, 4),
-    "flow-divider": area(1, 12, 56, 1),
-    ...Object.fromEntries([1, 2, 3, 4].flatMap((n) => {
-      const column = 1 + (n - 1) * 3;
-      return [[n === 1 ? "flow-diagram" : `flow-step-${n}`, area(column, 3, 22, 6)],
-        [`step${n}-head`, area(column, 3, 30, 4)],
-        [`step${n}-body`, area(column, 3, 35, 17)]];
+    "flow-title": rect(72, 84, 1776, 96), "flow-lead": rect(72, 192, 1326, 48),
+    "flow-divider": rect(72, 732, 1776, 12),
+    ...Object.fromEntries([72, 522, 972, 1422].flatMap((x, i) => {
+      const n = i + 1;
+      return [[n === 1 ? "flow-diagram" : `flow-step-${n}`, rect(x, 324, 426, 72)],
+        [`step${n}-head`, rect(x, 420, 426, 48)], [`step${n}-body`, rect(x, 480, 426, 204)]];
     })),
-    "sketch-head": area(1, 5, 59, 4), "sketch-body": area(1, 5, 64, 9),
-    "firstuse-head": area(7, 6, 59, 4), "firstuse-body": area(7, 6, 64, 9),
+    "sketch-head": rect(72, 768, 726, 48), "sketch-body": rect(72, 828, 726, 108),
+    "firstuse-head": rect(972, 768, 876, 48), "firstuse-body": rect(972, 828, 876, 108),
   },
   "shared-file": {
-    "share-title": area(1, 12, 2, 8), "share-lead": area(1, 10, 11, 7),
-    "share-diagram": area(1, 12, 20, 40), "share-note": area(1, 12, 65, 8),
+    "share-title": rect(72, 84, 1776, 96), "share-lead": rect(72, 192, 1476, 84),
+    "share-diagram": rect(72, 300, 1776, 480), "share-note": rect(72, 840, 1776, 96),
   },
   components: {
-    "comp-title": area(1, 12, 2, 8), "comp-icons": area(2, 10, 16, 18),
-    ...Object.fromEntries([1, 2, 3, 4, 5].flatMap((n) => {
-      const column = n * 2;
-      return [[`comp${n}-head`, area(column, 2, 37, 4)],
-        [`comp${n}-body`, area(column, 2, 42, 14)]];
+    "comp-title": rect(72, 84, 1776, 96), "comp-icons": rect(222, 252, 1476, 216),
+    ...Object.fromEntries([222, 522, 822, 1122, 1422].flatMap((x, i) => {
+      const n = i + 1;
+      return [[`comp${n}-head`, rect(x, 504, 276, 48)], [`comp${n}-body`, rect(x, 564, 276, 168)]];
     })),
-    "comp-note": area(1, 12, 66, 10),
+    "comp-note": rect(72, 852, 1776, 120),
   },
   notes: {
-    "notes-title": area(1, 12, 2, 8), "notes-ui": area(1, 6, 17, 47),
-    ...Object.fromEntries([1, 2, 3, 4].flatMap((n) => {
-      const row = [17, 29, 41, 52][n - 1];
-      return [[`nstep${n}-num`, area(8, 1, row, 4)],
-        [`nstep${n}-head`, area(9, 4, row, 4)],
-        [`nstep${n}-body`, area(9, 4, row + 4 + (n === 4 ? 1 : 0), 7)]];
+    "notes-title": rect(72, 84, 1776, 96), "notes-ui": rect(72, 264, 876, 564),
+    ...Object.fromEntries([264, 408, 552, 684].flatMap((y, i) => {
+      const n = i + 1, bodyY = [312, 456, 600, 744][i];
+      return [[`nstep${n}-num`, rect(1122, y, 126, 48)],
+        [`nstep${n}-head`, rect(1272, y, 576, 48)], [`nstep${n}-body`, rect(1272, bodyY, 576, 84)]];
     })),
-    "notes-limit": area(1, 12, 68, 8),
+    "notes-limit": rect(72, 876, 1776, 96),
   },
   "browser-or-agent": {
-    "where-title": area(1, 12, 2, 8), "where-rules": area(1, 12, 16, 43),
-    "where-h1": area(4, 4, 17, 4), "where-h2": area(9, 4, 17, 4),
-    ...Object.fromEntries([24, 34, 43, 52].flatMap((row, i) => {
+    "where-title": rect(72, 84, 1776, 96), "where-rules": rect(72, 252, 1776, 516),
+    "where-h1": rect(522, 264, 576, 48), "where-h2": rect(1272, 264, 576, 48),
+    ...Object.fromEntries([348, 468, 576, 684].flatMap((y, i) => {
       const n = i + 1;
-      return [[`where-r${n}-label`, area(1, 2, row, 6)],
-        [`where-r${n}-browser`, area(4, 4, row, 6)],
-        [`where-r${n}-agent`, area(9, 4, row, 6)]];
+      return [[`where-r${n}-label`, rect(72, y, 276, 72)],
+        [`where-r${n}-browser`, rect(522, y, 576, 72)], [`where-r${n}-agent`, rect(1272, y, 576, 72)]];
     })),
-    "where-note": area(1, 12, 65, 6),
+    "where-note": rect(72, 840, 1776, 72),
   },
   start: {
-    "start-title": area(1, 12, 2, 8), "start-boxes": area(1, 7, 22, 30),
-    "start-s1": area(1, 7, 17, 4), "start-cmd": area(1, 7, 22, 8),
-    "start-s2": area(1, 7, 34, 4), "start-brief": area(1, 7, 40, 12),
-    "start-s2-note": area(1, 7, 55, 8), "need-head": area(9, 4, 17, 4),
-    "need-1": area(9, 4, 23, 4), "need-2": area(9, 4, 28, 7),
-    "need-3": area(9, 4, 37, 4), "init-head": area(9, 4, 43, 4),
-    "init-body": area(9, 4, 49, 10),
+    "start-title": rect(72, 84, 1776, 96), "start-boxes": rect(72, 324, 1026, 360),
+    "start-s1": rect(72, 264, 1026, 48), "start-cmd": rect(72, 324, 1026, 96),
+    "start-s2": rect(72, 468, 1026, 48), "start-brief": rect(72, 540, 1026, 144),
+    "start-s2-note": rect(72, 720, 1026, 96), "need-head": rect(1272, 264, 576, 48),
+    "need-1": rect(1272, 336, 576, 48), "need-2": rect(1272, 396, 576, 84),
+    "need-3": rect(1272, 504, 576, 48), "init-head": rect(1272, 576, 576, 48),
+    "init-body": rect(1272, 648, 576, 120),
   },
 };
 const LEGACY_COLORS = { "#007fb5": ACCENT };
 
 function page(id, name, question) {
   const s = {
-    id, name, grid: { preset: "presentation" },
+    id, name, preset: "presentation", canvas: { width: 1920, height: 1080 },
+    innerPadding: { top: 72, right: 72, bottom: 72, left: 72 },
     pageNumber: { style: "01", color: "muted" },
     audience: "Developers meeting Konpeki for the first time",
     question, intendedViewingSize: "presentation",
@@ -90,14 +86,14 @@ function page(id, name, question) {
   const add = (c, role = "body", instruction = "") => {
     const slotId = `${c.id}-slot`;
     s.contentSlots.push({ id: slotId, label: c.id, role, required: true, instruction: instruction || c.content || c.customVisual?.description || c.id });
-    const placed = { ...c, area: AREAS[id][c.id] };
+    const placed = { ...c, rect: RECTS[id][c.id] };
     for (const element of placed.customVisual?.elements ?? []) {
       for (const name of ["fill", "stroke", "color"]) {
         if (LEGACY_COLORS[element.attributes?.[name]]) element.attributes[name] = LEGACY_COLORS[element.attributes[name]];
       }
     }
     if (["flow-divider", "where-rules", "start-boxes"].includes(c.id)) placed.layer = "background";
-    if (["start-cmd", "start-brief"].includes(c.id)) placed.padding = 2;
+    if (["start-cmd", "start-brief"].includes(c.id)) placed.padding = 24;
     if (c.id === "start-boxes") placed.customVisual.fit = "stretch";
     s.components.push({ ...placed, slotIds: [slotId] });
     s.readingOrder.push({ kind: "component", id: c.id });
@@ -155,7 +151,7 @@ p1.s.pageNumber = { style: "none", color: "muted" };
 p1.add({ id: "mark", kind: "image", customVisual: markVisual }, "image");
 p1.add(text("wordmark", "Konpeki", "heading", { weight: 600, font: "heading" }));
 p1.add(text("cover-title", "Create clear visuals\nwith your coding agent.",
-  "display", { weight: 600, font: "heading", leading: 8 }, "title"), "takeaway");
+  "display", { weight: 600, font: "heading", leading: 96 }, "title"), "takeaway");
 p1.add(text("cover-lead", "Your agent drafts covers, social graphics, visual explanations and presentations. You and your agent edit the same page.",
   "body", { color: "muted" }, "subtitle"));
 {
@@ -212,8 +208,8 @@ const steps2 = [
     v.circle(`n${i}`, 32, 36, 30, { fill: i === 3 ? ACCENT : BG, stroke: ACCENT, "stroke-width": 3 });
     v.text(`n${i}-num`, 32, 46, String(i + 1), { "font-size": "scale:body", "font-weight": 600, "text-anchor": "middle", fill: i === 3 ? ON_ACCENT : ACCENT, "font-family": HEAD });
     if (i < 3) v.arrow(`e${i}`, 78, 36, 410, 36);
-    // Each numbered drawing shares its label's three-column area. Its local
-    // viewport matches that cell; no page-wide artwork pitch competes with it.
+    // Each numbered drawing shares its label's rectangle. Its local viewport
+    // matches that space; no page-wide artwork pitch competes with it.
     p2.add(vector(i === 0 ? "flow-diagram" : `flow-step-${i + 1}`, "diagram", 426, 72,
       `Step ${i + 1}: ${h}.${i < 3 ? " Arrow continues to the next step." : ""}`, v.els,
       { type: "process", selection: "explicit", border: "none", colorScheme: "accent-with-muted-context", emphasis: "primary", density: "sparse" }), "process-step");
@@ -227,7 +223,7 @@ const steps2 = [
   p2.add(vector("flow-divider", "image", 1776, 2, "Divider between the main flow and the alternatives below it.", v.els), "image");
 }
 p2.add(text("sketch-head", "Prefer to sketch first?", "body", { weight: 600, font: "heading" }));
-p2.add(text("sketch-body", "In a file-backed preview, add a component and describe its intent. Ask your agent in chat to draft from that saved layout.", "caption", { color: "muted" }));
+p2.add(text("sketch-body", "In a file-backed preview, leave a comment on a component, then copy the prompt to your agent to request the next revision.", "caption", { color: "muted" }));
 p2.add(text("firstuse-head", "No separate setup step", "body", { weight: 600, font: "heading" }));
 p2.add(text("firstuse-body", "With your approval, the skill installs the runtime in a user cache, not in your project.", "caption", { color: "muted" }));
 
@@ -429,8 +425,7 @@ const doc = {
   title: "Introducing Konpeki",
   authoringMode: "default",
   theme: { id: "plex", mode: "paper", typography: "hanken-grotesk" },
-  // Preserve the original authored layout while emitting the finer grid.
-  slides: [p1, p2, p3, p4, p5, p6, p7].map((p) => refineGrid(p.s)),
+  pages: [p1, p2, p3, p4, p5, p6, p7].map((p) => p.s),
 };
 writeFileSync(join(here, "composition.json"), canonicalJSON(doc) + "\n");
 console.log("wrote", join(here, "composition.json"));

@@ -26,7 +26,7 @@ export function isReviewState(input: unknown): input is ReviewState {
 
 export function reviewPrompt(document: CompositionDocument, review: ReviewState, sourceName?: string) {
   const comments = review.notes.filter(note => !note.resolved).map((note, index) => {
-    const page = document.slides.find(page => page.id === note.slideId);
+    const page = document.pages.find(page => page.id === note.slideId);
     const component = page?.components.find(component => component.id === note.componentId);
     const element = component?.customVisual?.format === "vector"
       ? component.customVisual.elements.find(element => element.id === note.elementId) : undefined;

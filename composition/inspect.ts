@@ -1,4 +1,4 @@
-import { gridMetrics, resolveArea, type GridSlide } from "./grid.ts";
+import { pageMetrics, pixelPage, type GridSlide } from "./grid.ts";
 import type { FontContext } from "./fonts.ts";
 import { itemBounds, textInkBounds, type ScenePage } from "./scene.ts";
 import type { Rect } from "./types.ts";
@@ -6,12 +6,11 @@ import type { Rect } from "./types.ts";
 /** Component-level overview; detailed geometry is available through inspectPage.
  * Rounding is for this display only, never for layout or diagnostics. */
 export function summarizePage(page: GridSlide, scene: ScenePage) {
+  page = pixelPage(page);
   const round = (value: number) => Math.round(value * 100) / 100;
   const box = (rect: Rect) => ({ x: round(rect.x), y: round(rect.y), width: round(rect.width), height: round(rect.height) });
-  const grid = gridMetrics(page.grid);
   return {
     pageId: scene.pageId, width: scene.width, height: scene.height,
-    grid: { columns: grid.columns, rows: grid.rows },
     components: scene.components.map(component => {
       const authored = page.components.find(item => item.id === component.id)!;
       const items = scene.items.filter(item => item.componentId === component.id);
@@ -35,25 +34,23 @@ export function summarizePage(page: GridSlide, scene: ScenePage) {
  * and baselines are in page pixels, before clipping or later paint occlusion.
  * Keep glyph arrays and paths out of the agent's context. */
 export function inspectPage(page: GridSlide, scene: ScenePage, fonts: FontContext) {
-  const grid = gridMetrics(page.grid);
+  page = pixelPage(page);
   return {
     pageId: scene.pageId,
     name: page.name,
     width: scene.width,
     height: scene.height,
     background: scene.background,
-    grid: {
-      preset: page.grid.preset, revision: page.grid.revision ?? 1,
-      columns: grid.columns, rows: grid.rows, columnWidth: grid.columnWidth,
-      baseline: grid.baseline, gutter: grid.gutter, marginX: grid.margin, marginY: grid.marginY,
-    },
+    preset: page.preset,
+    innerPadding: pageMetrics(page).margin,
     readingOrder: page.readingOrder,
     paintOrder: page.paintOrder,
     components: scene.components.map(component => {
       const authored = page.components.find(item => item.id === component.id)!;
       return {
         id: component.id, kind: authored.kind,
-        area: authored.area, resolvedArea: resolveArea(page.grid, authored.area),
+        ...(authored.rect ? { rect: authored.rect }
+          : { flow: { groupId: page.groups.find(group => group.childIds.includes(component.id))!.id, ...authored.flow } }),
         box: component.box, contentBox: component.contentBox,
         draft: component.draft, artworkScale: component.artworkScale,
         ...(component.processNodes ? { processNodes: component.processNodes } : {}),

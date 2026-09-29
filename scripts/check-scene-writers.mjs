@@ -45,7 +45,7 @@ try {
   const pages = [];
   for (const relative of documents) {
     const document = JSON.parse(await readFile(resolve(root, relative), "utf8"));
-    document.slides.forEach((page, index) => pages.push({ document, page, index, label: `${relative.includes("github-cover") ? "github-cover" : basename(relative, ".json")}-${index + 1}` }));
+    document.pages.forEach((page, index) => pages.push({ document, page, index, label: `${relative.includes("github-cover") ? "github-cover" : basename(relative, ".json")}-${index + 1}` }));
   }
   if (pages.length !== 12) throw new Error(`Expected 11 example pages and the cover, found ${pages.length}`);
   const scenes = pages.map(({ document, page }) => lowerPage(document, page, fonts));

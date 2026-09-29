@@ -101,7 +101,7 @@ export function fileSessionPlugin({
               sendJSON(response, 409, { error: "The composition changed; save or reload before exporting.", revision: current.revision });
               return;
             }
-            if (!["png", "svg", "pdf"].includes(body.format) || !Number.isInteger(body.page) || body.page < 1 || body.page > current.document.slides.length ||
+            if (!["png", "svg", "pdf"].includes(body.format) || !Number.isInteger(body.page) || body.page < 1 || body.page > current.document.pages.length ||
                 !Number.isFinite(body.scale) || body.scale <= 0 || body.scale > 8) {
               sendJSON(response, 400, { error: "Invalid export format, page or scale." });
               return;

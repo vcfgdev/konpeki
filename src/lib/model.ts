@@ -74,6 +74,16 @@ function closest(points: number[], targets: number[], threshold: number) {
   return match;
 }
 
+/** Visual references only: never move an authored rectangle to a target. */
+export function alignmentGuides(rect: Rect, others: Rect[], bounds: CanvasSize, padding?: CompositionSlide["innerPadding"], threshold = 2): Guide[] {
+  const targets = alignmentTargets(others, bounds, padding);
+  return (["x", "y"] as const).flatMap(axis => {
+    const size = axis === "x" ? rect.width : rect.height;
+    const match = closest([rect[axis], rect[axis] + size / 2, rect[axis] + size], targets[axis], threshold);
+    return match ? [{ axis, value: match.target }] : [];
+  });
+}
+
 export function snapRect(
   rect: Rect,
   others: Rect[],

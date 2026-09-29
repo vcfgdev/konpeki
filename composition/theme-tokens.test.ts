@@ -22,7 +22,7 @@ test("theme bindings are explicit and restricted to compatible attributes", () =
 test("bindings and fixed overrides survive validation and JSON round trips", () => {
   const draft = initialDraft();
   const visual = parseEditableSvg('<svg viewBox="0 0 100 100"><text x="1" y="20" fill="theme:accent">Literal</text></svg>');
-  draft.slides[0].components[1].customVisual = { ...visual, format: "vector", description: "Mixed linked and fixed artwork" };
+  draft.pages[0].components[1].customVisual = { ...visual, format: "vector", description: "Mixed linked and fixed artwork" };
   assert.equal(visual.elements[0].attributes.fill, "theme:accent");
   visual.elements[0].attributes["font-family"] = "theme:heading-font";
   assert.ok(validateComposition(toComposition(draft)).ok);
@@ -38,7 +38,7 @@ test("bindings and fixed overrides survive validation and JSON round trips", () 
 
 test("v2 artwork rejects literal colors instead of guessing theme roles", () => {
   const draft = initialDraft();
-  draft.slides[0].components[1].customVisual = { ...parseEditableSvg('<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>'), format: "vector", description: "Fixed artwork" };
+  draft.pages[0].components[1].customVisual = { ...parseEditableSvg('<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#fff"/></svg>'), format: "vector", description: "Fixed artwork" };
   const result = validateComposition(toComposition(draft));
   assert.equal(result.ok, false);
 });

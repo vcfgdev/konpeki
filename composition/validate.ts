@@ -1,6 +1,6 @@
 import { Ajv2020 } from "ajv/dist/2020.js";
 import { schemaV2 } from "./schema-v2.ts";
-import { areaIssue, gridSchema, gridMetrics, resolveDocument, type WireDocument } from "./grid.ts";
+import { areaIssue, gridSchema, pixelPage, resolveDocument, type WireDocument } from "./grid.ts";
 import { vectorAttributeNames } from "./vector.ts";
 import { validThemeBinding } from "./theme-tokens.ts";
 import { processFlowIssue } from "./process-flow.ts";
@@ -14,7 +14,7 @@ const structuralV2 = ajv.compile<WireDocument>(schemaV2);
 
 function normalizeBookkeeping(input: WireDocument): WireDocument {
   let changed = false;
-  const slides = input.slides.map((slide) => {
+  const pages = input.pages.map((slide) => {
     const componentIds = slide.components.map((component) => component.id);
     let componentsChanged = false;
     const components = slide.components.map((component) => {
@@ -39,12 +39,26 @@ function normalizeBookkeeping(input: WireDocument): WireDocument {
     }
     return slide;
   });
-  return changed ? { ...input, slides } : input;
+  return changed ? { ...input, pages } : input;
 }
 
 export function validateComposition(input: unknown): ValidationResult {
   if (!input || typeof input !== "object" || !("schema" in input) || input.schema !== gridSchema)
     return { ok: false, issues: [{ path: "/schema", message: `must be ${gridSchema}` }] };
+  // Import old files and browser drafts, but expose only pages in the contract.
+  // Leave malformed values intact for structural validation; never choose one
+  // collection silently when both spellings are present.
+  if ("slides" in input && !("pages" in input)) {
+    const { slides, ...document } = input;
+    input = { ...document, pages: Array.isArray(slides) ? slides.map((page: unknown) => {
+      if (!page || typeof page !== "object" || !("components" in page) || !Array.isArray(page.components)) return page;
+      return { ...page, components: page.components.map((component: unknown) => {
+        if (!component || typeof component !== "object" || !("intent" in component)) return component;
+        const { intent: _, ...rest } = component;
+        return rest;
+      }) };
+    }) : slides };
+  }
   if (!structuralV2(input))
     return {
       ok: false,
@@ -57,11 +71,28 @@ export function validateComposition(input: unknown): ValidationResult {
   const issues: ValidationIssue[] = [];
   const fail = (path: string, message: string) =>
     issues.push({ path, message });
-  normalized.slides.forEach((slide, index) => {
+  normalized.pages.forEach((slide, index) => {
     for (const key of ["components", "groups"] as const) slide[key].forEach((item, itemIndex) => {
-      if (!item.area) return;
+      if (!item.area || !slide.grid) return;
       const issue = areaIssue(slide.grid, item.area);
-      if (issue) fail(`/slides/${index}/${key}/${itemIndex}/area`, issue);
+      if (issue) fail(`/pages/${index}/${key}/${itemIndex}/area`, issue);
+    });
+    slide.components.forEach((component, componentIndex) => {
+      const path = `/pages/${index}/components/${componentIndex}`;
+      const stack = slide.groups.find(group => group.layout === "stack" && group.childIds.includes(component.id));
+      const placement = component.rect ?? component.area;
+      if (stack) {
+        if (placement || component.kind !== "text-block" || component.customVisual ||
+            component.appearance.layout && component.appearance.layout !== "single" ||
+            component.appearance.verticalAlignment && component.appearance.verticalAlignment !== "start")
+          fail(path, "Stack members must be native single-region text without a rectangle or vertical alignment override");
+      } else {
+        if (!placement) fail(`${path}/rect`, "Positioned components require a rectangle; put flowing text in a stack group");
+        if (component.flow) fail(`${path}/flow`, "Flow overrides require membership in a stack group");
+        if (component.rect?.height === undefined && !component.area &&
+            (component.kind !== "text-block" || component.customVisual || component.appearance.layout && component.appearance.layout !== "single"))
+          fail(`${path}/rect/height`, "Only native single-region text can omit height");
+      }
     });
   });
   if (issues.length) return { ok: false, issues };
@@ -70,18 +101,17 @@ export function validateComposition(input: unknown): ValidationResult {
     if (new Set(ids).size !== ids.length) fail(path, "IDs must be unique");
   };
   unique(
-    candidate.slides.map((slide) => slide.id),
-    "/slides",
+    candidate.pages.map((slide) => slide.id),
+    "/pages",
   );
-  candidate.slides.forEach((slide, slideIndex) => {
-    const base = `/slides/${slideIndex}`;
+  candidate.pages.forEach((slide, slideIndex) => {
+    const base = `/pages/${slideIndex}`;
     const padding = slide.innerPadding;
-    if (slide.grid) {
-      const metrics = gridMetrics(slide.grid);
+    {
       for (const [index, component] of slide.components.entries()) {
         const path = `${base}/components/${index}`;
-        const inset = (component.padding ?? 0) * metrics.baseline * 2;
-        if (inset >= component.preferredRect.width || inset >= component.preferredRect.height)
+        const inset = (component.padding ?? 0) * 2;
+        if (inset >= component.preferredRect.width || component.rect?.height !== undefined && inset >= component.preferredRect.height)
           fail(`${path}/padding`, "Padding leaves no component content area");
         if (component.kind === "text-block" && component.textStyle!.lineHeight! < 1)
           fail(`${path}/textStyle/leading`, "Leading must be at least the type size");
@@ -210,6 +240,11 @@ export function validateComposition(input: unknown): ValidationResult {
       if (!components.has(id))
         fail(`${base}/groups`, "Groups may contain only components");
     }
+  for (const group of slide.groups) {
+    const r = group.rect;
+    if (r && (r.x + r.width > slide.canvas.width || r.y + r.height > slide.canvas.height))
+      fail(`${base}/groups`, "Group rectangle exceeds canvas");
+  }
   unique(grouped, `${base}/groups`);
   const reading = slide.readingOrder.flatMap((entry) => {
     if (entry.kind === "component") {
@@ -251,7 +286,7 @@ export function validateComposition(input: unknown): ValidationResult {
   });
   return issues.length
     ? { ok: false, issues }
-    : { ok: true, document: normalized };
+    : { ok: true, document: { ...normalized, pages: normalized.pages.map(pixelPage) } };
 }
 export function assertComposition(input: unknown): WireDocument {
   const result = validateComposition(input);

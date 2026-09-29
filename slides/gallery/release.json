@@ -7,7 +7,7 @@
     "mode": "paper",
     "typography": "hanken-grotesk"
   },
-  "slides": [
+  "pages": [
     {
       "id": "release",
       "name": "Clearpath 0.4 — release announcement",
@@ -25,7 +25,6 @@
           "slotIds": [
             "headline-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Review the release\nbefore you publish.",
           "textStyle": {
             "weight": 600,
@@ -45,11 +44,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 13,
-            "rows": 22
+          "rect": {
+            "x": 60,
+            "y": 207,
+            "width": 960,
+            "height": 264
           }
         },
         {
@@ -58,7 +57,6 @@
           "slotIds": [
             "product-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Clearpath 0.4",
           "textStyle": {
             "weight": 500,
@@ -78,11 +76,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 3,
-            "rows": 5
+          "rect": {
+            "x": 60,
+            "y": 87,
+            "width": 960,
+            "height": 60
           }
         },
         {
@@ -91,7 +89,6 @@
           "slotIds": [
             "support-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Preview release notes. Review the wording.\nExport Markdown when you’re ready.",
           "textStyle": {
             "weight": 400,
@@ -111,11 +108,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 37,
-            "rows": 11
+          "rect": {
+            "x": 60,
+            "y": 495,
+            "width": 960,
+            "height": 132
           }
         },
         {
@@ -124,7 +121,6 @@
           "slotIds": [
             "release-steps-content"
           ],
-          "intent": "Preview release notes. This document is symbolic, not a screenshot of a real application.",
           "appearance": {
             "type": "process",
             "selection": "explicit",
@@ -241,11 +237,11 @@
               }
             ]
           },
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": 57,
-            "rows": 25
+          "rect": {
+            "x": 60,
+            "y": 735,
+            "width": 304,
+            "height": 300
           }
         },
         {
@@ -254,7 +250,6 @@
           "slotIds": [
             "release-review-content"
           ],
-          "intent": "Review a highlighted line before export. This document is symbolic, not a screenshot.",
           "appearance": {
             "type": "process",
             "selection": "explicit",
@@ -371,11 +366,11 @@
               }
             ]
           },
-          "area": {
-            "column": 5,
-            "span": 4,
-            "row": 57,
-            "rows": 25
+          "rect": {
+            "x": 388,
+            "y": 735,
+            "width": 304,
+            "height": 300
           }
         },
         {
@@ -384,7 +379,6 @@
           "slotIds": [
             "release-export-content"
           ],
-          "intent": "Export Markdown after review. This document is symbolic, not a screenshot.",
           "appearance": {
             "type": "process",
             "selection": "explicit",
@@ -515,11 +509,11 @@
               }
             ]
           },
-          "area": {
-            "column": 9,
-            "span": 4,
-            "row": 57,
-            "rows": 25
+          "rect": {
+            "x": 716,
+            "y": 735,
+            "width": 304,
+            "height": 300
           }
         },
         {
@@ -528,7 +522,6 @@
           "slotIds": [
             "step-1-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Preview\nrelease notes.",
           "textStyle": {
             "weight": 500,
@@ -548,11 +541,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 4,
-            "row": 85,
-            "rows": 9
+          "rect": {
+            "x": 60,
+            "y": 1071,
+            "width": 304,
+            "height": 108
           }
         },
         {
@@ -561,7 +554,6 @@
           "slotIds": [
             "step-2-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Review\nthe wording.",
           "textStyle": {
             "weight": 500,
@@ -581,11 +573,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 5,
-            "span": 4,
-            "row": 85,
-            "rows": 9
+          "rect": {
+            "x": 388,
+            "y": 1071,
+            "width": 304,
+            "height": 108
           }
         },
         {
@@ -594,7 +586,6 @@
           "slotIds": [
             "step-3-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Export\nMarkdown.",
           "textStyle": {
             "weight": 500,
@@ -614,11 +605,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 9,
-            "span": 4,
-            "row": 85,
-            "rows": 9
+          "rect": {
+            "x": 716,
+            "y": 1071,
+            "width": 304,
+            "height": 108
           }
         },
         {
@@ -627,7 +618,6 @@
           "slotIds": [
             "caveat-content"
           ],
-          "intent": "Explain the supporting idea in concise language.",
           "content": "Fictional product · illustrative example",
           "textStyle": {
             "weight": 400,
@@ -647,11 +637,11 @@
             "titleStyle": "plain",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 12,
-            "row": 100,
-            "rows": 3
+          "rect": {
+            "x": 60,
+            "y": 1251,
+            "width": 960,
+            "height": 36
           }
         }
       ],
@@ -783,9 +773,16 @@
         "step-3",
         "caveat"
       ],
-      "grid": {
-        "preset": "portrait",
-        "revision": 2
+      "preset": "portrait",
+      "canvas": {
+        "width": 1080,
+        "height": 1350
+      },
+      "innerPadding": {
+        "top": 63,
+        "right": 60,
+        "bottom": 63,
+        "left": 60
       }
     }
   ]

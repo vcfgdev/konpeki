@@ -6,7 +6,7 @@
     "id": "plex",
     "mode": "paper"
   },
-  "slides": [
+  "pages": [
     {
       "id": "architecture",
       "name": "architecture",
@@ -33,11 +33,11 @@
             "border": "none",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 24,
-            "row": 1,
-            "rows": 6
+          "rect": {
+            "x": 64,
+            "y": 68,
+            "width": 1472,
+            "height": 72
           }
         },
         {
@@ -59,11 +59,11 @@
             "border": "none",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 24,
-            "row": 7,
-            "rows": 4
+          "rect": {
+            "x": 64,
+            "y": 140,
+            "width": 1472,
+            "height": 48
           }
         },
         {
@@ -76,7 +76,6 @@
             "events",
             "warehouse"
           ],
-          "intent": "Where do order responsibilities and integration contracts belong?",
           "appearance": {
             "type": "architecture",
             "selection": "explicit",
@@ -606,11 +605,11 @@
               }
             ]
           },
-          "area": {
-            "column": 1,
-            "span": 24,
-            "row": 14,
-            "rows": 54
+          "rect": {
+            "x": 64,
+            "y": 224,
+            "width": 1472,
+            "height": 648
           }
         },
         {
@@ -625,7 +624,7 @@
             "color": "muted",
             "font": "body",
             "step": "fine",
-            "leading": 2
+            "leading": 24
           },
           "appearance": {
             "role": "caption",
@@ -633,11 +632,11 @@
             "border": "none",
             "rule": "none"
           },
-          "area": {
-            "column": 1,
-            "span": 24,
-            "row": 69,
-            "rows": 4
+          "rect": {
+            "x": 64,
+            "y": 884,
+            "width": 1472,
+            "height": 48
           }
         }
       ],
@@ -725,9 +724,16 @@
         "caveat"
       ],
       "relationships": [],
-      "grid": {
-        "preset": "gallery",
-        "revision": 2
+      "preset": "gallery",
+      "canvas": {
+        "width": 1600,
+        "height": 1000
+      },
+      "innerPadding": {
+        "top": 68,
+        "right": 64,
+        "bottom": 68,
+        "left": 64
       }
     }
   ]

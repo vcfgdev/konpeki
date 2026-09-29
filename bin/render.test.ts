@@ -6,12 +6,14 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { PDFDocument } from "pdf-lib";
 import { addComponent, initialGridDraft } from "../composition/document.ts";
-import { toComposition } from "../composition/grid.ts";
+import { resolveDocument, toComposition } from "../composition/grid.ts";
+import { resizePage } from "../src/lib/page-size.ts";
 import { renderDocument } from "./render.ts";
 
 test("shared renderer selects one-based pages, sizes mixed PDFs, and scales only PNG", async () => {
-  const document = toComposition(initialGridDraft());
-  document.slides.push({ ...structuredClone(document.slides[0]), id: "portrait", grid: { preset: "portrait" } });
+  const draft = resolveDocument(toComposition(initialGridDraft()));
+  draft.pages.push({ ...resizePage(structuredClone(draft.pages[0]), { width: 1080, height: 1350 }, "social"), id: "portrait", preset: "portrait" });
+  const document = toComposition(draft);
   const svg = await renderDocument(document, { format: "svg", page: 2, scale: 3 });
   assert.match(new TextDecoder().decode(svg.bytes), /width="1080" height="1350"/);
   const png = Buffer.from((await renderDocument(document, { format: "png", page: 2, scale: .5 })).bytes);
@@ -25,9 +27,11 @@ test("shared renderer selects one-based pages, sizes mixed PDFs, and scales only
 });
 
 test("A4 keeps exact print dimensions while PNG rounds only at rasterization", async () => {
-  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
-  document.slides[0].grid = { preset: "a4", revision: 2 };
-  document.slides[0].components[0].area = { column: 1, span: 12, row: 1, rows: 12 };
+  const draft = resolveDocument(toComposition(addComponent(initialGridDraft(), "text-block")));
+  draft.pages[0] = resizePage(draft.pages[0], { width: 210 / 25.4 * 96, height: 297 / 25.4 * 96 });
+  draft.pages[0].preset = "a4";
+  draft.pages[0].components[0].rect = { x: 56, y: 56, width: 682, height: 48 };
+  const document = toComposition(draft);
   const pdf = await PDFDocument.load((await renderDocument(document, { format: "pdf", scale: 4 })).bytes);
   const { width, height } = pdf.getPage(0).getSize();
   assert.ok(Math.abs(width * 25.4 / 72 - 210) < 1e-9);
@@ -62,30 +66,21 @@ test("CLI render never overwrites outputs and check emits machine-readable error
   assert.equal(JSON.parse(invalid.stdout).diagnostics[0].code, "invalid-document");
 });
 
-test("CLI grid upgrade preserves rendered geometry, IDs and input; outputs are exclusive", async t => {
-  const directory = await mkdtemp(join(tmpdir(), "konpeki-refine-"));
+test("removed refine-grid command does not write output", async t => {
+  const directory = await mkdtemp(join(tmpdir(), "konpeki-no-refine-"));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const path = join(directory, "document.json"), output = join(directory, "document.refined.json");
   const document = toComposition(addComponent(initialGridDraft(), "text-block"));
-  const page = document.slides[0];
-  delete page.grid.revision;
+  const page = document.pages[0];
+  page.grid = { preset: "presentation" };
   page.components[0].area = { column: 3, span: 5, row: 7, rows: 15 };
   page.groups = [{ id: "stack", childIds: [page.components[0].id], area: { column: "center", span: 8, row: 1, rows: 78 }, verticalAlignment: "center" }];
   const source = JSON.stringify(document);
   await writeFile(path, source);
   const cli = (...args: string[]) => spawnSync(process.execPath, [new URL("./konpeki.mjs", import.meta.url).pathname, ...args], { encoding: "utf8" });
   const result = cli("refine-grid", path);
-  assert.equal(result.status, 0, result.stderr);
-  const bytes = await readFile(output, "utf8"), refined = JSON.parse(bytes);
-  assert.deepEqual(refined.slides[0].components[0].area, { column: 5, span: 10, row: 7, rows: 15 });
-  assert.equal(refined.slides[0].groups[0].area.column, "center");
-  assert.equal(refined.slides[0].groups[0].area.span, 16);
-  assert.deepEqual(await renderDocument(refined, { format: "svg" }), await renderDocument(document, { format: "svg" }));
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Usage:/);
+  await assert.rejects(readFile(output), { code: "ENOENT" });
   assert.equal(await readFile(path, "utf8"), source);
-  assert.equal(cli("refine-grid", path).status, 1);
-  assert.equal(await readFile(output, "utf8"), bytes);
-  assert.equal(cli("refine-grid", path, "--output", path).status, 1);
-  assert.equal(await readFile(path, "utf8"), source);
-  assert.equal(cli("refine-grid", output, "--output", join(directory, "twice.json")).status, 0);
-  assert.equal(await readFile(join(directory, "twice.json"), "utf8"), bytes);
 });

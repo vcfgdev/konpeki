@@ -30,9 +30,9 @@ const documents = sources.map(([name, path]) => {
   assert.equal(v2.schema, gridSchema, `${path} is not v2`);
   const type = { textBlocks: 0, namedTextSteps: 0, vectorLabels: 0, namedVectorSteps: 0, violations: [] };
   const used = new Set();
-  const v1Sizes = new Set(v1.slides.flatMap(s => s.components.flatMap(c => [c.textStyle?.size,
+  const v1Sizes = new Set(v1.pages.flatMap(s => s.components.flatMap(c => [c.textStyle?.size,
     ...(c.customVisual?.elements ?? []).map(e => Number(e.attributes["font-size"]))])).filter(n => n > 0));
-  for (const slide of v2.slides) for (const component of slide.components) {
+  for (const slide of v2.pages) for (const component of slide.components) {
     if (component.kind === "text-block") {
       type.textBlocks++;
       const step = component.textStyle?.step ?? roleSteps[component.appearance.role];
@@ -55,7 +55,7 @@ const documents = sources.map(([name, path]) => {
   return {
     name, path, v2,
     metrics: {
-      pages: v2.slides.length,
+      pages: v2.pages.length,
       canonicalBytes: { v1: canonicalBytes(v1), v2: canonicalBytes(v2) },
       distinctSizes: { v1: [...v1Sizes].sort((a, b) => a - b), v2Steps: typeSteps.filter(step => used.has(step)) },
       typeSteps: type,
@@ -75,9 +75,9 @@ try {
   b("open", base);
   b("set", "viewport", "1920", "1080", "2");
   b("wait", ".canvas");
-  for (const { name, v2 } of documents) for (const [pageIndex, page] of v2.slides.entries()) for (const preset of presets) {
+  for (const { name, v2 } of documents) for (const [pageIndex, page] of v2.pages.entries()) for (const preset of presets) {
     const variant = structuredClone(v2);
-    variant.slides[pageIndex].grid.preset = preset; // Deliberately change nothing else.
+    variant.pages[pageIndex].grid.preset = preset; // Deliberately change nothing else.
     const validation = validateComposition(variant);
     const label = `${name}-${pageIndex + 1}-${preset}`;
     if (!validation.ok) {
@@ -93,7 +93,7 @@ try {
     b("focus", ".presentation"); b("press", "Home");
     for (let i = 0; i < pageIndex; i++) click("Next page");
     settle();
-    const resolved = resolveDocument(variant).slides[pageIndex];
+    const resolved = resolveDocument(variant).pages[pageIndex];
     const issues = evaluate(`(() => {
       const slide = ${JSON.stringify(resolved)};
       const canvas = document.querySelector('.presentation .canvas');

@@ -8,8 +8,8 @@ const base = process.argv[2] ?? "http://localhost:4318";
 const scratch = mkdtempSync(join(tmpdir(), "konpeki-themes-"));
 const deck = JSON.parse(readFileSync(new URL("../slides/introducing-konpeki/composition.json", import.meta.url), "utf8"));
 deck.theme = { id: "precision", mode: "paper" };
-deck.slides[0].components[0].customVisual = { format: "vector", description: "Legacy vector fixture", viewBox: { x: 0, y: 0, width: 820, height: 177 }, elements: [{ id: "brand-line-1", kind: "text", text: "Konpeki", attributes: { x: 0, y: 120, fill: "theme:accent", "font-family": "theme:heading-font" } }] };
-const element = deck.slides[0].components[0].customVisual.elements[0];
+deck.pages[0].components[0].customVisual = { format: "vector", description: "Legacy vector fixture", viewBox: { x: 0, y: 0, width: 820, height: 177 }, elements: [{ id: "brand-line-1", kind: "text", text: "Konpeki", attributes: { x: 0, y: 120, fill: "theme:accent", "font-family": "theme:heading-font" } }] };
+const element = deck.pages[0].components[0].customVisual.elements[0];
 element.attributes.fill = "#123456";
 element.attributes["font-size"] = 500;
 const file = join(scratch, "overflow.json");
@@ -97,7 +97,7 @@ try {
   click("Paper");
   savedTheme({ id: "precision", mode: "paper", typography: "plex-serif" });
   const saved = JSON.parse(JSON.parse(browser("eval", "localStorage.getItem('konpeki-composer/v1')"))).document;
-  assert.deepEqual(saved.slides, deck.slides, "appearance edits changed content or geometry");
+  assert.deepEqual(saved.pages, deck.pages, "appearance edits changed content or geometry");
   const roundtrip = join(scratch, "roundtrip.json");
   writeFileSync(roundtrip, JSON.stringify(saved));
   browser("select", '[name="Font"]', "plex-sans");
@@ -113,7 +113,7 @@ try {
   check(`if(document.querySelector('#canvas-stage [data-vector-element="brand-line-1"]').getAttribute('fill') !== '#123456') throw Error('Undo lost fixed override')`);
   browser("press", "Control+Shift+z");
   check(`if(document.querySelector('#canvas-stage [data-vector-element="brand-line-1"]').getAttribute('fill') !== 'var(--vector-accent)') throw Error('Redo lost binding')`);
-  browser("wait", "--fn", `JSON.parse(localStorage.getItem('konpeki-composer/v1')).document.slides[0].components[0].customVisual.elements[0].attributes.fill === 'theme:accent'`);
+  browser("wait", "--fn", `JSON.parse(localStorage.getItem('konpeki-composer/v1')).document.pages[0].components[0].customVisual.elements[0].attributes.fill === 'theme:accent'`);
   browser("reload");
   browser("wait", "--text", "Meet Konpeki");
   fonts("IBM Plex Serif", "IBM Plex Sans", "plex-serif");

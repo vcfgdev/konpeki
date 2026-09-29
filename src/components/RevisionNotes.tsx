@@ -85,7 +85,7 @@ export function RevisionNotes({ document, open, target, editId, review, disabled
   useEffect(() => { if (fallback) { promptInput.current?.focus(); promptInput.current?.select(); } }, [fallback]);
   if (!open) return null;
   function label(value: ReviewTarget) {
-    const slide = document.slides.find(s => s.id === value.slideId);
+    const slide = document.pages.find(s => s.id === value.slideId);
     if (!slide) return "Deleted page";
     const component = slide.components.find(c => c.id === value.componentId);
     if (value.componentId && !component) return `${slide.name} · Deleted component`;
@@ -101,7 +101,7 @@ export function RevisionNotes({ document, open, target, editId, review, disabled
   }
   const pending = review.notes.filter(n => !n.resolved);
   const current = editId ? [] : target ? pending.filter(note => note.slideId === target.slideId && note.componentId === target.componentId && note.elementId === target.elementId) : pending;
-  const page = document.slides.find(page => page.id === target?.slideId);
+  const page = document.pages.find(page => page.id === target?.slideId);
   const component = page?.components.find(component => component.id === target?.componentId);
   const stale = Boolean(editId && !editing) || (target && (!page || Boolean(target.componentId && !component) || Boolean(target.elementId && (component?.customVisual?.format !== "vector" || !component.customVisual.elements.some(element => element.id === target.elementId)))));
   function noteItem(note: RevisionNote) {

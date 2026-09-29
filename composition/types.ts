@@ -89,7 +89,6 @@ type ComponentBase = {
   id: string;
   preferredRect: Rect;
   slotIds: string[];
-  intent?: string;
   customVisual?: CustomVisual;
 };
 export type TextBlockComponent = ComponentBase & {
@@ -267,5 +266,5 @@ export type CompositionDocument = {
   title: string;
   authoringMode?: AuthoringMode;
   theme?: { id: ThemeId; mode: ThemeMode; typography?: TypographyId };
-  slides: CompositionSlide[];
+  pages: CompositionSlide[];
 };

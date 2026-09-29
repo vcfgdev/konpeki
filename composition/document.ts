@@ -8,7 +8,7 @@ import {
   type ContentSlot,
   type Rect,
 } from "./runtime.ts";
-import { gridSchema, gridMetrics, refineGrid, resolveArea, resolveDocument, resolveSlide, resolveComponent, snapArea, toComposition, toGridComponent, type GridArea, type PageGrid } from "./grid.ts";
+import { gridSchema, resolveDocument, resolveSlide, toComposition, toGridComponent } from "./grid.ts";
 import { validateComposition } from "./validate.ts";
 import { appearanceOptions } from "./schema.ts";
 import { diagramDefinition } from "./visualizations.ts";
@@ -97,10 +97,10 @@ export function createComponent(
   return {
     id,
     kind,
+    rect: preferredRect,
     preferredRect,
     slotIds: [`${id}-content`],
-    intent: instructions[kind],
-    ...(kind === "text-block" ? { content: "Text", textStyle: { size: 36, weight: 400, lineHeight: 1.4, color: "ink", font: "body" } } : {}),
+    ...(kind === "text-block" ? { content: "Text", textStyle: { weight: 400, color: "ink", font: "body" } } : {}),
     appearance,
   } as CompositionComponent;
 }
@@ -115,7 +115,6 @@ function createStarterSlide(index = 1): CompositionSlide {
       width: canvasSize.width - canvasPadding.left - canvasPadding.right,
       height: 88,
     };
-    title.intent = "State the decision or takeaway.";
     title.appearance = {
       ...title.appearance,
       role: "title",
@@ -126,7 +125,6 @@ function createStarterSlide(index = 1): CompositionSlide {
   const emphasis = components[2];
   if (emphasis.kind === "text-block") {
     emphasis.preferredRect.x = 1248;
-    emphasis.intent = "Explain the implication or recommended action.";
     emphasis.appearance = {
       ...emphasis.appearance,
       purpose: "emphasis",
@@ -141,7 +139,6 @@ function createStarterSlide(index = 1): CompositionSlide {
       width: canvasSize.width - canvasPadding.left - canvasPadding.right,
       height: 88,
     };
-    footnote.intent = "Add the source, scope, and any important caveat.";
     footnote.appearance = {
       ...footnote.appearance,
       role: "footnote",
@@ -198,20 +195,18 @@ export function createBlankSlide(index = 1, size: CanvasSize = canvasSize): Comp
 }
 export function initialDraft(empty = false): Draft {
   const slide = empty ? createBlankSlide() : createStarterSlide();
-  const { canvas: _, innerPadding: __, ...wireSlide } = slide;
   return resolveDocument({
     schema: gridSchema,
     title: "Untitled composition",
     theme: { id: "plex", mode: "paper" },
-    // Keep the starter's original geometry while new documents use revision 2.
-    slides: [refineGrid({
-      ...wireSlide,
-      grid: { preset: "presentation" },
+    pages: [{
+      ...slide,
+      preset: "presentation",
       components: slide.components.map((component) => ({
         ...toGridComponent(component),
-        area: snapArea({ preset: "presentation" }, component.preferredRect),
+        rect: component.preferredRect,
       })),
-    })],
+    }],
   });
 }
 export function initialGridDraft(): Draft {
@@ -220,19 +215,19 @@ export function initialGridDraft(): Draft {
 export function validateDraft(draft: Draft) {
   return validateComposition(toComposition(draft));
 }
-export function getSlide(draft: Draft, id = draft.slides[0]?.id) {
-  const slide = draft.slides.find((item) => item.id === id);
+export function getSlide(draft: Draft, id = draft.pages[0]?.id) {
+  const slide = draft.pages.find((item) => item.id === id);
   if (!slide) throw new Error(`Unknown slide: ${id}`);
   return slide;
 }
 export function addSlide(draft: Draft): { draft: Draft; slideId: string } {
-  const used = new Set(draft.slides.map((slide) => slide.id));
-  let index = draft.slides.length + 1;
+  const used = new Set(draft.pages.map((slide) => slide.id));
+  let index = draft.pages.length + 1;
   while (used.has(`slide-${index}`)) index += 1;
   const blank = createBlankSlide(index);
-  const slide = draft.schema === gridSchema
-    ? resolveSlide({ ...blank, grid: draft.slides[0].grid!, components: [] }) : blank;
-  const next = { ...draft, slides: [...draft.slides, slide] };
+  const first = draft.pages[0];
+  const slide = resolveSlide({ ...blank, canvas: first.canvas, preset: first.preset, innerPadding: first.innerPadding, components: [] });
+  const next = { ...draft, pages: [...draft.pages, slide] };
   const validated = validMutation(draft, next);
   if (validated === draft) return { draft, slideId: "" };
   return {
@@ -241,12 +236,12 @@ export function addSlide(draft: Draft): { draft: Draft; slideId: string } {
   };
 }
 export function removeSlide(draft: Draft, slideId: string): Draft {
-  if (draft.slides.length === 1) return draft;
+  if (draft.pages.length === 1) return draft;
   const next = {
     ...draft,
-    slides: draft.slides.filter((slide) => slide.id !== slideId),
+    pages: draft.pages.filter((slide) => slide.id !== slideId),
   };
-  if (next.slides.length === draft.slides.length) return draft;
+  if (next.pages.length === draft.pages.length) return draft;
   return validMutation(draft, next);
 }
 export function createContentSlots(
@@ -257,7 +252,13 @@ export function createContentSlots(
       id,
       label: componentLabels[component.kind] + (index ? ` ${index + 1}` : ""),
       required: true,
-      instruction: component.intent?.trim() || instructions[component.kind],
+      instruction: component.kind === "text-block" && component.appearance.role === "title"
+        ? "State the decision or takeaway."
+        : isFootnoteText(component)
+          ? "Add the source, scope, and any important caveat."
+          : component.kind === "text-block" && component.appearance.purpose === "emphasis"
+            ? "Explain the implication or recommended action."
+            : instructions[component.kind],
     };
     if (isFootnoteText(component))
       return { ...base, role: "source", targets: [] };
@@ -289,36 +290,30 @@ function offsetRect(rect: Rect, size: CanvasSize) {
   const y = rect.y + 48 <= maximumY ? rect.y + 48 : Math.max(0, rect.y - 48);
   return { ...rect, x, y };
 }
-function avoidOccupiedArea(area: ReturnType<typeof snapArea>, slide: CompositionSlide) {
-  if (!slide.grid) return area;
-  const occupied = new Set(slide.components.map(component => {
-    const value = resolveArea(slide.grid!, component.area!);
-    return `${value.column}:${value.row}`;
-  }));
-  if (!occupied.has(`${area.column}:${area.row}`)) return area;
-  const columns = gridMetrics(slide.grid).columns;
-  for (let distance = 1; distance < columns; distance += 1) {
-    for (const column of [area.column + distance, area.column - distance]) {
-      if (column < 1 || column + area.span - 1 > columns) continue;
-      if (!occupied.has(`${column}:${area.row}`)) return { ...area, column };
-    }
-  }
-  return area;
-}
 export function transformComponentRect(
   component: CompositionComponent,
   previousRect: Rect,
   nextRect: Rect,
-  grid?: PageGrid,
+  bounds?: CanvasSize,
 ): CompositionComponent {
-  if (grid) {
-    const area: GridArea = snapArea(grid, nextRect, component.area);
-    if (component.area?.column === "center" && previousRect.x === nextRect.x && previousRect.width === nextRect.width) area.column = "center";
-    if (component.area?.row === "center" && previousRect.y === nextRect.y && previousRect.height === nextRect.height) area.row = "center";
-    return resolveComponent({ ...toGridComponent(component), area }, grid);
+  let dx = Math.round(nextRect.x - previousRect.x), dy = Math.round(nextRect.y - previousRect.y);
+  const dw = Math.round(nextRect.width - previousRect.width), dh = Math.round(nextRect.height - previousRect.height);
+  const width = dw ? Math.max(1, Math.min(bounds?.width ?? Infinity, previousRect.width + dw)) : previousRect.width;
+  const height = dh ? Math.max(1, Math.min(bounds?.height ?? Infinity, previousRect.height + dh)) : previousRect.height;
+  if (bounds) {
+    dx = clamp(previousRect.x + dx, 0, Math.max(0, bounds.width - width)) - previousRect.x;
+    dy = clamp(previousRect.y + dy, 0, Math.max(0, bounds.height - height)) - previousRect.y;
+  }
+  if (!dx && !dy && !dw && !dh) return component;
+  if (!component.rect) {
+    const offset = component.flow?.offset ?? { x: 0, y: 0 };
+    if (!dx && !dy) return component;
+    return { ...component, flow: { ...component.flow, offset: { x: offset.x + dx, y: offset.y + dy } } };
   }
   const next = structuredClone(component);
-  next.preferredRect = { ...nextRect };
+  next.preferredRect = { x: previousRect.x + dx, y: previousRect.y + dy, width, height };
+  next.rect = { ...next.preferredRect };
+  if (component.rect.height === undefined && !dh) delete next.rect.height;
   if ((next.kind !== "diagram" && next.kind !== "chart") || !next.topology) return next;
   const scaleX = nextRect.width / previousRect.width;
   const scaleY = nextRect.height / previousRect.height;
@@ -377,14 +372,7 @@ export function addComponent(
     );
   if (!at && previous)
     component.preferredRect = offsetRect(previous.preferredRect, slide.canvas);
-  if (slide.grid) {
-    const area = snapArea(slide.grid, component.preferredRect);
-    if (!at) {
-      const bottom = Math.max(0, ...slide.components.map(c => resolveArea(slide.grid!, c.area!).row + c.area!.rows - 1));
-      area.row = Math.min(bottom + 3, gridMetrics(slide.grid).rows - area.rows + 1);
-    }
-    component = resolveComponent({ ...toGridComponent(component), area: avoidOccupiedArea(area, slide) }, slide.grid);
-  }
+  component.rect = component.preferredRect;
   const readingOrder = [...slide.readingOrder];
   readingOrder.push({ kind: "component", id: component.id });
   const contentSlots = [
@@ -402,7 +390,7 @@ export function addComponent(
   ];
   const next = {
     ...draft,
-    slides: draft.slides.map((item) =>
+    pages: draft.pages.map((item) =>
       item.id === slide.id
         ? {
             ...item,
@@ -461,7 +449,7 @@ export function removeComponent(draft: Draft, id: string, slideId?: string): Dra
   const groupIds = new Set(groups.map((group) => group.id));
   const next = {
     ...draft,
-    slides: draft.slides.map((item) =>
+    pages: draft.pages.map((item) =>
       item.id === slide.id
         ? {
             ...item,
@@ -509,7 +497,7 @@ export function reorderPaintOrder(
     return draft;
   return validMutation(draft, {
     ...draft,
-    slides: draft.slides.map((item) =>
+    pages: draft.pages.map((item) =>
       item.id === slide.id ? { ...item, paintOrder: [...paintOrder] } : item,
     ),
   });
@@ -532,16 +520,12 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
   });
   const slotMap = new Map(source.slotIds.map((slotId, index) => [slotId, slotIds[index]]));
   const preferredRect = offsetRect(source.preferredRect, slide.canvas);
-  let component = transformComponentRect(
+  const component = !source.rect ? structuredClone(source) : transformComponentRect(
     structuredClone(source),
     source.preferredRect,
     preferredRect,
-    slide.grid,
+    slide.canvas,
   );
-  if (slide.grid && component.area) component = resolveComponent({
-    ...toGridComponent(component),
-    area: avoidOccupiedArea(resolveArea(slide.grid, component.area), slide),
-  }, slide.grid);
   component.id = componentId;
   component.slotIds = slotIds;
   if ((component.kind === "diagram" || component.kind === "chart") && component.topology)
@@ -598,7 +582,7 @@ export function duplicateComponent(draft: Draft, id: string, slideId?: string): 
   paintOrder.splice(paintOrder.indexOf(id) + 1, 0, componentId);
   const next = {
     ...draft,
-    slides: draft.slides.map((item) =>
+    pages: draft.pages.map((item) =>
       item.id === slide.id
         ? {
             ...item,

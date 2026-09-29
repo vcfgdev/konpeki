@@ -228,12 +228,12 @@ try {
   for (const [name, width, height] of [["square", 1080, 1080], ["header", 1600, 600], ["portrait", 1080, 1350], ["presentation", 1920, 1080]]) {
     let doc = initialDraft(true);
     doc.title = "Visual page verification";
-    doc.slides[0] = resizePage(doc.slides[0], { width, height });
-    doc.slides[0].name = name;
+    doc.pages[0] = resizePage(doc.pages[0], { width, height });
+    doc.pages[0].name = name;
     doc = addComponent(doc, "text-block");
     doc = addComponent(doc, "text-block");
     doc = addComponent(doc, "image");
-    const [headline, body, artwork] = doc.slides[0].components;
+    const [headline, body, artwork] = doc.pages[0].components;
     headline.content = "Ideas deserve\na clear picture.";
     headline.textStyle = { size: 72, weight: 600, lineHeight: 1.15, color: "accent", font: "heading" };
     headline.preferredRect = { x: 80, y: 80, width: width - 160, height: 180 };
@@ -247,9 +247,9 @@ try {
       description: "Magenta rectangle used to verify generated vector export",
       elements: [{ id: "export-vector", kind: "rect", attributes: { x: 0, y: 0, width: 120, height: 80, fill: "#ff00aa" } }],
     };
-    doc.slides[0].groups = [{ id: "copy", childIds: [headline.id, body.id] }];
-    doc.slides[0].readingOrder = [{ kind: "group", id: "copy" }, { kind: "component", id: artwork.id }];
-    doc.slides[0].paintOrder = [body.id, headline.id, artwork.id];
+    doc.pages[0].groups = [{ id: "copy", childIds: [headline.id, body.id] }];
+    doc.pages[0].readingOrder = [{ kind: "group", id: "copy" }, { kind: "component", id: artwork.id }];
+    doc.pages[0].paintOrder = [body.id, headline.id, artwork.id];
     assert.ok(validateComposition(doc).ok);
     evaluate(`localStorage.setItem('konpeki-composer/v1', ${JSON.stringify(JSON.stringify({ version: 2, document: doc }))})`);
     browser("reload");

@@ -18,7 +18,7 @@ const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 const failures = [], pages = [];
 for (const file of files) {
   const document = assertComposition(JSON.parse(readFileSync(file.path, "utf8")));
-  for (const [index, page] of document.slides.entries()) {
+  for (const [index, page] of document.pages.entries()) {
     const scene = lowerPage(document, page, fonts), diagnostics = checkPageNode(scene, fonts);
     const label = `${file.name}-${index + 1}`, svg = renderSVG(scene, fonts);
     writeFileSync(join(output, `${label}.svg`), svg);

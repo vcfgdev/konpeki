@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositionComponent } from "../../composition/runtime.ts";
 import { validateDraft, initialGridDraft } from "../../composition/document.ts";
-import { areaIssue, resolveDocument, toComposition } from "../../composition/grid.ts";
+import { resolveDocument, toComposition } from "../../composition/grid.ts";
 import { componentRemovalIssue, duplicateComponent, getSlide, parseCompositionJSON, removeComponent, transformComponentRect, type Draft } from "../lib/model.ts";
 import { commitHistory, createHistory, finishHistoryEdit, redoHistory, undoHistory } from "../lib/history.ts";
 import { clearStoredDraft, clearStoredExampleDraft, loadDraft, loadExampleDraft, loadFileReview, persistDraft, persistExampleDraft, persistFileReview } from "../lib/storage.ts";
@@ -73,6 +73,15 @@ export function App() {
   }, [notice, noticePaused]);
   useEffect(() => { document.title = `${draft.title} · Konpeki`; }, [draft.title]);
   useEffect(() => {
+    if (reviewView !== "queue" || review.notes.some(note => !note.resolved)) return;
+    function dismissEmptyQueue(event: PointerEvent) {
+      if (event.button === 0 && event.target instanceof Element && !event.target.closest(".revision-notes,.review-launcher"))
+        setReviewView("closed");
+    }
+    window.addEventListener("pointerdown", dismissEmptyQueue, true);
+    return () => window.removeEventListener("pointerdown", dismissEmptyQueue, true);
+  }, [reviewView, review]);
+  useEffect(() => {
     function keydown(event: KeyboardEvent) {
       if (event.defaultPrevented || locked) return;
       const editable = event.target instanceof HTMLElement && (event.target.closest("input,textarea,select") || event.target.isContentEditable);
@@ -118,10 +127,7 @@ export function App() {
     setHistory(current => ({ ...finishHistoryEdit(current), present: { ...current.present, selection: { slideId, componentId } } }));
   }
   function updateComponent(slideId: string, component: CompositionComponent, mergeKey?: string) {
-    const page = getSlide(draft, slideId);
-    const issue = page.grid && component.area && areaIssue(page.grid, component.area);
-    if (issue) { setNotice(issue); return; }
-    updateDraft({ ...draft, slides: draft.slides.map(page => page.id === slideId
+    updateDraft({ ...draft, pages: draft.pages.map(page => page.id === slideId
       ? { ...page, components: page.components.map(item => item.id === component.id ? component : item) } : page) }, { mergeKey: mergeKey && `${slideId}:${mergeKey}` });
   }
   function closeReview() {
@@ -215,7 +221,7 @@ export function App() {
         selected={selection?.slideId === page.id ? selection.componentId : undefined}
         commentTarget={target?.slideId === page.id ? target : undefined}
         onSelect={id => select(page.id, id)} onComment={componentId => comment({ slideId: page.id, ...(componentId ? { componentId } : {}) })}
-        onSlideName={name => updateDraft({ ...draft, slides: draft.slides.map(item => item.id === page.id ? { ...item, name } : item) })}
+        onSlideName={name => updateDraft({ ...draft, pages: draft.pages.map(item => item.id === page.id ? { ...item, name } : item) })}
         onComponent={(component, key) => updateComponent(page.id, component, key)}
         onDuplicate={(sourceId, rect) => {
           const next = duplicateComponent(draft, sourceId, page.id);
@@ -223,7 +229,8 @@ export function App() {
           const nextPage = getSlide(next, page.id);
           const copy = nextPage.components.find(item => !page.components.some(old => old.id === item.id));
           if (!copy) return;
-          const moved = transformComponentRect(copy, copy.preferredRect, rect, page.grid);
+          const before = { ...copy.preferredRect, height: copy.rect?.height === undefined ? rect.height : copy.preferredRect.height };
+          const moved = transformComponentRect(copy, before, rect, page.canvas);
           nextPage.components = nextPage.components.map(item => item.id === copy.id ? moved : item);
           updateDraft(next, { selection: { slideId: page.id, componentId: moved.id }, mergeKey: `${page.id}:geometry:${moved.id}` });
           return moved;

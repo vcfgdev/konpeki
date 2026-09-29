@@ -36,7 +36,7 @@ test("vector edits, sibling subtree ordering and deletion survive history and bo
   const draft = initialDraft();
   const supported = `<svg viewBox="0 0 800 400"><g id="group" font-family="theme:body-font" font-size="scale:body"><rect id="box" width="200" height="100" fill="theme:accent"/><text id="label"><tspan id="bold" x="20" y="50" font-weight="600">Before</tspan></text></g><path id="path" d="M0 0L100 100" stroke="theme:ink"/></svg>`;
   const visual = { format: "vector" as const, ...parseEditableSvg(supported), description: "Editable artwork" };
-  draft.slides[0].components[1].customVisual = visual;
+  draft.pages[0].components[1].customVisual = visual;
   const original = structuredClone(draft);
   let history = createHistory(draft);
   const edited = structuredClone(draft);
@@ -46,7 +46,7 @@ test("vector edits, sibling subtree ordering and deletion survive history and bo
   assert.equal(moveVectorElement(elements, "group", 1), elements);
   elements.find((element) => element.id === "bold")!.text = "revised";
   elements.find((element) => element.id === "path")!.attributes.d = "M10 10L90 90";
-  edited.slides[0].components[1].customVisual = { ...visual, elements };
+  edited.pages[0].components[1].customVisual = { ...visual, elements };
   history = commitHistory(history, edited);
   assert.equal(validateComposition(toComposition(edited)).ok, true);
   assert.deepEqual(parseStoredDraft(serializeDraft(edited)), { ok: true, draft: edited });
@@ -57,7 +57,7 @@ test("vector edits, sibling subtree ordering and deletion survive history and bo
   assert.deepEqual(redoHistory(undoHistory(history)).present, edited);
   // Deleting a group removes its text descendants but not its peer path.
   assert.deepEqual(removeVectorElement(elements, "group").map((element) => element.id), ["path"]);
-  edited.slides[0].components[1].customVisual = { ...visual, elements: [] };
+  edited.pages[0].components[1].customVisual = { ...visual, elements: [] };
   assert.equal(validateComposition(toComposition(edited)).ok, true, "last-element deletion leaves a valid blank interior");
   assert.deepEqual(draft, original, "editing does not mutate the previous document");
 });
@@ -74,7 +74,7 @@ test("invisible invalid SVG hierarchies and executable content are rejected", ()
   ]) {
     const draft = initialDraft();
     const candidate = JSON.parse(JSON.stringify(draft));
-    candidate.slides[0].components[1].customVisual = { format: "vector", elements, viewBox: { x: 0, y: 0, width: 100, height: 100 }, description: "Invalid" };
+    candidate.pages[0].components[1].customVisual = { format: "vector", elements, viewBox: { x: 0, y: 0, width: 100, height: 100 }, description: "Invalid" };
     assert.equal(validateComposition(toComposition(candidate)).ok, false);
   }
   assert.throws(() => parseEditableSvg('<svg viewBox="0 0 10 10"><script>alert(1)</script></svg>'), /Unsupported/);

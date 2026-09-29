@@ -1,4 +1,4 @@
-import { areaRect, gridMetrics, roleSteps, typeSteps, type GridDocument, type GridSlide, type GridComponent } from "./grid.ts";
+import { pageMetrics, pixelPage, groupRect, roleSteps, typeSteps, type GridDocument, type GridSlide, type GridComponent } from "./grid.ts";
 import type { Rect, VectorElement } from "./types.ts";
 import type { FontContext } from "./fonts.ts";
 import { layoutText } from "./text-layout.ts";
@@ -15,7 +15,8 @@ const inheritKeys = new Set(["fill", "stroke", "stroke-width", "stroke-linecap",
 /** Shared page-pixel layout. No DOM, viewport, filesystem, or renderer measurement.
  * The editor may hold group offsets during a gesture; these never enter the IR. */
 export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontContext, groupOffsets?: ReadonlyMap<string, number>): ScenePage {
-  const grid = gridMetrics(page.grid);
+  page = pixelPage(page);
+  const grid = pageMetrics(page);
   const palette = composerPalette(document.theme?.id ?? "plex", document.theme?.mode ?? "paper");
   const theme = getTheme(themeLabel(document.theme?.id ?? "plex"), document.theme?.mode ?? "paper", document.theme?.typography);
   const body = familyName(theme.body), heading = familyName(theme.headline);
@@ -30,9 +31,57 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
     const layout = layoutText(fonts, { text: source, width: box.width, fontFamily, fontSize: size, lineHeight: height, fontWeight: weight, fontStyle: style, align, wrap: label ? "no-wrap" : "pre-wrap", overflowWrap: "anywhere" });
     return { ...owner, kind: "text", source, box, layout, fontSize: size, lineHeight: height, fontWeight: weight, color: fill, opacity, label, clip: box };
   }
+  function nativeText(component: Extract<GridComponent, { kind: "text-block" }>, box: Rect, source = component.content ?? "") {
+    const index = typeSteps.indexOf(component.textStyle?.step ?? roleSteps[component.appearance.role]);
+    const size = component.textStyle?.size ?? grid.scale[index];
+    const height = component.textStyle?.leading ?? (component.textStyle?.size === undefined ? grid.lineHeights[index] : size * 1.4);
+    return text(source, box, target(component.id), size, height, component.textStyle?.font === "heading" ? heading : body,
+      component.textStyle?.weight ?? 400, component.appearance.treatment === "strong" ? palette.bg : colors[component.textStyle?.color ?? "ink"],
+      component.appearance.alignment === "center" ? "center" : component.appearance.alignment === "end" ? "right" : "left");
+  }
+  // Layout order is explicit in childIds, independent of source and paint order.
+  // Measure once and reuse the exact shaped lines in every writer.
+  const flowing = new Map<string, { box: Rect; text: SceneText }>();
+  function measuredText(component: Extract<GridComponent, { kind: "text-block" }>, frame: Rect) {
+    const inset = component.padding ?? 0;
+    const item = nativeText(component, { x: frame.x + inset, y: frame.y + inset, width: frame.width - 2 * inset, height: 0 });
+    item.box.height = item.layout.height;
+    const box = { ...frame, height: item.layout.height + 2 * inset };
+    flowing.set(component.id, { box, text: item });
+    return box;
+  }
+  for (const component of page.components) {
+    if (component.kind === "text-block" && component.rect && component.rect.height === undefined)
+      measuredText(component, { ...component.rect, height: 0 });
+  }
+  for (const group of page.groups) {
+    if (group.layout !== "stack") continue;
+    const frame = groupRect(page, group), boxes: Rect[] = [];
+    let y = frame.y;
+    for (const [index, id] of group.childIds.entries()) {
+      const component = page.components.find(c => c.id === id)!;
+      if (component.kind !== "text-block") throw new Error(`${id}: stack members must be text`);
+      const step = component.textStyle?.step ?? roleSteps[component.appearance.role];
+      const gap = group.gap ?? grid.lineHeights[2] / 2;
+      y += component.flow?.gapBefore ?? (index === 0 ? 0 : gap * (typeSteps.indexOf(step) >= 4 ? 2 : 1));
+      const offset = component.flow?.offset ?? { x: 0, y: 0 };
+      const box = measuredText(component, { x: frame.x + offset.x, y: y + offset.y, width: frame.width, height: 0 });
+      boxes.push(box);
+      // A human nudge is a visual offset, not blank space inserted in the flow.
+      y += box.height;
+    }
+    if (boxes.length) {
+      const left = Math.min(...boxes.map(box => box.x)), right = Math.max(...boxes.map(box => box.x + box.width));
+      const top = Math.min(frame.y, ...boxes.map(box => box.y)), bottom = Math.max(y, ...boxes.map(box => box.y + box.height));
+      (scene.groups ??= []).push({ id: group.id, box: frame, bounds: { x: left, y: top, width: right - left, height: bottom - top } });
+    }
+  }
   for (const id of page.paintOrder) {
     const component = page.components.find(c => c.id === id)!;
-    const owner = target(id), box = areaRect(page.grid, component.area), inset = (component.padding ?? 0) * grid.baseline;
+    const flow = flowing.get(id);
+    const source = flow?.box ?? component.rect as Rect;
+    const box = { x: source.x, y: source.y, width: source.width, height: source.height };
+    const owner = target(id), inset = component.padding ?? 0;
     const cell = { x: box.x + inset, y: box.y + inset, width: box.width - 2 * inset, height: box.height - 2 * inset };
     const info: ScenePage["components"][number] = { id, box, contentBox: cell, draft: !component.customVisual && component.kind !== "text-block", chart: component.kind === "chart" };
     scene.components.push(info);
@@ -74,8 +123,9 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
           const elementOwner = target(id, element.id);
           if (element.kind === "text" || element.kind === "tspan") {
             if (element.text !== undefined) {
-              const step = String(attrs["font-size"] ?? "scale:caption").replace("scale:", "") as typeof typeSteps[number];
-              const size = grid.scale[typeSteps.indexOf(step)], height = grid.lineHeights[typeSteps.indexOf(step)];
+              const value = attrs["font-size"] ?? "scale:caption";
+              const index = typeSteps.indexOf(String(value).replace("scale:", "") as typeof typeSteps[number]);
+              const size = typeof value === "number" ? value : grid.scale[index], height = typeof value === "number" ? value * 1.4 : grid.lineHeights[index];
               const item = text(element.text, { x: 0, y: 0, width: 0, height: cell.height }, elementOwner, size, height,
                 attrs["font-family"] === "theme:heading-font" ? heading : body, Number(attrs["font-weight"] ?? 400), color(attrs.fill, color(attrs.color)), "left", true,
                 attrs["font-style"] === "italic" ? "italic" : "normal", opacity * Number(attrs["fill-opacity"] ?? 1));
@@ -98,30 +148,24 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
       }
       visit(undefined, {}, 1);
     } else if (component.kind === "text-block") {
-      const step = component.textStyle?.step ?? roleSteps[component.appearance.role], index = typeSteps.indexOf(step);
-      const size = grid.scale[index], height = component.textStyle?.leading === undefined ? grid.lineHeights[index] : component.textStyle.leading * grid.baseline;
-      const regions = textRegions(component, cell, grid.gutter);
-      for (const region of regions) {
-        const item = text(region.text, region.box, owner, size, height, component.textStyle?.font === "heading" ? heading : body,
-          component.textStyle?.weight ?? 400, appearance.treatment === "strong" ? palette.bg : colors[component.textStyle?.color ?? "ink"],
-          appearance.alignment === "center" ? "center" : appearance.alignment === "end" ? "right" : "left");
-        const alignment = component.appearance.verticalAlignment ?? (component.appearance.role === "title" ? "end" : "start");
+      const items = flow ? [flow.text] : textRegions(component, cell, grid.gutter).map(region => nativeText(component, region.box, region.text));
+      for (const item of items) {
+        const region = item.box;
+        const alignment = component.rect ? component.appearance.verticalAlignment ?? (component.appearance.role === "title" ? "end" : "start") : "start";
         if (alignment !== "start") {
           // Center from the first cap top to the last baseline, excluding
           // half-leading and descenders. End retains the title's line-box rule.
-          const top = item.layout.lines[0].baseline - item.layout.capHeight * size;
+          const top = item.layout.lines[0].baseline - item.layout.capHeight * item.fontSize;
           const bottom = item.layout.lines.at(-1)!.baseline;
-          const offset = alignment === "center" ? (region.box.height - top - bottom) / 2 : Math.max(0, region.box.height - item.layout.height);
-          item.box = { ...region.box, y: region.box.y + offset, height: region.box.height - offset };
+          const offset = alignment === "center" ? (region.height - top - bottom) / 2 : Math.max(0, region.height - item.layout.height);
+          item.box = { ...region, y: region.y + offset, height: region.height - offset };
         }
         scene.items.push(item);
       }
     } else {
       const caption = text(`Draft ${component.kind}`, { ...cell, height: grid.lineHeights[2] }, owner, grid.scale[2], grid.lineHeights[2], heading, 500, palette.fg);
       scene.items.push(caption);
-      const intent = text(component.intent ?? "", { ...cell, y: cell.y + caption.layout.height + 12, height: Math.max(0, cell.height - caption.layout.height - 12) }, owner, grid.scale[1], grid.lineHeights[1], body, 400, palette.muted);
-      scene.items.push(intent);
-      const top = intent.box.y + intent.layout.height + 20;
+      const top = cell.y + caption.layout.height + 20;
       const artBox = { ...cell, y: top, height: Math.max(0, cell.y + cell.height - top) };
       const art = draftArtwork(component, palette), s = Math.min(artBox.width / art.width, artBox.height / art.height);
       const dx = artBox.x + (artBox.width - art.width * s) / 2, dy = artBox.y + (artBox.height - art.height * s) / 2;
@@ -135,13 +179,13 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
     }
   }
   for (const group of page.groups) {
-    if (!group.area || !group.verticalAlignment) continue;
+    if (!group.rect || !group.verticalAlignment) continue;
     const members = new Set(group.childIds);
     const items = scene.items.filter(item => item.componentId && members.has(item.componentId));
     const bounds = items.map(item => itemBounds(item, fonts)).filter((box): box is Rect => box !== undefined);
     if (!bounds.length) continue;
     const top = Math.min(...bounds.map(box => box.y)), bottom = Math.max(...bounds.map(box => box.y + box.height));
-    const area = areaRect(page.grid, group.area);
+    const area = group.rect;
     const offset = groupOffsets?.get(group.id) ?? (group.verticalAlignment === "center" ? area.y + (area.height - top - bottom) / 2
       : group.verticalAlignment === "end" ? area.y + area.height - bottom : area.y - top);
     const translate = (box: Rect): Rect => ({ ...box, y: box.y + offset });
@@ -161,7 +205,7 @@ export function lowerPage(document: GridDocument, page: GridSlide, fonts: FontCo
     }
   }
   if (page.pageNumber && page.pageNumber.style !== "none") {
-    const index = document.slides.findIndex(item => item.id === page.id), source = String(index + 1).padStart(2, "0") + (page.pageNumber?.style === "01/02" ? `/${String(document.slides.length).padStart(2, "0")}` : "");
+    const index = document.pages.findIndex(item => item.id === page.id), source = String(index + 1).padStart(2, "0") + (page.pageNumber?.style === "01/02" ? `/${String(document.pages.length).padStart(2, "0")}` : "");
     const number = text(source, { x: grid.width * 0.65, y: grid.height * 0.978 - grid.scale[0], width: grid.width * (1 - 0.65 - 0.058333333), height: grid.scale[0] }, target(), grid.scale[0], grid.scale[0], body, 400, colors[page.pageNumber?.color ?? "muted"], "right", true);
     // A page label belongs to the page, not a font-size-high clipping cell.
     // Preserve its baseline while allowing slash/descender ink below the em.

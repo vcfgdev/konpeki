@@ -14,16 +14,59 @@ import { addComponent, addSlide, createComponent, initialDraft, parseComposition
 import { resolveDocument, toComposition } from './grid.ts';
 const publicSchema = JSON.parse(readFileSync(new URL('./schema-v2.json', import.meta.url), 'utf8'));
 const validateSchema = new Ajv2020({ strict: false }).compile(publicSchema);
-const firstSlide = (document: ReturnType<typeof initialDraft>) => document.slides[0];
+const firstSlide = (document: ReturnType<typeof initialDraft>) => document.pages[0];
 test('public schema is generated from the runtime vocabulary', () => assert.deepEqual(publicSchema, schemaV2));
+test('legacy slides import to pages without intent, mutation or lost edits', () => {
+  const draft = addSlide(initialDraft()).draft;
+  draft.pages[0].components[0].rect!.x = 113.25;
+  draft.pages[1].name = 'Second page';
+  const expected = toComposition(draft);
+  const { pages, ...rest } = structuredClone(expected);
+  const legacy = { ...rest, slides: pages.map(page => ({ ...page, components: page.components.map(component =>
+    Object.freeze({ ...component, intent: 'Obsolete private authoring instruction' })) })) };
+  const before = canonicalJSON(legacy);
+  Object.freeze(legacy);
+  assert.equal(validateSchema(legacy), false, 'public authoring schema exposes only pages');
+  const result = validateComposition(legacy);
+  assert.ok(result.ok);
+  assert.deepEqual(result.document, expected);
+  assert.equal(canonicalJSON(legacy), before);
+  assert.deepEqual(parseCompositionJSON(before), { ok: true, document: resolveDocument(expected) });
+  const restored = parseStoredDraft(JSON.stringify({ version: 2, document: legacy }));
+  assert.ok(restored.ok);
+  assert.deepEqual(JSON.parse(serializeDraft(restored.draft)).document, expected);
+  const handoff = compileHandoff(legacy);
+  assert.doesNotMatch(handoff, /"slides"|"intent"|Obsolete private authoring instruction/);
+  assert.match(handoff, /"pages"/);
+});
+test('canonical pages reject intent and mixed keys; legacy import still validates structure', () => {
+  const wire = toComposition(initialDraft());
+  assert.equal(validateSchema(wire), true);
+  for (const component of wire.pages[0].components) assert.equal('intent' in component, false);
+  const mixed = { ...wire, slides: [] };
+  assert.equal(validateSchema(mixed), false);
+  assert.equal(validateComposition(mixed).ok, false, 'never silently prefer one page collection');
+  for (const [index, kind] of componentKinds.entries()) {
+    const document = toComposition(addComponent(initialDraft(true), kind));
+    Object.assign(document.pages[0].components[0], { intent: `Removed field ${index}` });
+    assert.equal(validateSchema(document), false, kind);
+    assert.equal(validateComposition(document).ok, false, kind);
+  }
+  const { pages, ...rest } = wire;
+  for (const slides of [null, {}, [null], [{ ...pages[0], components: null }],
+    [{ ...pages[0], components: [null] }], [{ ...pages[0], extra: 'invalid' }]]) {
+    assert.equal(validateComposition({ ...rest, slides }).ok, false);
+  }
+  assert.equal(validateComposition({ ...rest, schema: 'konpeki-composition/v1', slides: pages }).ok, false);
+});
 for (const [name, document] of Object.entries(fixtures)) test(`fixture and deterministic handoff: ${name}`, () => {
   const wire = toComposition(document);
   assert.equal(validateSchema(wire), true);
   assert.equal(validateComposition(wire).ok, true);
   assert.equal(readFileSync(new URL(`./fixtures/${name}.json`, import.meta.url), 'utf8'), canonicalJSON(wire) + '\n');
   assert.equal(readFileSync(new URL(`./fixtures/${name}.handoff.md`, import.meta.url), 'utf8'), compileHandoff(wire));
-  const body = document.slides[0].components[1].preferredRect;
-  const emphasis = document.slides[0].components.find(component => component.kind === 'text-block' && component.appearance?.purpose === 'emphasis')?.preferredRect;
+  const body = document.pages[0].components[1].preferredRect;
+  const emphasis = document.pages[0].components.find(component => component.kind === 'text-block' && component.appearance?.purpose === 'emphasis')?.preferredRect;
   if (emphasis) assert.ok(body.x + body.width <= emphasis.x, 'body and emphasis must not overlap');
 });
 test('schema exposes only five top-level component kinds and text roles replace headline and footnote', () => {
@@ -38,7 +81,7 @@ test('schema exposes only five top-level component kinds and text roles replace 
 });
 test('raw SVG is rejected by the v2 wire contract', () => {
   const wire = toComposition(initialDraft()) as unknown as Record<string, any>;
-  wire.slides[0].components[1].customVisual = {
+  wire.pages[0].components[1].customVisual = {
     format: 'svg', source: '<svg/>', viewBox: { x: 0, y: 0, width: 1, height: 1 }, description: 'raw',
   };
   assert.equal(validateSchema(wire), false);
@@ -59,7 +102,7 @@ test('SVG primitives import as stable editable vector elements', () => {
   );
   assert.equal(parsed.elements.at(-1)?.text, 'Editable');
   const draft = initialDraft();
-  draft.slides[0].components[1].customVisual = {
+  draft.pages[0].components[1].customVisual = {
     format: 'vector',
     elements: parsed.elements,
     viewBox: parsed.viewBox,
@@ -70,8 +113,8 @@ test('SVG primitives import as stable editable vector elements', () => {
   assert.match(compileHandoff(draft), /preserve element IDs/);
 
   const invalid = structuredClone(draft);
-  if (invalid.slides[0].components[1].customVisual?.format !== 'vector') return;
-  invalid.slides[0].components[1].customVisual.elements[1].parentId = 'missing';
+  if (invalid.pages[0].components[1].customVisual?.format !== 'vector') return;
+  invalid.pages[0].components[1].customVisual.elements[1].parentId = 'missing';
   assert.equal(validateComposition(toComposition(invalid)).ok, false);
 });
 test('diagram starting points and chart grammars have complete, disjoint definitions', () => {
@@ -89,7 +132,7 @@ test('diagram starting points and chart grammars have complete, disjoint definit
   assert.deepEqual(diagramTypes.filter(type => (chartTemplates as readonly string[]).includes(type)), []);
   for (const template of chartTemplates) {
     const draft = initialDraft();
-    const chart = draft.slides[0].components[1];
+    const chart = draft.pages[0].components[1];
     if (chart.kind !== 'chart') throw new Error('Chart missing');
     chart.appearance.template = template;
     assert.equal(validateComposition(toComposition(draft)).ok, true, template);
@@ -107,7 +150,7 @@ test('reading order expands groups exactly once independently of text role', () 
 test('references and rectangles cannot silently escape the contract', () => {
   const doc = initialDraft();
   const wire = toComposition(doc);
-  wire.slides[0].components[1].area.column = 13;
+  wire.pages[0].components[1].rect!.x = 1920;
   assert.equal(validateComposition(wire).ok, false);
   const reference = initialDraft();
   firstSlide(reference).relationships = [{ id: 'relation', kind: 'depends-on', direction: 'forward', from: { nodeId: 'chart-2', slotId: 'text-block-1-content' }, to: { nodeId: 'text-block-3' } }];
@@ -129,14 +172,14 @@ test('topology preserves parallel request/poll links and rejects missing, duplic
   c.topology.edges[0].to = 'gateway'; c.topology.nodes.pop(); assert.equal(validateComposition(toComposition(doc)).ok, false);
 });
 test('diagram topology requires unique exact slot coverage', () => {
-  const doc = structuredClone(fixtures['branching-process-return']); const c = doc.slides[0].components[1];
+  const doc = structuredClone(fixtures['branching-process-return']); const c = doc.pages[0].components[1];
   if (c.kind !== 'diagram' || !c.topology) throw new Error('Missing diagram');
   c.topology.nodes[1].slotId = c.topology.nodes[0].slotId;
   assert.equal(validateComposition(toComposition(doc)).ok, false);
 });
 test('diagram topology rejects derived node geometry', () => {
   const wire = toComposition(structuredClone(fixtures['branching-process-return']));
-  const component = wire.slides[0].components[1];
+  const component = wire.pages[0].components[1];
   if (component.kind !== 'diagram' || !component.topology) throw new Error('Missing diagram');
   component.topology.nodes[0].preferredRect = { x: 150, y: 320, width: 160, height: 80 };
   assert.equal(validateComposition(wire).ok, false);
@@ -149,7 +192,7 @@ test('compiler canonicalizes object keys, retains array order and needs no autho
   assert.notEqual(compileHandoff(doc), before);
   assert.match(before, /render every directed, labeled edge exactly once/);
   assert.match(before, /Keep ordinary text in native Text-block content, not artwork/);
-  assert.match(before, /Do not write canvas, innerPadding, preferredRect/);
+  assert.match(before, /Positioned components use rect \{x,y,width,height\} in page pixels/);
   assert.match(before, /Run konpeki inspect for a revision-bound JSON layout report/);
   assert.match(before, /inspect all pages before delivery/);
   assert.match(before, /Do not save the derived report as composition JSON/);
@@ -158,7 +201,7 @@ test('compiler canonicalizes object keys, retains array order and needs no autho
 });
 test('compiler preserves an ordered multi-slide deck and slide names', () => {
   const document = addSlide(initialDraft()).draft;
-  document.slides[1].name = 'Decision';
+  document.pages[1].name = 'Decision';
   const handoff = compileHandoff(document);
   assert.equal((handoff.match(/^### \d+\./gm) ?? []).length, 2);
   assert.match(handoff, /Surface: 1920×1080 pixels/);
@@ -166,32 +209,28 @@ test('compiler preserves an ordered multi-slide deck and slide names', () => {
   assert.ok(handoff.indexOf('### 1. Slide 01') < handoff.indexOf('### 2. Decision'));
   assert.ok(handoff.indexOf('"name": "Slide 01"') < handoff.indexOf('"name": "Decision"'));
   const duplicateId = structuredClone(document);
-  duplicateId.slides[1].id = duplicateId.slides[0].id;
+  duplicateId.pages[1].id = duplicateId.pages[0].id;
   assert.equal(validateComposition(duplicateId).ok, false);
 });
 test('compiler summarizes explicit order, placement, relationships and only used component guidance', () => {
   const document = structuredClone(fixtures['architecture-ownership']);
   const handoff = compileHandoff(document);
   assert.match(handoff, /## Deck plan/);
-  assert.match(handoff, /Text block `text-block-1`, column 1, span 22, row 1, rows 7/);
-  assert.match(handoff, /Diagram `diagram-2`, column 1, span 14, row 18, rows 44/);
+  assert.match(handoff, /Text block `text-block-1`, across the top \(x 112, y 72, width 1696, height 88\)/);
+  assert.match(handoff, /Diagram `diagram-2`, middle-left \(x 112, y 280, width 1080, height 530\)/);
   assert.match(handoff, /Reading flow: Text block `text-block-1` → Diagram `diagram-2`/);
   assert.match(handoff, /qualifies \(forward\): Text block `text-block-3` → Diagram `diagram-2` \/ slot `queue-entity` — Preserve retry uncertainty/);
   assert.match(handoff, /Diagram `diagram-2`: `browser` → `gateway` — initial request/);
   assert.match(handoff, /- Diagram: Start from the explanation goal/);
   assert.match(handoff, /Auto form .*Show system boundaries/);
-  assert.ok(handoff.indexOf('## Deck plan') < handoff.indexOf('## Composition JSON'));
+  assert.ok(handoff.indexOf('## Deck plan') < handoff.indexOf('## Normalized canonical Composition JSON'));
 });
-test('diagram handoff prioritizes intent and explicit notation over a preset without rewriting the document', () => {
+test('diagram handoff honors the brief and topology without rewriting the document', () => {
   const document = structuredClone(fixtures['architecture-ownership']);
-  const diagram = document.slides[0].components.find(component => component.kind === 'diagram');
-  assert.ok(diagram);
-  diagram.intent = 'Explain message order. Use a UML sequence diagram.';
   const before = canonicalJSON(toComposition(document));
   const handoff = compileHandoff(document);
-  assert.match(handoff, /Explain message order\. Use a UML sequence diagram\./);
   assert.match(handoff, /Only selection auto delegates the form choice/);
-  assert.match(handoff, /Honor notation explicitly requested in the intent or brief/);
+  assert.match(handoff, /Honor notation explicitly requested in the brief/);
   assert.match(handoff, /update the returned type while preserving auto/);
   assert.match(handoff, /preserve every node and render every directed, labeled edge exactly once/);
   assert.doesNotMatch(handoff, /Honor the selected semantic diagram grammar/);
@@ -199,7 +238,7 @@ test('diagram handoff prioritizes intent and explicit notation over a preset wit
 });
 test('explicit diagram forms are binding and unknown schema versions are rejected', () => {
   const doc = structuredClone(fixtures['architecture-ownership']);
-  const diagram = doc.slides[0].components.find(c => c.kind === 'diagram');
+  const diagram = doc.pages[0].components.find(c => c.kind === 'diagram');
   assert.ok(diagram);
   const created = createComponent('diagram', 1);
   assert.ok(created.kind === 'diagram');
@@ -213,7 +252,7 @@ test('explicit diagram forms are binding and unknown schema versions are rejecte
 });
 test('chart choices are auto by default and explicit templates require permission to switch', () => {
   const document = initialDraft();
-  const chart = document.slides[0].components.find(c => c.kind === 'chart');
+  const chart = document.pages[0].components.find(c => c.kind === 'chart');
   assert.ok(chart);
   assert.equal(chart.appearance.selection, 'auto');
   assert.match(compileHandoff(document), /Auto chart form/);
@@ -225,7 +264,7 @@ test('chart choices are auto by default and explicit templates require permissio
   assert.match(compileHandoff(document), /Auto does not authorize discarding topology/);
   for (const invalid of ['automatic', null, false]) {
     const candidate = JSON.parse(JSON.stringify(document));
-    candidate.slides[0].components.find((c: { kind: string }) => c.kind === 'chart').appearance.selection = invalid;
+    candidate.pages[0].components.find((c: { kind: string }) => c.kind === 'chart').appearance.selection = invalid;
     assert.equal(validateComposition(toComposition(candidate)).ok, false);
   }
 });
@@ -233,7 +272,7 @@ test('visual selection import and JSON round trips preserve SVG, vectors, topolo
   for (const kind of ['diagram', 'chart'] as const) {
     for (const format of ['vector'] as const) {
       const document = addComponent(initialDraft(true), kind);
-      const component = document.slides[0].components[0];
+      const component = document.pages[0].components[0];
       assert.ok(component.kind === 'diagram' || component.kind === 'chart');
       const source = '<svg viewBox="0 0 100 100"><rect id="box" x="5" y="5" width="90" height="90"/></svg>';
       component.customVisual = { format, ...parseEditableSvg(source), description: 'Preserved artwork' };
@@ -254,7 +293,7 @@ test('visual selection import and JSON round trips preserve SVG, vectors, topolo
 test('public schema and runtime allow topology only for Sankey charts', () => {
   for (const template of chartTemplates) {
     const wire = toComposition(initialDraft()) as unknown as Record<string, any>;
-    const chart = wire.slides[0].components[1];
+    const chart = wire.pages[0].components[1];
     chart.appearance.template = template;
     chart.topology = {
       kind: 'explicit',
@@ -270,12 +309,12 @@ test('public schema and runtime allow topology only for Sankey charts', () => {
 });
 test('current documents reject image as a chart template', () => {
   const current = toComposition(initialDraft()) as unknown as Record<string, any>;
-  const visual = current.slides[0].components.find((component: any) => component.kind === 'chart');
+  const visual = current.pages[0].components.find((component: any) => component.kind === 'chart');
   visual.appearance.template = 'image';
   assert.equal(validateSchema(current), false);
   assert.equal(validateComposition(current).ok, false);
 });
-test('empty slides are valid in both schema and runtime validators', () => {
+test('empty pages are valid in both schema and runtime validators', () => {
   const draft = initialDraft();
   Object.assign(firstSlide(draft), {
     contentSlots: [], components: [], groups: [], readingOrder: [], paintOrder: [], relationships: [],
@@ -283,21 +322,21 @@ test('empty slides are valid in both schema and runtime validators', () => {
   assert.equal(validateSchema(toComposition(draft)), true);
   assert.equal(validateComposition(toComposition(draft)).ok, true);
 });
-test('new components default to no outer border and resolve from the preset margin', () => {
+test('new components default to no outer border and use authored pixel margins', () => {
   const draft = initialDraft();
-  assert.deepEqual(firstSlide(draft).innerPadding, { top: 72, right: 72, bottom: 72, left: 72 });
+  assert.deepEqual(firstSlide(draft).innerPadding, { top: 72, right: 112, bottom: 0, left: 112 });
   for (const [index, kind] of componentKinds.entries()) {
     const component = createComponent(kind, index + 20);
     assert.equal((component.appearance as { border?: string }).border, 'none');
   }
   const headline = firstSlide(draft).components.find(component => component.kind === 'text-block' && component.appearance.role === 'title')!;
   const footnote = firstSlide(draft).components.find(component => component.kind === 'text-block' && component.appearance.role === 'footnote')!;
-  assert.equal(headline.preferredRect.x, 72);
-  assert.equal(footnote.preferredRect.x, 72);
+  assert.equal(headline.preferredRect.x, 112);
+  assert.equal(footnote.preferredRect.x, 112);
   assert.equal(headline.preferredRect.width, footnote.preferredRect.width);
   const wire = toComposition(draft);
-  assert.equal('innerPadding' in wire.slides[0], false, 'derived preset padding is not authored');
-  for (const component of wire.slides[0].components)
+  assert.deepEqual(wire.pages[0].innerPadding, { top: 72, right: 112, bottom: 0, left: 112 }, 'explicit margins survive saving');
+  for (const component of wire.pages[0].components)
     delete (component.appearance as { border?: string }).border;
   assert.equal(validateSchema(wire), true, 'omitted borders use the default');
   assert.equal(validateComposition(wire).ok, true);

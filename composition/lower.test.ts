@@ -7,23 +7,16 @@ import { lowerPage } from "./lower.ts";
 import { renderSVG } from "./svg.ts";
 import { assertComposition } from "./validate.ts";
 import { addComponent, initialGridDraft } from "./document.ts";
-import { areaRect, toComposition } from "./grid.ts";
+import { toComposition } from "./grid.ts";
 import { itemBounds, textInkBounds, type SceneShape } from "./scene.ts";
 import { checkPage } from "./check.ts";
-
-// These independently measured fit/baseline fixtures use the original grid.
-function legacyGridDraft() {
-  const draft = initialGridDraft();
-  draft.slides[0].grid = { preset: "presentation" };
-  return draft;
-}
 
 const fonts = await loadNodeFontContext(new URL("../fonts/", import.meta.url));
 const baseline = JSON.parse(readFileSync(new URL("./fixtures/text-layout-browser-baseline.json", import.meta.url), "utf8"));
 for (const name of ["architecture", "sankey", "release", "explainer", "intro"]) {
   const path = name === "intro" ? "../slides/introducing-konpeki/composition.json" : `../slides/gallery/${name}.json`;
   const document = assertComposition(JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8")));
-  for (const page of document.slides) test(`${name}/${page.id}: deterministic scene snapshot`, t => {
+  for (const page of document.pages) test(`${name}/${page.id}: deterministic scene snapshot`, t => {
     const before = structuredClone(document), scene = lowerPage(document, page, fonts);
     assert.deepEqual(document, before, "lowering cannot mutate authored data");
     assert.deepEqual(lowerPage(structuredClone(document), structuredClone(page), fonts), scene);
@@ -67,9 +60,9 @@ for (const name of ["architecture", "sankey", "release", "explainer", "intro"]) 
 }
 
 test("artwork fits once; labels keep unscaled steps, anchors, IDs and paint order", () => {
-  const document = toComposition(addComponent(legacyGridDraft(), "image"));
-  const page = document.slides[0], component = page.components[0];
-  component.area = { column: 2, span: 2, row: 4, rows: 10 };
+  const document = toComposition(addComponent(initialGridDraft(), "image"));
+  const page = document.pages[0], component = page.components[0];
+  component.rect = { x: 222, y: 108, width: 276, height: 120 };
   component.customVisual = { format: "vector", description: "Asymmetric anchor fixture", viewBox: { x: 10, y: 20, width: 200, height: 80 }, elements: [
     { id: "first", kind: "rect", attributes: { x: 10, y: 20, width: 200, height: 80, fill: "theme:accent" } },
     { id: "label", kind: "text", text: "office", attributes: { x: 110, y: 60, "text-anchor": "end", "font-size": "scale:caption" } },
@@ -88,9 +81,9 @@ test("artwork fits once; labels keep unscaled steps, anchors, IDs and paint orde
 });
 
 test("artwork alignment uses the padded cell, keeps labels attached, and preserves default centering", () => {
-  const document = toComposition(addComponent(legacyGridDraft(), "image"));
-  const page = document.slides[0], component = page.components[0];
-  component.area = { column: 2, span: 2, row: 4, rows: 10 }; component.padding = 1;
+  const document = toComposition(addComponent(initialGridDraft(), "image"));
+  const page = document.pages[0], component = page.components[0];
+  component.rect = { x: 222, y: 108, width: 276, height: 120 }; component.padding = 12;
   // Padded cell [234,120,252,96]. Contain leaves 204px spare width; cover
   // crops 228px; stretch has no spare width. Nonzero view origins matter.
   for (const config of [
@@ -116,10 +109,10 @@ test("artwork alignment uses the padded cell, keeps labels attached, and preserv
 });
 
 test("nested vertical regions keep pixel gutters and put sparse content first", () => {
-  const document = toComposition(addComponent(legacyGridDraft(), "text-block"));
-  const page = document.slides[0], component = page.components[0];
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const page = document.pages[0], component = page.components[0];
   assert.ok(component.kind === "text-block");
-  component.area = { column: 2, span: 6, row: 4, rows: 40 };
+  component.rect = { x: 222, y: 108, width: 876, height: 480 };
   component.appearance.layout = "one-plus-three";
   component.appearance.orientation = "vertical";
   component.content = "First\n\nSecond";
@@ -135,11 +128,11 @@ test("nested vertical regions keep pixel gutters and put sparse content first", 
 });
 
 test("titles bottom-align multiline copy inside padding; body copy stays at the top", () => {
-  const document = toComposition(addComponent(legacyGridDraft(), "text-block"));
-  const page = document.slides[0], component = page.components[0];
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const page = document.pages[0], component = page.components[0];
   assert.ok(component.kind === "text-block");
-  component.area = { column: 2, span: 6, row: 4, rows: 20 };
-  component.padding = 2;
+  component.rect = { x: 222, y: 108, width: 876, height: 240 };
+  component.padding = 24;
   component.content = "First line\nSecond line";
   component.textStyle = { step: "heading" };
   const region = { x: 246, y: 132, width: 828, height: 192 };
@@ -157,11 +150,11 @@ test("titles bottom-align multiline copy inside padding; body copy stays at the 
 test("restores the reviewed title offsets without moving subtitles", () => {
   for (const [name, id, offset] of [["sankey", "title", 44], ["explainer", "headline", 44], ["architecture", "headline", 20]] as const) {
     const document = assertComposition(JSON.parse(readFileSync(new URL(`../slides/gallery/${name}.json`, import.meta.url), "utf8")));
-    const scene = lowerPage(document, document.slides[0], fonts);
+    const scene = lowerPage(document, document.pages[0], fonts);
     const title = scene.items.find(item => item.kind === "text" && item.componentId === id);
     assert.ok(title?.kind === "text" && title.clip);
     assert.equal(title.box.y - title.clip.y, offset, name);
-    for (const component of document.slides[0].components.filter(item => item.kind === "text-block" && item.appearance.role === "subtitle")) {
+    for (const component of document.pages[0].components.filter(item => item.kind === "text-block" && item.appearance.role === "subtitle")) {
       const subtitle = scene.items.find(item => item.kind === "text" && item.componentId === component.id);
       assert.ok(subtitle?.kind === "text" && subtitle.clip);
       assert.equal(subtitle.box.y, subtitle.clip.y);
@@ -170,16 +163,16 @@ test("restores the reviewed title offsets without moving subtitles", () => {
 });
 
 test("explicit vertical alignment overrides roles; cap centering ignores descenders and leading", () => {
-  const document = toComposition(addComponent(legacyGridDraft(), "text-block"));
-  const page = document.slides[0], component = page.components[0];
+  const document = toComposition(addComponent(initialGridDraft(), "text-block"));
+  const page = document.pages[0], component = page.components[0];
   assert.ok(component.kind === "text-block");
-  component.area = { column: 2, span: 6, row: 4, rows: 20 };
-  component.padding = 2;
+  component.rect = { x: 222, y: 108, width: 876, height: 240 };
+  component.padding = 24;
   component.textStyle = { step: "heading" };
   component.appearance.role = "title";
   for (const copy of ["H", "Hp", "H\nHp"]) for (const leading of [undefined, 6]) {
     component.content = copy;
-    component.textStyle.leading = leading;
+    component.textStyle.leading = leading === undefined ? undefined : leading * 12;
     component.appearance.verticalAlignment = "center";
     const item = lowerPage(document, page, fonts).items.find(item => item.kind === "text");
     assert.ok(item?.kind === "text" && item.clip);
@@ -198,17 +191,17 @@ test("explicit vertical alignment overrides roles; cap centering ignores descend
 });
 
 test("group centering translates ink and selection cells together and responds to changed copy", () => {
-  const document = toComposition(addComponent(addComponent(legacyGridDraft(), "image"), "text-block"));
-  const page = document.slides[0], [mark, copy] = page.components;
+  const document = toComposition(addComponent(addComponent(initialGridDraft(), "image"), "text-block"));
+  const page = document.pages[0], [mark, copy] = page.components;
   assert.ok(copy.kind === "text-block");
-  mark.area = { column: 1, span: 1, row: 3, rows: 10 };
+  mark.rect = { x: 72, y: 96, width: 126, height: 120 };
   mark.customVisual = { format: "vector", description: "Asymmetric mark", viewBox: { x: 0, y: 0, width: 126, height: 120 }, elements: [
     { id: "mark", kind: "path", attributes: { d: "M0 20H126V50H0Z", fill: "theme:accent" } },
   ] };
-  copy.area = { column: 1, span: 3, row: 20, rows: 10 };
+  copy.rect = { x: 72, y: 300, width: 426, height: 120 };
   copy.content = "H"; copy.textStyle = { step: "body" };
   const ungrouped = lowerPage(document, page, fonts);
-  page.groups = [{ id: "stack", childIds: [mark.id, copy.id], area: { column: 1, span: 3, row: "center", rows: 40 }, verticalAlignment: "center" }];
+  page.groups = [{ id: "stack", childIds: [mark.id, copy.id], rect: { x: 72, y: 300, width: 426, height: 480 }, verticalAlignment: "center" }];
   for (const extraLine of [false, true]) {
     copy.content = extraLine ? "H\nH" : "H";
     const original = structuredClone(document), scene = lowerPage(document, page, fonts);
@@ -229,7 +222,7 @@ test("group centering translates ink and selection cells together and responds t
     assert.equal(alignment === "start" ? bounds.y : bounds.y + bounds.height, alignment === "start" ? 300 : 780);
     assert.deepEqual(checkPage(scene, fonts), []);
   }
-  page.groups[0].area!.rows = 2;
+  page.groups[0].rect!.height = 24;
   assert.equal(checkPage(lowerPage(document, page, fonts), fonts).find(issue => issue.code === "group-overflow")?.groupId, "stack");
 });
 
@@ -248,10 +241,11 @@ test("group shape bounds follow curve extrema and fit, and ignore invisible geom
 
 test("cover stack stays left-aligned and vertically centered when the audience gains a line", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
-  const page = document.slides[0], group = page.groups.find(group => group.id === "brand-stack")!;
+  const page = document.pages[0], group = page.groups.find(group => group.id === "brand-stack")!;
   for (const changed of [false, true]) {
     const audience = page.components.find(item => item.id === "audience")!;
-    if (changed && audience.kind === "text-block") { audience.content += "\nAnd your team."; audience.area.rows += 4; }
+    assert.ok(audience.rect);
+    if (changed && audience.kind === "text-block") { audience.content += "\nAnd your team."; audience.rect.height = (audience.rect.height ?? 0) + 32; }
     const scene = lowerPage(document, page, fonts);
     const mark = scene.items.find(item => item.elementId === "mark-silhouette")!;
     assert.ok(mark.kind === "shape");
@@ -269,11 +263,11 @@ test("cover stack stays left-aligned and vertically centered when the audience g
 
 test("held group offsets move shapes, text, clips and hit boxes together without changing the document", () => {
   const document = assertComposition(JSON.parse(readFileSync(new URL("../slides/github-cover/composition.json", import.meta.url), "utf8")));
-  const page = document.slides[0], before = lowerPage(document, page, fonts);
-  const offsets = new Map([["brand-stack", before.components[0].box.y - areaRect(page.grid, page.components[0].area).y]]);
+  const page = document.pages[0], before = lowerPage(document, page, fonts);
+  const offsets = new Map([["brand-stack", before.components[0].box.y - page.components[0].rect!.y]]);
   for (const [id, delta] of [["brand-mark", -24], ["audience", 48]] as const) {
-    const edited = structuredClone(document), next = edited.slides[0], member = next.components.find(item => item.id === id)!;
-    assert.ok(typeof member.area.row === "number"); member.area.row += delta / 8;
+    const edited = structuredClone(document), next = edited.pages[0], member = next.components.find(item => item.id === id)!;
+    assert.ok(member.rect); member.rect.y += delta;
     const source = structuredClone(edited), held = lowerPage(edited, next, fonts, offsets);
     assert.deepEqual(edited, source);
     for (const [index, item] of held.items.entries()) {

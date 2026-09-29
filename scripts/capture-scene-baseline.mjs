@@ -23,8 +23,8 @@ try {
     b("wait", "--fn", `document.querySelector('.document-title input')?.value === ${JSON.stringify(document.title)}`);
     click("Present");
     b("focus", ".presentation"); b("press", "Home");
-    for (let page = 0; page < document.slides.length; page++) {
-      const pageWidth = document.slides[page].canvas?.width ?? ({ presentation: 1920, portrait: 1080, link: 1200, square: 1080, article: 1600, explainer: 1200, gallery: 1600 })[document.slides[page].grid?.preset];
+    for (let page = 0; page < document.pages.length; page++) {
+      const pageWidth = document.pages[page].canvas?.width ?? ({ presentation: 1920, portrait: 1080, link: 1200, square: 1080, article: 1600, explainer: 1200, gallery: 1600 })[document.pages[page].grid?.preset];
       b("eval", "document.fonts.ready.then(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))))");
       const measured = JSON.parse(b("eval", `(() => {
         const canvas=document.querySelector('.presentation .canvas'), cb=canvas.getBoundingClientRect(), scale=cb.width/${pageWidth};
@@ -40,8 +40,8 @@ try {
         const labels=[...canvas.querySelectorAll('svg text')].map(el=>{const s=getComputedStyle(el),m=el.getScreenCTM(),p=new DOMPoint(0,Number(el.getAttribute('y')??0)).matrixTransform(m);return {id:el.dataset.vectorElement??null,text:el.textContent??'',baseline:round((p.y-cb.top)/scale),fontFamily:s.fontFamily,fontWeight:s.fontWeight,fontStyle:s.fontStyle,fontSize:round(parseFloat(s.fontSize)*Math.hypot(m.c,m.d)/scale)};});
         return {texts,labels};
       })()`));
-      pages.push({document:file.name,page:page+1,slideId:document.slides[page].id,...measured});
-      if (page + 1 < document.slides.length) click("Next page");
+      pages.push({document:file.name,page:page+1,slideId:document.pages[page].id,...measured});
+      if (page + 1 < document.pages.length) click("Next page");
     }
     click("Exit");
   }
