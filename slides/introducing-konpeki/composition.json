@@ -1,6 +1,5 @@
 {
   "authoringMode": "default",
-  "schema": "konpeki-composition/v2",
   "pages": [
     {
       "audience": "Developers meeting Konpeki for the first time",
@@ -1877,7 +1876,7 @@
                 },
                 "id": "share-canvas-c1",
                 "kind": "text",
-                "text": "Edit text, move and resize"
+                "text": "Comment, move and resize"
               },
               {
                 "attributes": {
@@ -5522,6 +5521,7 @@
       "relationships": []
     }
   ],
+  "schema": "konpeki-composition/v2",
   "theme": {
     "id": "plex",
     "mode": "paper",

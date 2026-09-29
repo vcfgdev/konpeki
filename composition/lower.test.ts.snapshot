@@ -2467,7 +2467,7 @@ exports[`intro/notes: deterministic scene snapshot 1`] = `
 
 exports[`intro/shared-file: deterministic scene snapshot 1`] = `
 {
-  "digest": "0c878b416822218ad2fd7b155db6c588560b98411b0a5b85e3876b78454e2066",
+  "digest": "c08c511c67a0367093d2a7924a025313ab19bac997e9f70a77257c756e0bbdfb",
   "size": [
     1920,
     1080
@@ -2537,15 +2537,15 @@ exports[`intro/shared-file: deterministic scene snapshot 1`] = `
       "box": {
         "x": 152,
         "y": 665.636,
-        "width": 275.42400000000004,
+        "width": 290.832,
         "height": 32
       },
       "lines": [
         {
-          "text": "Edit text, move and resize",
+          "text": "Comment, move and resize",
           "x": 0,
           "baseline": 24.364,
-          "width": 275.42400000000004
+          "width": 290.832
         }
       ]
     },

@@ -245,7 +245,7 @@ p3.add(text("share-lead", "The page lives in composition.json. The browser canva
   v.rect("canvas-sel", 240, top + 140, 168, 108, { fill: "none", stroke: ACCENT, "stroke-width": 2, "stroke-dasharray": "6 5" });
   [[240, top + 140], [408, top + 140], [240, top + 248], [408, top + 248]].forEach(([x, y], i) => v.rect(`canvas-h${i}`, x - 5, y - 5, 10, 10, { fill: BG, stroke: ACCENT, "stroke-width": 2 }));
   [[258, 60], [300, 40], [342, 80]].forEach(([x, h], i) => v.rect(`canvas-b${i}`, x, top + 236 - h, 28, h, { fill: i === 2 ? ACCENT : DIVIDER }));
-  v.text("canvas-c1", 40, top + 320, "Edit text, move and resize", { fill: MUTED });
+  v.text("canvas-c1", 40, top + 320, "Comment, move and resize", { fill: MUTED });
   v.text("canvas-c2", 40, top + 352, "components, undo and redo", { fill: MUTED });
   // file
   const fx = 758, fy = top + 70, fw = 180, fh = 230;
