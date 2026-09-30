@@ -51,9 +51,8 @@ opening CSS: Cobalt's link preset has body 32/44 and title 72/80 CSS px.
 
 ## Color roles
 
-Konpeki's default is cobalt blue on a light canvas, independent of OS preference.
-Experimental alternatives live in `themes/`. Define every token below when
-adapting a theme for a brief.
+Konpeki's only bundled theme is cobalt blue on a light canvas, independent of OS
+preference. Define every token below when adapting it for a brief.
 
 | Tokens | Meaning |
 | --- | --- |

@@ -32,8 +32,9 @@ standalone graphics.
 
 The brief, brand, and references choose the visual language, but never override
 accuracy or readability. The selected theme owns repeatable treatments; this
-guide and other design skills own their use. Konpeki's bundled default, Cobalt,
-is cobalt ink on warm paper. A different theme is an equally valid starting point.
+guide and other design skills own their use. Konpeki bundles one theme, Cobalt:
+cobalt ink on warm paper. A brief-specific theme adapted from it is an equally
+valid starting point.
 
 For Cobalt, use square corners, precise alignment and an asymmetric layout led
 by a strong headline. That is this theme's taste, not a restriction on a

@@ -5,10 +5,7 @@ import { fileURLToPath } from "node:url";
 
 try {
   const [cli, input, ...extra] = process.argv.slice(2);
-  if (!cli || !input || extra.length && (extra.length !== 2 || extra[0] !== "--theme"))
-    throw new Error("Usage: node prepare-document.mjs <cli> <document.html> [--theme default|editorial|dark|dense-data]");
-  const theme = extra[1] ?? "default";
-  if (!["default", "editorial", "dark", "dense-data"].includes(theme)) throw new Error(`Unknown theme: ${theme}`);
+  if (!cli || !input || extra.length) throw new Error("Usage: node prepare-document.mjs <cli> <document.html>");
   if (!/\.html?$/i.test(input)) throw new Error("Use an .html document path.");
   const documentPath = resolve(input);
   function validate(path) {
@@ -25,14 +22,11 @@ try {
     validate(template);
     const blank = readFileSync(template);
     const root = resolve(dirname(cli), "..");
-    const themeRoot = theme === "default" ? root : join(root, "themes", theme);
-    const assets = new Map([["theme.css", join(themeRoot, "theme.css")], ["theme-base.css", join(root, "theme-base.css")]]);
-    for (const directory of new Set([root, themeRoot]))
-      for (const name of readdirSync(join(directory, "fonts")))
-        if (/\.woff2$|OFL\.txt$/.test(name)) assets.set(`fonts/${name}`, join(directory, "fonts", name));
-    if (existsSync(join(themeRoot, "NOTES.md"))) assets.set("NOTES.md", join(themeRoot, "NOTES.md"));
-    // Preflight every asset before writing any: a theme request must not silently
-    // reuse another theme or replace an author's stylesheet in a shared folder.
+    const assets = new Map([["theme.css", join(root, "theme.css")], ["theme-base.css", join(root, "theme-base.css")]]);
+    for (const name of readdirSync(join(root, "fonts")))
+      if (/\.woff2$|OFL\.txt$/.test(name)) assets.set(`fonts/${name}`, join(root, "fonts", name));
+    // Preflight every asset before writing any: never replace an author's
+    // adapted stylesheet or fonts in a shared folder.
     for (const [asset, source] of assets) {
       const destination = join(dirname(documentPath), asset);
       if (existsSync(destination) && !readFileSync(destination).equals(readFileSync(source)))

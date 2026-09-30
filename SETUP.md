@@ -1,8 +1,9 @@
 # Set up Konpeki
 
-Konpeki is not published to npm yet. Use a
-source checkout or a tarball packed locally from a trusted checkout. Do not
-describe the repository version as a published release.
+Konpeki 0.4.0 is not on npm. The `konpeki` package on npm (0.3.x) is an earlier
+release that this skill does not accept. Use a source checkout or a tarball packed
+locally from a trusted checkout, and do not describe the repository version as a
+published release.
 
 ## Source checkout
 

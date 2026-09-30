@@ -75,7 +75,7 @@ if (command === "browser" && input === "install") {
   try { await html(command, input); }
   catch (error) {
     if (command === "check") console.log(JSON.stringify({ ok: false, diagnostics: [{ code: "invalid-document", severity: "error", message: error instanceof Error ? error.message : String(error) }] }, null, 2));
-    else if (command === "inspect") console.log(JSON.stringify({ schema: "konpeki-inspection/v1", ok: false, pages: [], diagnostics: [{ code: "inspection-failed", severity: "error", message: error instanceof Error ? error.message : String(error) }] }, null, 2));
+    else if (command === "inspect") console.log(JSON.stringify({ schema: "konpeki-html-inspection/v1", ok: false, pages: [], diagnostics: [{ code: "inspection-failed", severity: "error", message: error instanceof Error ? error.message : String(error) }] }, null, 2));
     else console.error(error instanceof Error ? error.message : error);
     process.exitCode = 1;
   }

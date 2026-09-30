@@ -40,7 +40,7 @@ try {
   const bundled = fileURLToPath(new URL("../../../", import.meta.url));
   const found = (workspace && runtime(workspace)) || runtime(bundled);
   if (!found)
-    throw new Error("Install a locally packed Konpeki tarball or use a prepared checkout. See SETUP.md. The npm release is not published yet.");
+    throw new Error("Install a locally packed Konpeki 0.4.0 tarball or use a prepared checkout. See SETUP.md. The konpeki package on npm is an earlier, incompatible release.");
   console.log(JSON.stringify(found));
 } catch (error) {
   console.error(error.message);

@@ -86,14 +86,11 @@ The [public comment preview](https://vcfgdev.github.io/konpeki/) opens the
 packaged starter. Use the CLI's `preview` to review your own document; local
 changes stay local until a separately authorized release or deployment.
 
-## Themes
+## Theme
 
-The default theme, Cobalt, is cobalt blue on a light canvas with local IBM Plex
-Sans and Mono. Its CSS contract lets a brief supply its own visual treatment;
-composition stays in HTML and page-owned CSS. Editorial, Dark and Dense Data are
-experimental alternatives. Initialize a new document with one by adding
-`--theme editorial`, `--theme dark` or `--theme dense-data` to
-`prepare-document.mjs`, in its own directory.
+Konpeki bundles one theme, Cobalt: cobalt blue on a light canvas with local IBM
+Plex Sans and Mono. Its CSS contract lets a brief supply its own visual treatment
+by adapting a copy; composition stays in HTML and page-owned CSS.
 
 ## Documentation
 
@@ -105,12 +102,8 @@ experimental alternatives. Initialize a new document with one by adding
 - [Setup](SETUP.md), [development](docs/development.md) and
   [contributing](CONTRIBUTING.md)
 
-Development examples and evaluations are maintained separately in the private
-`wf/playground/konpeki-html` playground.
-
 ## License
 
 [Apache-2.0](LICENSE). Bundled IBM Plex Sans and Mono files retain the SIL
 Open Font Licenses in [`fonts/OFL.txt`](fonts/OFL.txt) and
-[`fonts/plex-mono-OFL.txt`](fonts/plex-mono-OFL.txt). Editorial includes Plex Serif
-with its [license](themes/editorial/fonts/plex-serif-OFL.txt).
+[`fonts/plex-mono-OFL.txt`](fonts/plex-mono-OFL.txt).

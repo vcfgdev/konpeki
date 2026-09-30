@@ -5,7 +5,7 @@ import { reviewPosition } from "../src/lib/review-position.ts";
 import { referenceGuides, type Guide } from "../src/lib/alignment.ts";
 import { inspectHTMLPage, type Diagnostic } from "./inspect.ts";
 import { documentHTML } from "./document.ts";
-import { themes, starterSource } from "./starter.ts";
+import { starterSource } from "./starter.ts";
 import "@fontsource/ibm-plex-sans/400.css";
 import "@fontsource/ibm-plex-sans/500.css";
 import "../src/styles/base.css";
@@ -19,13 +19,12 @@ type Note = Target & { key: string; text: string };
 type Page = { id: string; name: string; canvas: { width: number; height: number } };
 type Correction = Target & ({ kind: "move"; translate: string } | { kind: "delete" });
 const token = new URLSearchParams(location.search).get("session") ?? "";
-const theme = themes.find(item => item.id === new URLSearchParams(location.search).get("theme")) ?? themes[0];
 async function request(edit?: unknown, revision?: string): Promise<Snapshot> {
   if (!token) {
     if (edit) throw new Error("Open a local CLI preview to save source corrections.");
-    const source = starterSource(theme), doc = new DOMParser().parseFromString(source, "text/html");
+    const source = starterSource(), doc = new DOMParser().parseFromString(source, "text/html");
     const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(source));
-    return { source, revision: Array.from(new Uint8Array(hash), n => n.toString(16).padStart(2, "0")).join(""), name: "blank.html", path: `skills/konpeki/assets/blank.html (theme: ${theme.id})`, key: `starter:${theme.id}`, pages: Array.from(doc.querySelectorAll("body > [data-page]"), page => page.id) };
+    return { source, revision: Array.from(new Uint8Array(hash), n => n.toString(16).padStart(2, "0")).join(""), name: "blank.html", path: "skills/konpeki/assets/blank.html", key: "starter:default", pages: Array.from(doc.querySelectorAll("body > [data-page]"), page => page.id) };
   }
   const response = await fetch("/__konpeki/html", { method: edit ? "PATCH" : "GET", headers: { "x-konpeki-session": token, "Content-Type": "application/json" }, ...(edit ? { body: JSON.stringify({ edit, revision }) } : {}) });
   const body = await response.json();
@@ -287,7 +286,6 @@ function Preview() {
   }}>
     <header className="board-heading html-heading"><h1>Konpeki</h1>{!token && <>
       <a href="https://github.com/vcfgdev/konpeki/blob/main/html/README.md">Authoring guide</a>
-      <select aria-label="Theme" value={theme.id} onChange={event => { const url = new URL(location.href); url.searchParams.set("theme", event.target.value); location.assign(url); }}>{themes.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}</select>
     </>}</header>
     {!snapshot && <p>{error || "Opening HTML…"}</p>}
     {snapshot && <PageBoard draft={{ pages }}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} source={token ? undefined : snapshot.source} notes={notes} selected={selected} commenting={view === "select"} locked={saving}

@@ -20,9 +20,7 @@ for (const required of [
   "src/styles/feedback.css", "src/assets/konpeki-mark.png", "public/og.png",
   "fonts/OFL.txt",
 ]) assert(paths.has(required), `Missing package resource: ${required}`);
-for (const name of ["editorial", "dark", "dense-data"])
-  for (const asset of ["theme.css", "theme-base.css", "NOTES.md", "fonts/OFL.txt"])
-    assert(paths.has(`themes/${name}/${asset}`), `Missing theme resource: ${name}/${asset}`);
+assert(![...paths].some(path => path.startsWith("themes/")), "Only the default theme is packaged");
 for (const css of [...paths].filter(path => path.endsWith(".css")))
   for (const [, asset] of readFileSync(new URL(`../${css}`, import.meta.url), "utf8").matchAll(/url\("([^"]+)"\)/g))
     assert(paths.has(posix.join(dirname(css), asset)), `Missing theme asset: ${css} -> ${asset}`);

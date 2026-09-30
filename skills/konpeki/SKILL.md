@@ -28,9 +28,7 @@ than requiring an outline or design checkpoint, unless the user requests one.
 1. Choose the user's document path. For a new document, run
    `node scripts/prepare-document.mjs <cli> <document.html>` to place a validated
    starter, theme, bundled fonts, and font license beside it without overwriting
-   existing files. For a different look, append `--theme editorial`, `--theme dark`
-   or `--theme dense-data`. This option initializes new documents only; use a
-   separate directory for each theme's assets.
+   existing files.
 2. Reread any existing source before changing it. Preserve stable IDs, facts,
    provenance, deliberate human edits, and unrelated or newer changes.
 3. Plan each page before writing HTML, in your working notes: its format and

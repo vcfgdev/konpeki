@@ -73,7 +73,7 @@ test("static preview works under a Pages base path, isolates comments, and clear
   await tab.mouse.click(loadingTitle.x + 12, loadingTitle.y + 12);
   assert.equal(await tab.locator(".html-outline").count(), 0, "loading geometry must not be selected");
   releaseFonts();
-  await tab.getByRole("combobox", { name: "Theme" }).focus();
+  await tab.getByRole("link", { name: "Authoring guide" }).focus();
   await tab.keyboard.press("Tab");
   assert.equal(await tab.locator(".html-page").evaluate(page => page === document.activeElement), true);
   assert.notEqual(await tab.locator(".html-page").evaluate(page => getComputedStyle(page).outlineStyle), "none", "keyboard navigation retains the page focus indicator");
@@ -199,14 +199,7 @@ test("static preview works under a Pages base path, isolates comments, and clear
   assert.match(await tab.evaluate(() => navigator.clipboard.readText()), /cover-title[\s\S]*Shorten this headline/);
   await tab.getByRole("button", { name: "Undo", exact: true }).click();
   assert.equal(await tab.locator(".review-count").textContent(), "1");
-  await tab.getByRole("combobox", { name: "Theme" }).selectOption("dark");
-  await waitForPage(tab, "cover-page");
-  assert.equal(await tab.locator(".review-count").count(), 0);
-  assert.equal(await tab.frameLocator("iframe").locator("#cover-page").evaluate(page => getComputedStyle(page).backgroundColor), "rgb(32, 34, 37)");
   assert.deepEqual(external, [], "preview must load bundled fonts without external requests");
-  await tab.getByRole("combobox", { name: "Theme" }).selectOption("default");
-  await tab.locator(".review-count").waitFor();
-  assert.equal(await tab.locator(".review-count").textContent(), "1");
   await tab.getByRole("button", { name: "Comment", exact: true }).click();
   await tab.getByRole("button", { name: "Remove comment 1" }).click();
   assert.equal(await tab.getByRole("button", { name: "New comment" }).evaluate(button => button === document.activeElement), true, "an empty queue focuses its remaining action");
@@ -282,7 +275,7 @@ test("preview falls back from a busy default port but explicit ports are strict"
   await assert.rejects(previewHTML(file, "127.0.0.1", port, root, true), /already in use|EADDRINUSE/i);
 });
 
-test("packaged starter renders all themes without external examples or missing assets", async t => {
+test("packaged starter renders the default theme without external examples or missing assets", async t => {
   const server = await createServer({ root, base: "/konpeki/", logLevel: "silent", server: { port: 0, host: "127.0.0.1" } });
   await server.listen(); t.after(() => server.close());
   const origin = `http://127.0.0.1:${(server.httpServer!.address() as { port: number }).port}/konpeki/`;
@@ -291,16 +284,15 @@ test("packaged starter renders all themes without external examples or missing a
   const failures: string[] = [];
   tab.on("pageerror", error => failures.push(error.message));
   tab.on("response", response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
-  for (const [theme, family, size] of [["default", '"IBM Plex Sans", sans-serif', "72px"], ["editorial", '"IBM Plex Serif", serif', "52px"], ["dark", '"IBM Plex Sans", sans-serif', "52px"], ["dense-data", '"IBM Plex Sans", sans-serif', "42px"]]) {
-    await tab.goto(`${origin}?theme=${theme}`);
-    await waitForPage(tab, "page-1");
-    assert.equal(await tab.locator(".html-page").count(), 1);
-    assert.deepEqual(await tab.locator(".html-diagnostics li").allTextContents(), []);
-    const style = await tab.frameLocator("iframe").locator("#title").evaluate(el => {
-      const s = getComputedStyle(el); return [el.textContent, s.fontFamily, s.fontSize];
-    });
-    assert.deepEqual(style, ["Untitled visual", family, size]);
-  }
+  await tab.goto(origin);
+  await waitForPage(tab, "page-1");
+  assert.equal(await tab.locator(".html-page").count(), 1);
+  assert.deepEqual(await tab.locator(".html-diagnostics li").allTextContents(), []);
+  const style = await tab.frameLocator("iframe").locator("#title").evaluate(el => {
+    const s = getComputedStyle(el); return [el.textContent, s.fontFamily, s.fontSize];
+  });
+  assert.deepEqual(style, ["Untitled visual", '"IBM Plex Sans", sans-serif', "72px"]);
+  assert.equal(await tab.getByRole("combobox", { name: "Theme" }).count(), 0);
   assert.equal(await tab.getByRole("combobox", { name: "Example" }).count(), 0);
   assert.equal(await tab.getByRole("link", { name: "Authoring guide" }).getAttribute("href"), "https://github.com/vcfgdev/konpeki/blob/main/html/README.md");
   assert.equal(await tab.locator('a[href*="vcfgdev/wf"]').count(), 0, "public preview must not direct users to a private workspace");
