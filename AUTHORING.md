@@ -20,18 +20,18 @@ This guide owns editorial and visual judgment. For workflow steps, use the
 
 ## Visual judgment
 
-The brief, brand, palette, typeface, and references override these defaults,
-but never accuracy or readability. Konpeki's default is cobalt ink on warm paper:
-IBM Plex Sans, blue headlines, dark body copy, fine rules, and open margins.
-Use square-corner geometry and precise alignment. Let a strong headline and an
-asymmetric composition do the work; avoid pill badges and decorative card stacks.
-Dark mode uses blue-black paper and pale cobalt, keeping the same hierarchy.
+The brief, brand, and references choose the visual language, but never override
+accuracy or readability. The selected theme owns repeatable treatments; this
+guide and other design skills own their use. Konpeki's bundled default is cobalt
+ink on warm paper. A different theme is an equally valid starting point.
 
-Use the theme's named type steps rather than accumulating near-identical sizes.
-Build rhythm in multiples of the spacing unit. Color distinguishes roles:
-accent for the main claim or path, muted ink for supporting copy, categorical
-colors for identity, sequential colors for amount. The eight palettes are
-alternatives, not an invitation to mix unrelated accents on one page.
+Use complete type roles rather than accumulating near-identical treatments.
+Choose spacing by relationship: keep evidence and its qualification close,
+separate changes of subject more clearly, and align true peers. Let hierarchy
+and composition do the work before adding panels or ornament. Color distinguishes
+roles: accent for the main claim or path, muted ink for supporting copy,
+categorical colors for identity, sequential colors for amount. Token compliance
+does not establish good composition or honest visual encoding.
 
 Start reading order with the main headline. Remove redundant eyebrows, section
 labels, repeated metadata, and ornament that does not clarify structure. Keep

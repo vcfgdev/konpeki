@@ -106,12 +106,21 @@ test("inspection distinguishes text parents for overlap and handles inline text 
 <p id="normal-pass" style="color:#767676">normal pass</p><p id="normal-fail" style="color:#777777">normal fail</p>
 <p id="large-pass" class="large" style="color:#777777">large pass</p><p id="large-fail" class="large" style="color:#959595">large fail</p><p id="bold-pass" class="bold" style="color:#777777">bold pass</p></section></main>`));
 
-test("theme diagnostics use computed values and honor a custom-theme ancestor", async () => fixture(async path => {
-  const { report } = await browserDocument(path);
-  const warnings = report.diagnostics.filter(d => d.code === "theme-value").map(d => d.target);
-  assert(warnings.includes("off-size")); assert(warnings.includes("off-color"));
-  assert(!warnings.includes("token-values")); assert(!warnings.includes("custom"));
-}, `<!doctype html><style>:root{--font-family:Arial;--font-body:16px;--font-title:32px;--bg:#fff;--fg:#111;--muted:#666}[data-page]{width:400px;height:250px;background:var(--bg);color:var(--fg);font-family:var(--font-family)}p{font-size:var(--font-body)}</style><main id="page" data-page><p id="token-values">tokens</p><p id="off-size" style="font-size:17px">odd size</p><p id="off-color" style="color:#123456">odd color</p><section data-theme="custom"><p id="custom" style="font-size:13px;color:#abcdef">custom</p></section></main>`));
+test("theme checks require a version marker, pair size with leading, and report resolved type", async () => {
+  for (const marker of ["", "--kp-theme:1;", "--kp-theme:2;"]) await fixture(async path => {
+    const { report } = await browserDocument(path);
+    const warnings = report.diagnostics.filter(d => d.code === "theme-value").map(d => d.target);
+    if (marker === "--kp-theme:1;") {
+      assert.deepEqual(warnings.sort(), ["off-color", "off-leading", "off-size"], "valid size and valid leading from different roles must not pass as a pair");
+      assert.equal(report.pages[0].theme?.type.body.size, 16);
+      assert.equal(report.pages[0].theme?.type.body.lineHeight, 24);
+    } else {
+      assert.deepEqual(warnings, [], "generic brand variables and unsupported versions must not activate v1 checks");
+      assert.equal(report.pages[0].theme, undefined);
+    }
+    assert.equal(report.diagnostics.some(d => d.code === "theme-version"), marker === "--kp-theme:2;");
+  }, `<!doctype html><style>:root{${marker}--font-family:Brand;--bg:red;--kp-font-family:Arial;--kp-font-body:16px;--kp-leading-body:24px;--kp-font-title:32px;--kp-leading-title:40px;--kp-bg:#fff;--kp-fg:#111;--kp-muted:#666}[data-page]{width:400px;height:500px;background:var(--kp-bg);color:var(--kp-fg);font-family:var(--kp-font-family)}p{font-size:var(--kp-font-body);line-height:var(--kp-leading-body)}</style><main id="page" data-page><p id="token-values">tokens</p><p id="off-size" style="font-size:17px">odd size</p><p id="off-leading" style="line-height:40px">wrong pair</p><p id="off-color" style="color:#123456">odd color</p><section data-theme="custom"><p id="custom" style="font-size:13px;color:#abcdef">custom</p></section></main>`);
+});
 
 test("CLI render refuses missing resources and leaves no output", async () => fixture(async (path, directory) => {
   const output = join(directory, "result.png");

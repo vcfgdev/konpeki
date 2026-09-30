@@ -95,19 +95,68 @@ export function inspectHTMLPage(page: HTMLElement) {
   // cannot distinguish a literal equal to a token from a var() reference.
   const probe = doc.createElement("span");
   probe.style.display = "none"; doc.body.append(probe);
-  const colorTokens = ["bg", "fg", "muted", "line", "inverse", "accent", "wash", "surface", "emphasis", "emphasis-wash", "complete", "attention", "blocked", ...Array.from({ length: 6 }, (_, i) => `category-${i + 1}`), ...Array.from({ length: 5 }, (_, i) => `sequence-${i + 1}`)];
+  const roles = ["fine", "caption", "body", "lead", "heading", "title", "display"];
+  const colorTokens = ["bg", "fg", "muted", "line", "line-subtle", "line-strong", "inverse", "accent", "wash", "surface", "contrast", "on-contrast", "on-contrast-muted", "emphasis", "emphasis-wash", "complete", "attention", "blocked", ...Array.from({ length: 6 }, (_, i) => `category-${i + 1}`), ...Array.from({ length: 5 }, (_, i) => `sequence-${i + 1}`)];
+  function themeColors(style: CSSStyleDeclaration) {
+    probe.style.colorScheme = style.colorScheme;
+    return Object.fromEntries(colorTokens.map(token => {
+      const value = style.getPropertyValue(`--kp-${token}`);
+      probe.style.color = ""; probe.style.color = value;
+      return [token, value && probe.style.color ? win.getComputedStyle(probe).color : undefined];
+    }));
+  }
+  const pageStyle = win.getComputedStyle(page), version = pageStyle.getPropertyValue("--kp-theme").trim();
+  const type = Object.fromEntries(roles.map(role => [role, {
+    size: parseFloat(pageStyle.getPropertyValue(`--kp-font-${role}`)),
+    lineHeight: parseFloat(pageStyle.getPropertyValue(`--kp-leading-${role}`)),
+    weight: Number(pageStyle.getPropertyValue(`--kp-weight-${role}`)),
+    tracking: pageStyle.getPropertyValue(`--kp-tracking-${role}`).trim(),
+    family: pageStyle.getPropertyValue(role === "display" ? "--kp-font-family-display" : role === "heading" || role === "title" ? "--kp-font-family-heading" : "--kp-font-family").trim(),
+  }]));
+  const theme = version === "1" ? { version: 1, mode: pageStyle.colorScheme, unit: parseFloat(pageStyle.getPropertyValue("--kp-unit")), type } : undefined;
+  if (version && version !== "1") report("theme-version", page, `Unsupported --kp-theme version ${version}; theme checks were skipped.`, "warning");
+  if (theme && !page.closest('[data-theme="custom"]')) {
+    // Validate the active definition even when a token is not used by this page.
+    const required = [...colorTokens, "font-family", "font-family-heading", "font-family-display", "font-family-mono", "weight-strong", "weight-mono", "unit", "rule-width", "stroke", "stroke-heavy", "radius", "radius-small", "page-width", "page-height", "page-margin", ...[1, 2, 3, 4, 5, 6, 8, 10, 12, 16].map(n => `space-${n}`), ...roles.flatMap(role => ["font", "leading", "weight", "tracking"].map(property => `${property}-${role}`))];
+    const invalid = required.filter(token => !pageStyle.getPropertyValue(`--kp-${token}`).trim()).map(token => `missing --kp-${token}`);
+    let previous = 0;
+    for (const role of roles) {
+      const t = type[role];
+      const pixels = ["font", "leading"].every(property => /^\d+(?:\.\d+)?px$/.test(pageStyle.getPropertyValue(`--kp-${property}-${role}`).trim()));
+      if (!pixels || !(t.size > previous && t.lineHeight >= t.size && t.weight >= 1 && t.weight <= 1000) || !win.CSS.supports("letter-spacing", t.tracking)) invalid.push(`invalid ${role} type treatment`);
+      previous = t.size;
+    }
+    const colors = themeColors(pageStyle);
+    for (const token of colorTokens) if (!colors[token]) invalid.push(`invalid --kp-${token} color`);
+    if (invalid.length) report("theme-definition", page, invalid.join("; "));
+    const textContrast: string[] = [], chartContrast: string[] = [];
+    const contrast = (foreground: string, background: string, minimum: number, failures: string[]) => {
+      const a = rgb(colors[foreground] ?? ""), b = rgb(colors[background] ?? "");
+      if (!opaque(a) || !opaque(b)) return;
+      const x = luminance(a!), y = luminance(b!), ratio = (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+      if (ratio < minimum) failures.push(`${foreground} on ${background}: ${ratio.toFixed(2)}:1; needs ${minimum}:1`);
+    };
+    for (const surface of ["bg", "surface", "wash"]) for (const ink of ["fg", "muted"]) contrast(ink, surface, 4.5, textContrast);
+    for (const ink of ["on-contrast", "on-contrast-muted"]) contrast(ink, "contrast", 4.5, textContrast);
+    contrast("accent", "bg", 4.5, textContrast); contrast("inverse", "accent", 4.5, textContrast);
+    const categories = Array.from({ length: 6 }, (_, i) => `category-${i + 1}`);
+    for (const token of categories) contrast(token, "bg", 3, chartContrast);
+    if (textContrast.length) report("theme-contrast", page, textContrast.join("; "));
+    if (chartContrast.length) report("theme-chart-contrast", page, chartContrast.join("; "), "warning");
+    if (new Set(categories.map(token => colors[token])).size !== categories.length)
+      report("theme-categories", page, "Category colors contain exact duplicates. Use distinct identities or supply non-color encodings.", "warning");
+  }
   for (const element of [page, ...elements]) {
     if (!visible(element) || element.closest('[data-theme="custom"]')) continue;
     const style = win.getComputedStyle(element);
-    if (!style.getPropertyValue("--font-family")) continue;
+    if (style.getPropertyValue("--kp-theme").trim() !== "1") continue;
     const deviations: string[] = [];
-    if (textElements.has(element) && !["fine", "caption", "body", "lead", "heading", "title", "display"].some(step => Math.abs(parseFloat(style.getPropertyValue(`--font-${step}`)) - parseFloat(style.fontSize)) < .1))
-      deviations.push(`font-size ${style.fontSize}`);
-    probe.style.colorScheme = style.colorScheme;
-    const colors = colorTokens.map(token => {
-      probe.style.color = ""; probe.style.color = style.getPropertyValue(`--${token}`);
-      return win.getComputedStyle(probe).color;
-    });
+    // SVG text uses explicit coordinates, not CSS line-height, for line spacing.
+    if (textElements.has(element) && !roles.some(role =>
+      Math.abs(parseFloat(style.getPropertyValue(`--kp-font-${role}`)) - parseFloat(style.fontSize)) < .1 &&
+      (element.namespaceURI !== "http://www.w3.org/1999/xhtml" || Math.abs(parseFloat(style.getPropertyValue(`--kp-leading-${role}`)) - parseFloat(style.lineHeight)) < .1)))
+      deviations.push(`type pair ${style.fontSize}/${style.lineHeight}`);
+    const colors = Object.values(themeColors(style));
     const values = [style.backgroundColor];
     if (textElements.has(element)) values.push(element.namespaceURI === "http://www.w3.org/2000/svg" ? style.fill : style.color);
     for (const side of ["Top", "Right", "Bottom", "Left"] as const)
@@ -115,11 +164,11 @@ export function inspectHTMLPage(page: HTMLElement) {
     if (element.matches("path,rect,circle,ellipse,polygon,polyline,line")) values.push(style.fill, style.stroke);
     for (const value of new Set(values))
       if (value !== "none" && value !== "rgba(0, 0, 0, 0)" && !colors.includes(value)) deviations.push(`color ${value}`);
-    if (deviations.length) report("theme-value", element, `Outside the theme scale/palette: ${deviations.join(", ")}. Use theme variables, or data-theme="custom" for a brief-specific look.`, "warning");
+    if (deviations.length) report("theme-value", element, `Outside the active theme: ${deviations.join(", ")}. Use a complete type role and theme colors, or data-theme="custom" for deliberately unthemed content.`, "warning");
   }
   probe.remove();
   for (const link of doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
     if (!link.sheet && !link.disabled) report("missing-stylesheet", page, "A stylesheet did not load. Keep stylesheets beside the HTML or inline them.");
   for (const font of doc.fonts) if (font.status === "error") report("missing-font", page, `Font failed to load: ${font.family}.`);
-  return { id: page.id, width: origin.width, height: origin.height, blocks, text, diagnostics };
+  return { id: page.id, width: origin.width, height: origin.height, blocks, text, theme, diagnostics };
 }

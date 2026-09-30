@@ -31,11 +31,15 @@ than requiring an outline or design checkpoint, unless the user requests one.
    existing files.
 2. Reread any existing source before changing it. Preserve stable IDs, facts,
    provenance, deliberate human edits, and unrelated or newer changes.
-3. Author or revise the HTML and nearby local resources. Link `theme.css` unless
-   the brief has its own look. Apply the taste guidance without weakening factual
-   fidelity or readability.
+3. Read `html/theme.md` for the theme API. Link the default light-blue `theme.css`.
+   When the brief brings its own look, adapt a copy using the same contract.
+   Read CSS implementation only when changing a theme, not when using one.
+   Author the HTML and page-specific composition; use complete type roles and
+   theme tokens. Apply authoring guidance and any selected design skills without
+   weakening factual fidelity or readability.
 4. Run `node <cli> validate <document.html>` and fix source-contract errors.
 5. Run `node <cli> inspect <document.html>`; use `--page N` or `--details` when useful.
+   Use each page's resolved `theme.type` to plan type and line lengths.
    Resolve diagnostic errors and evaluate warnings rather than suppressing them
    mechanically.
 6. Render every affected page at 2x PNG and inspect it both at intended size and

@@ -24,7 +24,7 @@ try {
     const blank = readFileSync(template);
     const root = resolve(dirname(cli), "..");
     mkdirSync(join(dirname(documentPath), "fonts"), { recursive: true });
-    for (const asset of ["theme.css", "fonts/OFL.txt", ...[400, 600, 700].map(weight => `fonts/ibm-plex-sans-latin-${weight}-normal.woff2`)]) {
+    for (const asset of ["theme.css", "theme-base.css", "fonts/OFL.txt", "fonts/plex-mono-OFL.txt", "fonts/ibm-plex-mono-latin-400-normal.woff2", ...[400, 600, 700].map(weight => `fonts/ibm-plex-sans-latin-${weight}-normal.woff2`)]) {
       try { copyFileSync(join(root, asset), join(dirname(documentPath), asset), constants.COPYFILE_EXCL); }
       catch (error) { if (error.code !== "EEXIST") throw error; }
     }

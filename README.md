@@ -9,13 +9,15 @@ presentations. Start with the [Konpeki skill](skills/konpeki/SKILL.md), which ow
 the authoring workflow. Supporting references are intentionally narrow:
 
 - [HTML, files, theme, and CLI](html/README.md)
+- [Theme contract](html/theme.md)
 - [Taste and editorial judgment](AUTHORING.md)
 - [Setup](SETUP.md)
 - [Examples](examples/README.md)
 - [Development](docs/development.md)
 
-The bundled theme includes local IBM Plex Sans and adaptable page, type, and
-color tokens. A brief-specific visual language may replace it.
+The default theme is cobalt blue on a light canvas with local IBM Plex Sans and
+Mono. Its CSS contract lets a brief supply its own visual treatment. Composition
+stays in HTML and page-owned CSS.
 
 The preview supports comments and small source-backed geometry corrections.
 PNG and PDF are the primary delivery artifacts; recipients do not need Konpeki,
@@ -43,5 +45,6 @@ placeholders are not evidence about real products.
 
 ## License
 
-[Apache-2.0](LICENSE). Bundled IBM Plex Sans files retain the SIL Open Font
-License in [`fonts/OFL.txt`](fonts/OFL.txt).
+[Apache-2.0](LICENSE). Bundled IBM Plex Sans and Mono files retain the SIL
+Open Font Licenses in [`fonts/OFL.txt`](fonts/OFL.txt) and
+[`fonts/plex-mono-OFL.txt`](fonts/plex-mono-OFL.txt).

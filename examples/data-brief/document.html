@@ -5,15 +5,15 @@
   <title>Trial cohort outcome brief</title>
   <link rel="stylesheet" href="theme.css">
   <style>
-    [data-page] { --page-height: 800px; padding: 56px 68px; }
-    h1 { font-size: var(--font-title); line-height: var(--leading-title); }
-    .dek { margin: calc(2 * var(--unit)) 0 calc(3 * var(--unit)); color: var(--muted); font-size: var(--font-caption); line-height: var(--leading-caption); }
+    [data-page] { --kp-page-height: 800px; padding: 56px 68px; }
+    h1 { font-size: var(--kp-font-title); line-height: var(--kp-leading-title); }
+    .dek { margin: calc(2 * var(--kp-unit)) 0 calc(3 * var(--kp-unit)); color: var(--kp-muted); font-size: var(--kp-font-caption); line-height: var(--kp-leading-caption); }
     svg { width: 1064px; height: 490px; display: block; }
-    svg text { font-size: var(--font-body); font-weight: 600; fill: var(--fg); }
-    svg .caption { font-size: var(--font-fine); font-weight: 400; fill: var(--muted); }
-    svg .inverse { fill: var(--inverse); }
-    .note { display: flex; justify-content: space-between; gap: calc(4 * var(--unit)); margin-top: calc(2 * var(--unit)); padding-top: calc(2 * var(--unit)); border-top: 1px solid var(--line); color: var(--muted); font-size: var(--font-fine); line-height: var(--leading-fine); }
-    .note strong { color: var(--fg); }
+    svg text { font-size: var(--kp-font-body); font-weight: var(--kp-weight-strong); fill: var(--kp-fg); }
+    svg .caption { font-size: var(--kp-font-fine); font-weight: var(--kp-weight-fine); fill: var(--kp-muted); }
+    svg .inverse { fill: var(--kp-inverse); }
+    .note { display: flex; justify-content: space-between; gap: calc(4 * var(--kp-unit)); margin-top: calc(2 * var(--kp-unit)); padding-top: calc(2 * var(--kp-unit)); border-top: var(--kp-rule-width) solid var(--kp-line); color: var(--kp-muted); font-size: var(--kp-font-fine); line-height: var(--kp-leading-fine); }
+    .note strong { color: var(--kp-fg); }
   </style>
 </head>
 <body>
@@ -22,22 +22,22 @@
     <p id="cohort-dek" class="dek">Activation separates the cohort first; every user is accounted for in the outcomes below.</p>
     <svg id="cohort-chart" viewBox="0 0 1064 490" role="img" aria-label="Of 1,000 trial users, 700 activated and 300 did not. Of those activated, 400 paid and 300 remained free. The 300 not activated left.">
       <text id="initial-label" x="0" y="36" class="caption">INITIAL COHORT</text>
-      <rect id="initial-bar" x="0" y="55" width="1000" height="64" fill="var(--wash)"/>
+      <rect id="initial-bar" x="0" y="55" width="1000" height="64" fill="var(--kp-wash)"/>
       <text id="initial-value" x="20" y="95">1,000 trial users</text>
       <text id="activation-label" x="0" y="167" class="caption">ACTIVATION</text>
-      <rect id="activated-bar" x="0" y="185" width="700" height="76" fill="var(--accent)"/>
-      <rect id="not-activated-bar" x="700" y="185" width="300" height="76" fill="var(--line)"/>
+      <rect id="activated-bar" x="0" y="185" width="700" height="76" fill="var(--kp-accent)"/>
+      <rect id="not-activated-bar" x="700" y="185" width="300" height="76" fill="var(--kp-line)"/>
       <text id="activated-value" x="20" y="231" class="inverse">Activated · 700</text>
       <text id="not-activated-value" x="720" y="231">Not activated · 300</text>
       <text id="outcomes-label" x="0" y="311" class="caption">OUTCOMES</text>
-      <rect id="paid-bar" x="0" y="329" width="400" height="92" fill="var(--sequence-5)"/>
-      <rect id="free-bar" x="400" y="329" width="300" height="92" fill="var(--sequence-2)"/>
-      <rect id="left-bar" x="700" y="329" width="300" height="92" fill="var(--line)"/>
+      <rect id="paid-bar" x="0" y="329" width="400" height="92" fill="var(--kp-sequence-5)"/>
+      <rect id="free-bar" x="400" y="329" width="300" height="92" fill="var(--kp-sequence-2)"/>
+      <rect id="left-bar" x="700" y="329" width="300" height="92" fill="var(--kp-line)"/>
       <text id="paid-value" x="20" y="375" class="inverse">Paid · 400</text>
       <text id="paid-share" x="20" y="401" class="caption inverse">40% of initial cohort</text>
       <text id="free-value" x="420" y="383">Free · 300</text>
       <text id="left-value" x="720" y="383">Left · 300</text>
-      <line id="activated-guide" x1="700" y1="261" x2="700" y2="329" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5"/>
+      <line id="activated-guide" x1="700" y1="261" x2="700" y2="329" fill="none" stroke="var(--kp-muted)" stroke-width="var(--kp-stroke)" stroke-dasharray="5 5"/>
       <text id="scale-caption" x="0" y="470" class="caption">Bar width is proportional to users; 1 px represents 1 user.</text>
     </svg>
     <div id="cohort-notes" class="note"><span><strong>Reading:</strong> 700 activated; 400 paid and 300 remained free. The 300 who did not activate left.</span><span><strong>Illustrative data only.</strong> Not product or customer performance.</span></div>

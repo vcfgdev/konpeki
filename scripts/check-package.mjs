@@ -10,6 +10,7 @@ const [pack] = JSON.parse(execFileSync("npm", ["pack", "--dry-run", "--json", "-
 const paths = new Set(pack.files.map(({ path }) => path));
 for (const required of [
   "LICENSE", "README.md", "AGENTS.md", "AUTHORING.md", "SETUP.md", "theme.css",
+  "theme-base.css", "html/theme.md", "fonts/plex-mono-OFL.txt",
   "docs/workflow.md", "docs/development.md", "plugin.json", "skills/konpeki/SKILL.md",
   "skills/konpeki/scripts/ensure-runtime.mjs", "skills/konpeki/scripts/prepare-document.mjs",
   "skills/konpeki/assets/blank.html", "html/README.md", "html/index.html", "html/preview.tsx",
@@ -20,8 +21,9 @@ for (const required of [
   "examples/README.md", "examples/cover/document.html", "examples/data-brief/document.html",
   "examples/field-guide/document.html", "fonts/OFL.txt",
 ]) assert(paths.has(required), `Missing package resource: ${required}`);
-for (const [, font] of readFileSync(new URL("../theme.css", import.meta.url), "utf8").matchAll(/url\("([^"]+)"\)/g))
-  assert(paths.has(font), `Missing theme font: ${font}`);
+for (const css of ["theme.css", "theme-base.css"])
+  for (const [, asset] of readFileSync(new URL(`../${css}`, import.meta.url), "utf8").matchAll(/url\("([^"]+)"\)/g))
+    assert(paths.has(asset), `Missing theme asset: ${css} -> ${asset}`);
 for (const path of paths) {
   assert(!/^(composition|design|lib|scripts|resources)\/|^legacy\.html$|\.test\.|(^|\/)\.env|pnpm-lock|tsconfig/.test(path), `Development or legacy file in package: ${path}`);
   if (!/\.(?:ts|tsx|mjs|js)$/.test(path)) continue;

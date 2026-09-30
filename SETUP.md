@@ -50,8 +50,9 @@ checkout or a compatible locally installed `konpeki` package and prints its CLI
 location; it does not download or modify a runtime.
 
 `prepare-document.mjs` takes `<cli> <document.html>`. It creates the starter HTML,
-`theme.css`, the three IBM Plex Sans font files, and `fonts/OFL.txt` beside the
-document. It validates the result and never overwrites existing files:
+`theme.css`, `theme-base.css`, bundled IBM Plex Sans and Mono font files, and
+their licenses beside the document. It validates the result and never overwrites
+existing files:
 
 ```sh
 node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html

@@ -32,26 +32,18 @@ owns editorial and visual judgment.
 </html>
 ```
 
-## Bundled theme
+## Themes
 
-Link the root [`theme.css`](../theme.css) unless the brief supplies its own look.
-Keep its `fonts/` directory beside it. It bundles IBM Plex Sans Latin 400, 600,
-and 700 under the SIL Open Font License.
+Link `theme.css` for the default light-blue theme. Read the [theme contract](theme.md)
+for its `--kp-`-prefixed public tokens, complete type roles, page presets, and asset
+requirements. A compatible entry point sets `--kp-theme: 1`; the base alone does
+not. Keep the imported `theme-base.css` and referenced fonts beside the entry
+point. Adapt a copy of the default when a brief brings its own look.
 
-Set `data-mode="light|dark"` and choose one of eight `data-palette` slugs:
-`plex`, `precision`, `editorial`, `blue-cyan`, `orange-coral`, `yellow`, `green`,
-or `graphite`. Page presets use `data-size` values `portrait`, `square`, `link`,
-`article`, `a4`, `explainer`, or `gallery`; omitting it uses the original
-1920 × 1080 scale.
-
-The theme provides `--unit` (8px), `--page-width`, `--page-height`,
-`--page-margin`, color tokens, and type tokens from `--font-fine` through
-`--font-display` with matching `--leading-*` values. Presets preserve the former
-type scales. Read `theme.css` for exact values.
-
-For a brief-specific look, set `data-theme="custom"`. This suppresses only
-theme-value warnings. Computed-value inspection cannot prove whether a value
-came from a CSS variable, so visual review remains required.
+For deliberately unthemed content, set `data-theme="custom"` on its ancestor.
+This skips theme-value checks in that subtree and definition checks on an
+opted-out page, but keeps layout and resource checks. An alternative implementing
+the contract does not need this opt-out.
 
 ## Diagnostics
 
@@ -60,6 +52,11 @@ inter-element text line-box overlap, and opaque sRGB HTML text contrast against
 solid ancestor backgrounds. Contrast thresholds are 3:1 for large text and
 4.5:1 otherwise. Contrast inspection skips SVG text, gradients, images,
 transparency, and compositing it cannot evaluate reliably.
+
+For opted-in themes, it also checks the active definition and compares used
+size/leading pairs and colors to its tokens. See the [theme diagnostics](theme.md#verify-a-theme)
+for required roles and contrast pairs. `inspect` includes each page's resolved
+type treatments under `theme.type`, so authors can plan with the actual sizes.
 
 Line boxes are not glyph ink, and automated checks cannot establish factual
 correctness or visual quality. Inspect rendered output. A render with diagnostic

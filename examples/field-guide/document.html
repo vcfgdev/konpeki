@@ -6,25 +6,25 @@
   <link rel="stylesheet" href="theme.css">
   <style>
     .page { padding: 56px 64px; display: flex; flex-direction: column; }
-    header { padding-bottom: calc(3 * var(--unit)); border-bottom: 1px solid var(--accent); margin-bottom: calc(3 * var(--unit)); }
-    h1 { font-size: var(--font-display); line-height: var(--leading-display); margin-bottom: calc(2 * var(--unit)); max-width: 610px; }
-    .intro { max-width: 595px; color: var(--muted); font-size: var(--font-lead); line-height: var(--leading-lead); }
-    h2 { font-size: var(--font-lead); line-height: var(--leading-lead); margin-bottom: var(--unit); }
-    p { margin-bottom: calc(2 * var(--unit)); }
-    section { margin-bottom: calc(3 * var(--unit)); }
-    code { background: var(--wash); padding: 1px 4px; }
-    .flow { margin: var(--unit) 0 calc(3 * var(--unit)); padding: calc(2 * var(--unit)) 0; border-block: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: var(--unit); font-weight: 600; }
-    .flow svg { width: 36px; height: 18px; flex: none; stroke: var(--accent); fill: none; stroke-width: 1.5; }
-    .callout { background: var(--wash); border-left: 2px solid var(--accent); padding: calc(2 * var(--unit)) calc(3 * var(--unit)); }
+    header { padding-bottom: calc(3 * var(--kp-unit)); border-bottom: var(--kp-rule-width) solid var(--kp-accent); margin-bottom: calc(3 * var(--kp-unit)); }
+    h1 { font-size: var(--kp-font-display); line-height: var(--kp-leading-display); margin-bottom: calc(2 * var(--kp-unit)); max-width: 610px; }
+    .intro { max-width: 595px; color: var(--kp-muted); font-size: var(--kp-font-lead); line-height: var(--kp-leading-lead); }
+    h2 { font-size: var(--kp-font-lead); line-height: var(--kp-leading-lead); margin-bottom: var(--kp-unit); }
+    p { margin-bottom: calc(2 * var(--kp-unit)); }
+    section { margin-bottom: calc(3 * var(--kp-unit)); }
+    code { background: var(--kp-wash); padding: 1px 4px; }
+    .flow { margin: var(--kp-unit) 0 calc(3 * var(--kp-unit)); padding: calc(2 * var(--kp-unit)) 0; border-block: var(--kp-rule-width) solid var(--kp-line); display: flex; align-items: center; justify-content: space-between; gap: var(--kp-unit); font-weight: var(--kp-weight-strong); }
+    .flow svg { width: 36px; height: 18px; flex: none; stroke: var(--kp-accent); fill: none; stroke-width: var(--kp-stroke); }
+    .callout { background: var(--kp-wash); border-left: var(--kp-stroke) solid var(--kp-accent); padding: calc(2 * var(--kp-unit)) calc(3 * var(--kp-unit)); }
     .callout p:last-child { margin-bottom: 0; }
-    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: calc(4 * var(--unit)); }
-    table { border-collapse: collapse; width: 100%; margin-top: calc(2 * var(--unit)); }
-    th, td { text-align: left; vertical-align: top; padding: 12px var(--unit); border-bottom: 1px solid var(--line); }
-    th { color: var(--accent); font-weight: 600; border-top: 1px solid var(--line); }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: calc(4 * var(--kp-unit)); }
+    table { border-collapse: collapse; width: 100%; margin-top: calc(2 * var(--kp-unit)); }
+    th, td { text-align: left; vertical-align: top; padding: 12px var(--kp-unit); border-bottom: var(--kp-rule-width) solid var(--kp-line); }
+    th { color: var(--kp-accent); font-weight: var(--kp-weight-strong); border-top: var(--kp-rule-width) solid var(--kp-line); }
     th:first-child, td:first-child { width: 32%; padding-left: 0; }
     ol { margin: 0; padding-left: 21px; }
     li { padding-left: 4px; margin-bottom: 9px; }
-    footer { margin-top: auto; flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: calc(4 * var(--unit)); font-size: var(--font-caption); color: var(--muted); }
+    footer { margin-top: auto; flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: calc(4 * var(--kp-unit)); font-size: var(--kp-font-caption); line-height: var(--kp-leading-caption); color: var(--kp-muted); }
     @page { size: 210mm 297mm; margin: 0; }
     @media print { .page { width: 210mm; height: 297mm; break-after: page; } .page:last-child { break-after: auto; } }
   </style>
