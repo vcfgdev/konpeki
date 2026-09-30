@@ -76,6 +76,77 @@ export function inspectHTMLPage(page: HTMLElement) {
       }
     }
   }
+  // Composition rules with IDs from skills/konpeki/floor.md. Headlines are the
+  // title, display and section-heading roles, explicit or semantic.
+  const xhtml = "http://www.w3.org/1999/xhtml";
+  const roleOf = (el: Element) => el.getAttribute("data-type") ?? (el.tagName === "H1" ? "title" : "heading");
+  const leading = (style: CSSStyleDeclaration) => parseFloat(style.lineHeight) || parseFloat(style.fontSize) * 1.2;
+  // A figure set in a headline role ("2,000") is a metric, not a headline.
+  const headlines = Array.from(page.querySelectorAll('h1:not([data-type]), h2:not([data-type]), [data-type="title"], [data-type="display"], [data-type="heading"]'))
+    .filter(el => el.namespaceURI === xhtml && visible(el) && (el.textContent?.match(/\p{L}/gu)?.length ?? 0) > (el.textContent?.match(/\d/g)?.length ?? 0));
+  function block(element: Element) {
+    let current = element;
+    while (current !== page && current.parentElement && win.getComputedStyle(current).display.startsWith("inline")) current = current.parentElement;
+    return current;
+  }
+  const textBlocks = [...new Set(Array.from(textElements, block))].filter(el => el.namespaceURI === xhtml);
+  // Horizontal extent of the text itself: a block box spans its whole column.
+  function extent(element: Element) {
+    const range = doc.createRange(); range.selectNodeContents(element);
+    const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0);
+    return rects.length ? { left: Math.min(...rects.map(r => r.left)), right: Math.max(...rects.map(r => r.right)) } : element.getBoundingClientRect();
+  }
+  // Running heads repeat on other print pages, apart from their numbers.
+  const normalize = (text: string) => text.replace(/\s+/g, " ").replace(/\d+/g, "#").trim();
+  const printPages = page.getAttribute("data-size") === "a4"
+    ? Array.from(doc.querySelectorAll("body > [data-page]")).filter(p => p !== page && p.getAttribute("data-size") === "a4").map(p => normalize(p.textContent ?? ""))
+    : [];
+  function labels(heading: Element) {
+    const box = heading.getBoundingClientRect(), style = win.getComputedStyle(heading), headingInk = extent(heading);
+    // compareDocumentPosition bit 2: the block precedes the heading. The nearest
+    // preceding block and its row peers (a kicker left, a date right) are candidates.
+    const before = textBlocks.filter(b => !b.contains(heading) && !heading.contains(b) && heading.compareDocumentPosition(b) & 2);
+    const nearest = before.at(-1)?.getBoundingClientRect();
+    if (!nearest) return [];
+    return before.filter(label => {
+      const rect = label.getBoundingClientRect(), labelStyle = win.getComputedStyle(label), labelInk = extent(label);
+      const text = (label.textContent ?? "").replace(/\s+/g, " ").trim(), gap = box.top - rect.bottom;
+      if (rect.top >= nearest.bottom || rect.bottom <= nearest.top) return false;
+      if (gap < -1 || labelInk.right <= headingInk.left || labelInk.left >= headingInk.right || text.length > 48 || /[.!?]$/.test(text) || rect.height > leading(labelStyle) * 1.5) return false;
+      if (parseFloat(labelStyle.fontSize) >= parseFloat(style.fontSize) * .8 || label.closest('[data-kp-allow~="label-above-headline"]')) return false;
+      // A section heading's label hugs it; a page headline's label may sit anywhere above.
+      if (roleOf(heading) === "heading" && gap > leading(style)) return false;
+      return !printPages.some(other => other.includes(normalize(text)));
+    });
+  }
+  for (const heading of headlines)
+    for (const label of labels(heading))
+      report("label-above-headline", label, `"${(label.textContent ?? "").replace(/\s+/g, " ").trim()}" labels the headline below it. Delete it, or move the product, date or source into the headline, supporting line, caption or footer.`, "warning");
+  for (const heading of headlines) {
+    const words: { node: Node; top: number; text: string }[] = [];
+    const walker = doc.createTreeWalker(heading, 4);
+    for (let node: Node | null; (node = walker.nextNode());) {
+      for (const match of (node.textContent ?? "").matchAll(/\S+/g)) {
+        const range = doc.createRange();
+        range.setStart(node, match.index); range.setEnd(node, match.index + match[0].length);
+        const rect = range.getClientRects()[0];
+        if (rect) words.push({ node, top: rect.top, text: match[0] });
+      }
+    }
+    // Each <br> starts a deliberate segment; a segment that wraps must not end
+    // on one word after a fuller line. compareDocumentPosition bit 4: follows.
+    const size = parseFloat(win.getComputedStyle(heading).fontSize), breaks = Array.from(heading.querySelectorAll("br"));
+    const segments = new Map<number, (typeof words)[]>();
+    for (const word of words) {
+      const segment = breaks.filter(br => br.compareDocumentPosition(word.node) & 4).length;
+      const lines = segments.get(segment) ?? [], line = lines.at(-1);
+      if (line && word.top <= line[0].top + size / 2) line.push(word); else lines.push([word]);
+      segments.set(segment, lines);
+    }
+    // One word per line is a deliberate stack, not a stranded word.
+    const stranded = [...segments.values()].find(lines => lines.length > 1 && lines.at(-1)!.length === 1 && lines.at(-2)!.length > 1);
+    if (stranded) report("stranded-word", heading, `A headline line ends on one stranded word, "${stranded.at(-1)![0].text}". Reword it or change its measure rather than shrinking it.`, "warning");
+  }
   // Contrast is deliberately limited to opaque sRGB text on solid ancestor
   // backgrounds. Images, gradients, compositing and SVG paint need visual review.
   const rgb = (value: string) => /^rgba?\(/.test(value) ? value.match(/[\d.]+/g)!.map(Number) : undefined;

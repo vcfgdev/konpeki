@@ -10,7 +10,8 @@ the authoring workflow. Supporting references are intentionally narrow:
 
 - [HTML, files, theme, and CLI](html/README.md)
 - [Theme contract](html/theme.md)
-- [Taste and editorial judgment](AUTHORING.md)
+- [Authoring floor: bans, defaults and review checklist](skills/konpeki/floor.md)
+- [Editorial and visual judgment](AUTHORING.md)
 - [Setup](SETUP.md)
 - [Development](docs/development.md)
 

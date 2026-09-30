@@ -1,8 +1,9 @@
 # HTML, files, theme, and CLI
 
 This is the reference for Konpeki's source contract and runtime behavior. The
-[skill](../skills/konpeki/SKILL.md) owns workflow; [AUTHORING.md](../AUTHORING.md)
-owns editorial and visual judgment.
+[skill](../skills/konpeki/SKILL.md) owns workflow, its [floor](../skills/konpeki/floor.md)
+owns bans and defaults, and [AUTHORING.md](../AUTHORING.md) owns editorial and
+visual judgment.
 
 ## Document and file contract
 
@@ -52,6 +53,15 @@ inter-element text line-box overlap, and opaque sRGB HTML text contrast against
 solid ancestor backgrounds. Contrast thresholds are 3:1 for large text and
 4.5:1 otherwise. Contrast inspection skips SVG text, gradients, images,
 transparency, and compositing it cannot evaluate reliably.
+
+Floor warnings use the rule ID from the [authoring floor](../skills/konpeki/floor.md)
+as their code. `label-above-headline` flags a short, smaller line directly above
+a title, display or section heading in the same column; running heads repeated
+across A4 pages, full sentences and metric figures are not flagged, and
+`data-kp-allow="label-above-headline"` on the label records a deliberate
+exception. `stranded-word` flags a headline line that holds one word after a fuller
+line, within each `<br>`-separated part; a line a `<br>` isolates is deliberate. The base balances headline roles and
+sets `text-wrap: pretty` on pages to avoid most stranded words.
 
 `small-text` warns below 24 CSS px on screen presets and 11 CSS px on A4,
 including unthemed HTML and SVG text. The default preset is presentation.
