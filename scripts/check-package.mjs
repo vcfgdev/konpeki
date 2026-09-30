@@ -11,7 +11,7 @@ const paths = new Set(pack.files.map(({ path }) => path));
 for (const required of [
   "LICENSE", "README.md", "AGENTS.md", "AUTHORING.md", "SETUP.md", "theme.css",
   "theme-base.css", "html/theme.md", "html/theme-authoring.md", "html/starter.ts", "fonts/plex-mono-OFL.txt",
-  "docs/workflow.md", "docs/development.md", "plugin.json", "skills/konpeki/SKILL.md",
+  "docs/workflow.md", "docs/development.md", "plugin.json", "skills/konpeki/SKILL.md", "skills/konpeki/floor.md", "html/floor.ts",
   "skills/konpeki/scripts/ensure-runtime.mjs", "skills/konpeki/scripts/prepare-document.mjs",
   "skills/konpeki/assets/blank.html", "html/README.md", "html/index.html", "html/preview.tsx",
   "html/preview.css", "html/inspect.ts", "runtime/konpeki.mjs", "index.html", "vite.config.ts",

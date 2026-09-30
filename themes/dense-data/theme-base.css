@@ -47,6 +47,8 @@ body { margin: 0; }
   font-family: var(--kp-font-family); font-size: var(--kp-font-body); line-height: var(--kp-leading-body);
   font-weight: var(--kp-weight-body); letter-spacing: var(--kp-tracking-body);
   font-synthesis: none;
+  /* Avoid stranded last words; headline roles below balance their lines. */
+  text-wrap: pretty;
 }
 
 /* Zero-specificity defaults leave page-authored CSS in control. An explicit
@@ -71,14 +73,17 @@ body { margin: 0; }
 :where([data-page]) :where(h2:not([data-type]), [data-type="heading"]) {
   font-family: var(--kp-font-family-heading); font-size: var(--kp-font-heading); line-height: var(--kp-leading-heading);
   font-weight: var(--kp-weight-heading); letter-spacing: var(--kp-tracking-heading);
+  text-wrap: balance;
 }
 :where([data-page]) :where(h1:not([data-type]), [data-type="title"]) {
   font-family: var(--kp-font-family-heading); font-size: var(--kp-font-title); line-height: var(--kp-leading-title);
   font-weight: var(--kp-weight-title); letter-spacing: var(--kp-tracking-title); color: var(--kp-accent);
+  text-wrap: balance;
 }
 :where([data-page]) :where([data-type="display"]) {
   font-family: var(--kp-font-family-display); font-size: var(--kp-font-display); line-height: var(--kp-leading-display);
   font-weight: var(--kp-weight-display); letter-spacing: var(--kp-tracking-display); color: var(--kp-accent);
+  text-wrap: balance;
 }
 :where([data-page]) :where(strong) { font-weight: var(--kp-weight-strong); }
 :where([data-page]) :where(code) { font-family: var(--kp-font-family-mono); font-weight: var(--kp-weight-mono); color: var(--kp-accent); }

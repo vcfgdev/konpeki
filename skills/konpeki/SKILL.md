@@ -12,14 +12,14 @@ than requiring an outline or design checkpoint, unless the user requests one.
 
 ## Before authoring
 
-1. Read `AUTHORING.md` for taste and fidelity guidance.
-2. Read `html/README.md` for all HTML, file, theme, diagnostic, preview, and CLI
-   rules. Do not duplicate or override those rules here.
-3. Resolve the runtime. From an installed skill, run
+1. Resolve the runtime. From an installed skill, run
    `node scripts/ensure-runtime.mjs` with no arguments; it reports a compatible
-   checkout or locally installed package. Use its `root` to locate the guides and
-   run its returned `cli` path with Node. See `SETUP.md` if no runtime is found.
-4. Ground the work in the requested audience, takeaway, supplied evidence,
+   checkout or locally installed package. Its `root` locates the guides below;
+   run its `cli` path with Node. See `SETUP.md` if no runtime is found.
+2. From that root, read `AUTHORING.md` for accuracy and editorial judgment and
+   `html/README.md` for all HTML, file, theme, diagnostic, preview, and CLI
+   rules. Do not duplicate or override those rules here.
+3. Ground the work in the requested audience, takeaway, supplied evidence,
    destination, and output format. Ask only when missing facts or conflicting
    constraints prevent faithful work.
 
@@ -33,21 +33,25 @@ than requiring an outline or design checkpoint, unless the user requests one.
    separate directory for each theme's assets.
 2. Reread any existing source before changing it. Preserve stable IDs, facts,
    provenance, deliberate human edits, and unrelated or newer changes.
-3. Read `html/theme.md` for the theme API. Link the default light-blue `theme.css`.
+3. Plan each page before writing HTML, in your working notes: its format and
+   viewing size, the headline as a claim, the elements it carries in reading
+   order, and what the format's budget forces out.
+4. Read [floor.md](floor.md) immediately before writing or revising HTML. Its
+   bans have no exceptions; its defaults yield only to an explicit brief.
+5. Read `html/theme.md` for the theme API. Link the default Cobalt `theme.css`.
    When the brief brings its own look, adapt a copy using the same contract.
    Read CSS implementation only when changing a theme, not when using one.
    Author the HTML and page-specific composition; use complete type roles and
-   theme tokens. Apply authoring guidance and any selected design skills without
-   weakening factual fidelity or readability.
-4. Run `node <cli> validate <document.html>` and fix source-contract errors.
-5. Run `node <cli> inspect <document.html>`; use `--page N` or `--details` when useful.
+   theme tokens.
+6. Run `node <cli> validate <document.html>` and fix source-contract errors.
+7. Run `node <cli> inspect <document.html>`; use `--page N` or `--details` when useful.
    Use each page's resolved `theme.type` to plan type and line lengths.
-   Resolve diagnostic errors and evaluate warnings rather than suppressing them
-   mechanically.
-6. Render every affected page at 2x PNG and inspect it both at intended size and
-   enlarged. Check facts, hierarchy, readability, clipping, contrast,
-   relationships, and consistency—not only automated diagnostics.
-7. Repeat editing, validation, inspection, and visual review until sound. Inspect
+   Resolve errors. Fix each warning, or keep it with a reason you will report;
+   floor warnings use their rule ID as the diagnostic code.
+8. Render every affected page at 2x PNG. `render` prints the floor's review
+   checklist: check the page against it at intended size and enlarged, along
+   with facts, readability, clipping and consistency.
+9. Repeat editing, validation, inspection, and visual review until sound. Inspect
    a requested PDF separately because it is a distinct artifact.
 
 Example focused loop:
@@ -70,7 +74,8 @@ agent-authored revisions.
 ## Deliver
 
 Deliver requested PNG/PDF artifacts first. Keep editable HTML and local resources
-in the agent workspace; share them when useful or requested. Report consequential
-warnings and any review limitations honestly. Do not claim checks you did not run.
+in the agent workspace; share them when useful or requested. Report every
+warning you kept and why, and any review limitations. Do not claim checks you did
+not run.
 
 Do not publish, push, deploy, or create a release without explicit permission.

@@ -49,11 +49,14 @@ async function html(command, input) {
     ...(command === "render" ? { format, scale: Number(option("--scale", "2")) } : {}),
   });
   if (command === "render") {
-    for (const diagnostic of report.diagnostics) console.error(`${diagnostic.severity}: ${diagnostic.page}/${diagnostic.target}: ${diagnostic.message}`);
+    for (const diagnostic of report.diagnostics) console.error(`${diagnostic.severity} ${diagnostic.code}: ${diagnostic.page}/${diagnostic.target}: ${diagnostic.message}`);
     if (!report.ok) throw new Error("Render refused because the document has errors.");
     const output = resolve(option("--output", input.replace(/\.html?$/i, "") + (page ? `-page-${page}` : "") + `.${format}`));
     await writeFile(output, bytes, { flag: "wx" });
     console.log(output);
+    // Judgment rules no diagnostic covers, shown while the rendered page is in hand.
+    const { reviewChecklist } = await import("../html/floor.ts");
+    console.error(`Review ${output} at its viewing size and enlarged, against skills/konpeki/floor.md:\n${reviewChecklist().map(rule => `- ${rule}`).join("\n")}`);
   } else {
     console.log(JSON.stringify(command === "check" ? { ok: report.ok, diagnostics: report.diagnostics } : report, null, 2));
     if (!report.ok) process.exitCode = 1;
