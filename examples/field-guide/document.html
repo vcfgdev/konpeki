@@ -3,38 +3,34 @@
 <head>
   <meta charset="utf-8">
   <title>Accepted orders, durable events</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&amp;display=swap">
+  <link rel="stylesheet" href="theme.css">
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; color: #202b3d; background: white; font: 15px/1.55 'IBM Plex Sans', sans-serif; }
-    .page { width: 794px; height: 1123px; padding: 58px 64px; display: flex; flex-direction: column; }
-    header { padding-bottom: 24px; border-bottom: 1px solid #d6dce4; margin-bottom: 26px; }
-    h1 { font-size: 41px; line-height: 1.12; letter-spacing: -.035em; margin: 0 0 16px; max-width: 610px; text-wrap: balance; }
-    .intro { margin: 0; max-width: 595px; color: #556074; font-size: 18px; line-height: 1.5; }
-    h2 { font-size: 21px; line-height: 1.25; margin: 0 0 12px; letter-spacing: -.02em; }
-    p { margin: 0 0 13px; }
-    section { margin: 0 0 25px; }
-    code { font: .9em ui-monospace, monospace; color: #195a98; background: #eef4fa; padding: 1px 4px; border-radius: 3px; }
-    .flow { margin: 10px 0 22px; padding: 18px 0; border-block: 1px solid #d6dce4; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; }
-    .flow svg { width: 36px; height: 18px; flex: none; stroke: #2166aa; fill: none; stroke-width: 1.5; }
-    .callout { background: #f0f5fa; padding: 19px 22px; border-radius: 7px; }
-    .callout h2 { font-size: 17px; }
+    .page { padding: 56px 64px; display: flex; flex-direction: column; }
+    header { padding-bottom: calc(3 * var(--unit)); border-bottom: 1px solid var(--accent); margin-bottom: calc(3 * var(--unit)); }
+    h1 { font-size: var(--font-display); line-height: var(--leading-display); margin-bottom: calc(2 * var(--unit)); max-width: 610px; }
+    .intro { max-width: 595px; color: var(--muted); font-size: var(--font-lead); line-height: var(--leading-lead); }
+    h2 { font-size: var(--font-lead); line-height: var(--leading-lead); margin-bottom: var(--unit); }
+    p { margin-bottom: calc(2 * var(--unit)); }
+    section { margin-bottom: calc(3 * var(--unit)); }
+    code { background: var(--wash); padding: 1px 4px; }
+    .flow { margin: var(--unit) 0 calc(3 * var(--unit)); padding: calc(2 * var(--unit)) 0; border-block: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: var(--unit); font-weight: 600; }
+    .flow svg { width: 36px; height: 18px; flex: none; stroke: var(--accent); fill: none; stroke-width: 1.5; }
+    .callout { background: var(--wash); border-left: 2px solid var(--accent); padding: calc(2 * var(--unit)) calc(3 * var(--unit)); }
     .callout p:last-child { margin-bottom: 0; }
-    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-    .small { font-size: 13px; color: #556074; }
-    table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 16px; }
-    th, td { text-align: left; vertical-align: top; padding: 12px 10px; border-bottom: 1px solid #d6dce4; }
-    th { color: #2166aa; font-weight: 600; border-top: 1px solid #d6dce4; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: calc(4 * var(--unit)); }
+    table { border-collapse: collapse; width: 100%; margin-top: calc(2 * var(--unit)); }
+    th, td { text-align: left; vertical-align: top; padding: 12px var(--unit); border-bottom: 1px solid var(--line); }
+    th { color: var(--accent); font-weight: 600; border-top: 1px solid var(--line); }
     th:first-child, td:first-child { width: 32%; padding-left: 0; }
     ol { margin: 0; padding-left: 21px; }
     li { padding-left: 4px; margin-bottom: 9px; }
-    footer { margin-top: auto; flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 30px; font-size: 12px; color: #556074; }
+    footer { margin-top: auto; flex-shrink: 0; display: flex; align-items: baseline; justify-content: space-between; gap: calc(4 * var(--unit)); font-size: var(--font-caption); color: var(--muted); }
     @page { size: 210mm 297mm; margin: 0; }
     @media print { .page { width: 210mm; height: 297mm; break-after: page; } .page:last-child { break-after: auto; } }
   </style>
 </head>
 <body>
-  <article id="the-pattern" class="page" data-page>
+  <article id="the-pattern" class="page" data-page data-size="a4">
     <header>
       <h1 id="guide-title">Accepted orders,<br>durable events</h1>
       <p class="intro" id="guide-intro">A transactional outbox keeps a broker outage from losing the confirmation event for an accepted order.</p>
@@ -57,7 +53,7 @@
     </section>
     <footer><span id="scenario-caption">Illustrative commerce scenario · no production metrics</span><span>01 / 02</span></footer>
   </article>
-  <article id="the-worker" class="page" data-page>
+  <article id="the-worker" class="page" data-page data-size="a4">
     <header>
       <h1 id="worker-title">Make retries safe<br>at the consumer</h1>
       <p class="intro" id="worker-intro">Durable publication closes one failure window. An idempotent worker closes the next.</p>

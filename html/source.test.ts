@@ -2,18 +2,30 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { fileSource, inspectSource, patchSource } from "./source.ts";
 
 const source = `<!doctype html>\n<style>p { color: blue; }</style>\n<body><article id='one' data-page>\n<!-- <p id="target">not the target</p> -->\n<p title="a > b" id="target" style='color: red; --label: "A&amp;B"'>Keep <b>inline</b> wording.</p><p id="other">Untouched</p></article><article data-page id="two"><p id="elsewhere">Other page</p></article></body>`;
-test("patches only the exact style attribute, escaping CSS string content", () => {
-  const style = 'color: red; --label: "A&B"; translate: 12px -6px;';
-  assert.equal(patchSource(source, { kind: "move", page: "one", id: "target", style }), source.replace(`style='color: red; --label: "A&amp;B"'`, 'style="color: red; --label: &quot;A&amp;B&quot;; translate: 12px -6px;"'));
+test("patches only translate while preserving authored CSS values", () => {
+  const styled = source.replace(`color: red; --label: "A&amp;B"`, `color: #1d4ed8; /* keep */ --label: "A&amp;B; C"; --custom: calc(10% + 2px)`);
+  const result = patchSource(styled, { kind: "move", page: "one", id: "target", translate: "12px -6px" });
+  assert.match(result, /color: #1d4ed8; \/\* keep \*\/ --label: &quot;A&amp;B; C&quot;; --custom: calc\(10% \+ 2px\);? translate: 12px -6px;/);
+  assert.equal(result.replace(/ style="[^"]*"/, " STYLE"), styled.replace(/ style='[^']*'/, " STYLE"));
 });
 test("inserts style without rewriting other attributes; deletes only the selected subtree", () => {
-  const result = patchSource(source, { kind: "move", page: "one", id: "other", style: "translate: -7px 19px;" });
+  const result = patchSource(source, { kind: "move", page: "one", id: "other", translate: "-7px 19px" });
   assert.equal(result, source.replace('<p id="other">', '<p id="other" style="translate: -7px 19px;">'));
   assert.equal(patchSource(source, { kind: "delete", page: "one", id: "target" }), source.replace(`<p title="a > b" id="target" style='color: red; --label: "A&amp;B"'>Keep <b>inline</b> wording.</p>`, ""));
+});
+test("updates duplicate and important translate declarations without disturbing neighbors", () => {
+  const input = source.replace(`color: red; --label: "A&amp;B"`, "color:#abc; translate: 1px 2px !important; margin:var(--space); translate : 3px 4px");
+  const result = patchSource(input, { kind: "move", page: "one", id: "target", translate: "12px -6px" });
+  assert.match(result, /color:#abc; translate: 12px -6px !important; margin:var\(--space\); translate : 12px -6px/);
+  assert.equal((result.match(/translate/g) ?? []).length, 2);
+});
+test("rejects malformed or injected move values", () => {
+  for (const translate of ["12px", "12px -6px; color:red", "calc(1px) 2px", "12% -6px", "12px -6px !important", "12px\n-6px"])
+    assert.throws(() => patchSource(source, { kind: "move", page: "one", id: "target", translate }), /Invalid correction/);
 });
 test("rejects missing, ambiguous and cross-page targets and deleting pages", () => {
   assert.throws(() => inspectSource(source.replace('id="other"', 'id="target"')), /unique/);
@@ -30,8 +42,9 @@ test("serializes writes, rejects stale revisions and never undoes an external re
   try {
     await writeFile(path, source);
     const store = fileSource(path), initial = await store.read();
+    assert.equal(initial.path, path); assert.equal(isAbsolute(initial.path), true);
     const changes = await Promise.allSettled([
-      store.edit(initial.revision, { kind: "move", page: "one", id: "target", style: "translate: 12px -6px;" }),
+      store.edit(initial.revision, { kind: "move", page: "one", id: "target", translate: "12px -6px" }),
       store.edit(initial.revision, { kind: "delete", page: "one", id: "other" }),
     ]);
     assert.equal(changes[0].status, "fulfilled"); assert.equal(changes[1].status, "rejected");

@@ -3,6 +3,7 @@ import { readFile, mkdtemp, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createServer as createHTTPServer } from "node:http";
 import { test } from "node:test";
 import { createServer } from "vite";
 import { chromium, type Page } from "playwright";
@@ -39,16 +40,11 @@ test("static preview works under a Pages base path, isolates comments, and clear
   const origin = `http://127.0.0.1:${address.port}`;
   const browser = await chromium.launch(); t.after(() => browser.close());
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
-  const font = await readFile(new URL("../node_modules/@fontsource/ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2", import.meta.url));
-  let styles = 0, fonts = 0;
-  // Test font loading through the real CSP without depending on Google's uptime.
-  await context.route("https://fonts.googleapis.com/**", route => {
-    styles++;
-    return route.fulfill({ contentType: "text/css", body: "@font-face{font-family:'IBM Plex Sans';font-weight:400 600;src:url(https://fonts.gstatic.com/s/test/font.woff2)}" });
-  });
-  await context.route("https://fonts.gstatic.com/**", route => {
-    fonts++;
-    return route.fulfill({ contentType: "font/woff2", headers: { "Access-Control-Allow-Origin": "*" }, body: font });
+  const external: string[] = [];
+  await context.route(/^https?:\/\//, route => {
+    const url = new URL(route.request().url());
+    if (url.hostname === "127.0.0.1") return route.continue();
+    external.push(route.request().url()); return route.abort("blockedbyclient");
   });
   const tab = await context.newPage();
   const errors: string[] = [], api: string[] = [];
@@ -194,8 +190,8 @@ test("static preview works under a Pages base path, isolates comments, and clear
   assert.equal(await tab.locator(".html-page").count(), 2);
   const frame = tab.frames().find(frame => frame.url().startsWith("blob:"))!;
   await frame.evaluate(() => document.fonts.ready);
-  assert(styles > 0 && fonts > 0, "stylesheet and font must load through the preview CSP");
   assert.equal(await frame.evaluate(() => [...document.fonts].filter(f => f.family.includes("IBM Plex Sans")).some(f => f.status === "loaded")), true);
+  assert.deepEqual(external, [], "examples must load bundled fonts without external requests");
   for (const id of ["the-pattern", "the-worker"]) {
     const page = tab.frameLocator(`iframe[title="${id}"]`).locator(`#${id}`);
     const layout = await page.evaluate(async page => {
@@ -205,7 +201,7 @@ test("static preview works under a Pages base path, isolates comments, and clear
       return { eyebrows: page.querySelectorAll(".eyebrow").length, bottomInset: bounds.bottom - footer.getBoundingClientRect().bottom, leftInset: caption.left - bounds.left, baselineDifference: caption.bottom - number.bottom, gap: footer.getBoundingClientRect().top - page.querySelector(".callout:last-of-type")!.getBoundingClientRect().bottom };
     });
     assert.equal(layout.eyebrows, 0);
-    assert.equal(layout.bottomInset, 58, `${id}: footer must respect the page's bottom margin`);
+    assert.equal(layout.bottomInset, 56, `${id}: footer must respect the page's bottom margin`);
     assert.equal(layout.leftInset, 64, `${id}: caption must align with the text column`);
     assert.equal(layout.baselineDifference, 0, `${id}: caption and page number must align`);
     assert(layout.gap >= 25, `${id}: footer must not crowd the content`);
@@ -223,12 +219,13 @@ test("static preview works under a Pages base path, isolates comments, and clear
 test("local HTML preview still saves moves, deletions and undo to the exact source", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-preview-test-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  const source = '<!doctype html><style>body{margin:0}[data-page]{width:800px;height:500px;padding:40px;box-sizing:border-box}p{width:300px;height:100px}</style><main id="page" data-page><p id="target">Move this paragraph.</p></main>';
+  const source = '<!doctype html><style>body{margin:0}[data-page]{width:800px;height:500px;padding:40px;box-sizing:border-box}p{width:300px;height:100px}</style><main id="page" data-page><p id="target" style="color: #1d4ed8; margin-top: 30px">Move this paragraph.</p></main>';
   const file = join(dir, "document.html"); await writeFile(file, source);
   const preview = await previewHTML(file, "127.0.0.1", 0, root);
   t.after(() => preview.server.close());
   const browser = await chromium.launch(); t.after(() => browser.close());
-  const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
+  const tab = await context.newPage();
   await tab.goto(preview.url);
   await tab.frameLocator("iframe").locator("#target").waitFor();
   await clickTarget(tab, "page", "target", 2);
@@ -242,14 +239,43 @@ test("local HTML preview still saves moves, deletions and undo to the exact sour
   await tab.mouse.move(rect.x + 15, rect.y + 15); await tab.mouse.down();
   await tab.mouse.move(rect.x + 38, rect.y + 32, { steps: 5 }); await tab.mouse.up();
   await tab.getByRole("status").getByText("Saved", { exact: true }).waitFor();
-  assert.match(await readFile(file, "utf8"), /style="translate: [1-9][\d]*px [1-9][\d]*px;"/);
+  assert.match(await readFile(file, "utf8"), /style="color: #1d4ed8; margin-top: 30px;? translate: [1-9][\d]*px [1-9][\d]*px;"/);
   await tab.keyboard.press("Control+z");
-  await tab.waitForFunction(() => { const target = document.querySelector("iframe")?.contentDocument?.getElementById("target"); return target && !target.hasAttribute("style"); });
+  await tab.waitForFunction(() => { const target = document.querySelector("iframe")?.contentDocument?.getElementById("target"); return target && !target.style.translate; });
   assert.equal(await readFile(file, "utf8"), source);
+  const horizontal = await tab.frameLocator("iframe").locator("#target").boundingBox(); assert(horizontal);
+  const saved = tab.waitForResponse(response => response.request().method() === "PATCH");
+  await tab.mouse.move(horizontal.x + 15, horizontal.y + 15); await tab.mouse.down();
+  await tab.mouse.move(horizontal.x + 50, horizontal.y + 15, { steps: 5 }); await tab.mouse.up();
+  assert.equal((await saved).status(), 200, "horizontal moves must retain the zero y coordinate in the payload");
+  assert.match(await readFile(file, "utf8"), /translate: [1-9][\d]*px 0px;/);
+  await tab.keyboard.press("Control+z");
+  await tab.waitForFunction(() => { const target = document.querySelector("iframe")?.contentDocument?.getElementById("target"); return target && !target.style.translate; });
+  assert.equal(await readFile(file, "utf8"), source);
+  await clickTarget(tab, "page", "target"); await tab.keyboard.press("c");
+  await tab.getByRole("textbox", { name: "What should change?" }).fill("Keep the exact source path.");
+  await tab.keyboard.press("Control+Enter");
+  await tab.getByRole("button", { name: "Copy & clear" }).click();
+  const copied = await tab.evaluate(() => navigator.clipboard.readText());
+  assert.match(copied, new RegExp(`Revise the HTML document ${JSON.stringify(file).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
   await clickTarget(tab, "page", "target"); await tab.keyboard.press("Delete");
   await tab.frameLocator("iframe").locator("#target").waitFor({ state: "detached" });
   assert.equal(inspectSource(await readFile(file, "utf8")).elements.some(el => el.attrs.some(a => a.name === "id" && a.value === "target")), false);
   await tab.keyboard.press("Control+z");
   await tab.frameLocator("iframe").locator("#target").waitFor();
   assert.equal(await readFile(file, "utf8"), source);
+});
+
+test("preview falls back from a busy default port but explicit ports are strict", async t => {
+  const blocker = createHTTPServer((_req, res) => res.end("busy"));
+  await new Promise<void>((resolve, reject) => blocker.listen(0, "127.0.0.1", resolve).once("error", reject));
+  t.after(() => new Promise<void>(resolve => blocker.close(() => resolve())));
+  const port = (blocker.address() as { port: number }).port;
+  const dir = await mkdtemp(join(tmpdir(), "konpeki-port-test-")); t.after(() => rm(dir, { recursive: true, force: true }));
+  const file = join(dir, "document.html");
+  await writeFile(file, '<main id="page" data-page style="width:100px;height:100px"></main>');
+  const fallback = await previewHTML(file, "127.0.0.1", port, root);
+  t.after(() => fallback.server.close());
+  assert.notEqual(new URL(fallback.url).port, String(port));
+  await assert.rejects(previewHTML(file, "127.0.0.1", port, root, true), /already in use|EADDRINUSE/i);
 });

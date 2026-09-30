@@ -22,8 +22,6 @@ jobs:
       - name: Verify tag matches package version
         run: test "$GITHUB_REF_NAME" = "$(mise exec -- node -p "require('./package.json').version")"
 
-      - name: Install PDF conformance tools
-        run: sudo apt-get update && sudo apt-get install -y poppler-utils imagemagick
       - run: mise exec -- pnpm install --frozen-lockfile
       - run: mise exec -- pnpm exec playwright install --with-deps chromium
       - run: mise exec -- pnpm check
@@ -41,12 +39,6 @@ jobs:
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" inspect "$RUNNER_TEMP/smoke/document.html"
           for format in png pdf; do
             mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" render "$RUNNER_TEMP/smoke/document.html" --format "$format" --output "$RUNNER_TEMP/smoke/html-export.$format"
-          done
-          cp composition/fixtures/introducing-konpeki/composition.json "$RUNNER_TEMP/smoke/composition.json"
-          mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" validate "$RUNNER_TEMP/smoke/composition.json"
-          mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" check "$RUNNER_TEMP/smoke/composition.json"
-          for format in png svg pdf; do
-            mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" render "$RUNNER_TEMP/smoke/composition.json" --format "$format" --output "$RUNNER_TEMP/smoke/export.$format"
           done
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/vite/bin/vite.js" build "$RUNNER_TEMP/smoke/node_modules/konpeki" --outDir "$RUNNER_TEMP/smoke/dist"
 

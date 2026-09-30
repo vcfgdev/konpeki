@@ -1,86 +1,70 @@
 ---
 name: konpeki
 description: Creates, checks, renders, and revises static HTML visuals. Use for covers, social graphics, charts, diagrams, explainers, documents, or presentations.
-compatibility: Requires Node.js 24+, file/command access, and the unreleased Konpeki source checkout for HTML. CLI inspection/export requires explicitly installed pinned Chromium.
+compatibility: Requires Node.js 24+, file and command access, and a prepared Konpeki checkout or locally packed installation. Inspection and export require pinned Chromium.
 ---
 
 # Konpeki
 
-Turn a brief and evidence into a finished static HTML visual, inspect it, revise
-it, and deliver PNG/PDF artifacts. Infer the visual form rather than requiring a
-questionnaire or outline approval. Ask only when missing facts or conflicting
-constraints prevent faithful work.
+Turn a brief and evidence into a finished visual with HTML as editable source and
+PNG/PDF as delivery artifacts. Infer a suitable form and complete the work rather
+than requiring an outline or design checkpoint, unless the user requests one.
 
-## Availability
+## Before authoring
 
-Konpeki has not been published to npm. `0.4.0` is the repository version, not an
-available release. Use a prepared source checkout; installing the skill alone
-does not install the runtime. Existing JSON documents may continue using the
-checkout's compatibility commands, but choose HTML for new work.
-
-## Read the relevant guidance
-
-- `AUTHORING.md`: factual fidelity, writing, design, and review.
-- `html/README.md`: source contract and commands.
-- `docs/workflow.md`: optional human preview and delivery.
+1. Read `AUTHORING.md` for taste and fidelity guidance.
+2. Read `html/README.md` for all HTML, file, theme, diagnostic, preview, and CLI
+   rules. Do not duplicate or override those rules here.
+3. Resolve the runtime. From an installed skill, run
+   `node scripts/ensure-runtime.mjs` with no arguments; it reports a compatible
+   checkout or locally installed package. Use its `root` to locate the guides and
+   run its returned `cli` path with Node. See `SETUP.md` if no runtime is found.
+4. Ground the work in the requested audience, takeaway, supplied evidence,
+   destination, and output format. Ask only when missing facts or conflicting
+   constraints prevent faithful work.
 
 ## Create or revise
 
-Author the user's chosen `document.html` path:
+1. Choose the user's document path. For a new document, run
+   `node scripts/prepare-document.mjs <cli> <document.html>` to place a validated
+   starter, theme, bundled fonts, and font license beside it without overwriting
+   existing files.
+2. Reread any existing source before changing it. Preserve stable IDs, facts,
+   provenance, deliberate human edits, and unrelated or newer changes.
+3. Author or revise the HTML and nearby local resources. Link `theme.css` unless
+   the brief has its own look. Apply the taste guidance without weakening factual
+   fidelity or readability.
+4. Run `node <cli> validate <document.html>` and fix source-contract errors.
+5. Run `node <cli> inspect <document.html>`; use `--page N` or `--details` when useful.
+   Resolve diagnostic errors and evaluate warnings rather than suppressing them
+   mechanically.
+6. Render every affected page at 2x PNG and inspect it both at intended size and
+   enlarged. Check facts, hierarchy, readability, clipping, contrast,
+   relationships, and consistency—not only automated diagnostics.
+7. Repeat editing, validation, inspection, and visual review until sound. Inspect
+   a requested PDF separately because it is a distinct artifact.
 
-- static HTML/CSS with inline SVG;
-- every explicit page is a direct child of `<body>` with `data-page`;
-- page and targetable element IDs are globally unique and stable;
-- CSS defines page dimensions, including mixed sizes;
-- images and stylesheets are embedded or kept beside the HTML;
-- fonts are local, embedded, or loaded from Google Fonts; and
-- no authored JavaScript, embedded applications, controls, or other remote resources.
+Example focused loop:
 
-The HTML is canonical. Do not create composition JSON or another scene/schema as
-an intermediate source. Preserve facts, sources, caveats, IDs, unrelated edits,
-and newer human changes. Compose page breaks explicitly; there is no automatic
-pagination.
+```sh
+node <cli> validate document.html
+node <cli> inspect document.html
+node <cli> render document.html --page 1 --format png --scale 2 --output page-1.png
+```
 
-## Inspect and deliver
+## Human feedback
 
-Repeat until sound:
+Use `node <cli> preview <document.html>` only when interactive review is useful. After
+the reviewer uses **Copy & clear**, use the full local path in the prompt to
+reread current source, then address feedback by stable target ID. If a target no
+longer exists or feedback conflicts with newer work, report that instead of
+guessing. Re-run the verification loop after source-backed moves, deletions, or
+agent-authored revisions.
 
-1. `konpeki validate document.html`
-2. `konpeki inspect document.html` (add `--page N` or `--details` as needed)
-3. Repair errors and review warnings by stable ID.
-4. Render affected pages:
-   `konpeki render document.html --page N --format png --scale 2 --output page-N.png`
-5. Visually inspect fidelity, hierarchy, readability, clipping, relationships,
-   and consistency. Inspect requested PDF output separately.
+## Deliver
 
-`check` is available for diagnostics. DOM checks detect page overflow, clipped
-text, and missing images/fonts. They measure line boxes rather than glyph ink and
-cannot prove collision freedom, contrast, factual correctness, or visual quality.
+Deliver requested PNG/PDF artifacts first. Keep editable HTML and local resources
+in the agent workspace; share them when useful or requested. Report consequential
+warnings and any review limitations honestly. Do not claim checks you did not run.
 
-PNG defaults to page 1. PDF includes all explicitly authored pages by default and
-supports mixed sizes. Output is exclusive; choose a new path rather than
-overwriting. Install the pinned browser explicitly with `konpeki browser install`
-when CLI inspection/export needs it.
-
-Deliver PNG/PDF first. Keep HTML and local resources in the agent workspace and
-share source only when useful or requested. Artifact recipients do not need
-Playwright or Chromium.
-
-## Optional human preview
-
-Run `konpeki preview document.html [--host ...] [--port ...] [--json]` only when
-human review is useful. Preview itself does not need headless Chromium.
-
-People can comment, make small moves, delete, and undo. Alignment guides are
-visual and do not snap. Small drags persist visual translation without reordering
-DOM; deletion may reflow. There is no text editor, resize, presentation UI, or
-design control panel. Apply text and substantive design revisions in source.
-
-Comments stay browser-local. **Copy & clear** copies comments and target IDs for
-pasting into the agent conversation, with undo; failure leaves the queue intact.
-There is no adapter, waiting process, sidecar, automatic invocation, or automatic
-resolution. Reread source before applying a prompt and use stable IDs rather than
-guessing from screenshots.
-
-Do not publish, push, deploy, or claim release/test status without evidence and
-permission.
+Do not publish, push, deploy, or create a release without explicit permission.

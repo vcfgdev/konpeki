@@ -11,6 +11,8 @@ await build({
     outDir: "runtime",
     emptyOutDir: true,
     sourcemap: false,
-    rolldownOptions: { output: { entryFileNames: "konpeki.mjs" } },
+    // Keep every module one level below the package root, like html/*.ts,
+    // so package-relative theme and font URLs work after installation too.
+    rolldownOptions: { output: { entryFileNames: "konpeki.mjs", chunkFileNames: "[name]-[hash].mjs" } },
   },
 });

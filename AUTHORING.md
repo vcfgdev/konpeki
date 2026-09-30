@@ -1,84 +1,48 @@
-# Authoring visuals
+# Authoring taste
 
-Make clear, visually compelling pages from the supplied brief and evidence. For
-new work, author static HTML/CSS with inline SVG; the HTML is canonical. Follow
-the structural and safety rules in [html/README.md](html/README.md).
+This guide owns editorial and visual judgment. For workflow steps, use the
+[Konpeki skill](skills/konpeki/SKILL.md); for source and tool rules, use the
+[HTML reference](html/README.md).
 
-## Requirements
+## Accuracy and editorial judgment
 
 - Preserve facts, sources, units, denominators, bounds, and meaningful caveats.
   Distinguish evidence from interpretation; never invent data or filler.
-- Choose page dimensions for the destination and define them in CSS. Do not
-  assume 16:9, stretch an existing design, or invent extra pages. Compose every
-  page break explicitly; there is no automatic pagination.
-- Keep essential content readable at its intended viewing size. Do not hide
-  overflow, truncate required copy, or shrink type until it technically fits.
-- Use licensed assets and real font weights. Keep images and stylesheets beside
-  the document or embed them. Use Google Fonts or local/embedded fonts; verify
-  that they load before export.
+- Give each page one identifiable audience question and state its main point in
+  the headline. Write plainly, concretely, and concisely.
+- Keep names consistent and explain unfamiliar terms. Put citations, units, and
+  caveats next to the evidence they qualify; preserve required attribution.
 - Represent relationships honestly: correct arrow directions, clear label/value
   associations, appropriate chart scales, and zero baselines for amount bars.
-  Do not rely on color alone to convey meaning.
-- Preserve stable IDs and deliberate human edits. Give direct-body pages and
-  targetable elements globally unique stable IDs.
+  Never rely on color alone to carry meaning.
+- If fixed page count and required content conflict, ask for a scope decision
+  rather than dropping content or making it illegible.
 
-## Writing tone
+## Visual judgment
 
-Write like a builder explaining work to a capable peer: plainspoken, concrete,
-and concise. Give each page one identifiable audience question and state its main
-point in the headline. Cut hype, repetition, and rhetorical framing. Keep names
-consistent and explain unfamiliar terms.
+The brief, brand, palette, typeface, and references override these defaults,
+but never accuracy or readability. Konpeki's default is cobalt ink on warm paper:
+IBM Plex Sans, blue headlines, dark body copy, fine rules, and open margins.
+Use square-corner geometry and precise alignment. Let a strong headline and an
+asymmetric composition do the work; avoid pill badges and decorative card stacks.
+Dark mode uses blue-black paper and pale cobalt, keeping the same hierarchy.
 
-Start reading order with the main headline. Omit redundant eyebrows, section
-labels, and recurring metadata footers. Keep page-specific citations, units, and
-caveats next to the evidence they qualify. Preserve legally required attribution.
+Use the theme's named type steps rather than accumulating near-identical sizes.
+Build rhythm in multiples of the spacing unit. Color distinguishes roles:
+accent for the main claim or path, muted ink for supporting copy, categorical
+colors for identity, sequential colors for amount. The eight palettes are
+alternatives, not an invitation to mix unrelated accents on one page.
 
-## Taste and creative freedom
+Start reading order with the main headline. Remove redundant eyebrows, section
+labels, repeated metadata, and ornament that does not clarify structure. Keep
+essential content readable at the intended viewing size; do not solve fit by
+hiding overflow, truncating required copy, or shrinking type excessively.
 
-The brief, brand, palette, typeface, and visual references override taste defaults,
-but never accuracy or readability. Without contrary direction, use a minimalist
-light canvas, dark sans-serif text, and one restrained accent. Build hierarchy
-through typography, placement, and whitespace rather than decorative containers.
+Use diagrams, annotated artifacts, charts, or comparisons only when they make
+real relationships easier to grasp. Do not invent causal, temporal, or
+quantitative meaning. Use arrows sparingly and keep semantic colors consistent.
 
-Use diagrams, annotated artifacts, charts, or comparisons when they make the
-actual relationships easier to grasp. Do not require one on every page or invent
-causal, temporal, or quantitative meaning. Use arrows sparingly, keep semantic
-colors consistent, and label distinctions that carry information.
-
-Resolve conflicts in this order: accuracy/readability, explicit content and
-delivery constraints, specific visual directions, then taste defaults. If fixed
-page count and required content conflict, ask for a scope decision rather than
-silently dropping content.
-
-## Workflow and review
-
-Ground the visual in audience, takeaway, source material, and delivery needs.
-Return finished work by default rather than requiring a questionnaire, diagram
-choice, or outline approval. Honor an explicitly requested checkpoint.
-
-1. Write or revise the canonical HTML and nearby local resources.
-2. Validate and inspect it. Repair overflow, clipped text, and missing resources.
-3. Render affected pages at 2x and inspect them at intended size and enlarged.
-4. Check factual fidelity, hierarchy, readability, clipping, relationships, and
-   coherence. Inspect requested PDF output separately.
-5. Repeat until sound, then deliver requested PNG/PDF artifacts. Keep source in
-   the agent workspace; share it when useful or requested.
-
-DOM diagnostics use text line boxes, not glyph ink. They cannot prove collision
-freedom, contrast, factual correctness, or visual quality. Report consequential
-findings and verification limitations honestly.
-
-Human preview review is optional. People may comment, move, or delete; there is
-no browser text editing, resizing, or presentation UI. Apply wording and design
-changes in source. A small move is a visual translation, not DOM reordering;
-deletion may reflow.
-
-## Existing documents and showcases
-
-Composition JSON and its engine remain for existing documents only. Do not choose
-it as an equally recommended route for new work. See [examples](examples/README.md)
-for representative HTML sources; former JSON examples remain as regression fixtures.
-
-For a contributed showcase, preserve its exact brief and supplied sources without
-private transcripts, credentials, model metadata, or invented history. Ordinary
-deliveries do not need a showcase dossier.
+Resolve conflicts in this order: accuracy and readability; explicit content and
+delivery constraints; specific visual direction; then these taste defaults.
+Finished work is the default—do not impose a questionnaire, diagram choice, or
+outline checkpoint unless the user asks for one.

@@ -3,36 +3,36 @@
 <head>
   <meta charset="utf-8">
   <title>Konpeki — agent-authored visuals</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #fff; color: #172633; font-family: Arial, Helvetica, sans-serif; }
-    [data-page] { width: 1200px; height: 630px; padding: 66px 76px; position: relative; overflow: hidden; background: #fff; }
-    h1 { max-width: 600px; margin: 0; font-size: 62px; line-height: 1.04; letter-spacing: -.045em; }
-    .summary { max-width: 580px; margin: 26px 0 0; color: #526473; font-size: 22px; line-height: 1.45; }
-    .formats { display: flex; gap: 12px; margin-top: 32px; }
-    .formats span { padding: 10px 15px; border: 1px solid #aac5d8; border-radius: 999px; color: #075f98; font-size: 16px; font-weight: 700; }
-    .diagram { position: absolute; right: 66px; top: 72px; width: 326px; height: 486px; }
-    .footer { position: absolute; left: 76px; bottom: 46px; color: #71808c; font-size: 15px; }
+    [data-page] { padding: calc(8 * var(--unit)) calc(9 * var(--unit)); }
+    h1 { max-width: 660px; font-size: var(--font-display); line-height: var(--leading-display); }
+    .summary { max-width: 610px; margin-top: calc(3 * var(--unit)); color: var(--muted); font-size: var(--font-body); line-height: var(--leading-body); }
+    .formats { display: flex; gap: calc(3 * var(--unit)); margin-top: calc(4 * var(--unit)); padding-top: calc(2 * var(--unit)); border-top: 1px solid var(--accent); max-width: 560px; color: var(--accent); font-size: var(--font-fine); font-weight: 600; }
+    .diagram { position: absolute; right: 48px; top: 72px; width: 326px; height: 486px; }
+    .diagram text { font-size: var(--font-fine); fill: var(--fg); }
+    .diagram .label { font-size: var(--font-caption); font-weight: 600; }
+    .footer { position: absolute; left: 72px; bottom: 40px; color: var(--muted); font-size: var(--font-fine); }
   </style>
 </head>
 <body>
-  <main id="cover-page" data-page>
+  <main id="cover-page" data-page data-size="link">
     <h1 id="cover-title">Create clear visuals with your coding agent.</h1>
     <p id="cover-summary" class="summary">Readable HTML is the source. PNG and PDF are the artifacts. Optional review keeps feedback close to the work.</p>
     <div id="cover-formats" class="formats" aria-label="Konpeki formats"><span>HTML source</span><span>PNG</span><span>PDF</span></div>
     <svg id="cover-diagram" class="diagram" viewBox="0 0 326 486" role="img" aria-label="HTML source flowing to PNG and PDF artifacts, with an optional review note">
-      <rect id="source-card" x="18" y="18" width="240" height="154" rx="10" fill="#f2f7fb" stroke="#88b5d2" stroke-width="2"/>
-      <text id="source-label" x="42" y="62" font-size="18" font-weight="700" fill="#075f98">document.html</text>
-      <path id="source-lines" d="M42 88h150M42 110h176M42 132h122" stroke="#91a4b3" stroke-width="7" stroke-linecap="round"/>
-      <path id="artifact-arrow" d="M138 173v69m-9-12 9 12 9-12" fill="none" stroke="#0874b8" stroke-width="3"/>
-      <rect id="png-card" x="18" y="254" width="116" height="92" rx="8" fill="#fff" stroke="#88b5d2" stroke-width="2"/>
-      <rect id="pdf-card" x="146" y="254" width="116" height="92" rx="8" fill="#fff" stroke="#88b5d2" stroke-width="2"/>
-      <text id="png-label" x="76" y="308" text-anchor="middle" font-size="21" font-weight="700" fill="#172633">PNG</text>
-      <text id="pdf-label" x="204" y="308" text-anchor="middle" font-size="21" font-weight="700" fill="#172633">PDF</text>
-      <path id="review-connector" d="M263 94h30v293h-30" fill="none" stroke="#8aa0b0" stroke-width="2" stroke-dasharray="6 6"/>
-      <rect id="review-card" x="66" y="382" width="196" height="76" rx="38" fill="#0874b8"/>
-      <circle id="review-dot" cx="99" cy="420" r="8" fill="#fff"/>
-      <text id="review-label" x="120" y="427" font-size="15" font-weight="700" fill="#fff">optional review</text>
+      <rect id="source-card" x="18" y="18" width="240" height="154" fill="var(--wash)" stroke="var(--accent)"/>
+      <text id="source-label" x="42" y="62" class="label">document.html</text>
+      <path id="source-lines" d="M42 88h150M42 110h176M42 132h122" fill="none" stroke="var(--sequence-3)" stroke-width="5"/>
+      <path id="artifact-arrow" d="M138 173v69m-9-12 9 12 9-12" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <rect id="png-card" x="18" y="254" width="116" height="92" fill="var(--bg)" stroke="var(--accent)"/>
+      <rect id="pdf-card" x="146" y="254" width="116" height="92" fill="var(--bg)" stroke="var(--accent)"/>
+      <text id="png-label" x="76" y="308" text-anchor="middle" class="label">PNG</text>
+      <text id="pdf-label" x="204" y="308" text-anchor="middle" class="label">PDF</text>
+      <path id="review-connector" d="M258 95h35v325h-31" fill="none" stroke="var(--muted)" stroke-dasharray="6 6"/>
+      <rect id="review-card" x="66" y="382" width="196" height="76" fill="var(--wash)" stroke="var(--accent)" stroke-dasharray="4 4"/>
+      <circle id="review-dot" cx="93" cy="420" r="5" fill="var(--accent)"/>
+      <text id="review-label" x="110" y="425">optional review</text>
     </svg>
     <p id="cover-footer" class="footer">Agent-first authoring · human-readable source</p>
   </main>

@@ -1,4 +1,4 @@
-import type { Rect } from "../../composition/runtime.ts";
+type Rect = { x: number; y: number; width: number; height: number };
 
 /** Fixed viewport coordinates; the caller measures the already-zoomed target. */
 export function reviewPosition(anchor: Rect, panel: Pick<Rect, "width" | "height">, viewport: Rect) {

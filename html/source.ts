@@ -1,10 +1,11 @@
 import { createHash, randomBytes } from "node:crypto";
 import { readFile, writeFile, rename, rm } from "node:fs/promises";
-import { basename, dirname, join } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { parse, type DefaultTreeAdapterMap } from "parse5";
+import postcss from "postcss";
 
 type Element = DefaultTreeAdapterMap["element"];
-export type Edit = { page: string; id: string } & ({ kind: "move"; style: string } | { kind: "delete" });
+export type Edit = { page: string; id: string } & ({ kind: "move"; translate: string } | { kind: "delete" });
 export const revision = (source: string) => createHash("sha256").update(source).digest("hex");
 const attr = (node: Element, name: string) => node.attrs.find(a => a.name === name)?.value;
 function fail(message: string, status = 422): never { throw Object.assign(new Error(message), { status }); }
@@ -49,11 +50,18 @@ export function patchSource(source: string, edit: Edit) {
   const location = node.sourceCodeLocation;
   if (!location?.startTag) fail("This element does not have an unambiguous source location.");
   if (edit.kind === "delete") return source.slice(0, location.startOffset) + source.slice(location.endOffset);
-  if (edit.kind !== "move" || typeof edit.style !== "string" || edit.style.length > 8000)
+  if (edit.kind !== "move" || typeof edit.translate !== "string" || !/^-?\d+(?:\.\d+)?px -?\d+(?:\.\d+)?px$/.test(edit.translate) || edit.translate.length > 100)
     fail("Invalid correction.");
-  // The browser's CSSOM preserves authored declarations and changes only translate.
-  // Patch this one attribute; never serialize and reformat the surrounding HTML.
-  const escaped = edit.style.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
+  // Parse the authored CSS, not CSSOM's normalized serialization. PostCSS keeps
+  // unrelated declaration values, comments and whitespace, including hex colors.
+  let css;
+  try { css = postcss.parse(attr(node, "style") ?? ""); }
+  catch { fail("The inline style could not be parsed. Correct it in source before moving."); }
+  const declarations = css.nodes.filter(n => n.type === "decl" && n.prop.toLowerCase() === "translate");
+  for (const declaration of declarations) if (declaration.type === "decl") declaration.value = edit.translate;
+  if (!declarations.length) css.append({ prop: "translate", value: edit.translate });
+  css.raws.semicolon = true;
+  const escaped = css.toString().replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;");
   const style = location.attrs?.style;
   const start = style?.startOffset ?? location.startTag.endOffset - (source[location.startTag.endOffset - 2] === "/" ? 2 : 1);
   const end = style?.endOffset ?? start;
@@ -61,12 +69,13 @@ export function patchSource(source: string, edit: Edit) {
 }
 
 export function fileSource(path: string) {
+  path = resolve(path);
   let queue: Promise<unknown> = Promise.resolve();
   const history: { before: string; after: string }[] = [];
   async function read() {
     const source = await readFile(path, "utf8");
     const { pages } = inspectSource(source);
-    return { source, revision: revision(source), name: basename(path), key: revision(path), pages: pages.map(p => attr(p, "id")!) };
+    return { source, revision: revision(source), name: basename(path), path, key: revision(path), pages: pages.map(p => attr(p, "id")!) };
   }
   function edit(expected: string, change: Edit | { kind: "undo" }) {
     const result = queue.then(async () => {

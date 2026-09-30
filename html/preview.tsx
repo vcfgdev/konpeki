@@ -13,11 +13,11 @@ import "../src/styles/shell.css";
 import "../src/styles/feedback.css";
 import "./preview.css";
 
-type Snapshot = { source: string; revision: string; name: string; key: string; pages: string[] };
+type Snapshot = { source: string; revision: string; name: string; path: string; key: string; pages: string[] };
 type Target = { page: string; id: string };
 type Note = Target & { key: string; text: string };
 type Page = { id: string; name: string; canvas: { width: number; height: number } };
-type Correction = Target & ({ kind: "move"; style: string } | { kind: "delete" });
+type Correction = Target & ({ kind: "move"; translate: string } | { kind: "delete" });
 const token = new URLSearchParams(location.search).get("session") ?? "";
 const example = examples.find(item => item.id === new URLSearchParams(location.search).get("example")) ?? examples[0];
 async function request(edit?: unknown, revision?: string): Promise<Snapshot> {
@@ -25,7 +25,7 @@ async function request(edit?: unknown, revision?: string): Promise<Snapshot> {
     if (edit) throw new Error("Open a local CLI preview to save source corrections.");
     const doc = new DOMParser().parseFromString(example.source, "text/html");
     const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(example.source));
-    return { source: example.source, revision: Array.from(new Uint8Array(hash), n => n.toString(16).padStart(2, "0")).join(""), name: `examples/${example.id}/document.html`, key: `example:${example.id}`, pages: Array.from(doc.querySelectorAll("body > [data-page]"), page => page.id) };
+    return { source: example.source, revision: Array.from(new Uint8Array(hash), n => n.toString(16).padStart(2, "0")).join(""), name: "document.html", path: `examples/${example.id}/document.html`, key: `example:${example.id}`, pages: Array.from(doc.querySelectorAll("body > [data-page]"), page => page.id) };
   }
   const response = await fetch("/__konpeki/html", { method: edit ? "PATCH" : "GET", headers: { "x-konpeki-session": token, "Content-Type": "application/json" }, ...(edit ? { body: JSON.stringify({ edit, revision }) } : {}) });
   const body = await response.json();
@@ -82,8 +82,9 @@ function HTMLPage({ page, revision, source, notes, selected, commenting, locked,
     onBusy(false);
     if (cancel) d.target.style.cssText = d.style;
     else if (d.moved) {
-      d.target.style.translate = `${d.tx + d.dx}px ${d.ty + d.dy}px`;
-      onEdit({ kind: "move", page: page.id, id: d.id, style: d.target.style.cssText });
+      const translate = `${d.tx + d.dx}px ${d.ty + d.dy}px`;
+      d.target.style.translate = translate;
+      onEdit({ kind: "move", page: page.id, id: d.id, translate });
     }
     const pageElement = element(page.id);
     if (pageElement) setDiagnostics(inspectHTMLPage(pageElement).diagnostics);
@@ -253,7 +254,7 @@ function Preview() {
   }
   async function copy() {
     const batch = notes;
-    const prompt = [`Revise the HTML document ${JSON.stringify(snapshot!.name)} using these comments.`, "Reread the latest HTML source first. Preserve unrelated edits, stable element IDs and saved CSS position corrections. If a target is missing or ambiguous, ask rather than guessing. Render the HTML in a browser and inspect every affected page before delivery.", ...batch.map((n, i) => `${i + 1}. Page: ${JSON.stringify(n.page)}\nElement: ${JSON.stringify(n.id)}\nComment:\n${n.text}`)].join("\n\n");
+    const prompt = [`Revise the HTML document ${JSON.stringify(snapshot!.path)} using these comments.`, "Reread the latest HTML source first. Preserve unrelated edits, stable element IDs and saved CSS position corrections. If a target is missing or ambiguous, ask rather than guessing. Render the HTML in a browser and inspect every affected page before delivery.", ...batch.map((n, i) => `${i + 1}. Page: ${JSON.stringify(n.page)}\nElement: ${JSON.stringify(n.id)}\nComment:\n${n.text}`)].join("\n\n");
     setSaving(true); setError("");
     try { await navigator.clipboard.writeText(prompt); persist(notes.filter(n => !batch.includes(n))); setCleared(batch); closePanel(); setNotice("Copied and cleared"); }
     catch (e) { setError(`Could not copy and clear. Comments were kept. ${e}`); setFallback(prompt); }

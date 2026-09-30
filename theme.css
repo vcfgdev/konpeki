@@ -1,0 +1,144 @@
+/* Konpeki: cobalt ink, paper, measured type. IBM Plex Sans is bundled under OFL. */
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: block; src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: block; src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 700; font-display: block; src: url("fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2"); }
+
+:root {
+  color-scheme: light;
+  --font-family: "IBM Plex Sans", sans-serif;
+  --unit: 8px;
+  --bg: light-dark(#faf9f6, #101b2b);
+  --fg: light-dark(#20242a, #f2f2f2);
+  --muted: light-dark(#505b68, #b7bcc4);
+  --line: light-dark(#c9cfd6, #454b54);
+  --inverse: light-dark(#ffffff, #101b2b);
+  --emphasis: light-dark(#98451f, #f0ac7d);
+  --emphasis-wash: light-dark(#f1e1d4, #443025);
+  --complete: light-dark(#276749, #94d3ab);
+  --attention: light-dark(#946200, #e3c477);
+  --blocked: light-dark(#ac3348, #f0a1af);
+}
+[data-mode="light"] { color-scheme: light; }
+[data-mode="dark"] { color-scheme: dark; }
+
+/* Six categorical colors keep their identity across modes; five sequential
+   steps encode ordered amounts. Status is an independent color channel. */
+:root, [data-palette="plex"] {
+  --accent: light-dark(#2458b8, #91b9ff); --wash: light-dark(#eaf0fa, #18273f); --surface: light-dark(#f1f3f5, #171b21);
+  --category-1: light-dark(#3569b7, #82aef2); --category-2: light-dark(#167d8d, #63c3cd);
+  --category-3: light-dark(#8061a8, #baa0df); --category-4: light-dark(#a27616, #d7b55b);
+  --category-5: light-dark(#ba536a, #e899aa); --category-6: light-dark(#59734a, #a6c58e);
+  --sequence-1: light-dark(#e8effb, #192b45); --sequence-2: light-dark(#b9cdea, #305381);
+  --sequence-3: light-dark(#7ca2d4, #4c7cb4); --sequence-4: light-dark(#4677b8, #82aef2); --sequence-5: light-dark(#24518d, #c2daff);
+}
+[data-palette="precision"] {
+  --accent: light-dark(#3d3a8f, #b6b2ff); --wash: light-dark(#eeeffd, #22213d); --surface: light-dark(#f2f2f5, #19191f);
+  --category-1: light-dark(#4b469d, #aaa5f4); --category-2: light-dark(#2f6a8f, #82bce2);
+  --category-3: light-dark(#76538f, #c69ddf); --category-4: light-dark(#8a5a25, #deb071);
+  --category-5: light-dark(#9a475f, #e89aaf); --category-6: light-dark(#4f7040, #a6c88d);
+  --sequence-1: light-dark(#eeeffd, #23223f); --sequence-2: light-dark(#c9c7ec, #454278);
+  --sequence-3: light-dark(#9792d0, #716cb2); --sequence-4: light-dark(#6761ae, #aaa5f4); --sequence-5: light-dark(#3d3a8f, #d9d7ff);
+}
+[data-palette="editorial"] {
+  --accent: light-dark(#93451f, #f2b38c); --wash: light-dark(#f6ece5, #30231d); --surface: light-dark(#f4f3f2, #1b1918);
+  --category-1: light-dark(#af5934, #efa77f); --category-2: light-dark(#387684, #86c3cd);
+  --category-3: light-dark(#8a619a, #c6a3d5); --category-4: light-dark(#8c791d, #d4c17a);
+  --category-5: light-dark(#ad5071, #e9a2bf); --category-6: light-dark(#4d7757, #a0c9a5);
+  --sequence-1: light-dark(#f7eee7, #35271f); --sequence-2: light-dark(#eacab4, #664832);
+  --sequence-3: light-dark(#cd9875, #a07350); --sequence-4: light-dark(#ab6a45, #d5a17b); --sequence-5: light-dark(#794021, #f6d5b8);
+}
+[data-palette="blue-cyan"] {
+  --accent: light-dark(#007c88, #63d6e3); --wash: light-dark(#eaf9fa, #112e33); --surface: light-dark(#f0f9fa, #121d20);
+  --category-1: light-dark(#007c88, #63d6e3); --category-2: light-dark(#007f8e, #79e3eb);
+  --category-3: light-dark(#275f9a, #8fbcef); --category-4: light-dark(#95631f, #dbb267);
+  --category-5: light-dark(#a64d68, #e799af); --category-6: light-dark(#39724f, #89c9a1);
+  --sequence-1: light-dark(#eaf9fa, #123136); --sequence-2: light-dark(#b7e7ea, #225d65);
+  --sequence-3: light-dark(#72c3ca, #388f99); --sequence-4: light-dark(#2b9aa5, #63c6d0); --sequence-5: light-dark(#007c88, #a8eff4);
+}
+[data-palette="orange-coral"] {
+  --accent: light-dark(#a23e20, #ffb28e); --wash: light-dark(#fff0e8, #33231d); --surface: light-dark(#f5f3f2, #1d1917);
+  --category-1: light-dark(#ba5a31, #f3a47c); --category-2: light-dark(#b94970, #ed99b7);
+  --category-3: light-dark(#4876aa, #91b8e8); --category-4: light-dark(#247d76, #76c7be);
+  --category-5: light-dark(#8861a3, #bfa3dd); --category-6: light-dark(#92771d, #d7bf70);
+  --sequence-1: light-dark(#fcede5, #36251f); --sequence-2: light-dark(#edc3ad, #6d4430);
+  --sequence-3: light-dark(#d89370, #a9704d); --sequence-4: light-dark(#b66a44, #df9f73); --sequence-5: light-dark(#88411e, #ffd1ac);
+}
+[data-palette="yellow"] {
+  --accent: light-dark(#756000, #f1d66d); --wash: light-dark(#fbf5d9, #302a17); --surface: light-dark(#f5f5f0, #1c1c18);
+  --category-1: light-dark(#95761c, #e0c264); --category-2: light-dark(#416fa4, #91b6e5);
+  --category-3: light-dark(#a95670, #e1a1b6); --category-4: light-dark(#397d71, #8ac8b8);
+  --category-5: light-dark(#8862a2, #bfa5d9); --category-6: light-dark(#ad612c, #e4b181);
+  --sequence-1: light-dark(#f8f3d9, #302b19); --sequence-2: light-dark(#e5d9a4, #5a4c25);
+  --sequence-3: light-dark(#c4b369, #917a38); --sequence-4: light-dark(#9b8433, #c9af59); --sequence-5: light-dark(#705c12, #f5de91);
+}
+[data-palette="green"] {
+  --accent: light-dark(#216b3d, #98dcaf); --wash: light-dark(#eaf3ed, #1a2d22); --surface: light-dark(#f1f5f2, #171d19);
+  --category-1: light-dark(#43785b, #91c7a6); --category-2: light-dark(#5375b5, #9ab8ea);
+  --category-3: light-dark(#b45a38, #e9ab8a); --category-4: light-dark(#8b5b96, #cba4d5);
+  --category-5: light-dark(#8a781b, #d1c278); --category-6: light-dark(#287f92, #7bc8d8);
+  --sequence-1: light-dark(#e7f0e9, #1b3023); --sequence-2: light-dark(#b9d1bf, #325a40);
+  --sequence-3: light-dark(#83ad90, #578569); --sequence-4: light-dark(#528566, #91c7a6); --sequence-5: light-dark(#2d5941, #cbecd6);
+}
+[data-palette="graphite"] {
+  --bg: light-dark(#ffffff, #111111); --fg: light-dark(#202020, #f2f2f2);
+  --muted: light-dark(#595959, #b8b8b8); --line: light-dark(#cecece, #454545);
+  --accent: light-dark(#242424, #f2f2f2); --wash: light-dark(#ededed, #242424); --surface: light-dark(#f5f5f5, #171717);
+  --emphasis: var(--accent); --emphasis-wash: var(--wash);
+  --category-1: light-dark(#3268b5, #85b2f3); --category-2: light-dark(#187f86, #77c9cf);
+  --category-3: light-dark(#8a5da6, #c3a2e0); --category-4: light-dark(#a87922, #ddbb78);
+  --category-5: light-dark(#b55372, #e6a0b8); --category-6: light-dark(#5a7847, #adc991);
+  --sequence-1: light-dark(#efefef, #282828); --sequence-2: light-dark(#cbcbcb, #505050);
+  --sequence-3: light-dark(#999999, #838383); --sequence-4: light-dark(#666666, #b8b8b8); --sequence-5: light-dark(#303030, #efefef);
+}
+
+/* Page presets preserve the original grid's type scales in CSS pixels.
+   Dimensions/margins are defaults, not placement constraints. */
+[data-page] {
+  --page-width: 1920px; --page-height: 1080px; --page-margin: 72px;
+  --font-fine: 20px; --font-caption: 24px; --font-body: 28px; --font-lead: 36px; --font-heading: 44px; --font-title: 60px; --font-display: 76px;
+  --leading-fine: 28px; --leading-caption: 32px; --leading-body: 40px; --leading-lead: 46px; --leading-heading: 52px; --leading-title: 68px; --leading-display: 84px;
+}
+[data-size="portrait"], [data-size="square"] {
+  --page-width: 1080px; --page-height: 1350px; --page-margin: 60px;
+  --font-fine: 18px; --font-caption: 22px; --font-body: 28px; --font-lead: 34px; --font-heading: 44px; --font-title: 60px; --font-display: 76px;
+  --leading-fine: 24px; --leading-caption: 28px; --leading-body: 36px; --leading-lead: 44px; --leading-heading: 52px; --leading-title: 68px; --leading-display: 84px;
+}
+[data-size="square"] { --page-height: 1080px; }
+[data-size="link"] {
+  --page-width: 1200px; --page-height: 630px; --page-margin: 48px;
+  --font-fine: 16px; --font-caption: 20px; --font-body: 24px; --font-lead: 30px; --font-heading: 40px; --font-title: 52px; --font-display: 64px;
+  --leading-fine: 20px; --leading-caption: 24px; --leading-body: 32px; --leading-lead: 36px; --leading-heading: 48px; --leading-title: 60px; --leading-display: 72px;
+}
+[data-size="article"] {
+  --page-width: 1600px; --page-height: 600px; --page-margin: 48px;
+  --font-fine: 18px; --font-caption: 22px; --font-body: 28px; --font-lead: 34px; --font-heading: 44px; --font-title: 56px; --font-display: 72px;
+  --leading-fine: 24px; --leading-caption: 28px; --leading-body: 36px; --leading-lead: 44px; --leading-heading: 52px; --leading-title: 64px; --leading-display: 80px;
+}
+[data-size="a4"] {
+  --page-width: 210mm; --page-height: 297mm; --page-margin: 56px;
+  --font-fine: 10px; --font-caption: 12px; --font-body: 14px; --font-lead: 18px; --font-heading: 24px; --font-title: 32px; --font-display: 44px;
+  --leading-fine: 14px; --leading-caption: 16px; --leading-body: 20px; --leading-lead: 24px; --leading-heading: 30px; --leading-title: 38px; --leading-display: 50px;
+}
+[data-size="explainer"] { --page-width: 1200px; --page-height: 1600px; --page-margin: 60px; }
+[data-size="gallery"] {
+  --page-width: 1600px; --page-height: 1000px; --page-margin: 64px;
+  --font-lead: 34px; --font-title: 56px; --font-display: 72px;
+  --leading-fine: 24px; --leading-body: 36px; --leading-lead: 44px; --leading-title: 64px; --leading-display: 80px;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+[data-page] {
+  position: relative; display: flow-root;
+  width: var(--page-width); height: var(--page-height); padding: var(--page-margin);
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-family); font-size: var(--font-body); line-height: var(--leading-body);
+  font-synthesis: none;
+}
+h1, h2, h3, p { margin: 0; }
+h1 { color: var(--accent); font-size: var(--font-title); line-height: var(--leading-title); font-weight: 600; letter-spacing: -.035em; }
+h2 { font-size: var(--font-heading); line-height: var(--leading-heading); font-weight: 600; letter-spacing: -.02em; }
+h3 { font-size: var(--font-lead); line-height: var(--leading-lead); font-weight: 600; }
+strong { font-weight: 600; }
+code { font-family: var(--font-family); font-weight: 600; color: var(--accent); }
+hr { margin: calc(3 * var(--unit)) 0; border: 0; border-top: 1px solid var(--line); }

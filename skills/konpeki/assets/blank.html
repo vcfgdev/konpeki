@@ -3,15 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>Untitled visual</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; font: 20px/1.5 Arial, sans-serif; color: #202b3d; background: white; }
-    [data-page] { position: relative; width: 1200px; height: 675px; padding: 64px; }
-    h1 { margin: 0; font-size: 48px; line-height: 1.15; }
+    h1 { max-width: 850px; }
+    p { max-width: 760px; margin-top: calc(3 * var(--unit)); color: var(--muted); }
   </style>
 </head>
 <body>
-  <main id="page-1" data-page>
+  <main id="page-1" data-page data-size="link">
     <h1 id="title">Untitled visual</h1>
   </main>
 </body>

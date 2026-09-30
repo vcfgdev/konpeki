@@ -54,7 +54,15 @@ export function htmlSession(path: string, token = randomBytes(24).toString("base
       const name = decodeURIComponent(url.pathname.slice(assets.length));
       const type = types[extname(name).toLowerCase()];
       if (!type || name.split(/[\\/]/).some(part => part.startsWith("."))) return send(res, 403, { error: "Only local image, font and CSS assets are served." });
-      const base = await realpath(dirname(resolve(path))), file = await realpath(resolve(base, name));
+      let base = await realpath(dirname(resolve(path))), file: string;
+      try { file = await realpath(resolve(base, name)); }
+      catch (error) {
+        // A linked default theme is available in previews and fixtures. Copies
+        // made by prepare-document carry these assets beside the HTML instead.
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT" || !/^(theme\.css|fonts\/ibm-plex-sans-latin-(400|600|700)-normal\.woff2)$/.test(name)) throw error;
+        base = fileURLToPath(new URL("../", import.meta.url));
+        file = await realpath(resolve(base, name));
+      }
       const within = relative(base, file);
       if (isAbsolute(within) || within.startsWith("..")) return send(res, 403, { error: "Asset is outside the document directory." });
       const bytes = await readFile(file);
@@ -77,12 +85,11 @@ export async function documentServer(path: string) {
   return { ...session, origin: `http://127.0.0.1:${address.port}`, close: () => new Promise<void>((resolve, reject) => server.close(e => e ? reject(e) : resolve())) };
 }
 
-export async function previewHTML(path: string, host: string, port: number, root: string) {
+export async function previewHTML(path: string, host: string, port: number, root: string, strictPort = false) {
   const session = htmlSession(path);
   await session.store.read();
   const server = await createServer({ root, configFile: false, logLevel: "silent", server: {
-    host, port, strictPort: true, allowedHosts: [".onamp.dev"],
-    headers: { "x-amp-review-widget": "off" },
+    host, port, strictPort,
     fs: { allow: [root, dirname(fileURLToPath(import.meta.resolve("@fontsource/ibm-plex-sans/package.json")))], deny: [".env", ".env.*", "*.{crt,pem,key,p12,pfx}", ".npmrc", "**/.git/**"] },
   }, plugins: [{ name: "konpeki-html", configureServer(server) { server.middlewares.use((req, res, next) => void session.handler(req, res, next)); } }] });
   try { await server.listen(); } catch (e) { await server.close(); throw e; }

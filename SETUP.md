@@ -1,59 +1,58 @@
 # Set up Konpeki
 
-Konpeki has not been published to npm. The repository's `0.4.0` version is not an
-available npm release. Use a source checkout for HTML and legacy JSON commands;
-do not use `npm install konpeki` or `konpeki@latest` for this setup.
+Konpeki is not published to npm yet. Use a
+source checkout or a tarball packed locally from a trusted checkout. Do not
+describe the repository version as a published release.
 
-## Source-checkout HTML workflow
+## Source checkout
 
-Use Node.js and pnpm versions pinned by `mise.toml`:
+Use the versions pinned by `mise.toml`:
 
 ```sh
 mise trust
 mise install
 mise exec -- pnpm install --frozen-lockfile
-```
-
-Run the checkout CLI directly. Install the pinned CLI browser explicitly when
-inspection or export needs it:
-
-```sh
 mise exec -- node bin/konpeki.mjs browser install
 ```
 
-That Chromium is for the agent/runtime machine. It is not required by artifact
-recipients or human preview reviewers, and preview itself does not require
-headless Chromium.
+The browser is needed for inspection and export, not preview or artifact viewing.
+On minimal Linux hosts, its system libraries may require administrator-approved
+installation with `mise exec -- pnpm exec playwright install-deps chromium`.
 
-Create `document.html` in the agent workspace and follow [html/README.md](html/README.md).
-Keep its local images, stylesheets, and fonts beside it. A normal loop is:
+Run the checkout CLI as `mise exec -- node bin/konpeki.mjs`. The authoring loop
+is in the [skill](skills/konpeki/SKILL.md); CLI rules are in
+[html/README.md](html/README.md).
+
+## Local tarball
+
+From a prepared trusted checkout, build and pack without publishing:
 
 ```sh
-mise exec -- node bin/konpeki.mjs validate document.html
-mise exec -- node bin/konpeki.mjs inspect document.html
-mise exec -- node bin/konpeki.mjs render document.html --format png --scale 2 --output page-1.png
+mise exec -- pnpm install --frozen-lockfile
+mise exec -- pnpm pack
 ```
 
-Use `preview` only when human review is useful. See [docs/workflow.md](docs/workflow.md).
+Install the resulting `.tgz` by local path in the workspace that will author the
+document, for example `npm install --no-save /path/to/konpeki-0.4.0.tgz`. This is
+a local package install, not evidence of an npm release. Run its CLI with the
+workspace package runner and install its browser before inspection or export.
 
-The bundled starter is `skills/konpeki/assets/blank.html`. To create it without
-overwriting an existing document, run
-`mise exec -- node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html`.
-`ensure-runtime.mjs --html` probes an available runtime without downloading one.
-On minimal Linux images, Chromium also needs its system libraries;
-`mise exec -- pnpm exec playwright install-deps chromium` installs them using the
-host's package manager and may require administrator approval.
+## Skill helpers
 
-## Skill and legacy documents
-
-Install the authoring skill separately from the runtime:
+Install the authoring skill separately:
 
 ```sh
 npx skills add vcfgdev/konpeki -g
 ```
 
-The helper can find a prepared checkout when the skill is inside that checkout,
-or a compatible local package. A standalone skill does not contain the runtime;
-use the checkout's `bin/konpeki.mjs` if it cannot find one. The same checkout CLI
-accepts existing composition JSON documents. JSON is a compatibility path, not
-the recommended source format for new work.
+`ensure-runtime.mjs` takes no arguments. It discovers either the containing
+checkout or a compatible locally installed `konpeki` package and prints its CLI
+location; it does not download or modify a runtime.
+
+`prepare-document.mjs` takes `<cli> <document.html>`. It creates the starter HTML,
+`theme.css`, the three IBM Plex Sans font files, and `fonts/OFL.txt` beside the
+document. It validates the result and never overwrites existing files:
+
+```sh
+node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html
+```

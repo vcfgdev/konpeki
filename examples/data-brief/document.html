@@ -3,40 +3,42 @@
 <head>
   <meta charset="utf-8">
   <title>Trial cohort outcome brief</title>
+  <link rel="stylesheet" href="theme.css">
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #fff; color: #172633; font-family: Arial, Helvetica, sans-serif; }
-    [data-page] { width: 1200px; height: 800px; padding: 58px 68px; background: #fff; }
-    h1 { margin: 0; font-size: 46px; line-height: 1.08; letter-spacing: -.035em; }
-    .dek { margin: 14px 0 30px; color: #566876; font-size: 19px; }
+    [data-page] { --page-height: 800px; padding: 56px 68px; }
+    h1 { font-size: var(--font-title); line-height: var(--leading-title); }
+    .dek { margin: calc(2 * var(--unit)) 0 calc(3 * var(--unit)); color: var(--muted); font-size: var(--font-caption); line-height: var(--leading-caption); }
     svg { width: 1064px; height: 490px; display: block; }
-    .note { display: flex; justify-content: space-between; gap: 36px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #cad5dc; color: #566876; font-size: 15px; }
-    .note strong { color: #172633; }
+    svg text { font-size: var(--font-body); font-weight: 600; fill: var(--fg); }
+    svg .caption { font-size: var(--font-fine); font-weight: 400; fill: var(--muted); }
+    svg .inverse { fill: var(--inverse); }
+    .note { display: flex; justify-content: space-between; gap: calc(4 * var(--unit)); margin-top: calc(2 * var(--unit)); padding-top: calc(2 * var(--unit)); border-top: 1px solid var(--line); color: var(--muted); font-size: var(--font-fine); line-height: var(--leading-fine); }
+    .note strong { color: var(--fg); }
   </style>
 </head>
 <body>
-  <main id="cohort-page" data-page>
+  <main id="cohort-page" data-page data-size="link">
     <h1 id="cohort-title">Four in ten trial users became paid</h1>
     <p id="cohort-dek" class="dek">Activation separates the cohort first; every user is accounted for in the outcomes below.</p>
     <svg id="cohort-chart" viewBox="0 0 1064 490" role="img" aria-label="Of 1,000 trial users, 700 activated and 300 did not. Of those activated, 400 paid and 300 remained free. The 300 not activated left.">
-      <text id="initial-label" x="0" y="36" font-size="16" font-weight="700" fill="#526473">INITIAL COHORT</text>
-      <rect id="initial-bar" x="0" y="55" width="1000" height="64" rx="5" fill="#d9e7f0"/>
-      <text id="initial-value" x="20" y="95" font-size="23" font-weight="700" fill="#172633">1,000 trial users</text>
-      <text id="activation-label" x="0" y="167" font-size="16" font-weight="700" fill="#526473">ACTIVATION</text>
-      <rect id="activated-bar" x="0" y="185" width="700" height="76" rx="5" fill="#0874b8"/>
-      <rect id="not-activated-bar" x="700" y="185" width="300" height="76" rx="5" fill="#b9c6cf"/>
-      <text id="activated-value" x="20" y="231" font-size="22" font-weight="700" fill="#fff">Activated · 700</text>
-      <text id="not-activated-value" x="720" y="231" font-size="20" font-weight="700" fill="#172633">Not activated · 300</text>
-      <text id="outcomes-label" x="0" y="311" font-size="16" font-weight="700" fill="#526473">OUTCOMES</text>
-      <rect id="paid-bar" x="0" y="329" width="400" height="92" rx="5" fill="#075f98"/>
-      <rect id="free-bar" x="400" y="329" width="300" height="92" rx="5" fill="#76acd0"/>
-      <rect id="left-bar" x="700" y="329" width="300" height="92" rx="5" fill="#d2d9de"/>
-      <text id="paid-value" x="20" y="375" font-size="24" font-weight="700" fill="#fff">Paid · 400</text>
-      <text id="paid-share" x="20" y="401" font-size="16" fill="#fff">40% of initial cohort</text>
-      <text id="free-value" x="420" y="383" font-size="22" font-weight="700" fill="#172633">Free · 300</text>
-      <text id="left-value" x="720" y="383" font-size="22" font-weight="700" fill="#172633">Left · 300</text>
-      <line id="activated-guide" x1="700" y1="261" x2="700" y2="329" stroke="#6b7e8c" stroke-width="2" stroke-dasharray="5 5"/>
-      <text id="scale-caption" x="0" y="470" font-size="15" fill="#657785">Bar width is proportional to users; 1 px represents 1 user.</text>
+      <text id="initial-label" x="0" y="36" class="caption">INITIAL COHORT</text>
+      <rect id="initial-bar" x="0" y="55" width="1000" height="64" fill="var(--wash)"/>
+      <text id="initial-value" x="20" y="95">1,000 trial users</text>
+      <text id="activation-label" x="0" y="167" class="caption">ACTIVATION</text>
+      <rect id="activated-bar" x="0" y="185" width="700" height="76" fill="var(--accent)"/>
+      <rect id="not-activated-bar" x="700" y="185" width="300" height="76" fill="var(--line)"/>
+      <text id="activated-value" x="20" y="231" class="inverse">Activated · 700</text>
+      <text id="not-activated-value" x="720" y="231">Not activated · 300</text>
+      <text id="outcomes-label" x="0" y="311" class="caption">OUTCOMES</text>
+      <rect id="paid-bar" x="0" y="329" width="400" height="92" fill="var(--sequence-5)"/>
+      <rect id="free-bar" x="400" y="329" width="300" height="92" fill="var(--sequence-2)"/>
+      <rect id="left-bar" x="700" y="329" width="300" height="92" fill="var(--line)"/>
+      <text id="paid-value" x="20" y="375" class="inverse">Paid · 400</text>
+      <text id="paid-share" x="20" y="401" class="caption inverse">40% of initial cohort</text>
+      <text id="free-value" x="420" y="383">Free · 300</text>
+      <text id="left-value" x="720" y="383">Left · 300</text>
+      <line id="activated-guide" x1="700" y1="261" x2="700" y2="329" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5"/>
+      <text id="scale-caption" x="0" y="470" class="caption">Bar width is proportional to users; 1 px represents 1 user.</text>
     </svg>
     <div id="cohort-notes" class="note"><span><strong>Reading:</strong> 700 activated; 400 paid and 300 remained free. The 300 who did not activate left.</span><span><strong>Illustrative data only.</strong> Not product or customer performance.</span></div>
   </main>
