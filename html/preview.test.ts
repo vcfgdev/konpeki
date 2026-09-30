@@ -12,7 +12,12 @@ import { inspectSource } from "./source.ts";
 import { isGoogleFontResource } from "./document.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
+async function waitForPage(tab: Page, page: string) {
+  const surface = tab.locator(`.html-page[data-html-page="${page}"][aria-busy="false"]`);
+  await surface.click({ trial: true }); // Wait for resources, saves and fitted geometry without selecting anything.
+}
 async function clickTarget(tab: Page, page: string, id: string, clickCount = 1) {
+  await waitForPage(tab, page);
   const rect = await tab.frameLocator(`iframe[title="${page}"]`).locator(`#${id}`).boundingBox();
   assert(rect);
   await tab.mouse.click(rect.x + 12, rect.y + 12, { clickCount });
@@ -50,8 +55,17 @@ test("static preview works under a Pages base path, isolates comments, and clear
   const errors: string[] = [], api: string[] = [];
   tab.on("pageerror", error => errors.push(error.message));
   tab.on("request", request => { if (request.url().includes("/__konpeki/")) api.push(request.url()); });
-  await tab.goto(`${origin}/konpeki/?example=cover`);
+  let releaseFonts!: () => void;
+  const fonts = new Promise<void>(resolve => { releaseFonts = resolve; });
+  t.after(() => releaseFonts());
+  await tab.route("**/fonts/*.woff2", async route => { await fonts; await route.continue(); });
+  await tab.goto(`${origin}/konpeki/?example=cover`, { waitUntil: "domcontentloaded" });
   await tab.frameLocator("iframe").locator("#cover-title").waitFor();
+  assert.equal(await tab.locator(".html-page").getAttribute("aria-busy"), "true", "visible text is not ready for selection while fonts are loading");
+  const loadingTitle = await tab.frameLocator("iframe").locator("#cover-title").boundingBox(); assert(loadingTitle);
+  await tab.mouse.click(loadingTitle.x + 12, loadingTitle.y + 12);
+  assert.equal(await tab.locator(".html-outline").count(), 0, "loading geometry must not be selected");
+  releaseFonts();
   assert.equal(await tab.frameLocator("iframe").locator(".eyebrow").count(), 0);
   await tab.getByRole("combobox", { name: "Example" }).focus();
   await tab.keyboard.press("Tab");
@@ -240,15 +254,18 @@ test("local HTML preview still saves moves, deletions and undo to the exact sour
   await tab.mouse.move(rect.x + 38, rect.y + 32, { steps: 5 }); await tab.mouse.up();
   await tab.getByRole("status").getByText("Saved", { exact: true }).waitFor();
   assert.match(await readFile(file, "utf8"), /style="color: #1d4ed8; margin-top: 30px;? translate: [1-9][\d]*px [1-9][\d]*px;"/);
+  await waitForPage(tab, "page");
   await tab.keyboard.press("Control+z");
   await tab.waitForFunction(() => { const target = document.querySelector("iframe")?.contentDocument?.getElementById("target"); return target && !target.style.translate; });
   assert.equal(await readFile(file, "utf8"), source);
+  await waitForPage(tab, "page");
   const horizontal = await tab.frameLocator("iframe").locator("#target").boundingBox(); assert(horizontal);
   const saved = tab.waitForResponse(response => response.request().method() === "PATCH");
   await tab.mouse.move(horizontal.x + 15, horizontal.y + 15); await tab.mouse.down();
   await tab.mouse.move(horizontal.x + 50, horizontal.y + 15, { steps: 5 }); await tab.mouse.up();
   assert.equal((await saved).status(), 200, "horizontal moves must retain the zero y coordinate in the payload");
   assert.match(await readFile(file, "utf8"), /translate: [1-9][\d]*px 0px;/);
+  await waitForPage(tab, "page");
   await tab.keyboard.press("Control+z");
   await tab.waitForFunction(() => { const target = document.querySelector("iframe")?.contentDocument?.getElementById("target"); return target && !target.style.translate; });
   assert.equal(await readFile(file, "utf8"), source);
@@ -261,6 +278,7 @@ test("local HTML preview still saves moves, deletions and undo to the exact sour
   await clickTarget(tab, "page", "target"); await tab.keyboard.press("Delete");
   await tab.frameLocator("iframe").locator("#target").waitFor({ state: "detached" });
   assert.equal(inspectSource(await readFile(file, "utf8")).elements.some(el => el.attrs.some(a => a.name === "id" && a.value === "target")), false);
+  await waitForPage(tab, "page");
   await tab.keyboard.press("Control+z");
   await tab.frameLocator("iframe").locator("#target").waitFor();
   assert.equal(await readFile(file, "utf8"), source);

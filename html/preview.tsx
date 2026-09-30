@@ -96,7 +96,7 @@ function HTMLPage({ page, revision, source, notes, selected, commenting, locked,
   void tick;
   return <>
     <header className="stage-meta"><span className="page-index">{page.name}</span><h2>{page.id}</h2>{diagnostics.length > 0 && <details className="html-diagnostics"><summary>{diagnostics.length} layout {diagnostics.length === 1 ? "issue" : "issues"}</summary><ul>{diagnostics.map(d => <li key={`${d.code}/${d.target}`}><strong>{d.target}</strong>: {d.message}</li>)}</ul></details>}</header>
-    <div className="html-page" ref={outer} tabIndex={0} data-html-page={page.id} style={{ aspectRatio: `${page.canvas.width}/${page.canvas.height}` }}
+    <div className="html-page" ref={outer} tabIndex={0} data-html-page={page.id} aria-busy={!ready || locked} style={{ aspectRatio: `${page.canvas.width}/${page.canvas.height}` }}
       onPointerDown={event => {
         if (event.button !== 0) return;
         // The iframe is a canvas surface, not a native text-selection target.
