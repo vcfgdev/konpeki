@@ -2,6 +2,7 @@
 @import url("theme-base.css");
 
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 400; font-display: block; src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "IBM Plex Sans"; font-style: italic; font-weight: 400; font-display: block; src: url("fonts/ibm-plex-sans-latin-400-italic.woff2") format("woff2"); }
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 600; font-display: block; src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }
 @font-face { font-family: "IBM Plex Sans"; font-style: normal; font-weight: 700; font-display: block; src: url("fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2"); }
 @font-face { font-family: "IBM Plex Mono"; font-style: normal; font-weight: 400; font-display: block; src: url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); }
@@ -12,8 +13,8 @@
   --kp-font-family-heading: "IBM Plex Sans", sans-serif;
   --kp-font-family-display: "IBM Plex Sans", sans-serif;
   --kp-font-family-mono: "IBM Plex Mono", monospace; --kp-weight-mono: 400;
-  --kp-weight-fine: 400; --kp-weight-caption: 400; --kp-weight-body: 400; --kp-weight-lead: 600;
-  --kp-weight-heading: 600; --kp-weight-title: 600; --kp-weight-display: 600; --kp-weight-strong: 600;
+  --kp-weight-fine: 400; --kp-weight-caption: 400; --kp-weight-body: 400; --kp-weight-lead: 400;
+  --kp-weight-heading: 400; --kp-weight-title: 600; --kp-weight-display: 600; --kp-weight-strong: 600;
   --kp-tracking-fine: 0em; --kp-tracking-caption: 0em; --kp-tracking-body: 0em; --kp-tracking-lead: 0em;
   --kp-tracking-heading: -.02em; --kp-tracking-title: -.035em; --kp-tracking-display: -.035em;
   --kp-unit: 8px;
@@ -34,4 +35,27 @@
   --kp-category-5: #ba536a; --kp-category-6: #59734a;
   --kp-sequence-1: #e8effb; --kp-sequence-2: #b9cdea;
   --kp-sequence-3: #7ca2d4; --kp-sequence-4: #4677b8; --kp-sequence-5: #24518d;
+}
+
+/* Cobalt's scale follows the viewing format, not a scaled-up document.
+   Keep these on pages: root type values are shadowed by the shared base. */
+[data-page] {
+  --kp-font-fine: 24px; --kp-font-caption: 28px; --kp-font-body: 32px; --kp-font-lead: 40px; --kp-font-heading: 52px; --kp-font-title: 84px; --kp-font-display: 112px;
+  --kp-leading-fine: 32px; --kp-leading-caption: 36px; --kp-leading-body: 44px; --kp-leading-lead: 50px; --kp-leading-heading: 60px; --kp-leading-title: 92px; --kp-leading-display: 116px;
+}
+[data-size="portrait"], [data-size="square"] {
+  --kp-font-fine: 24px; --kp-font-caption: 28px; --kp-font-body: 32px; --kp-font-lead: 40px; --kp-font-heading: 52px; --kp-font-title: 80px; --kp-font-display: 128px;
+  --kp-leading-fine: 32px; --kp-leading-caption: 36px; --kp-leading-body: 44px; --kp-leading-lead: 50px; --kp-leading-heading: 60px; --kp-leading-title: 88px; --kp-leading-display: 132px;
+}
+[data-size="link"] {
+  --kp-font-fine: 24px; --kp-font-caption: 28px; --kp-font-body: 32px; --kp-font-lead: 40px; --kp-font-heading: 48px; --kp-font-title: 72px; --kp-font-display: 88px;
+  --kp-leading-fine: 32px; --kp-leading-caption: 36px; --kp-leading-body: 44px; --kp-leading-lead: 50px; --kp-leading-heading: 56px; --kp-leading-title: 80px; --kp-leading-display: 92px;
+}
+[data-size="article"] {
+  --kp-font-fine: 24px; --kp-font-caption: 28px; --kp-font-body: 32px; --kp-font-lead: 40px; --kp-font-heading: 48px; --kp-font-title: 72px; --kp-font-display: 96px;
+  --kp-leading-fine: 32px; --kp-leading-caption: 36px; --kp-leading-body: 44px; --kp-leading-lead: 50px; --kp-leading-heading: 56px; --kp-leading-title: 80px; --kp-leading-display: 100px;
+}
+[data-size="a4"] {
+  --kp-font-fine: 11px; --kp-font-caption: 12px; --kp-font-body: 14px; --kp-font-lead: 18px; --kp-font-heading: 24px; --kp-font-title: 32px; --kp-font-display: 44px;
+  --kp-leading-fine: 16px; --kp-leading-caption: 18px; --kp-leading-body: 20px; --kp-leading-lead: 24px; --kp-leading-heading: 30px; --kp-leading-title: 38px; --kp-leading-display: 50px;
 }

@@ -1,5 +1,6 @@
-.html-heading { display: flex; align-items: center; gap: 20px; }
+.html-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
 .html-heading select { width: auto; padding: 5px 26px 5px 10px; border-color: var(--ui-border); font-size: 12px; }
+.html-heading a { color: var(--ui-muted); font-size: 12px; text-underline-offset: 3px; }
 .html-page { position: relative; width: 100%; background: white; box-shadow: 0 1px 3px #00000016, 0 12px 40px #0000000a; touch-action: none; -webkit-user-select: none; user-select: none; }
 /* Component outlines indicate focus without making the page look selected too. */
 .html-page:has(.html-outline):focus-visible { outline: none; }

@@ -2,7 +2,7 @@ export type Bounds = { x: number; y: number; width: number; height: number };
 export type Diagnostic = { code: string; severity: "error" | "warning"; page: string; target: string; message: string };
 
 /** Self-contained so the same measurement runs in the review iframe and CLI's
- * Chromium page. Range bounds are line boxes, not glyph ink. */
+ * Chromium page. Range bounds describe font metrics, not glyph ink or leading. */
 export function inspectHTMLPage(page: HTMLElement) {
   const doc = page.ownerDocument, win = doc.defaultView!;
   const origin = page.getBoundingClientRect();
@@ -31,9 +31,11 @@ export function inspectHTMLPage(page: HTMLElement) {
     if (element.tagName === "IMG" && !(element as HTMLImageElement).naturalWidth)
       report("missing-image", element, "An image did not load. Use a local asset beside the HTML or an embedded data URL.");
   }
-  const text: { target: string; bounds: Bounds[] }[] = [];
+  const text: { target: string; content: string; bounds: Bounds[] }[] = [];
   const lines: { parent: Element; rect: DOMRect }[] = [];
   const textElements = new Set<Element>();
+  const minimumSizes: Record<string, number> = { presentation: 24, portrait: 24, square: 24, link: 24, article: 24, a4: 11, explainer: 24, gallery: 24 };
+  const preset = page.getAttribute("data-size") ?? "presentation", minimumSize = minimumSizes[preset];
   const walker = doc.createTreeWalker(page, 4); // NodeFilter.SHOW_TEXT across iframe realms
   let node: Node | null;
   while ((node = walker.nextNode())) {
@@ -41,17 +43,30 @@ export function inspectHTMLPage(page: HTMLElement) {
     if (!node.textContent?.trim() || !parent || !visible(parent) || parent.closest("style,defs,title,desc")) continue;
     const range = doc.createRange(); range.selectNodeContents(node);
     const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0);
-    text.push({ target: parent.closest("[id]")?.id ?? page.id, bounds: rects.map(bounds) });
+    if (rects.length) text.push({ target: parent.closest("[id]")?.id ?? page.id, content: node.textContent, bounds: rects.map(bounds) });
     if (rects.length) textElements.add(parent);
+    const style = win.getComputedStyle(parent);
+    if (rects.length && parseFloat(style.fontSize) < minimumSize)
+      report("small-text", parent, `Text is ${style.fontSize}; use at least ${minimumSize}px for ${preset}. Reduce content or recompose for the viewing size, rather than shrinking it.`, "warning");
+    let leading = parseFloat(style.lineHeight);
+    // Center an estimated HTML line box on the font-metric rectangle. SVG uses
+    // coordinate placement. Keep raw bounds for normal leading or non-horizontal
+    // text, and for transforms where an axis-aligned estimate is misleading.
+    for (let ancestor: Element | null = parent; ancestor; ancestor = ancestor.parentElement) {
+      const s = win.getComputedStyle(ancestor);
+      if (s.transform !== "none" || s.scale !== "none" || s.rotate !== "none" || Number(s.zoom) !== 1) leading = NaN;
+    }
     for (const rect of rects) {
+      const line = parent.namespaceURI === "http://www.w3.org/1999/xhtml" && style.writingMode === "horizontal-tb" && leading > 0
+        ? new DOMRect(rect.x, rect.y + (rect.height - leading) / 2, rect.width, leading) : rect;
       for (const previous of lines) {
         if (previous.parent === parent) continue;
         const other = previous.rect;
-        if (Math.min(rect.right, other.right) - Math.max(rect.left, other.left) > 1 &&
-            Math.min(rect.bottom, other.bottom) - Math.max(rect.top, other.top) > 1)
+        if (Math.min(line.right, other.right) - Math.max(line.left, other.left) > 1 &&
+            Math.min(line.bottom, other.bottom) - Math.max(line.top, other.top) > 1)
           report("text-overlap", parent, `Text overlaps text in #${previous.parent.closest("[id]")?.id ?? page.id}. Separate their line boxes.`);
       }
-      lines.push({ parent, rect });
+      lines.push({ parent, rect: line });
       if (outside(rect, origin)) report("text-overflow", parent, "Text extends beyond the page. Do not hide it or shrink required copy to fit.");
       for (let ancestor: Element | null = parent; ancestor; ancestor = ancestor.parentElement) {
         const style = win.getComputedStyle(ancestor), box = ancestor.getBoundingClientRect();
@@ -96,6 +111,26 @@ export function inspectHTMLPage(page: HTMLElement) {
   const probe = doc.createElement("span");
   probe.style.display = "none"; doc.body.append(probe);
   const roles = ["fine", "caption", "body", "lead", "heading", "title", "display"];
+  const faces = Array.from(doc.fonts);
+  const familyName = (family: string) => family.trim().replace(/^(["'])(.*)\1$/, "$2").toLowerCase();
+  const primaryFamily = (family: string) => familyName(family.match(/^\s*("[^"]*"|'[^']*'|[^,]+)/)?.[0] ?? "");
+  function hasFace(family: string, weight: number, style = "normal") {
+    return faces.some(face => {
+      if (familyName(face.family) !== primaryFamily(family)) return false;
+      const weights = face.weight.replace("normal", "400").replace("bold", "700").split(/\s+/).map(Number);
+      const angles = (value: string) => value.match(/-?[\d.]+(?=deg)/g)?.map(Number) ?? [14];
+      const requested = angles(style)[0], available = angles(face.style);
+      const sameStyle = face.style === style || style.startsWith("oblique") && face.style.startsWith("oblique") && requested >= available[0] && requested <= (available[1] ?? available[0]);
+      return sameStyle && weight >= weights[0] && weight <= (weights[1] ?? weights[0]);
+    });
+  }
+  for (const element of textElements) {
+    const s = win.getComputedStyle(element);
+    // An undeclared family may use installed fonts; only the CLI can audit the
+    // actual glyph source. Declared faces must cover the requested treatment.
+    if (faces.some(face => familyName(face.family) === primaryFamily(s.fontFamily)) && !hasFace(s.fontFamily, Number(s.fontWeight), s.fontStyle))
+      report("font-face", element, `No declared face for ${s.fontFamily}, weight ${s.fontWeight}, style ${s.fontStyle}. Bundle the matching face; substitution or synthesis changes the intended text.`);
+  }
   const colorTokens = ["bg", "fg", "muted", "line", "line-subtle", "line-strong", "inverse", "accent", "wash", "surface", "contrast", "on-contrast", "on-contrast-muted", "emphasis", "emphasis-wash", "complete", "attention", "blocked", ...Array.from({ length: 6 }, (_, i) => `category-${i + 1}`), ...Array.from({ length: 5 }, (_, i) => `sequence-${i + 1}`)];
   function themeColors(style: CSSStyleDeclaration) {
     probe.style.colorScheme = style.colorScheme;
@@ -119,13 +154,22 @@ export function inspectHTMLPage(page: HTMLElement) {
     // Validate the active definition even when a token is not used by this page.
     const required = [...colorTokens, "font-family", "font-family-heading", "font-family-display", "font-family-mono", "weight-strong", "weight-mono", "unit", "rule-width", "stroke", "stroke-heavy", "radius", "radius-small", "page-width", "page-height", "page-margin", ...[1, 2, 3, 4, 5, 6, 8, 10, 12, 16].map(n => `space-${n}`), ...roles.flatMap(role => ["font", "leading", "weight", "tracking"].map(property => `${property}-${role}`))];
     const invalid = required.filter(token => !pageStyle.getPropertyValue(`--kp-${token}`).trim()).map(token => `missing --kp-${token}`);
+    const rootStyle = win.getComputedStyle(doc.documentElement);
+    const shadowed = [...roles.flatMap(role => [`font-${role}`, `leading-${role}`]), "page-width", "page-height", "page-margin"]
+      .filter(token => rootStyle.getPropertyValue(`--kp-${token}`).trim() && rootStyle.getPropertyValue(`--kp-${token}`).trim() !== pageStyle.getPropertyValue(`--kp-${token}`).trim());
+    if (shadowed.length) report("theme-root", page, `Root values differ from this page: ${shadowed.map(token => `--kp-${token}`).join(", ")}. Apply type and page overrides to [data-page] or [data-size], not :root.`, "warning");
     let previous = 0;
     for (const role of roles) {
       const t = type[role];
       const pixels = ["font", "leading"].every(property => /^\d+(?:\.\d+)?px$/.test(pageStyle.getPropertyValue(`--kp-${property}-${role}`).trim()));
       if (!pixels || !(t.size > previous && t.lineHeight >= t.size && t.weight >= 1 && t.weight <= 1000) || !win.CSS.supports("letter-spacing", t.tracking)) invalid.push(`invalid ${role} type treatment`);
-      previous = t.size;
+      if (/^\d+(?:\.\d+)?px$/.test(pageStyle.getPropertyValue(`--kp-font-${role}`).trim()) && t.size > 0) previous = t.size;
     }
+    const treatments = [...roles.map(role => ({ role, ...type[role] })),
+      { role: "strong", family: pageStyle.getPropertyValue("--kp-font-family"), weight: Number(pageStyle.getPropertyValue("--kp-weight-strong")) },
+      { role: "mono", family: pageStyle.getPropertyValue("--kp-font-family-mono"), weight: Number(pageStyle.getPropertyValue("--kp-weight-mono")) }];
+    const missingFaces = treatments.filter(t => t.family && t.weight > 0 && !hasFace(t.family, t.weight));
+    if (missingFaces.length) report("theme-font", page, `Missing declared normal faces: ${missingFaces.map(t => `${t.role} (${t.family}, ${t.weight})`).join("; ")}. Bundle matching families and weights.`);
     const colors = themeColors(pageStyle);
     for (const token of colorTokens) if (!colors[token]) invalid.push(`invalid --kp-${token} color`);
     if (invalid.length) report("theme-definition", page, invalid.join("; "));
@@ -150,6 +194,8 @@ export function inspectHTMLPage(page: HTMLElement) {
     if (!visible(element) || element.closest('[data-theme="custom"]')) continue;
     const style = win.getComputedStyle(element);
     if (style.getPropertyValue("--kp-theme").trim() !== "1") continue;
+    if (element.hasAttribute("data-type") && !roles.includes(element.getAttribute("data-type")!))
+      report("theme-role", element, `Unknown data-type="${element.getAttribute("data-type")}". Use ${roles.join(", ")}.`, "warning");
     const deviations: string[] = [];
     // SVG text uses explicit coordinates, not CSS line-height, for line spacing.
     if (textElements.has(element) && !roles.some(role =>
@@ -159,12 +205,34 @@ export function inspectHTMLPage(page: HTMLElement) {
     const colors = Object.values(themeColors(style));
     const values = [style.backgroundColor];
     if (textElements.has(element)) values.push(element.namespaceURI === "http://www.w3.org/2000/svg" ? style.fill : style.color);
-    for (const side of ["Top", "Right", "Bottom", "Left"] as const)
-      if (parseFloat(style[`border${side}Width`]) > 0) values.push(style[`border${side}Color`]);
-    if (element.matches("path,rect,circle,ellipse,polygon,polyline,line")) values.push(style.fill, style.stroke);
+    probe.style.fontSize = style.fontSize;
+    function themedLength(property: "borderTopWidth" | "borderTopLeftRadius" | "strokeWidth", value: string, tokens: string[]) {
+      return tokens.some(token => {
+        probe.style[property] = ""; probe.style[property] = style.getPropertyValue(`--kp-${token}`);
+        return probe.style[property] && win.getComputedStyle(probe)[property] === value;
+      });
+    }
+    probe.style.borderTopStyle = "solid";
+    const widths = ["rule-width", "stroke", "stroke-heavy"];
+    for (const side of ["Top", "Right", "Bottom", "Left"] as const) {
+      const width = style[`border${side}Width`];
+      if (parseFloat(width) > 0) {
+        values.push(style[`border${side}Color`]);
+        if (!themedLength("borderTopWidth", width, widths)) deviations.push(`border width ${width}`);
+      }
+    }
+    for (const corner of ["TopLeft", "TopRight", "BottomLeft", "BottomRight"] as const) {
+      const radius = style[`border${corner}Radius`];
+      if (radius !== "0px" && !themedLength("borderTopLeftRadius", radius, ["radius", "radius-small"])) deviations.push(`corner radius ${radius}`);
+    }
+    if (element.matches("path,rect,circle,ellipse,polygon,polyline,line")) {
+      if (!element.matches("line")) values.push(style.fill);
+      values.push(style.stroke);
+      if (style.stroke !== "none" && parseFloat(style.strokeWidth) > 0 && !themedLength("strokeWidth", style.strokeWidth, widths)) deviations.push(`stroke width ${style.strokeWidth}`);
+    }
     for (const value of new Set(values))
       if (value !== "none" && value !== "rgba(0, 0, 0, 0)" && !colors.includes(value)) deviations.push(`color ${value}`);
-    if (deviations.length) report("theme-value", element, `Outside the active theme: ${deviations.join(", ")}. Use a complete type role and theme colors, or data-theme="custom" for deliberately unthemed content.`, "warning");
+    if (deviations.length) report("theme-value", element, `Outside the active theme: ${[...new Set(deviations)].join(", ")}. Use complete type roles and theme color/shape tokens, or data-theme="custom" for deliberately unthemed content.`, "warning");
   }
   probe.remove();
   for (const link of doc.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))

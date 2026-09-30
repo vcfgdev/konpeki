@@ -12,12 +12,16 @@ the authoring workflow. Supporting references are intentionally narrow:
 - [Theme contract](html/theme.md)
 - [Taste and editorial judgment](AUTHORING.md)
 - [Setup](SETUP.md)
-- [Examples](examples/README.md)
 - [Development](docs/development.md)
 
 The default theme is cobalt blue on a light canvas with local IBM Plex Sans and
 Mono. Its CSS contract lets a brief supply its own visual treatment. Composition
-stays in HTML and page-owned CSS.
+stays in HTML and page-owned CSS. Editorial, Dark and Dense Data are experimental
+alternatives; `prepare-document --theme <name>` initializes their local assets.
+
+Development examples and evaluations are maintained separately in the private
+`wf/playground/konpeki-html` playground. Konpeki's standalone preview opens the
+packaged starter; use the CLI to review an authored document.
 
 The preview supports comments and small source-backed geometry corrections.
 PNG and PDF are the primary delivery artifacts; recipients do not need Konpeki,
@@ -36,8 +40,9 @@ Install the authoring skill separately:
 npx skills add vcfgdev/konpeki -g
 ```
 
-Try the [public comment preview](https://vcfgdev.github.io/konpeki/) or inspect
-the three [example sources](examples/README.md).
+Try the [public comment preview](https://vcfgdev.github.io/konpeki/). Local changes
+are only available in a source preview until a separately authorized release or
+deployment.
 
 Konpeki requires no account or hosted AI service. Your coding agent's pricing
 and data handling still apply. Supply facts and approved assets; examples and
@@ -47,4 +52,5 @@ placeholders are not evidence about real products.
 
 [Apache-2.0](LICENSE). Bundled IBM Plex Sans and Mono files retain the SIL
 Open Font Licenses in [`fonts/OFL.txt`](fonts/OFL.txt) and
-[`fonts/plex-mono-OFL.txt`](fonts/plex-mono-OFL.txt).
+[`fonts/plex-mono-OFL.txt`](fonts/plex-mono-OFL.txt). Editorial includes Plex Serif
+with its [license](themes/editorial/fonts/plex-serif-OFL.txt).

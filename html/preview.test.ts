@@ -39,7 +39,14 @@ test("Google Fonts allowlist does not allow unrelated origins, schemes or resour
 });
 
 test("static preview works under a Pages base path, isolates comments, and clears only after copy", async t => {
-  const server = await createServer({ root, base: "/konpeki/", logLevel: "silent", server: { port: 0, host: "127.0.0.1" } });
+  // Two independent targets exercise review state without depending on showcase
+  // documents. The unmodified packaged starter is exercised separately below.
+  const fixture = '<!doctype html><link rel="stylesheet" href="theme.css"><style>p{margin-top:24px}</style><main id="cover-page" data-page data-size="link"><h1 id="cover-title">Editable heading</h1><p id="cover-summary">Supporting text for a second review target.</p></main>';
+  const server = await createServer({ root, base: "/konpeki/", logLevel: "silent", server: { port: 0, host: "127.0.0.1" },
+    plugins: [{ name: "review-test-document", enforce: "pre", load(id) {
+      if (id === join(root, "skills/konpeki/assets/blank.html") + "?raw") return `export default ${JSON.stringify(fixture)}`;
+    } }],
+  });
   await server.listen(); t.after(() => server.close());
   const address = server.httpServer!.address() as { port: number };
   const origin = `http://127.0.0.1:${address.port}`;
@@ -59,15 +66,14 @@ test("static preview works under a Pages base path, isolates comments, and clear
   const fonts = new Promise<void>(resolve => { releaseFonts = resolve; });
   t.after(() => releaseFonts());
   await tab.route("**/fonts/*.woff2", async route => { await fonts; await route.continue(); });
-  await tab.goto(`${origin}/konpeki/?example=cover`, { waitUntil: "domcontentloaded" });
+  await tab.goto(`${origin}/konpeki/`, { waitUntil: "domcontentloaded" });
   await tab.frameLocator("iframe").locator("#cover-title").waitFor();
   assert.equal(await tab.locator(".html-page").getAttribute("aria-busy"), "true", "visible text is not ready for selection while fonts are loading");
   const loadingTitle = await tab.frameLocator("iframe").locator("#cover-title").boundingBox(); assert(loadingTitle);
   await tab.mouse.click(loadingTitle.x + 12, loadingTitle.y + 12);
   assert.equal(await tab.locator(".html-outline").count(), 0, "loading geometry must not be selected");
   releaseFonts();
-  assert.equal(await tab.frameLocator("iframe").locator(".eyebrow").count(), 0);
-  await tab.getByRole("combobox", { name: "Example" }).focus();
+  await tab.getByRole("combobox", { name: "Theme" }).focus();
   await tab.keyboard.press("Tab");
   assert.equal(await tab.locator(".html-page").evaluate(page => page === document.activeElement), true);
   assert.notEqual(await tab.locator(".html-page").evaluate(page => getComputedStyle(page).outlineStyle), "none", "keyboard navigation retains the page focus indicator");
@@ -184,7 +190,7 @@ test("static preview works under a Pages base path, isolates comments, and clear
   });
   assert(dismissGeometry.every((value, index) => Math.abs(value - (index < 2 ? 36 : 0)) < .5), "error dismissal also uses a square, centered icon control");
   assert.equal(await tab.locator(".review-count").textContent(), "1");
-  assert.match(await tab.getByRole("textbox", { name: "Prompt to copy" }).inputValue(), /examples\/cover\/document.html[\s\S]*cover-title[\s\S]*Shorten this headline/);
+  assert.match(await tab.getByRole("textbox", { name: "Prompt to copy" }).inputValue(), /skills\/konpeki\/assets\/blank.html[\s\S]*cover-title[\s\S]*Shorten this headline/);
   await tab.evaluate(() => { delete (navigator.clipboard as unknown as { writeText?: unknown }).writeText; });
   await tab.getByRole("button", { name: "Copy & clear" }).click();
   await tab.getByRole("dialog").waitFor({ state: "hidden" });
@@ -193,34 +199,12 @@ test("static preview works under a Pages base path, isolates comments, and clear
   assert.match(await tab.evaluate(() => navigator.clipboard.readText()), /cover-title[\s\S]*Shorten this headline/);
   await tab.getByRole("button", { name: "Undo", exact: true }).click();
   assert.equal(await tab.locator(".review-count").textContent(), "1");
-  await tab.getByRole("combobox", { name: "Example" }).selectOption("data-brief");
-  await tab.frameLocator("iframe").locator("#paid-bar").waitFor();
-  assert.equal(await tab.frameLocator("iframe").locator(".eyebrow").count(), 0);
+  await tab.getByRole("combobox", { name: "Theme" }).selectOption("dark");
+  await waitForPage(tab, "cover-page");
   assert.equal(await tab.locator(".review-count").count(), 0);
-  const widths = await tab.frameLocator("iframe").locator("svg").evaluate(svg => ["initial-bar", "activated-bar", "not-activated-bar", "paid-bar", "free-bar", "left-bar"].map(id => Number(svg.querySelector(`#${id}`)!.getAttribute("width"))));
-  assert.deepEqual(widths, [1000, 700, 300, 400, 300, 300]);
-  await tab.getByRole("combobox", { name: "Example" }).selectOption("field-guide");
-  await tab.frameLocator('iframe[title="the-worker"]').locator("#worker-title").waitFor();
-  assert.equal(await tab.locator(".html-page").count(), 2);
-  const frame = tab.frames().find(frame => frame.url().startsWith("blob:"))!;
-  await frame.evaluate(() => document.fonts.ready);
-  assert.equal(await frame.evaluate(() => [...document.fonts].filter(f => f.family.includes("IBM Plex Sans")).some(f => f.status === "loaded")), true);
-  assert.deepEqual(external, [], "examples must load bundled fonts without external requests");
-  for (const id of ["the-pattern", "the-worker"]) {
-    const page = tab.frameLocator(`iframe[title="${id}"]`).locator(`#${id}`);
-    const layout = await page.evaluate(async page => {
-      await document.fonts.ready;
-      const bounds = page.getBoundingClientRect(), footer = page.querySelector("footer")!;
-      const caption = footer.children[0].getBoundingClientRect(), number = footer.children[1].getBoundingClientRect();
-      return { eyebrows: page.querySelectorAll(".eyebrow").length, bottomInset: bounds.bottom - footer.getBoundingClientRect().bottom, leftInset: caption.left - bounds.left, baselineDifference: caption.bottom - number.bottom, gap: footer.getBoundingClientRect().top - page.querySelector(".callout:last-of-type")!.getBoundingClientRect().bottom };
-    });
-    assert.equal(layout.eyebrows, 0);
-    assert.equal(layout.bottomInset, 56, `${id}: footer must respect the page's bottom margin`);
-    assert.equal(layout.leftInset, 64, `${id}: caption must align with the text column`);
-    assert.equal(layout.baselineDifference, 0, `${id}: caption and page number must align`);
-    assert(layout.gap >= 25, `${id}: footer must not crowd the content`);
-  }
-  await tab.getByRole("combobox", { name: "Example" }).selectOption("cover");
+  assert.equal(await tab.frameLocator("iframe").locator("#cover-page").evaluate(page => getComputedStyle(page).backgroundColor), "rgb(32, 34, 37)");
+  assert.deepEqual(external, [], "preview must load bundled fonts without external requests");
+  await tab.getByRole("combobox", { name: "Theme" }).selectOption("default");
   await tab.locator(".review-count").waitFor();
   assert.equal(await tab.locator(".review-count").textContent(), "1");
   await tab.getByRole("button", { name: "Comment", exact: true }).click();
@@ -296,4 +280,30 @@ test("preview falls back from a busy default port but explicit ports are strict"
   t.after(() => fallback.server.close());
   assert.notEqual(new URL(fallback.url).port, String(port));
   await assert.rejects(previewHTML(file, "127.0.0.1", port, root, true), /already in use|EADDRINUSE/i);
+});
+
+test("packaged starter renders all themes without external examples or missing assets", async t => {
+  const server = await createServer({ root, base: "/konpeki/", logLevel: "silent", server: { port: 0, host: "127.0.0.1" } });
+  await server.listen(); t.after(() => server.close());
+  const origin = `http://127.0.0.1:${(server.httpServer!.address() as { port: number }).port}/konpeki/`;
+  const browser = await chromium.launch(); t.after(() => browser.close());
+  const tab = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const failures: string[] = [];
+  tab.on("pageerror", error => failures.push(error.message));
+  tab.on("response", response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
+  for (const [theme, family, size] of [["default", '"IBM Plex Sans", sans-serif', "72px"], ["editorial", '"IBM Plex Serif", serif', "52px"], ["dark", '"IBM Plex Sans", sans-serif', "52px"], ["dense-data", '"IBM Plex Sans", sans-serif', "42px"]]) {
+    await tab.goto(`${origin}?theme=${theme}`);
+    await waitForPage(tab, "page-1");
+    assert.equal(await tab.locator(".html-page").count(), 1);
+    assert.deepEqual(await tab.locator(".html-diagnostics li").allTextContents(), []);
+    const style = await tab.frameLocator("iframe").locator("#title").evaluate(el => {
+      const s = getComputedStyle(el); return [el.textContent, s.fontFamily, s.fontSize];
+    });
+    assert.deepEqual(style, ["Untitled visual", family, size]);
+  }
+  assert.equal(await tab.getByRole("combobox", { name: "Example" }).count(), 0);
+  assert.equal(await tab.getByRole("link", { name: "Authoring guide" }).getAttribute("href"), "https://github.com/vcfgdev/konpeki/blob/main/html/README.md");
+  assert.equal(await tab.locator('a[href*="vcfgdev/wf"]').count(), 0, "public preview must not direct users to a private workspace");
+  assert.equal(await tab.locator('a[href*="brand-conversion"]').count(), 0);
+  assert.deepEqual(failures, []);
 });

@@ -10,7 +10,7 @@ import { documentServer } from "./server.ts";
 import { referenceGuides } from "../src/lib/alignment.ts";
 
 const source = `<!doctype html><html><head><style>
-*{box-sizing:border-box}body{font:16px/20px Arial}p{margin:0}
+*{box-sizing:border-box}body{font:16px/20px "IBM Plex Sans"}p{margin:0}
 [data-page]{position:relative;width:420px;height:300px;background:white}
 body>main:nth-of-type(2){width:300px;height:420px}
 #sample{position:absolute;left:23px;top:51px;width:137px;height:63px;padding:7px;border:1px solid black}
@@ -18,7 +18,8 @@ body>main:nth-of-type(2){width:300px;height:420px}
 
 async function fixture(run: (path: string, directory: string) => Promise<void>, html = source) {
   const directory = await mkdtemp(join(tmpdir(), "konpeki-html-")), path = join(directory, "document.html");
-  try { await writeFile(path, html); await run(path, directory); }
+  const fonts = [400, 700].map(weight => `@font-face{font-family:"IBM Plex Sans";font-weight:${weight};src:url("fonts/ibm-plex-sans-latin-${weight}-normal.woff2")}`).join("");
+  try { await writeFile(path, html.replace("<style>", `<style>${fonts}body{font-family:"IBM Plex Sans"}`)); await run(path, directory); }
   finally { await rm(directory, { recursive: true, force: true }); }
 }
 
@@ -78,7 +79,7 @@ test("first-child margins stay inside the page rather than shifting the page in 
   const { report } = await browserDocument(path);
   assert.equal(report.ok, true, JSON.stringify(report.diagnostics));
   assert.equal(report.pages[0].blocks.find(b => b.id === "title")?.bounds.y, 20);
-}, '<!doctype html><style>[data-page]{width:300px;height:200px}h1{margin:20px 0;font:24px/30px Arial}</style><main id="page" data-page><h1 id="title">Heading</h1></main>'));
+}, '<!doctype html><style>[data-page]{width:300px;height:200px}h1{margin:20px 0;font:24px/30px "IBM Plex Sans"}</style><main id="page" data-page><h1 id="title">Heading</h1></main>'));
 
 test("inspection reports missing stylesheets and background assets instead of accepting a fallback", async () => fixture(async path => {
   const { report } = await browserDocument(path);
@@ -98,7 +99,7 @@ test("inspection distinguishes text parents for overlap and handles inline text 
   assert(!diagnostics.includes("large-pass/low-contrast"));
   assert(diagnostics.includes("large-fail/low-contrast"));
   assert(!diagnostics.includes("bold-pass/low-contrast"));
-}, `<!doctype html><style>[data-page]{position:relative;width:500px;height:420px;font:16px/30px Arial}p{margin:0}.pos{position:absolute}.large{font-size:24px}.bold{font-size:18.6667px;font-weight:700}</style><main id="page" data-page>
+}, `<!doctype html><style>[data-page]{position:relative;width:500px;height:420px;font:16px/30px "IBM Plex Sans"}p{margin:0}.pos{position:absolute}.large{font-size:24px}.bold{font-size:18.6667px;font-weight:700}</style><main id="page" data-page>
 <p id="under" class="pos" style="left:20px;top:20px;width:220px">A broad underlying line</p><p id="over" class="pos" style="left:30px;top:20px;width:30px">XX</p>
 <p id="inline" class="pos" style="top:60px">One <strong>inline</strong> sentence</p>
 <p id="parent" class="pos" style="top:100px">Headline<span id="nested" style="position:absolute;left:10px;top:0">subtitle</span></p>

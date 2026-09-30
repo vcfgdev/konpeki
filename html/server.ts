@@ -59,7 +59,7 @@ export function htmlSession(path: string, token = randomBytes(24).toString("base
       catch (error) {
         // A linked default theme is available in previews and fixtures. Copies
         // made by prepare-document carry these assets beside the HTML instead.
-        if ((error as NodeJS.ErrnoException).code !== "ENOENT" || !/^(theme(?:-base)?\.css|fonts\/ibm-plex-(sans-latin-(400|600|700)|mono-latin-400)-normal\.woff2)$/.test(name)) throw error;
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT" || !/^(theme(?:-base)?\.css|fonts\/ibm-plex-(sans-latin-400-italic|(sans-latin-(400|600|700)|mono-latin-400)-normal)\.woff2)$/.test(name)) throw error;
         base = fileURLToPath(new URL("../", import.meta.url));
         file = await realpath(resolve(base, name));
       }

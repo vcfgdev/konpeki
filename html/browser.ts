@@ -25,6 +25,8 @@ export async function browserDocument(input: string, options: { page?: number; f
       return request.url().startsWith(`${server.origin}${server.prefix}/`) || isGoogleFontResource(request.url(), request.resourceType()) ? route.continue() : route.abort();
     });
     const tab = await context.newPage(), pages = [], diagnostics: Diagnostic[] = [];
+    const cdp = await context.newCDPSession(tab);
+    await cdp.send("DOM.enable"); await cdp.send("CSS.enable");
     const failed = new Set<string>();
     tab.on("requestfailed", request => failed.add(request.url()));
     tab.on("response", response => { if (!response.ok()) failed.add(response.url()); });
@@ -50,6 +52,32 @@ export async function browserDocument(input: string, options: { page?: number; f
       await tab.evaluate(async () => { await document.fonts.ready; await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); });
       await tab.waitForLoadState("networkidle");
       const report = await element.evaluate(inspectHTMLPage);
+      // CSS font-family and FontFaceSet cannot tell which font supplied a glyph.
+      // Chromium can: inspect direct text children, retaining their nearest ID
+      // even when an inline span has no ID. Include generated text as well.
+      const { root } = await cdp.send("DOM.getDocument", { depth: -1, pierce: true });
+      const { nodeId } = await cdp.send("DOM.querySelector", { nodeId: root.nodeId, selector: "[data-konpeki-current]" });
+      const { node } = await cdp.send("DOM.describeNode", { nodeId, depth: -1, pierce: true });
+      const fallbacks = new Map<string, Set<string>>();
+      async function auditFonts(node: typeof root, target: string) {
+        if (node.nodeType !== 1) return;
+        const attrs = node.attributes ?? [], idIndex = attrs.indexOf("id");
+        if (idIndex >= 0) target = attrs[idIndex + 1];
+        const { computedStyle } = await cdp.send("CSS.getComputedStyleForNode", { nodeId: node.nodeId });
+        const style = Object.fromEntries(computedStyle.map(s => [s.name, s.value]));
+        if (style.display === "none" || Number(style.opacity) === 0) return;
+        if (style.visibility === "visible" && (node.pseudoType || node.children?.some(child => child.nodeType === 3 && child.nodeValue.trim()))) {
+          const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId: node.nodeId });
+          for (const font of fonts) if (font.glyphCount > 0 && !font.isCustomFont) {
+            if (!fallbacks.has(target)) fallbacks.set(target, new Set());
+            fallbacks.get(target)!.add(font.familyName);
+          }
+        }
+        for (const child of [...node.children ?? [], ...node.pseudoElements ?? []]) await auditFonts(child, target);
+      }
+      await auditFonts(node, id);
+      for (const [target, fonts] of fallbacks) report.diagnostics.push({ code: "font-fallback", severity: "error", page: id, target,
+        message: `Text was drawn with installed fonts: ${[...fonts].join(", ")}. Bundle font files covering its families, styles, weights and glyphs instead of relying on this machine.` });
       if (Math.abs(report.width - initial.width) > .75 || Math.abs(report.height - initial.height) > .75)
         throw new Error("Page dimensions depend on the viewport. Give pages a fixed CSS width and height; their content may use responsive layout.");
       for (const resource of failed) report.diagnostics.push({ code: "missing-resource", severity: "error", page: id, target: id, message: `Resource did not load: ${resource.startsWith(`${server.origin}${server.prefix}/document/`) ? resource.slice(`${server.origin}${server.prefix}/document/`.length) : new URL(resource).origin + new URL(resource).pathname}. Use local assets or check access to Google Fonts.` });
