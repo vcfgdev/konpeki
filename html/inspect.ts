@@ -200,7 +200,7 @@ export function inspectHTMLPage(page: HTMLElement) {
     // An undeclared family may use installed fonts; only the CLI can audit the
     // actual glyph source. Declared faces must cover the requested treatment.
     if (faces.some(face => familyName(face.family) === primaryFamily(s.fontFamily)) && !hasFace(s.fontFamily, Number(s.fontWeight), s.fontStyle))
-      report("font-face", element, `No declared face for ${s.fontFamily}, weight ${s.fontWeight}, style ${s.fontStyle}. Bundle the matching face; substitution or synthesis changes the intended text.`);
+      report("font-face", element, `No declared face for ${s.fontFamily}, weight ${s.fontWeight}, style ${s.fontStyle}. Declare the matching webfont face; substitution or synthesis changes the intended text.`);
   }
   const colorTokens = ["bg", "fg", "muted", "line", "line-subtle", "line-strong", "inverse", "accent", "wash", "surface", "contrast", "on-contrast", "on-contrast-muted", "emphasis", "emphasis-wash", "complete", "attention", "blocked", ...Array.from({ length: 6 }, (_, i) => `category-${i + 1}`), ...Array.from({ length: 5 }, (_, i) => `sequence-${i + 1}`)];
   function themeColors(style: CSSStyleDeclaration) {
@@ -240,7 +240,7 @@ export function inspectHTMLPage(page: HTMLElement) {
       { role: "strong", family: pageStyle.getPropertyValue("--kp-font-family"), weight: Number(pageStyle.getPropertyValue("--kp-weight-strong")) },
       { role: "mono", family: pageStyle.getPropertyValue("--kp-font-family-mono"), weight: Number(pageStyle.getPropertyValue("--kp-weight-mono")) }];
     const missingFaces = treatments.filter(t => t.family && t.weight > 0 && !hasFace(t.family, t.weight));
-    if (missingFaces.length) report("theme-font", page, `Missing declared normal faces: ${missingFaces.map(t => `${t.role} (${t.family}, ${t.weight})`).join("; ")}. Bundle matching families and weights.`);
+    if (missingFaces.length) report("theme-font", page, `Missing declared normal faces: ${missingFaces.map(t => `${t.role} (${t.family}, ${t.weight})`).join("; ")}. Declare webfonts with matching families and weights.`);
     const colors = themeColors(pageStyle);
     for (const token of colorTokens) if (!colors[token]) invalid.push(`invalid --kp-${token} color`);
     if (invalid.length) report("theme-definition", page, invalid.join("; "));

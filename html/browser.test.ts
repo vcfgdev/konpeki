@@ -5,9 +5,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawn } from "node:child_process";
 import { PDFDocument } from "pdf-lib";
+import { chromium } from "playwright";
 import { browserDocument } from "./browser.ts";
 import { documentServer } from "./server.ts";
 import { referenceGuides } from "../src/lib/alignment.ts";
+import { fontData, testFontCSS } from "../scripts/test-fonts.ts";
 
 const source = `<!doctype html><html><head><style>
 *{box-sizing:border-box}body{font:16px/20px "IBM Plex Sans"}p{margin:0}
@@ -18,8 +20,7 @@ body>main:nth-of-type(2){width:300px;height:420px}
 
 async function fixture(run: (path: string, directory: string) => Promise<void>, html = source) {
   const directory = await mkdtemp(join(tmpdir(), "konpeki-html-")), path = join(directory, "document.html");
-  const fonts = [400, 700].map(weight => `@font-face{font-family:"IBM Plex Sans";font-weight:${weight};src:url("fonts/ibm-plex-sans-latin-${weight}-normal.woff2")}`).join("");
-  try { await writeFile(path, html.replace("<style>", `<style>${fonts}body{font-family:"IBM Plex Sans"}`)); await run(path, directory); }
+  try { await writeFile(path, html.replace("<style>", `<style>${testFontCSS}body{font-family:"IBM Plex Sans"}`)); await run(path, directory); }
   finally { await rm(directory, { recursive: true, force: true }); }
 }
 
@@ -132,6 +133,54 @@ test("CLI render refuses missing resources and leaves no output", async () => fi
   assert.notEqual(result.code, 0); assert.match(result.stderr, /missing|failed|refused/i);
   await assert.rejects(readFile(output), /ENOENT/);
 }, `<!doctype html><style>@font-face{font-family:Missing;src:url(absent.woff2)}[data-page]{width:200px;height:100px;font-family:Missing;background:url(absent.png)}</style><main id="page" data-page>Missing assets</main>`));
+
+test("document-local font files export successfully and missing files fail font auditing", async () => fixture(async (path, directory) => {
+  const font = join(directory, "custom.woff2");
+  await writeFile(font, Buffer.from(fontData("mono").split(",")[1], "base64"));
+  for (const format of ["png", "pdf"]) {
+    const result = await browserDocument(path, { format });
+    assert.equal(result.report.ok, true, JSON.stringify(result.report.diagnostics));
+    assert(!result.report.diagnostics.some(d => d.code === "font-fallback"));
+    assert(result.bytes!.length > 1000, format);
+  }
+  await rm(font);
+  const { report } = await browserDocument(path);
+  assert.equal(report.ok, false);
+  assert(report.diagnostics.some(d => d.code === "missing-resource" && d.message.includes("custom.woff2")));
+  assert(report.diagnostics.some(d => d.code === "font-fallback" && d.target === "text"));
+}, '<!doctype html><style>@font-face{font-family:"Document Face";src:url("custom.woff2")} [data-page]{width:480px;height:200px;font:24px/32px "Document Face"}</style><main id="page" data-page><p id="text">A document-owned typeface.</p></main>'));
+
+test("unavailable Google stylesheets or font files remain inspection errors", async t => {
+  const launch = chromium.launch.bind(chromium);
+  for (const blocked of ["stylesheet", "font"]) {
+    const mocked = t.mock.method(chromium, "launch", async () => {
+      const browser = await launch();
+      const newContext = browser.newContext.bind(browser);
+      t.mock.method(browser, "newContext", async (options: Parameters<typeof newContext>[0]) => {
+        const context = await newContext(options);
+        const newPage = context.newPage.bind(context);
+        t.mock.method(context, "newPage", async () => {
+          const tab = await newPage();
+          await tab.route("https://fonts.googleapis.com/**", route => blocked === "stylesheet"
+            ? route.abort()
+            : route.fulfill({ contentType: "text/css", body: testFontCSS.replace(/data:font\/woff2;base64,[^"]+/g, "https://fonts.gstatic.com/s/fixture/missing.woff2") }));
+          await tab.route("https://fonts.gstatic.com/**", route => route.abort());
+          return tab;
+        });
+        return context;
+      });
+      return browser;
+    });
+    await fixture(async path => {
+      const { report } = await browserDocument(path);
+      assert.equal(report.ok, false, blocked);
+      const host = blocked === "stylesheet" ? "fonts.googleapis.com" : "fonts.gstatic.com";
+      assert(report.diagnostics.some(d => d.code === "missing-resource" && d.message.includes(host)), blocked);
+      assert(report.diagnostics.some(d => d.code === "font-fallback"), blocked);
+    }, '<!doctype html><link rel="stylesheet" href="theme.css"><main id="page" data-page data-size="link"><h1 id="title">Required webfonts</h1></main>');
+    mocked.mock.restore();
+  }
+});
 
 test("alignment references are inclusive at two pixels and never snap the source rectangle", () => {
   const rect = { x: 39, y: 71, width: 42, height: 18 };

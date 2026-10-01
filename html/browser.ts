@@ -77,7 +77,7 @@ export async function browserDocument(input: string, options: { page?: number; f
       }
       await auditFonts(node, id);
       for (const [target, fonts] of fallbacks) report.diagnostics.push({ code: "font-fallback", severity: "error", page: id, target,
-        message: `Text was drawn with installed fonts: ${[...fonts].join(", ")}. Bundle font files covering its families, styles, weights and glyphs instead of relying on this machine.` });
+        message: `Text was drawn with installed fonts: ${[...fonts].join(", ")}. Load webfonts covering its families, styles, weights and glyphs from Google Fonts, local files or embedded data instead of relying on this machine.` });
       if (Math.abs(report.width - initial.width) > .75 || Math.abs(report.height - initial.height) > .75)
         throw new Error("Page dimensions depend on the viewport. Give pages a fixed CSS width and height; their content may use responsive layout.");
       for (const resource of failed) report.diagnostics.push({ code: "missing-resource", severity: "error", page: id, target: id, message: `Resource did not load: ${resource.startsWith(`${server.origin}${server.prefix}/document/`) ? resource.slice(`${server.origin}${server.prefix}/document/`.length) : new URL(resource).origin + new URL(resource).pathname}. Use local assets or check access to Google Fonts.` });

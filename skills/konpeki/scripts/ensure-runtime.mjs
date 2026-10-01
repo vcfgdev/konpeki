@@ -13,7 +13,7 @@ function runtime(root) {
     if (pkg.name !== "konpeki" || pkg.version !== version) return;
     const cli = join(root, pkg.bin.konpeki);
     const sourceCLI = join(root, "bin/konpeki.mjs");
-    if (!["AUTHORING.md", "html/README.md", "theme.css", "fonts/OFL.txt"]
+    if (!["AUTHORING.md", "html/README.md", "theme.css", "theme-base.css"]
       .every(path => existsSync(join(root, path)))) return;
     // The development checkout runs TypeScript directly on the pinned Node.
     for (const candidate of [sourceCLI, cli]) {

@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, posix } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isGoogleFontResource } from "../html/document.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 execFileSync(process.execPath, ["scripts/build-cli.mjs"], { cwd: root, stdio: "inherit" });
@@ -10,7 +11,7 @@ const [pack] = JSON.parse(execFileSync("npm", ["pack", "--dry-run", "--json", "-
 const paths = new Set(pack.files.map(({ path }) => path));
 for (const required of [
   "LICENSE", "README.md", "AGENTS.md", "AUTHORING.md", "SETUP.md", "theme.css",
-  "theme-base.css", "html/theme.md", "html/theme-authoring.md", "html/starter.ts", "fonts/plex-mono-OFL.txt",
+  "theme-base.css", "html/theme.md", "html/theme-authoring.md", "html/starter.ts",
   "docs/workflow.md", "docs/development.md", "plugin.json", "skills/konpeki/SKILL.md", "skills/konpeki/floor.md", "html/floor.ts",
   ...["slides", "resume", "long-document", "one-pager", "cover", "patterns"].map(name => `skills/konpeki/references/${name}.md`),
   "skills/konpeki/scripts/ensure-runtime.mjs", "skills/konpeki/scripts/prepare-document.mjs",
@@ -19,14 +20,14 @@ for (const required of [
   "src/components/PageBoard.tsx", "src/lib/page-board.ts", "src/lib/alignment.ts",
   "src/lib/review-position.ts", "src/styles/base.css", "src/styles/shell.css",
   "src/styles/feedback.css", "src/assets/konpeki-mark.png", "public/og.png",
-  "fonts/OFL.txt",
 ]) assert(paths.has(required), `Missing package resource: ${required}`);
 assert(![...paths].some(path => path.startsWith("themes/")), "Only the default theme is packaged");
 for (const css of [...paths].filter(path => path.endsWith(".css")))
   for (const [, asset] of readFileSync(new URL(`../${css}`, import.meta.url), "utf8").matchAll(/url\("([^"]+)"\)/g))
-    assert(paths.has(posix.join(dirname(css), asset)), `Missing theme asset: ${css} -> ${asset}`);
+    assert(isGoogleFontResource(new URL(asset, "https://local.invalid/").href, "stylesheet")
+      || paths.has(posix.join(dirname(css), asset)), `Missing or disallowed theme asset: ${css} -> ${asset}`);
 for (const path of paths) {
-  assert(!/^(examples|evaluation|composition|design|lib|scripts|resources)\/|^legacy\.html$|\.test\.|(^|\/)\.env|pnpm-lock|tsconfig/.test(path), `Development or legacy file in package: ${path}`);
+  assert(!/^(fonts|examples|evaluation|composition|design|lib|scripts|resources)\/|^legacy\.html$|\.test\.|(^|\/)\.env|pnpm-lock|tsconfig/.test(path), `Development or legacy file in package: ${path}`);
   if (!/\.(?:ts|tsx|mjs|js)$/.test(path)) continue;
   const source = readFileSync(new URL(path, new URL("../", import.meta.url)), "utf8");
   for (const match of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*)["'](\.[^"']+)["']/g)) {

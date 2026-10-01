@@ -1,10 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { browserDocument } from "../html/browser.ts";
 
 const root = resolve(import.meta.dirname, ".."), cli = join(root, "bin/konpeki.mjs");
 const prepare = join(root, "skills/konpeki/scripts/prepare-document.mjs");
@@ -17,7 +16,9 @@ test("prepares a portable default starter without replacing existing work", asyn
   assert.equal(run(file).created, true);
   assert.deepEqual(await readFile(join(dir, "theme.css")), await readFile(join(root, "theme.css")));
   assert.deepEqual(await readFile(join(dir, "theme-base.css")), await readFile(join(root, "theme-base.css")));
-  assert.deepEqual((await browserDocument(file)).report.diagnostics, []);
+  assert.deepEqual((await readdir(dir)).sort(), ["document.html", "theme-base.css", "theme.css"]);
+  const runtime = JSON.parse(execFileSync(process.execPath, [join(root, "skills/konpeki/scripts/ensure-runtime.mjs")], { encoding: "utf8" }));
+  assert.equal(resolve(runtime.root), root, "runtime discovery must not require a fonts directory");
   await writeFile(join(dir, "theme.css"), "/* authored theme */");
   assert.equal(run(file).created, false);
   assert.equal(await readFile(join(dir, "theme.css"), "utf8"), "/* authored theme */");

@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,16 +23,14 @@ try {
     const blank = readFileSync(template);
     const root = resolve(dirname(cli), "..");
     const assets = new Map([["theme.css", join(root, "theme.css")], ["theme-base.css", join(root, "theme-base.css")]]);
-    for (const name of readdirSync(join(root, "fonts")))
-      if (/\.woff2$|OFL\.txt$/.test(name)) assets.set(`fonts/${name}`, join(root, "fonts", name));
     // Preflight every asset before writing any: never replace an author's
-    // adapted stylesheet or fonts in a shared folder.
+    // adapted stylesheet in a shared folder.
     for (const [asset, source] of assets) {
       const destination = join(dirname(documentPath), asset);
       if (existsSync(destination) && !readFileSync(destination).equals(readFileSync(source)))
         throw new Error(`Existing asset differs: ${destination}. Use a new directory; existing files were not changed.`);
     }
-    mkdirSync(join(dirname(documentPath), "fonts"), { recursive: true });
+    mkdirSync(dirname(documentPath), { recursive: true });
     for (const [asset, source] of assets) {
       try { copyFileSync(source, join(dirname(documentPath), asset), constants.COPYFILE_EXCL); }
       catch (error) { if (error.code !== "EEXIST") throw error; }

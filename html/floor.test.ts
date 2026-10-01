@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 import { documentServer } from "./server.ts";
 import { inspectHTMLPage } from "./inspect.ts";
 import { floorRules, reviewChecklist } from "./floor.ts";
+import { writeTestTheme } from "../scripts/test-fonts.ts";
 
 test("every floor rule has one ID, and inspect rules are emitted under that ID", async () => {
   const rules = floorRules(), ids = rules.flatMap(rule => rule.ids);
@@ -25,6 +26,7 @@ test("every floor rule has one ID, and inspect rules are emitted under that ID",
 test("labels above headlines and stranded words are flagged, deliberate structure is not", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-floor-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const file = join(dir, "document.html");
   const head = (id: string, n: number) => `<header id="${id}" data-type="fine"><span>Offline check-in pilot</span> · <span>0${n} / 02</span></header>`;
   await writeFile(file, `<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="theme.css"></head><body>

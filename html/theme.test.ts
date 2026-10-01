@@ -9,17 +9,18 @@ import { chromium } from "playwright";
 import { documentServer } from "./server.ts";
 import { browserDocument } from "./browser.ts";
 import { inspectHTMLPage } from "./inspect.ts";
+import { fontData, testFontCSS, writeTestTheme } from "../scripts/test-fonts.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
-test("portable starter loads bundled fonts and preserves page scales and the light-blue theme", async t => {
+test("starter requests Google Fonts and preserves page scales and the light-blue theme", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-theme-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
   const file = join(dir, "document.html");
   const prepare = join(root, "skills/konpeki/scripts/prepare-document.mjs");
   const cli = join(root, "bin/konpeki.mjs");
   execFileSync(process.execPath, [prepare, cli, file], { stdio: "pipe" });
-  for (const asset of ["theme.css", "theme-base.css", "fonts/OFL.txt", "fonts/plex-mono-OFL.txt", "fonts/ibm-plex-mono-latin-400-normal.woff2", "fonts/ibm-plex-sans-latin-400-italic.woff2", ...[400, 600, 700].map(w => `fonts/ibm-plex-sans-latin-${w}-normal.woff2`)])
+  for (const asset of ["theme.css", "theme-base.css"])
     assert.deepEqual(await readFile(join(dir, asset)), await readFile(join(root, asset)), asset);
   const before = await readFile(file, "utf8");
   assert.equal(JSON.parse(execFileSync(process.execPath, [prepare, cli, file], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })).created, false);
@@ -30,7 +31,10 @@ test("portable starter loads bundled fonts and preserves page scales and the lig
   const external: string[] = [];
   await tab.route("**/*", route => {
     if (route.request().url().startsWith(server.origin)) return route.continue();
-    external.push(route.request().url()); return route.abort();
+    external.push(route.request().url());
+    if (route.request().url().startsWith("https://fonts.googleapis.com/css2?"))
+      return route.fulfill({ contentType: "text/css", body: testFontCSS });
+    return route.abort();
   });
   await tab.goto(`${server.origin}${server.prefix}/document/`);
   await tab.evaluate(() => document.fonts.ready);
@@ -68,12 +72,16 @@ test("portable starter loads bundled fonts and preserves page scales and the lig
     assert.deepEqual(actual, ["light", "rgb(250, 249, 246)", "rgb(36, 88, 184)"], colorScheme);
     assert.deepEqual((await page.evaluate(inspectHTMLPage)).diagnostics, []);
   }
-  assert.deepEqual(external, []);
+  assert.equal(external.length, 1);
+  assert.deepEqual(new URL(external[0]).searchParams.getAll("family"), [
+    "IBM Plex Mono:wght@400", "IBM Plex Sans:ital,wght@0,400;0,600;0,700;1,400",
+  ]);
 });
 
-test("the default theme applies complete type roles and loads Sans and Mono locally", async t => {
+test("the theme applies complete type roles with document-local Sans and Mono", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-theme-roles-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const source = `<!doctype html><html lang="en"><head><link rel="stylesheet" href="theme.css">
     <style>.flow { display:grid; gap:var(--kp-space-3) } .evidence { border:var(--kp-rule-width) solid var(--kp-line); border-radius:var(--kp-radius); padding:var(--kp-space-2) }</style>
     </head><body><main id="page" data-page data-size="link"><div class="flow">
@@ -130,6 +138,7 @@ test("the default theme applies complete type roles and loads Sans and Mono loca
 test("theme definitions validate unused slots, ordered type, text contrast, and category marks", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-theme-check-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const file = join(dir, "document.html");
   await writeFile(file, '<!doctype html><html><head><link rel="stylesheet" href="theme.css"></head><body><main id="page" data-page data-size="link"></main></body></html>');
   const browser = await chromium.launch(); t.after(() => browser.close());
@@ -158,8 +167,13 @@ test("theme definitions validate unused slots, ordered type, text contrast, and 
   assert.equal((await page.evaluate(inspectHTMLPage)).theme?.type.display.family, '"IBM Plex Mono", monospace');
 });
 
-test("the packaged starter inspects cleanly with the bundled theme", async () => {
-  const { report } = await browserDocument(join(root, "skills/konpeki/assets/blank.html"));
+test("the starter inspects cleanly with document-local fonts", async t => {
+  const dir = await mkdtemp(join(tmpdir(), "konpeki-starter-fonts-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
+  const file = join(dir, "document.html");
+  await writeFile(file, await readFile(join(root, "skills/konpeki/assets/blank.html")));
+  const { report } = await browserDocument(file);
   assert.deepEqual(report.diagnostics, []);
   assert.equal(report.pages.length, 1);
 });
@@ -167,6 +181,7 @@ test("the packaged starter inspects cleanly with the bundled theme", async () =>
 test("tight adjacent HTML roles render while translated and SVG text collisions still fail", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-leading-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const file = join(dir, "document.html");
   await writeFile(file, `<!doctype html><link rel="stylesheet" href="theme.css"><main id="page" data-page data-size="link">
     <h1 id="title" style="width:600px">A heading wrapping onto a second line</h1>
@@ -193,6 +208,7 @@ test("tight adjacent HTML roles render while translated and SVG text collisions 
 test("font auditing catches actual system fallback, missing weights and styles, but not hidden text", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-font-audit-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const file = join(dir, "document.html");
   await writeFile(file, `<!doctype html><link rel="stylesheet" href="theme.css"><style>
     #generated::before { content:"Generated"; font-family:serif; }
@@ -220,6 +236,7 @@ test("font auditing catches actual system fallback, missing weights and styles, 
 test("theme diagnostics isolate invalid sizes, shadowed page tokens, roles and painted shapes", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-theme-diagnostics-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const file = join(dir, "document.html");
   await writeFile(file, `<!doctype html><link rel="stylesheet" href="theme.css"><main id="page" data-page data-size="link">
     <p id="role" data-type="subtitle">Unknown role</p>
@@ -257,6 +274,7 @@ test("theme diagnostics isolate invalid sizes, shadowed page tokens, roles and p
 test("unused theme roles require faces and declared weight ranges include both boundaries", async t => {
   const dir = await mkdtemp(join(tmpdir(), "konpeki-theme-faces-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeTestTheme(dir);
   const file = join(dir, "document.html");
   await writeFile(file, '<!doctype html><link rel="stylesheet" href="theme.css"><main id="page" data-page data-size="link"></main>');
   const browser = await chromium.launch(); t.after(() => browser.close());
@@ -264,7 +282,7 @@ test("unused theme roles require faces and declared weight ranges include both b
   const tab = await browser.newPage(); await tab.goto(`${server.origin}${server.prefix}/document/`);
   const page = tab.locator("[data-page]");
   // FontFace descriptors are the contract being checked, not binary metadata.
-  await tab.evaluate(() => document.fonts.add(new FontFace("Range", 'url("fonts/ibm-plex-sans-latin-400-normal.woff2")', { weight: "300 800" })));
+  await tab.evaluate(data => document.fonts.add(new FontFace("Range", `url("${data}")`, { weight: "300 800" })), fontData("sans"));
   await page.evaluate(el => (el as HTMLElement).style.setProperty("--kp-font-family-heading", '"Range"'));
   for (const weight of [299, 300, 800, 801]) {
     await page.evaluate((el, weight) => (el as HTMLElement).style.setProperty("--kp-weight-title", String(weight)), weight);

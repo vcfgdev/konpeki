@@ -27,8 +27,6 @@
     "LICENSE",
     "theme.css",
     "theme-base.css",
-    "fonts/*.woff2",
-    "fonts/*OFL.txt",
     "docs/workflow.md",
     "docs/development.md",
     "plugin.json",
@@ -72,6 +70,7 @@
     "vite": "^8.3.0"
   },
   "devDependencies": {
+    "@fontsource/ibm-plex-mono": "5.3.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",

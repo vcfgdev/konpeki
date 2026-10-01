@@ -10,6 +10,7 @@ import { chromium, type Page } from "playwright";
 import { previewHTML } from "./server.ts";
 import { inspectSource } from "./source.ts";
 import { isGoogleFontResource } from "./document.ts";
+import { testFontCSS } from "../scripts/test-fonts.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 async function waitForPage(tab: Page, page: string) {
@@ -65,7 +66,10 @@ test("static preview works under a Pages base path, isolates comments, and clear
   let releaseFonts!: () => void;
   const fonts = new Promise<void>(resolve => { releaseFonts = resolve; });
   t.after(() => releaseFonts());
-  await tab.route("**/fonts/*.woff2", async route => { await fonts; await route.continue(); });
+  await tab.route("https://fonts.googleapis.com/**", async route => {
+    await fonts;
+    await route.fulfill({ contentType: "text/css", body: testFontCSS });
+  });
   await tab.goto(`${origin}/konpeki/`, { waitUntil: "domcontentloaded" });
   await tab.frameLocator("iframe").locator("#cover-title").waitFor();
   assert.equal(await tab.locator(".html-page").getAttribute("aria-busy"), "true", "visible text is not ready for selection while fonts are loading");
@@ -199,7 +203,7 @@ test("static preview works under a Pages base path, isolates comments, and clear
   assert.match(await tab.evaluate(() => navigator.clipboard.readText()), /cover-title[\s\S]*Shorten this headline/);
   await tab.getByRole("button", { name: "Undo", exact: true }).click();
   assert.equal(await tab.locator(".review-count").textContent(), "1");
-  assert.deepEqual(external, [], "preview must load bundled fonts without external requests");
+  assert.deepEqual(external, [], "preview must not request external resources beyond Google Fonts");
   await tab.getByRole("button", { name: "Comment", exact: true }).click();
   await tab.getByRole("button", { name: "Remove comment 1" }).click();
   assert.equal(await tab.getByRole("button", { name: "New comment" }).evaluate(button => button === document.activeElement), true, "an empty queue focuses its remaining action");
@@ -281,6 +285,7 @@ test("packaged starter renders the default theme without external examples or mi
   const origin = `http://127.0.0.1:${(server.httpServer!.address() as { port: number }).port}/konpeki/`;
   const browser = await chromium.launch(); t.after(() => browser.close());
   const tab = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await tab.route("https://fonts.googleapis.com/**", route => route.fulfill({ contentType: "text/css", body: testFontCSS }));
   const failures: string[] = [];
   tab.on("pageerror", error => failures.push(error.message));
   tab.on("response", response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
