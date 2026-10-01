@@ -1,11 +1,12 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { PageBoard } from "../src/components/PageBoard.tsx";
+import { PageBoard, type PageBoardControls } from "../src/components/PageBoard.tsx";
 import { reviewPosition } from "../src/lib/review-position.ts";
 import { referenceGuides, type Guide } from "../src/lib/alignment.ts";
 import { inspectHTMLPage, type Diagnostic } from "./inspect.ts";
 import { documentHTML } from "./document.ts";
 import { starterSource } from "./starter.ts";
+import { hintAlphabet, reviewHints, targetRect } from "./review-hints.ts";
 import "@fontsource/ibm-plex-sans/400.css";
 import "@fontsource/ibm-plex-sans/500.css";
 import "../src/styles/base.css";
@@ -18,6 +19,8 @@ type Target = { page: string; id: string };
 type Note = Target & { key: string; text: string };
 type Page = { id: string; name: string; canvas: { width: number; height: number } };
 type Correction = Target & ({ kind: "move"; translate: string } | { kind: "delete" });
+type Hints = { page: string; prefix: string; entries: ReturnType<typeof reviewHints>; scrollLeft: number; scrollTop: number };
+const submitKey = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘ Enter" : "Ctrl + Enter";
 const token = new URLSearchParams(location.search).get("session") ?? "";
 async function request(edit?: unknown, revision?: string): Promise<Snapshot> {
   if (!token) {
@@ -153,6 +156,12 @@ function Preview() {
   const [error, setError] = useState(""), [notice, setNotice] = useState(""), [saving, setSaving] = useState(false), [fallback, setFallback] = useState("");
   const [reset, setReset] = useState(0);
   const [anchor, setAnchor] = useState<DOMRect>();
+  const [vim, setVim] = useState(() => { try { return localStorage.getItem("html-review:vim") === "true"; } catch { return false; } });
+  const [help, setHelp] = useState(false), [hints, setHints] = useState<Hints>();
+  const [activePage, setActivePage] = useState(""), [prefix, setPrefix] = useState("");
+  const [queueIndex, setQueueIndex] = useState(0);
+  const board = useRef<PageBoardControls>(null), workspace = useRef<HTMLElement>(null), shortcuts = useRef<HTMLDialogElement>(null);
+  const composerOrigin = useRef<"closed" | "queue">("closed");
   const current = useRef(snapshot), busy = useRef(false), loaded = useRef(false), panel = useRef<HTMLElement>(null);
   const launcher = useRef<HTMLButtonElement>(null), restoreFocus = useRef(false);
   const storedComments = useRef<string | null>(null);
@@ -179,6 +188,27 @@ function Preview() {
     return () => { live = false; clearInterval(timer); };
   }, []);
   useEffect(() => { if (!notice) return; const id = setTimeout(() => setNotice(""), 4500); return () => clearTimeout(id); }, [notice]);
+  useEffect(() => { if (!prefix) return; const id = setTimeout(() => setPrefix(""), 1200); return () => clearTimeout(id); }, [prefix]);
+  useEffect(() => { setHints(undefined); }, [snapshot?.revision, sizes]);
+  useEffect(() => {
+    function cancelHints() { setHints(undefined); setPrefix(""); }
+    const surface = workspace.current!;
+    function scrolled() {
+      // Navigation can deliver its scroll event after the next `f` key. Keep
+      // hints measured at that position; cancel only if their geometry moved.
+      setHints(h => h?.scrollLeft === surface.scrollLeft && h.scrollTop === surface.scrollTop ? h : undefined);
+      setPrefix("");
+    }
+    surface.addEventListener("scroll", scrolled);
+    surface.addEventListener("gesturestart", cancelHints);
+    window.addEventListener("resize", cancelHints);
+    window.addEventListener("blur", cancelHints);
+    return () => { surface.removeEventListener("scroll", scrolled); surface.removeEventListener("gesturestart", cancelHints); window.removeEventListener("resize", cancelHints); window.removeEventListener("blur", cancelHints); };
+  }, []);
+  useEffect(() => {
+    if (help) shortcuts.current?.showModal();
+    else shortcuts.current?.close();
+  }, [help]);
   async function save(edit: Correction | { kind: "undo" }) {
     if (!token || !current.current || saving) return;
     busy.current = true; setSaving(true); setError("");
@@ -186,39 +216,131 @@ function Preview() {
     catch (e) { setError(String(e)); setReset(n => n + 1); try { setSnapshot(await request()); } catch {} }
     finally { busy.current = false; setSaving(false); }
   }
+  function pageSurface(id: string) {
+    return workspace.current?.querySelector<HTMLElement>(`.html-page[data-html-page="${CSS.escape(id)}"]`);
+  }
   function selectedPage() {
-    return selected ? document.querySelector<HTMLElement>(`.html-page[data-html-page="${CSS.escape(selected.page)}"]`) : null;
+    return selected ? pageSurface(selected.page) : null;
   }
   function closePanel() {
-    restoreFocus.current = true; setView("closed");
+    restoreFocus.current = true; setView("closed"); setHints(undefined); setPrefix("");
+  }
+  function dismissComposer() {
+    if (typeof view === "object" && composerOrigin.current === "queue") setView("queue");
+    else closePanel();
+  }
+  function openQueue() {
+    setHints(undefined); setView("queue"); setFallback(""); setQueueIndex(0);
   }
   function openComment(target: Target, rect: DOMRect) {
+    composerOrigin.current = vim && view === "queue" ? "queue" : "closed";
+    setHints(undefined); setActivePage(target.page);
     setSelected(target.id === target.page ? undefined : target);
     setView(target); setAnchor(rect); setFallback("");
+  }
+  function commentOn(target: Target, reveal = false) {
+    const surface = pageSurface(target.page);
+    if (!surface || !targetRect(surface, target.id)) { setError("This target is unavailable. Your comments were kept; wait for the page to load or select another target."); return; }
+    if (reveal) {
+      board.current?.goTo(target.page);
+      const rect = targetRect(surface, target.id)!;
+      board.current?.pan(rect.left + rect.width / 2 - workspace.current!.clientWidth / 2, rect.top + rect.height / 2 - workspace.current!.clientHeight / 2);
+    }
+    openComment(target, targetRect(surface, target.id)!);
+  }
+  function startHints() {
+    if (busy.current) return;
+    board.current?.stopZoom();
+    const surface = pageSurface(activePage);
+    if (!surface || surface.getAttribute("aria-busy") !== "false") return;
+    const entries = reviewHints(surface);
+    if (!entries.length) { setNotice("No visible targets. Pan to an element, or use Shift+C to comment on the page."); return; }
+    setView("closed"); setHints({ page: activePage, prefix: "", entries, scrollLeft: workspace.current!.scrollLeft, scrollTop: workspace.current!.scrollTop });
+    surface.focus({ preventScroll: true });
   }
   function startComment() {
     const outline = selectedPage()?.querySelector(".html-outline");
     if (selected && outline) openComment(selected, outline.getBoundingClientRect());
+    else if (vim) startHints();
     else setView("select");
     setFallback("");
   }
   useEffect(() => {
     function key(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.isComposing || event.repeat) return;
+      if (event.defaultPrevented || event.isComposing || event.keyCode === 229) return;
+      const element = event.target as HTMLElement;
+      const typing = element.isContentEditable || !!element.closest("textarea,input,select");
+      const plain = !event.ctrlKey && !event.metaKey && !event.altKey;
+      const motion = plain && vim && view === "closed" && !hints && !help && !typing && ["h", "j", "k", "l", "+", "=", "-"].includes(event.key);
+      if (event.repeat && !motion) { if (!typing && event.key === "Enter") event.preventDefault(); return; }
+      if (help) {
+        if (event.key === "Escape") { event.preventDefault(); setHelp(false); }
+        return;
+      }
       if (event.key === "Escape") {
         event.preventDefault();
-        if (view !== "closed") closePanel();
+        if (hints) setHints(undefined);
+        else if (prefix) setPrefix("");
+        else if (view !== "closed") dismissComposer();
         else {
           setSelected(undefined);
           if (document.activeElement?.matches(".html-page")) (document.activeElement as HTMLElement).blur();
         }
         return;
       }
-      if ((event.target as HTMLElement).closest("textarea,input,select,[contenteditable=true]") || saving) return;
-      if (!event.ctrlKey && !event.metaKey && !event.altKey && (view === "closed" || view === "queue") && event.key.toLowerCase() === "c") {
+      if (saving || busy.current) return;
+      if (vim && view === "queue" && (event.ctrlKey || event.metaKey) && !event.altKey && event.key === "Enter") {
+        event.preventDefault(); if (notes.length) void copy(); return;
+      }
+      if (typing) return;
+      if (plain && event.key === "?") { event.preventDefault(); setHints(undefined); setPrefix(""); setHelp(true); return; }
+      if (hints) {
+        if (!plain) return;
+        event.preventDefault();
+        if (event.key === "Backspace") setHints({ ...hints, prefix: hints.prefix.slice(0, -1) });
+        else if (hintAlphabet.includes(event.key.toLowerCase()) && event.key.length === 1) {
+          const next = hints.prefix + event.key.toLowerCase();
+          const match = hints.entries.find(hint => hint.label === next);
+          if (match) commentOn({ page: hints.page, id: match.id });
+          else if (hints.entries.some(hint => hint.label.startsWith(next))) setHints({ ...hints, prefix: next });
+        }
+        return;
+      }
+      if (vim && plain && (view === "closed" || view === "queue")) {
+        if (event.key === "q") { event.preventDefault(); if (view === "queue") closePanel(); else openQueue(); return; }
+        if (view === "queue") {
+          if (["j", "k"].includes(event.key)) {
+            event.preventDefault(); setQueueIndex(i => Math.max(0, Math.min(notes.length - 1, i + (event.key === "j" ? 1 : -1)))); return;
+          }
+          if (event.key === "Enter" && element.closest(".revision-note-target")) {
+            event.preventDefault(); if (notes[queueIndex]) commentOn(notes[queueIndex], true); return;
+          }
+        } else {
+          const first = prefix === "g" && event.key === "g";
+          setPrefix("");
+          if (event.key === "g" && !first) { event.preventDefault(); setPrefix("g"); return; }
+          if (["[", "]", "G"].includes(event.key) || first) {
+            event.preventDefault();
+            const ids = snapshot?.pages ?? [], index = ids.indexOf(activePage);
+            const next = first ? 0 : event.key === "G" ? ids.length - 1 : Math.max(0, Math.min(ids.length - 1, index + (event.key === "]" ? 1 : -1)));
+            if (ids[next]) { setSelected(undefined); board.current?.goTo(ids[next]); }
+            return;
+          }
+          if (motion) {
+            event.preventDefault();
+            if (["+", "=", "-"].includes(event.key)) board.current?.zoom(event.key === "-" ? 1 / 1.2 : 1.2);
+            else board.current?.pan(event.key === "h" ? -80 : event.key === "l" ? 80 : 0, event.key === "k" ? -80 : event.key === "j" ? 80 : 0);
+            return;
+          }
+          if (event.key === "0") { event.preventDefault(); board.current?.goTo(activePage, true); return; }
+          if (event.key === "f") { event.preventDefault(); startHints(); return; }
+          if (event.key === "C") { event.preventDefault(); commentOn({ page: activePage, id: activePage }); return; }
+        }
+      }
+      if (plain && (view === "closed" || view === "queue") && event.key.toLowerCase() === "c") {
         event.preventDefault(); startComment(); return;
       }
-      if ((event.target as HTMLElement).closest("button")) return;
+      if (element.closest("button")) return;
       if (view === "closed" && selected && event.key === "Enter" && !event.ctrlKey && !event.metaKey && !event.altKey) {
         event.preventDefault(); startComment(); return;
       }
@@ -227,23 +349,26 @@ function Preview() {
       if (["Delete", "Backspace"].includes(event.key) && selected && view === "closed") { event.preventDefault(); void save({ ...selected, kind: "delete" }); }
     }
     window.addEventListener("keydown", key); return () => window.removeEventListener("keydown", key);
-  }, [selected, view, saving]);
+  }, [selected, view, saving, vim, hints, help, activePage, prefix, queueIndex, notes, snapshot]);
   useLayoutEffect(() => {
     if (saving) return;
     if (view === "closed" && restoreFocus.current) {
       restoreFocus.current = false;
-      (selectedPage() ?? launcher.current)?.focus({ preventScroll: true });
+      (selectedPage() ?? (vim ? pageSurface(activePage) : null) ?? launcher.current)?.focus({ preventScroll: true });
     }
     if (view === "queue") {
       const actions = panel.current?.querySelector(".review-actions");
-      (panel.current?.querySelector("textarea") ?? actions?.querySelector<HTMLButtonElement>(".primary:not(:disabled)") ?? actions?.querySelector<HTMLButtonElement>("button:not(:disabled)"))?.focus();
+      const rows = panel.current?.querySelectorAll<HTMLButtonElement>(".revision-note-target");
+      const row = vim ? rows?.[Math.min(queueIndex, (rows?.length ?? 1) - 1)] : undefined;
+      (panel.current?.querySelector("textarea") ?? row ?? actions?.querySelector<HTMLButtonElement>(".primary:not(:disabled)") ?? actions?.querySelector<HTMLButtonElement>("button:not(:disabled)"))?.focus({ preventScroll: true });
+      row?.scrollIntoView({ block: "nearest", inline: "nearest" });
       return;
     }
     if (typeof view !== "object" || !panel.current || !anchor) return;
     const position = reviewPosition(anchor, panel.current.getBoundingClientRect(), { x: 0, y: 0, width: innerWidth, height: innerHeight - 80 });
     Object.assign(panel.current.style, { left: `${position.left}px`, top: `${position.top}px`, right: "auto", bottom: "auto" });
     panel.current.querySelector("textarea")?.focus();
-  }, [view, anchor, notes.length, saving, fallback]);
+  }, [view, anchor, notes.length, saving, fallback, queueIndex, vim]);
   function persist(next: Note[]) {
     const key = `html-review:${snapshot!.key}`;
     if (localStorage.getItem(key) !== storedComments.current) throw new Error("Comments changed in another preview. Keep your draft and reload before changing the queue.");
@@ -252,6 +377,7 @@ function Preview() {
     setNotes(next);
   }
   async function copy() {
+    if (saving || !notes.length) return;
     const batch = notes;
     const prompt = [`Revise the HTML document ${JSON.stringify(snapshot!.path)} using these comments.`, "Reread the latest HTML source first. Preserve unrelated edits, stable element IDs and saved CSS position corrections. If a target is missing or ambiguous, ask rather than guessing. Render the HTML in a browser and inspect every affected page before delivery.", ...batch.map((n, i) => `${i + 1}. Page: ${JSON.stringify(n.page)}\nElement: ${JSON.stringify(n.id)}\nComment:\n${n.text}`)].join("\n\n");
     setSaving(true); setError("");
@@ -269,15 +395,18 @@ function Preview() {
     }
     try {
       persist([...notes, { ...target, key: crypto.randomUUID(), text }]);
-      setDrafts(v => ({ ...v, [draftKey]: "" })); setView("queue");
+      setDrafts(v => ({ ...v, [draftKey]: "" }));
+      if (vim) { closePanel(); setNotice("Comment added"); }
+      else setView("queue");
     } catch (e) { setError(String(e)); }
   }
   const pages: Page[] = snapshot?.pages.map((id, i) => ({ id, name: String(i + 1).padStart(2, "0"), canvas: sizes[id] ?? { width: 794, height: 1123 } })) ?? [];
   const target = typeof view === "object" ? view : undefined, draftKey = target ? `${target.page}/${target.id}` : "";
   const text = drafts[draftKey] ?? "";
-  return <main className="workspace" onPointerDown={e => {
+  return <main ref={workspace} className="workspace" onWheelCapture={() => setHints(undefined)} onPointerDown={e => {
     const element = e.target as HTMLElement;
-    if (element.closest(".revision-notes,.review-launcher,.html-pin")) return;
+    if (element.closest(".revision-notes,.review-launcher,.html-pin,.review-hints,.review-status,.shortcut-help,.shortcut-launcher")) return;
+    setHints(undefined); setPrefix("");
     if (!element.closest(".html-page")) {
       setSelected(undefined);
       if (document.activeElement?.matches(".html-page")) (document.activeElement as HTMLElement).blur();
@@ -286,21 +415,48 @@ function Preview() {
   }}>
     <header className="board-heading html-heading"><h1>Konpeki</h1>{!token && <>
       <a href="https://github.com/vcfgdev/konpeki/blob/main/html/README.md">Authoring guide</a>
-    </>}</header>
+    </>}<button className="shortcut-launcher" aria-label="Keyboard shortcuts" aria-keyshortcuts="Shift+/" title="Keyboard shortcuts (?)" onClick={() => { setHints(undefined); setHelp(true); }}><kbd>?</kbd></button></header>
     {!snapshot && <p>{error || "Opening HTML…"}</p>}
-    {snapshot && <PageBoard draft={{ pages }}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} source={token ? undefined : snapshot.source} notes={notes} selected={selected} commenting={view === "select"} locked={saving}
+    {snapshot && <PageBoard draft={{ pages }} controls={board} onActivePage={setActivePage}>{page => <HTMLPage key={`${page.id}:${reset}`} page={page} revision={snapshot.revision} source={token ? undefined : snapshot.source} notes={notes} selected={selected} commenting={view === "select"} locked={saving}
       onSize={(width, height) => setSizes(current => current[page.id]?.width === width && current[page.id]?.height === height ? current : { ...current, [page.id]: { width, height } })}
-      onSelect={setSelected} onComment={openComment} onEdit={edit => void save(edit)} onBusy={value => { if (!value && saving) return; busy.current = value; }} onBlocked={setError} />}</PageBoard>}
+      onSelect={value => { setSelected(value); setActivePage(page.id); }} onComment={openComment} onEdit={edit => void save(edit)} onBusy={value => { if (!value && saving) return; busy.current = value; }} onBlocked={setError} />}</PageBoard>}
     {(notice || error) && <div className={`feedback-notice toast visible${error ? " error" : ""}`} role="status"><span>{error || notice}</span>{!error && notice === "Copied and cleared" && cleared.length > 0 && <button disabled={saving} onClick={() => { try { persist([...cleared.filter(c => !notes.some(n => n.key === c.key)), ...notes]); setCleared([]); setNotice("Reviews restored"); } catch (e) { setError(String(e)); } }}>Undo</button>}{error && <button className="toast-dismiss" onClick={() => setError("")} aria-label="Dismiss error"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button>}</div>}
-    <button ref={launcher} className="review-launcher" aria-label="Comment" title="Comment (C)" aria-keyshortcuts="c" aria-pressed={view === "select" || !!target} aria-expanded={view === "queue" || !!target} disabled={!snapshot || saving} onClick={() => { if (view !== "closed") closePanel(); else if (notes.length) { setView("queue"); setFallback(""); } else startComment(); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path transform="translate(1.5 .5)" d="M20 11a8 8 0 0 1-8 8H5l-4 3V11a9 9 0 0 1 19 0Z" /></svg>{notes.length > 0 && <span className="review-count">{notes.length}</span>}</button>
+    <button ref={launcher} className="review-launcher" aria-label="Comment" title="Comment (C)" aria-keyshortcuts="c" aria-pressed={view === "select" || !!target || !!hints} aria-expanded={view === "queue" || !!target} disabled={!snapshot || saving} onClick={() => { if (view !== "closed" || hints) closePanel(); else if (notes.length) openQueue(); else startComment(); }}><svg viewBox="0 0 24 24" aria-hidden="true"><path transform="translate(1.5 .5)" d="M20 11a8 8 0 0 1-8 8H5l-4 3V11a9 9 0 0 1 19 0Z" /></svg>{notes.length > 0 && <span className="review-count">{notes.length}</span>}</button>
     {(target || view === "queue") && <section ref={panel} className={`revision-notes${target ? " comment-composer" : ""}`} role="dialog" aria-label={target ? "Add comment" : "Pending reviews"} key={draftKey}>
       {target && <header><h2 className="revision-note-scope">{target.id}</h2></header>}
-      <ol className="revision-note-list">{notes.filter(n => !target || n.id === target.id && n.page === target.page).map(n => <li key={n.key}><span className="revision-note-number">{notes.indexOf(n) + 1}</span><span className="revision-note-label" title={n.id}>{n.id}</span><p>{n.text}</p><div className="revision-note-actions"><button className="revision-note-remove" disabled={saving} aria-label={`Remove comment ${notes.indexOf(n) + 1}`} title="Remove comment" onClick={() => { try { persist(notes.filter(note => note !== n)); } catch (e) { setError(String(e)); } }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button></div></li>)}</ol>
+      {!target && vim && <header className="review-queue-heading"><h2>{notes.length} pending {notes.length === 1 ? "comment" : "comments"}</h2><span><kbd>j</kbd>/<kbd>k</kbd> select · <kbd>Enter</kbd> locate</span></header>}
+      <ol className="revision-note-list">{notes.filter(n => !target || n.id === target.id && n.page === target.page).map(n => <li key={n.key} className={vim && !target && notes.indexOf(n) === queueIndex ? "review-note-active" : undefined}>
+        {vim && !target ? <button className="revision-note-target" disabled={saving} onFocus={() => setQueueIndex(notes.indexOf(n))} onClick={() => commentOn(n, true)}><span className="revision-note-number">{notes.indexOf(n) + 1}</span><span className="revision-note-label" title={`${n.page} · ${n.id}`}>{n.page} · {n.id}</span></button> : <><span className="revision-note-number">{notes.indexOf(n) + 1}</span><span className="revision-note-label" title={n.id}>{n.id}</span></>}
+        <p>{n.text}</p><div className="revision-note-actions"><button className="revision-note-remove" disabled={saving} aria-label={`Remove comment ${notes.indexOf(n) + 1}`} title="Remove comment" onClick={() => { try { persist(notes.filter(note => note !== n)); setQueueIndex(i => Math.max(0, Math.min(i, notes.length - 2))); } catch (e) { setError(String(e)); } }}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg></button></div></li>)}</ol>
       {target ? <form onSubmit={addComment}>
-        <textarea aria-label="What should change?" placeholder="Leave a comment…" value={text} maxLength={4000} onChange={e => setDrafts(v => ({ ...v, [draftKey]: e.target.value }))} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !e.nativeEvent.isComposing && !e.repeat) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }} />
-        <div className="revision-note-submit"><button type="button" className="review-secondary" onClick={closePanel}>Cancel</button><button className="primary" title="Add comment (Ctrl/⌘ + Enter)" disabled={!text.trim() || saving}>Add</button></div>
-      </form> : <>{!notes.length && <p className="review-empty">No pending comments</p>}{fallback && <textarea aria-label="Prompt to copy" readOnly value={fallback} onFocus={e => e.currentTarget.select()} />}<footer className="review-actions"><button className="review-secondary" disabled={saving} onClick={() => setView("select")}>New comment</button><button className="primary" disabled={!notes.length || saving} onClick={() => void copy()}>Copy &amp; clear</button></footer></>}
+        <textarea aria-label="What should change?" placeholder="Leave a comment…" value={text} maxLength={4000} onChange={e => setDrafts(v => ({ ...v, [draftKey]: e.target.value }))} onKeyDown={e => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !e.nativeEvent.isComposing && e.keyCode !== 229 && !e.repeat) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }} />
+        <div className="revision-note-submit"><button type="button" className="review-secondary" onClick={dismissComposer}>Cancel</button><button className="primary" title="Add comment (Ctrl/⌘ + Enter)" disabled={!text.trim() || saving}>Add{vim && <kbd>{submitKey}</kbd>}</button></div>
+      </form> : <>{!notes.length && <p className="review-empty">No pending comments</p>}{fallback && <textarea aria-label="Prompt to copy" readOnly value={fallback} onFocus={e => e.currentTarget.select()} />}<footer className="review-actions"><button className="review-secondary" disabled={saving} onClick={() => vim ? startHints() : setView("select")}>New comment</button><button className="primary" disabled={!notes.length || saving} onClick={() => void copy()}>Copy &amp; clear{vim && <kbd>{submitKey}</kbd>}</button></footer></>}
     </section>}
+    {hints && <div className="review-hints" aria-label="Comment targets">
+      <svg aria-hidden="true">{hints.entries.filter(hint => hint.label.startsWith(hints.prefix)).map(hint => <g key={hint.id}>
+        <rect x={hint.rect.x} y={hint.rect.y} width={hint.rect.width} height={hint.rect.height} />
+        <line x1={hint.rect.x} y1={hint.rect.y + 11} x2={hint.badge.right} y2={hint.badge.y + 11} />
+      </g>)}</svg>
+      {hints.entries.filter(hint => hint.label.startsWith(hints.prefix)).map(hint => <button key={hint.id} className="review-hint" data-target={hint.id} aria-label={`${hint.label}: comment on ${hint.id}`} style={{ left: hint.badge.x, top: hint.badge.y, width: hint.badge.width }} onClick={() => commentOn({ page: hints.page, id: hint.id })}><span>{hints.prefix}</span>{hint.label.slice(hints.prefix.length)}</button>)}
+    </div>}
+    {vim && snapshot && <div className="review-status" aria-label="Review keyboard mode">
+      <button onClick={() => { setHints(undefined); setHelp(true); }} title="Keyboard shortcuts (?)">VIM · {hints ? "HINTS" : target ? "COMMENT" : view === "queue" ? "PENDING" : "NORMAL"}</button>
+      {(hints || prefix) && <kbd>{hints ? `${hints.prefix}_` : `${prefix}_`}</kbd>}
+      <span>{hints ? "Esc cancel" : target ? `${submitKey} add` : view === "queue" ? "Esc back" : "f comment · ? help"}</span>
+      <span className="review-page-number">Page {Math.max(0, pages.findIndex(p => p.id === activePage)) + 1} / {pages.length}</span>
+    </div>}
+    <dialog ref={shortcuts} className="shortcut-help" aria-labelledby="shortcut-title" onCancel={() => setHelp(false)} onClose={() => setHelp(false)}>
+      <header><h2 id="shortcut-title">Keyboard shortcuts</h2><button onClick={() => setHelp(false)} aria-label="Close keyboard shortcuts">×</button></header>
+      <label className="vim-toggle"><input type="checkbox" checked={vim} onChange={e => { setVim(e.target.checked); setHints(undefined); try { localStorage.setItem("html-review:vim", String(e.target.checked)); } catch { setError("The Vim mode preference could not be saved. This change applies to the current session only."); } }} />Vim review mode</label>
+      <p>Letter hints and navigation. Comments use normal text editing.</p>
+      <h3>Canvas <span>Vim mode</span></h3>
+      <dl><dt><kbd>f</kbd></dt><dd>Hint visible elements, then type their letters</dd><dt><kbd>c</kbd> / <kbd>Shift+C</kbd></dt><dd>Comment on selection / current page</dd><dt><kbd>h j k l</kbd></dt><dd>Pan left, down, up, right</dd><dt><kbd>[</kbd> / <kbd>]</kbd></dt><dd>Previous / next page · keep zoom</dd><dt><kbd>gg</kbd> / <kbd>G</kbd></dt><dd>First / last page</dd><dt><kbd>+</kbd> / <kbd>−</kbd> / <kbd>0</kbd></dt><dd>Zoom in / out / fit current page</dd><dt><kbd>q</kbd></dt><dd>Open pending comments</dd></dl>
+      <h3>Pending comments <span>Vim mode</span></h3>
+      <dl><dt><kbd>j</kbd> / <kbd>k</kbd></dt><dd>Select next / previous comment</dd><dt><kbd>Enter</kbd></dt><dd>Reveal selected target and its notes</dd><dt><kbd>{submitKey}</kbd></dt><dd>Copy &amp; clear · Undo remains available</dd></dl>
+      <h3>Always available</h3>
+      <dl><dt><kbd>c</kbd> / <kbd>Enter</kbd></dt><dd>Comment / comment on selected element</dd><dt><kbd>{submitKey}</kbd></dt><dd>Add comment · return to canvas in Vim mode</dd><dt><kbd>Esc</kbd></dt><dd>Back one level · keep unfinished drafts</dd><dt><kbd>?</kbd></dt><dd>Open this help outside text inputs</dd></dl>
+    </dialog>
   </main>;
 }
 

@@ -10,6 +10,7 @@ import { chromium, type Page } from "playwright";
 import { previewHTML } from "./server.ts";
 import { inspectSource } from "./source.ts";
 import { isGoogleFontResource } from "./document.ts";
+import { hintLabels } from "./review-hints.ts";
 import { testFontCSS } from "../scripts/test-fonts.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -78,6 +79,8 @@ test("static preview works under a Pages base path, isolates comments, and clear
   assert.equal(await tab.locator(".html-outline").count(), 0, "loading geometry must not be selected");
   releaseFonts();
   await tab.getByRole("link", { name: "Authoring guide" }).focus();
+  await tab.keyboard.press("Tab");
+  assert.equal(await tab.getByRole("button", { name: "Keyboard shortcuts", exact: true }).evaluate(button => button === document.activeElement), true);
   await tab.keyboard.press("Tab");
   assert.equal(await tab.locator(".html-page").evaluate(page => page === document.activeElement), true);
   assert.notEqual(await tab.locator(".html-page").evaluate(page => getComputedStyle(page).outlineStyle), "none", "keyboard navigation retains the page focus indicator");
@@ -303,4 +306,233 @@ test("packaged starter renders the default theme without external examples or mi
   assert.equal(await tab.locator('a[href*="vcfgdev/wf"]').count(), 0, "public preview must not direct users to a private workspace");
   assert.equal(await tab.locator('a[href*="brand-conversion"]').count(), 0);
   assert.deepEqual(failures, []);
+});
+
+test("hint codes remain unique and prefix-free across alphabet boundaries", () => {
+  assert.deepEqual(hintLabels(0), []);
+  assert.deepEqual(hintLabels(9), ["a", "s", "d", "f", "g", "h", "j", "k", "l"]);
+  assert.deepEqual(hintLabels(10), ["aa", "as", "ad", "af", "ag", "ah", "aj", "ak", "al", "sa"]);
+  assert.equal(hintLabels(81).at(-1), "ll");
+  assert.equal(hintLabels(82).at(-1), "saa");
+  for (const count of [1, 9, 10, 81, 82, 730]) {
+    const labels = hintLabels(count);
+    assert.equal(new Set(labels).size, count);
+    assert.equal(new Set(labels.map(label => label.length)).size, 1);
+  }
+});
+
+test("Vim review supports hints, mixed-page navigation, drafts and deliberate queue export", async t => {
+  const fixture = `<!doctype html><style>
+    body { margin: 0 } [data-page] { position: relative; box-sizing: border-box; width: 960px; height: 540px; padding: 40px; font: 24px sans-serif }
+    h1, p { margin: 0 } .items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 40px }
+    #portrait { width: 450px; height: 900px } #last-page { width: 700px; height: 400px }
+  </style><main id="first-page" data-page data-theme="custom"><section id="group"><h1 id="first-title">Review this heading</h1><p id="summary">Supporting text</p></section>
+    <div class="items">${Array.from({ length: 7 }, (_, i) => `<p id="item-${i}">Item ${i}</p>`).join("")}</div>
+    <p id="hidden" hidden>Hidden</p><p id="transparent" style="opacity:0">Transparent</p><p id="offscreen" style="position:absolute;left:1500px">Outside page</p>
+  </main><main id="portrait" data-page data-theme="custom"><h1 id="second-title">Portrait target</h1></main><main id="last-page" data-page data-theme="custom"><h1 id="last-title">Last target</h1></main>`;
+  const server = await createServer({ root, base: "/konpeki/", logLevel: "silent", server: { port: 0, host: "127.0.0.1" },
+    plugins: [{ name: "keyboard-review-fixture", enforce: "pre", load(id) {
+      if (id === join(root, "skills/konpeki/assets/blank.html") + "?raw") return `export default ${JSON.stringify(fixture)}`;
+    } }],
+  });
+  await server.listen(); t.after(() => server.close());
+  const browser = await chromium.launch(); t.after(() => browser.close());
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
+  // Exercise the Mac label branch in Chromium without claiming native macOS rendering.
+  await context.addInitScript(() => Object.defineProperty(navigator, "platform", { value: "MacIntel" }));
+  const tab = await context.newPage(), errors: string[] = [];
+  tab.on("pageerror", error => errors.push(error.message));
+  await tab.goto(`http://127.0.0.1:${(server.httpServer!.address() as { port: number }).port}/konpeki/`);
+  await tab.waitForFunction(() => document.querySelectorAll('.html-page[aria-busy="false"]').length === 3);
+  const status = tab.locator(".review-status"), hints = tab.locator(".review-hint"), input = tab.getByRole("textbox", { name: "What should change?" });
+  const position = () => tab.locator(".workspace").evaluate(el => [el.scrollLeft, el.scrollTop]);
+  const zoom = () => tab.locator(".page-board-content").evaluate(el => Number((el as HTMLElement).style.zoom));
+  const settleZoom = () => tab.waitForFunction(() => !document.querySelector("[data-zooming]"));
+  await tab.keyboard.press("f");
+  assert.equal(await hints.count(), 0, "letter commands are opt-in");
+  await tab.keyboard.press("?");
+  await tab.getByRole("checkbox", { name: "Vim review mode" }).check();
+  await tab.keyboard.press("Escape");
+  assert.match(await status.innerText(), /NORMAL.*Page 1 \/ 3/s);
+  assert.equal(await tab.evaluate(() => localStorage.getItem("html-review:vim")), "true");
+  await tab.keyboard.press("f");
+  await hints.first().waitFor(); // Key dispatch can finish before React commits the overlay.
+  assert.equal(await hints.count(), 10, "only visible ID targets from the active page receive hints");
+  await tab.locator(".workspace").dispatchEvent("scroll");
+  assert.equal(await hints.count(), 10, "a delayed scroll event at the measured position must not cancel fresh hints");
+  const original = await hints.evaluateAll(elements => elements.map(el => [el.getAttribute("data-target"), el.textContent]));
+  assert.deepEqual(original.slice(0, 3), [["group", "aa"], ["first-title", "as"], ["summary", "ad"]]);
+  const boxes = await hints.evaluateAll(elements => elements.map(el => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; }));
+  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+    const a = boxes[i], b = boxes[j];
+    assert(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top, "nested targets must not share a badge position");
+  }
+  await tab.keyboard.press("a");
+  assert.equal(await hints.count(), 9);
+  await tab.keyboard.press("z");
+  assert.equal(await hints.count(), 9, "an invalid hint letter must not leak into canvas commands");
+  await tab.keyboard.press("Backspace");
+  assert.deepEqual(await hints.evaluateAll(elements => elements.map(el => [el.getAttribute("data-target"), el.textContent])), original, "filtering must not reassign codes");
+  const beforeComment = await position();
+  await tab.keyboard.type("as");
+  assert.equal(await tab.locator(".revision-note-scope").textContent(), "first-title");
+  assert.equal(await tab.locator(".comment-composer .primary kbd").textContent(), "⌘ Enter");
+  assert.equal(await tab.locator(".comment-composer .primary kbd").evaluate(el => getComputedStyle(el).fontSize), "12px", "shortcut labels must not shrink into tiny symbols");
+  assert.equal(await input.evaluate(el => el === document.activeElement), true);
+  await input.fill("Shorten this headline. ");
+  await tab.keyboard.type("fjk?q[]0");
+  assert.equal(await input.inputValue(), "Shorten this headline. fjk?q[]0", "shortcuts stay literal while typing");
+  await input.dispatchEvent("keydown", { key: "Escape", isComposing: true });
+  await input.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, isComposing: true });
+  await input.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, keyCode: 229 });
+  await input.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, repeat: true });
+  assert.equal(await tab.locator(".review-count").count(), 0);
+  assert.equal(await input.isVisible(), true, "IME confirmation must neither submit nor dismiss");
+  await tab.keyboard.press("Escape");
+  await tab.keyboard.press("c");
+  assert.equal(await input.inputValue(), "Shorten this headline. fjk?q[]0", "Escape preserves the target's draft");
+  await input.fill("Shorten this headline.");
+  await tab.keyboard.down("Control"); await tab.keyboard.down("Enter");
+  await input.waitFor({ state: "hidden" });
+  await tab.keyboard.down("Enter"); await tab.keyboard.up("Enter"); await tab.keyboard.up("Control");
+  assert.equal(await tab.locator(".review-count").textContent(), "1");
+  assert.equal(await tab.getByRole("dialog", { name: "Pending reviews" }).count(), 0, "submit returns to the canvas, not the export action");
+  assert.deepEqual(await position(), beforeComment, "submission preserves the viewport");
+  assert.equal(await tab.locator('.html-page[data-html-page="first-page"]').evaluate(el => el === document.activeElement), true);
+
+  await tab.keyboard.press("="); await tab.keyboard.press("="); await settleZoom();
+  assert.equal(await zoom(), 1.44);
+  await tab.keyboard.press("]");
+  assert.match(await status.innerText(), /Page 2 \/ 3/);
+  assert.equal(await zoom(), 1.44, "navigation retains zoom even across aspect ratios");
+  const panned = await position();
+  await tab.keyboard.press("j");
+  assert((await position())[1] > panned[1]);
+  await tab.keyboard.press("k");
+  assert.deepEqual(await position(), panned);
+  await tab.keyboard.press("l");
+  assert((await position())[0] > panned[0]);
+  await tab.keyboard.press("h");
+  assert.deepEqual(await position(), panned);
+  await tab.keyboard.press("-"); await tab.keyboard.press("-"); await settleZoom();
+  assert.equal(await zoom(), 1);
+  await tab.keyboard.press("G");
+  assert.match(await status.innerText(), /Page 3 \/ 3/);
+  await tab.keyboard.press("]");
+  assert.match(await status.innerText(), /Page 3 \/ 3/, "last-page navigation clamps");
+  await tab.keyboard.type("gg");
+  assert.match(await status.innerText(), /Page 1 \/ 3/);
+  await tab.keyboard.press("[");
+  assert.match(await status.innerText(), /Page 1 \/ 3/, "first-page navigation clamps");
+  await tab.keyboard.press("]");
+  await tab.keyboard.press("+"); await settleZoom();
+  await tab.keyboard.press("0");
+  assert.equal(await zoom(), 1);
+  const fit = await tab.locator('.board-page[data-page="portrait"]').boundingBox(); assert(fit);
+  assert(fit.y >= 0 && fit.y + fit.height <= 900 && fit.x >= 0 && fit.x + fit.width <= 1280, "fit contains the whole portrait page");
+  await tab.keyboard.press("C");
+  assert.equal(await tab.locator(".revision-note-scope").textContent(), "portrait");
+  await tab.keyboard.press("Escape");
+  await tab.keyboard.press("f");
+  assert.deepEqual(await hints.allTextContents(), ["a"]);
+  await tab.keyboard.press("a");
+  await input.fill("Explain the portrait example.");
+  await tab.keyboard.press("Meta+Enter");
+  assert.equal(await tab.locator(".review-count").textContent(), "2", "both Mac and Ctrl submit bindings work");
+  await tab.keyboard.press("q");
+  const queue = tab.getByRole("dialog", { name: "Pending reviews" });
+  await queue.waitFor();
+  assert.equal(await queue.locator(".primary kbd").textContent(), "⌘ Enter");
+  assert.match(await queue.locator(".review-queue-heading").innerText(), /Enter locate/);
+  assert.equal(await queue.locator(".revision-note-target").first().evaluate(el => el === document.activeElement), true);
+  const queuePosition = await position();
+  await tab.keyboard.press("j");
+  assert.equal(await queue.locator(".revision-note-target").nth(1).evaluate(el => el === document.activeElement), true);
+  await tab.keyboard.press("k");
+  assert.deepEqual(await position(), queuePosition, "queue navigation must not pan the board");
+  await tab.keyboard.press("Enter");
+  assert.equal(await tab.locator(".revision-note-scope").textContent(), "first-title");
+  assert.match(await status.innerText(), /Page 1 \/ 3/);
+  assert.match(await tab.getByRole("dialog", { name: "Add comment" }).innerText(), /Shorten this headline/);
+  await tab.keyboard.press("Escape");
+  await queue.waitFor();
+  await queue.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, repeat: true });
+  await queue.dispatchEvent("keydown", { key: "Enter", ctrlKey: true, isComposing: true });
+  assert.equal(await tab.locator(".review-count").textContent(), "2", "repeat and IME events cannot export");
+  await tab.evaluate(() => Object.defineProperty(navigator.clipboard, "writeText", { configurable: true, value: () => Promise.reject(new Error("Permission denied")) }));
+  await tab.keyboard.press("Control+Enter");
+  await tab.getByRole("textbox", { name: "Prompt to copy" }).waitFor();
+  assert.equal(await tab.locator(".review-count").textContent(), "2", "failed copying preserves every comment");
+  await tab.evaluate(() => { delete (navigator.clipboard as unknown as { writeText?: unknown }).writeText; });
+  await tab.keyboard.press("Control+Enter");
+  await queue.waitFor({ state: "hidden" });
+  assert.equal(await tab.locator(".review-count").count(), 0);
+  const copied = await tab.evaluate(() => navigator.clipboard.readText());
+  assert.match(copied, /Page: "first-page"\nElement: "first-title"\nComment:\nShorten this headline\./);
+  assert.match(copied, /Page: "portrait"\nElement: "second-title"\nComment:\nExplain the portrait example\./);
+  await tab.getByRole("button", { name: "Undo", exact: true }).click();
+  assert.equal(await tab.locator(".review-count").textContent(), "2");
+  await tab.keyboard.press("f"); await hints.first().waitFor();
+  await tab.setViewportSize({ width: 1000, height: 800 });
+  await hints.first().waitFor({ state: "hidden" });
+  assert.equal(await hints.count(), 0, "viewport changes invalidate hint positions");
+  await tab.keyboard.press("0");
+  await tab.keyboard.press("=");
+  await tab.keyboard.press("f");
+  await hints.first().waitFor();
+  assert.equal(await tab.locator("[data-zooming]").count(), 0, "hinting freezes an in-flight zoom rather than dropping the f command");
+  const frozenPosition = await position(), frozenZoom = await zoom();
+  await tab.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  assert(await hints.count() > 0);
+  assert.deepEqual(await position(), frozenPosition);
+  assert.equal(await zoom(), frozenZoom);
+  await tab.reload();
+  await tab.waitForFunction(() => document.querySelectorAll('.html-page[aria-busy="false"]').length === 3);
+  assert.equal(await status.isVisible(), true, "mode preference survives reload");
+  assert.equal(await tab.locator(".review-count").textContent(), "2", "comments survive reload separately from mode preference");
+  await tab.keyboard.press("?");
+  await tab.getByRole("checkbox", { name: "Vim review mode" }).uncheck();
+  await tab.keyboard.press("Escape");
+  await tab.keyboard.press("f");
+  assert.equal(await status.count(), 0);
+  assert.equal(await hints.count(), 0);
+  assert.deepEqual(errors, []);
+});
+
+test("live source changes invalidate hints without retargeting saved comments or deleting source", async t => {
+  const dir = await mkdtemp(join(tmpdir(), "konpeki-vim-live-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const file = join(dir, "document.html");
+  const source = '<!doctype html><style>body{margin:0}main{width:800px;height:500px;padding:40px;box-sizing:border-box}h1{font:40px sans-serif}p{font:24px sans-serif}</style><main id="page" data-page data-theme="custom"><h1 id="old-title">Original title</h1><p id="summary">Supporting text</p></main>';
+  await writeFile(file, source);
+  const preview = await previewHTML(file, "127.0.0.1", 0, root);
+  t.after(() => preview.server.close());
+  const browser = await chromium.launch(); t.after(() => browser.close());
+  const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const patches: string[] = [];
+  tab.on("request", request => { if (request.method() === "PATCH") patches.push(request.url()); });
+  await tab.addInitScript(() => localStorage.setItem("html-review:vim", "true"));
+  await tab.goto(preview.url);
+  await waitForPage(tab, "page");
+  await tab.keyboard.press("f"); await tab.keyboard.press("a");
+  await tab.getByRole("textbox", { name: "What should change?" }).fill("Keep this note attached to the original ID.");
+  await tab.keyboard.press("Control+Enter");
+  await tab.keyboard.press("f");
+  await tab.keyboard.press("Backspace");
+  assert.equal(await readFile(file, "utf8"), source, "Backspace edits a hint prefix, never the selected source element");
+  const revised = source.replace('id="old-title"', 'id="new-title"');
+  await writeFile(file, revised);
+  await tab.frameLocator("iframe").locator("#new-title").waitFor();
+  await tab.locator(".review-hint").first().waitFor({ state: "hidden" });
+  await tab.keyboard.press("q"); await tab.keyboard.press("Enter");
+  assert.match(await tab.getByRole("status").innerText(), /target is unavailable/);
+  assert.equal(await tab.getByRole("dialog", { name: "Add comment" }).count(), 0);
+  assert.match(await tab.getByRole("dialog", { name: "Pending reviews" }).innerText(), /old-title/);
+  assert.equal(await tab.locator(".review-count").textContent(), "1");
+  await tab.keyboard.press("Escape");
+  await waitForPage(tab, "page");
+  await tab.keyboard.press("f");
+  assert.equal(await tab.locator('.review-hint[data-target="new-title"]').textContent(), "a");
+  assert.deepEqual(patches, [], "review-only commands must not mutate the document");
+  assert.equal(await readFile(file, "utf8"), revised);
 });

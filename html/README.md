@@ -112,3 +112,29 @@ document path, comments, and target IDs for pasting into an agent conversation.
 Small moves edit translation only; they do not reorder source. Deletion may
 reflow content. Reread current source and preserve unrelated edits when applying
 feedback.
+
+## Keyboard review
+
+Open **Keyboard shortcuts** (`?`) and enable **Vim review mode**. The preference
+is remembered in this browser. With it off, the existing mouse and comment
+shortcuts are unchanged.
+
+| Context | Keys | Action |
+| --- | --- | --- |
+| Canvas | `f`, then hint letters | Comment on a visible element of the current page |
+| Canvas | `c` / `Shift+C` | Comment on the selection / entire current page |
+| Canvas | `h j k l` | Pan left, down, up, right |
+| Canvas | `[` / `]`, `gg` / `G` | Previous / next page, first / last page; keep zoom |
+| Canvas | `+` or `=`, `-`, `0` | Zoom in, zoom out, fit and center current page |
+| Canvas | `q` | Open all pending comments |
+| Comment | `⌘/Ctrl+Enter` | Add and return to the canvas without changing the viewport |
+| Pending comments | `j` / `k`, `Enter` | Select a comment, reveal its target and notes |
+| Pending comments | `⌘/Ctrl+Enter` | Copy & clear; comments stay intact if copying fails |
+| Review | `Esc` | Back one level, preserving unfinished drafts until reload |
+
+The current page follows navigation and panning. Hints use stable element IDs,
+exclude hidden/offscreen targets, and keep their codes while filtering.
+`Backspace` corrects a hint prefix; `Esc` cancels. Moving the viewport or updating
+the source cancels hints rather than reusing stale geometry. Letter shortcuts are
+suspended inside text inputs and during IME composition. Review mode does not
+add Vim text editing or bare-letter source-deletion commands.

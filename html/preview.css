@@ -2,7 +2,8 @@
 .html-heading a { color: var(--ui-muted); font-size: 12px; text-underline-offset: 3px; }
 .html-page { position: relative; width: 100%; background: white; box-shadow: 0 1px 3px #00000016, 0 12px 40px #0000000a; touch-action: none; -webkit-user-select: none; user-select: none; }
 /* Component outlines indicate focus without making the page look selected too. */
-.html-page:has(.html-outline):focus-visible { outline: none; }
+.html-page:has(.html-outline):focus-visible,
+.workspace:has(.review-hints) .html-page:focus-visible { outline: none; }
 .html-page iframe { position: absolute; inset: 0; border: 0; transform-origin: top left; pointer-events: none; }
 .html-outline { position: absolute; border: 1.5px solid var(--accent); background: #007bbb06; pointer-events: none; }
 .html-pin { position: absolute; z-index: 3; display: grid; place-items: center; border: 2px solid white; background: #007bbb; color: white; border-radius: 50%; min-width: 22px; height: 22px; padding: 0 4px; font-size: 11px; line-height: 1; }
@@ -19,3 +20,43 @@
 .html-diagnostics summary { cursor: pointer; }
 .html-diagnostics ul { position: absolute; right: 0; z-index: 10; width: min(340px, 70vw); max-height: 280px; overflow: auto; margin-top: 6px; padding: 14px 14px 14px 28px; border: 1px solid #efd5ab; border-radius: 10px; background: #fffcf7; box-shadow: 0 6px 20px #00000014; color: #4f402b; white-space: normal; }
 .html-diagnostics li + li { margin-top: 8px; }
+.shortcut-launcher { margin-left: auto; padding: 4px 9px; border-color: transparent; background: transparent; color: var(--ui-muted); }
+kbd { font: 11px ui-monospace, monospace; }
+.review-status { position: fixed; left: 24px; bottom: 24px; z-index: 35; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 112px); min-height: 34px; padding: 4px 12px 4px 4px; border: 1px solid var(--ui-border); border-radius: 8px; background: var(--ui-surface); box-shadow: 0 2px 8px #00000006; color: var(--ui-muted); font-size: 11px; }
+.review-status button { padding: 5px 8px; border-color: transparent; background: transparent; color: var(--ui-text); font: 11px ui-monospace, monospace; white-space: nowrap; }
+.review-status > kbd { color: var(--accent); font-weight: 600; }
+.review-page-number { padding-left: 12px; border-left: 1px solid var(--ui-border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.review-hints { position: fixed; inset: 0; z-index: 36; pointer-events: none; }
+.review-hints > svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--accent); stroke-width: 1; }
+.review-hints rect { stroke-opacity: .18; }
+.review-hints line { stroke-opacity: .7; }
+.review-hint { position: absolute; height: 22px; padding: 2px 4px; border: 1px solid #fff; border-radius: 4px; background: #006da7; color: white; box-shadow: 0 1px 4px #00000024; font: 600 12px/16px ui-monospace, monospace; text-transform: uppercase; pointer-events: auto; }
+.review-hint:hover:not(:disabled) { border-color: white; background: #005584; color: white; }
+.review-hint > span { color: #afdbf2; }
+.review-queue-heading { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.review-queue-heading > span { color: var(--ui-muted); font-size: 11px; }
+.revision-note-list li.review-note-active { background: var(--ui-selected); box-shadow: -8px 0 var(--ui-selected), 8px 0 var(--ui-selected); }
+.revision-note-target:focus-visible { outline-offset: 2px; }
+.revision-notes .primary kbd { opacity: .85; font: inherit; font-weight: 400; }
+.shortcut-help { width: 510px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 48px); padding: 24px; border: 1px solid var(--ui-border); border-radius: 14px; background: var(--ui-surface); color: var(--ui-text); box-shadow: var(--ui-shadow); font-size: 13px; overscroll-behavior: contain; }
+.shortcut-help::backdrop { background: #20202040; }
+.shortcut-help header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.shortcut-help h2 { font-size: 17px; }
+.shortcut-help header button { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border-color: transparent; background: transparent; font-size: 20px; color: var(--ui-muted); }
+.vim-toggle { display: flex; align-items: center; gap: 10px; font-weight: 500; cursor: pointer; }
+.vim-toggle input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+.shortcut-help > p { margin: 8px 0 20px; color: var(--ui-muted); font-size: 12px; }
+.shortcut-help h3 { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 0 10px; font-size: 13px; font-weight: 500; }
+.shortcut-help h3 span { color: var(--ui-muted); font-size: 11px; font-weight: 400; }
+.shortcut-help dl { display: grid; grid-template-columns: 128px 1fr; align-items: baseline; gap: 10px 12px; margin: 0; padding-top: 12px; border-top: 1px solid var(--ui-border); }
+.shortcut-help dt { color: var(--ui-muted); }
+.shortcut-help dd { margin: 0; }
+.shortcut-help kbd { padding: 2px 4px; border: 1px solid var(--ui-border); border-radius: 4px; background: var(--ui-subtle); color: var(--ui-text); white-space: nowrap; }
+@media (max-width: 600px) {
+  .review-status { left: 16px; bottom: 20px; gap: 6px; padding-right: 8px; max-width: calc(100vw - 96px); }
+  .review-status > span:not(.review-page-number) { display: none; }
+  .review-page-number { padding-left: 8px; }
+  .shortcut-help { padding: 18px; }
+  .shortcut-help dl { grid-template-columns: 110px 1fr; gap: 10px; font-size: 12px; }
+  .review-actions:has(kbd) { flex-wrap: wrap; }
+}

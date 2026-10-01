@@ -1,7 +1,17 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from "react";
 import { layoutPages } from "../lib/page-board.ts";
 
-export function PageBoard<Page extends { id: string; name: string; canvas: { width: number; height: number } }>({ draft, children }: { draft: { pages: Page[] }; children: (page: Page, index: number) => ReactNode }) {
+export type PageBoardControls = {
+  goTo: (id: string, fit?: boolean) => void;
+  pan: (x: number, y: number) => void;
+  zoom: (factor: number) => void;
+  stopZoom: () => void;
+};
+
+export function PageBoard<Page extends { id: string; name: string; canvas: { width: number; height: number } }>({ draft, children, controls, onActivePage }: {
+  draft: { pages: Page[] }; children: (page: Page, index: number) => ReactNode;
+  controls: RefObject<PageBoardControls | null>; onActivePage: (id: string) => void;
+}) {
   const root = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const [space, setSpace] = useState({ width: 0, height: 0 });
@@ -27,6 +37,19 @@ export function PageBoard<Page extends { id: string; name: string; canvas: { wid
     let scale = 1, goal = 1, gestureScale: number | undefined;
     let frame = 0, lastTime = 0, x = 0, y = 0, smooth = true;
     let anchorX = 0, anchorY = 0;
+    function activePage() {
+      const center = viewport.getBoundingClientRect().left + viewport.clientWidth / 2;
+      const pages = Array.from(root.current!.querySelectorAll<HTMLElement>(".board-page"));
+      const page = pages.reduce<HTMLElement | undefined>((nearest, page) => {
+        const rect = page.getBoundingClientRect(), previous = nearest?.getBoundingClientRect();
+        return !previous || Math.abs(rect.left + rect.width / 2 - center) < Math.abs(previous.left + previous.width / 2 - center) ? page : nearest;
+      }, undefined);
+      if (page?.dataset.page) onActivePage(page.dataset.page);
+    }
+    function stopZoom() {
+      cancelAnimationFrame(frame); frame = 0; goal = scale;
+      if (content.current) delete content.current.dataset.zooming;
+    }
     function animate(time: number) {
       frame = 0;
       const board = content.current;
@@ -42,6 +65,7 @@ export function PageBoard<Page extends { id: string; name: string; canvas: { wid
       viewport.scrollLeft += after.left + anchorX * next - x;
       viewport.scrollTop += after.top + anchorY * next - y;
       scale = next;
+      activePage();
       if (scale !== goal) frame = requestAnimationFrame(animate);
       else delete board.dataset.zooming;
     }
@@ -55,7 +79,27 @@ export function PageBoard<Page extends { id: string; name: string; canvas: { wid
       content.current.dataset.zooming = "true";
       if (!frame) { lastTime = performance.now(); frame = requestAnimationFrame(animate); }
     }
+    controls.current = {
+      stopZoom,
+      goTo(id, fit = false) {
+        const page = root.current!.querySelector<HTMLElement>(`.board-page[data-page="${CSS.escape(id)}"]`);
+        if (!page || !content.current) return;
+        stopZoom();
+        if (fit) { scale = goal = 1; content.current.style.zoom = "1"; }
+        const rect = page.getBoundingClientRect(), bounds = viewport.getBoundingClientRect();
+        viewport.scrollLeft += rect.left + rect.width / 2 - bounds.left - viewport.clientWidth / 2;
+        viewport.scrollTop += rect.top + rect.height / 2 - bounds.top - viewport.clientHeight / 2;
+        onActivePage(id);
+      },
+      pan(dx, dy) { stopZoom(); viewport.scrollLeft += dx; viewport.scrollTop += dy; activePage(); },
+      zoom(factor) {
+        const bounds = viewport.getBoundingClientRect();
+        zoomAt(goal * factor, bounds.left + viewport.clientWidth / 2, bounds.top + viewport.clientHeight / 2, true);
+      },
+    };
     function wheel(event: WheelEvent) {
+      // Floating review panels own their scrolling, not the canvas beneath them.
+      if ((event.target as Element).closest(".revision-notes,dialog")) return;
       if (!event.ctrlKey && !event.metaKey) {
         // A fitted row has no vertical travel. Let a plain mouse wheel navigate
         // it, while preserving native two-axis panning when zoomed in.
@@ -78,14 +122,21 @@ export function PageBoard<Page extends { id: string; name: string; canvas: { wid
       else if (event.type === "gestureend") gestureScale = undefined;
       else if (gestureScale !== undefined) zoomAt(gestureScale * pinch.scale, pinch.clientX, pinch.clientY, false);
     }
+    const observer = new ResizeObserver(activePage);
+    observer.observe(root.current!);
+    observer.observe(viewport);
+    viewport.addEventListener("scroll", activePage);
     viewport.addEventListener("wheel", wheel, { passive: false });
     for (const type of ["gesturestart", "gesturechange", "gestureend"]) viewport.addEventListener(type, gesture, { passive: false });
     return () => {
       cancelAnimationFrame(frame);
+      controls.current = null;
+      observer.disconnect();
+      viewport.removeEventListener("scroll", activePage);
       viewport.removeEventListener("wheel", wheel);
       for (const type of ["gesturestart", "gesturechange", "gestureend"]) viewport.removeEventListener(type, gesture);
     };
-  }, []);
+  }, [controls, onActivePage]);
   const layout = layoutPages(draft.pages.map(page => page.canvas), space.width, space.height);
   return <div ref={root} className="page-board" style={{ minHeight: space.height }} aria-label="All pages in reading order">
     {space.width > 0 && <div ref={content} className="page-board-content" style={{ width: layout.width, height: layout.height, zoom: 1 }}>
