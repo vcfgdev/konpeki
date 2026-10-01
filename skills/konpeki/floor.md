@@ -71,6 +71,6 @@ The brief or a theme's `NOTES.md` may override these, explicitly.
 - `text-overflow`, `clipped-text`, `text-overlap`, `page-overflow` (inspect):
   Nothing leaves the page, hides behind a clip or collides. Recompose; do not
   hide, truncate or shrink required copy.
-- `font-fallback` (inspect): Every glyph comes from a bundled font. The bundled
-  Plex subsets lack arrows (→), comparison signs (≥) and check marks (✓): draw
-  them in SVG or write them out.
+- `font-fallback` (inspect): Every glyph comes from a loaded webfont, whether
+  Google-hosted, local, or embedded. Supply the required subsets, weights, and
+  styles; do not rely on installed-font fallback or synthesized faces.

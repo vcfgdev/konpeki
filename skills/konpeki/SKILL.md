@@ -48,8 +48,9 @@ and the relevant pattern section. Start freely when none fits exactly.
 
 1. Choose the user's document path. For a new document, run
    `node scripts/prepare-document.mjs <cli> <document.html>` to place a validated
-   starter, theme, bundled fonts, and font license beside it without overwriting
-   existing files.
+   starter and theme stylesheets beside it without overwriting existing files.
+   The default theme uses Google Fonts; use local or embedded fonts for offline
+   or reproducible rendering.
 2. Reread any existing source before changing it. Preserve stable IDs, facts,
    provenance, deliberate human edits, and unrelated or newer changes.
 3. Plan each page before writing HTML, in your working notes: its format and

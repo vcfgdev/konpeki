@@ -1,6 +1,8 @@
 # Use a theme
 
-Link `theme.css`; keep its imported CSS, fonts and licenses beside the document.
+Link `theme.css` and keep `theme-base.css` beside it. The default loads Google
+Fonts and needs network access. A document may instead use local or embedded
+fonts; keep any local files and their licenses beside it.
 Use the tokens below without reading their CSS values. `inspect` reports resolved
 type sizes, leading, weights and families under each page's `theme.type`.
 Theme construction and diagnostics are in [Author a theme](theme-authoring.md).

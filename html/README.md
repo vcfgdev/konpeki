@@ -77,8 +77,10 @@ type treatments under `theme.type`, so authors can plan with the actual sizes.
 
 CLI inspection checks which fonts actually drew the text. Installed-font fallback
 is an error, including on unthemed pages. Both CLI and preview check declared
-weight/style coverage; only CLI can audit actual glyph fallback. Bundle the
-required licensed faces and subsets instead of relying on the machine.
+weight/style coverage; only CLI can audit actual glyph fallback. Load the required
+licensed faces and subsets from Google Fonts, local files, or embedded data
+instead of relying on the machine. The default theme uses Google Fonts and needs
+network access during preview and export; finished PNGs and PDFs do not.
 
 HTML overlap uses estimated line-height boxes rather than raw font rectangles;
 SVG, normal leading and transformed text retain range bounds. These are not glyph

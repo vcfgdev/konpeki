@@ -47,7 +47,7 @@ mise exec -- pnpm install --frozen-lockfile
 mise exec -- node bin/konpeki.mjs browser install
 ```
 
-Create a starter with its theme and bundled fonts beside it, then run the loop:
+Create a starter with its theme beside it, then run the loop:
 
 ```sh
 node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs work/document.html
@@ -91,9 +91,14 @@ changes stay local until a separately authorized release or deployment.
 
 ## Theme
 
-Konpeki bundles one theme, Cobalt: cobalt blue on a light canvas with local IBM
-Plex Sans and Mono. Its CSS contract lets a brief supply its own visual treatment
-by adapting a copy; composition stays in HTML and page-owned CSS.
+Konpeki bundles one theme, Cobalt: cobalt blue on a light canvas with IBM Plex
+Sans and Mono from Google Fonts. Its CSS contract lets a brief supply its own
+visual treatment by adapting a copy; composition stays in HTML and page-owned CSS.
+
+The default theme needs access to Google Fonts during preview, inspection, and
+export. Exports fail if fonts cannot load or glyphs fall back to installed fonts.
+For offline or reproducible rendering, use licensed local or embedded fonts in
+the document's theme. Finished PNGs and PDFs need no network access.
 
 ## Documentation
 
@@ -107,6 +112,4 @@ by adapting a copy; composition stays in HTML and page-owned CSS.
 
 ## License
 
-[Apache-2.0](LICENSE). Bundled IBM Plex Sans and Mono files retain the SIL
-Open Font Licenses in [`fonts/OFL.txt`](fonts/OFL.txt) and
-[`fonts/plex-mono-OFL.txt`](fonts/plex-mono-OFL.txt).
+[Apache-2.0](LICENSE). Fonts and other dependencies retain their own licenses.

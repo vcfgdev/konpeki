@@ -51,9 +51,10 @@ checkout or a compatible locally installed `konpeki` package and prints its CLI
 location; it does not download or modify a runtime.
 
 `prepare-document.mjs` takes `<cli> <document.html>`. It creates the starter HTML,
-`theme.css`, `theme-base.css`, bundled IBM Plex Sans and Mono font files, and
-their licenses beside the document. It validates the result and never overwrites
-existing files:
+`theme.css`, and `theme-base.css` beside the document. It validates the result
+and never overwrites existing files. The default theme loads IBM Plex Sans and
+Mono from Google Fonts, so preview and export need network access. For offline
+rendering, adapt the document's theme to use licensed local or embedded fonts.
 
 ```sh
 node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html

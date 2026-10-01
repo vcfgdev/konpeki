@@ -25,7 +25,7 @@ AUTHORING.md. Notes do not add tokens or change the checks.
 Every role has `--kp-font-ROLE`, `--kp-leading-ROLE`, `--kp-weight-ROLE`, and
 `--kp-tracking-ROLE`. Sizes and leading resolve through custom properties to
 literal positive pixel lengths such as `24px`; v1 does not accept `rem` or `calc()`
-for these slots. Weights must have bundled faces; tracking uses `em` or `px`.
+for these slots. Weights must have declared webfont faces; tracking uses `em` or `px`.
 These names form complete treatments, not independent invitations to mix seven
 sizes with seven line heights.
 
@@ -105,18 +105,21 @@ the page's own values. Keep preset dimensions stable across themes.
 ## Create a theme
 
 When a brief brings its own look, adapt a copy of [`theme.css`](../theme.css).
-Keep `theme-base.css`, the referenced font files, and their licenses beside it.
+Keep `theme-base.css` and any local font files and their licenses beside it.
 Change token values and font declarations in the copy.
 The HTML continues to link only `theme.css`; its first rule imports the local
 base. Keep that import before font faces and other rules.
 
-The bundled default uses IBM Plex Sans Latin normal 400/600/700, italic 400,
-and Plex Mono Latin normal 400 for code. Font files come from Fontsource 5.3.0 and retain their licenses in
-`fonts/OFL.txt` and `fonts/plex-mono-OFL.txt`.
-Bundle additional licensed subsets, weights, and styles when needed. Loading a
-font does not prove it covers every glyph: these files do not cover CJK or bold
-italics. Do not depend on a machine's installed fonts or synthesized
-faces for required content.
+The default requests IBM Plex Sans normal 400/600/700, italic 400, and Plex Mono
+normal 400 from Google Fonts. Preview and export need access to
+`fonts.googleapis.com` and `fonts.gstatic.com`; remote updates may change font
+metrics. Use licensed local files or embedded font data for offline or
+reproducible rendering.
+
+Supply additional subsets, weights, and styles when needed. Loading a font does
+not prove it covers every glyph. Do not depend on a machine's installed fonts
+or synthesized faces for required content. Font-load failures and installed-font
+fallback remain export errors regardless of where the declared fonts are hosted.
 
 ## Verify a theme
 
