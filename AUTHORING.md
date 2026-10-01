@@ -17,6 +17,12 @@ for source and tool rules, use the [HTML reference](html/README.md).
 
 ## Adapt content to the format
 
+Read the matching [output guide](skills/konpeki/SKILL.md#choose-the-output-guide)
+for slides, résumés, long documents, one-pagers/cards, or covers/social graphics.
+Use [content patterns](skills/konpeki/references/patterns.md) only for the charts,
+tables, comparisons, processes, systems, or annotations that occur in the work.
+They guide decisions, not fixed templates or a placement grid.
+
 Specify required facts per format, not on every page of a multi-format set.
 Keep a qualification wherever its claim appears, and retain required disclosure.
 Preserve the same headline wording across announcement formats; change its
@@ -49,8 +55,11 @@ good composition or honest visual encoding.
 
 Budget space for the headline, chart or table, sources and caveats together.
 Prefer flow or grid rows over absolute positions for text that can wrap after a
-theme swap. On contrasting fields, explicitly set the ink of nested type roles
-and code too: their defaults may replace the parent's color.
+theme swap. Avoid guessed fixed-height paragraph boxes and manual line breaks
+that imitate wrapping. Judge visible text as well as its CSS box: line height,
+padding, and font metrics affect perceived gaps and alignment. On contrasting
+fields, explicitly set the ink of nested type roles and code too: their defaults
+may replace the parent's color.
 
 Use diagrams, annotated artifacts, charts, or comparisons only when they make
 real relationships easier to grasp. Use arrows sparingly and keep semantic

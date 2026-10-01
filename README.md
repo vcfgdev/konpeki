@@ -13,8 +13,11 @@ service. Your coding agent's pricing and data handling still apply.
 ## How it works
 
 The [Konpeki skill](skills/konpeki/SKILL.md) owns the authoring workflow. The
-agent writes static HTML with fixed-size pages, then repeats a short loop until
-the pages are sound:
+agent reads shared guidance, the matching [output guide](skills/konpeki/SKILL.md#choose-the-output-guide),
+and relevant content patterns. Guides cover landscape slides, résumés, multi-page
+documents, one-pagers/cards, and covers/social graphics without imposing fixed
+layouts. The agent writes static HTML with fixed-size pages, then repeats a
+short loop until the pages are sound:
 
 1. `validate` checks the source contract: explicit pages, stable IDs, local
    resources, and no scripts.

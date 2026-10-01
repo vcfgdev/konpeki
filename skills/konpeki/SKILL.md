@@ -1,6 +1,6 @@
 ---
 name: konpeki
-description: Creates, checks, renders, and revises static HTML visuals. Use for covers, social graphics, charts, diagrams, explainers, documents, or presentations.
+description: Creates, checks, renders, and revises static HTML visuals. Use for landscape slides, résumés, multi-page documents, one-pagers/cards, and covers/social graphics, including charts and diagrams within them.
 compatibility: Requires Node.js 24+, file and command access, and a prepared Konpeki checkout or locally packed installation. Inspection and export require pinned Chromium.
 ---
 
@@ -22,6 +22,27 @@ than requiring an outline or design checkpoint, unless the user requests one.
 3. Ground the work in the requested audience, takeaway, supplied evidence,
    destination, and output format. Ask only when missing facts or conflicting
    constraints prevent faithful work.
+4. Infer the format and read its guide below. Read only the relevant sections
+   of [content patterns](references/patterns.md) when the work includes a chart,
+   table, comparison, process, system map, hierarchy, or annotated detail.
+
+## Choose the output guide
+
+These guides cover content, layout, and review decisions, not fixed templates
+or a placement grid. The brief overrides format defaults, never accuracy,
+readability, or the floor's bans. Do not ask the user to choose a taxonomy.
+
+| Requested output | Read |
+| --- | --- |
+| Landscape presentation or deck | [Slides](references/slides.md) |
+| Résumé or CV | [Résumé](references/resume.md) |
+| Report, essay, proposal, or other sustained multi-page reading | [Long document](references/long-document.md) |
+| Bounded brief, reference sheet, one-pager, or card at A4 or another size | [One-pager/card](references/one-pager.md) |
+| Cover, thumbnail, link preview, or social graphic | [Cover/social graphic](references/cover.md) |
+
+For a mixed-format request, read each applicable guide. A one-page résumé still
+uses the résumé guide; a diagram within a report uses the long-document guide
+and the relevant pattern section. Start freely when none fits exactly.
 
 ## Create or revise
 

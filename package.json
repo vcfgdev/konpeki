@@ -34,6 +34,7 @@
     "plugin.json",
     "skills/konpeki/SKILL.md",
     "skills/konpeki/floor.md",
+    "skills/konpeki/references/*.md",
     "skills/konpeki/scripts/*.mjs",
     "skills/konpeki/assets/blank.html",
     "html/*.{ts,tsx,css,html,md}",
