@@ -17,8 +17,10 @@ Apply the [shared guidance](../SKILL.md#before-authoring) and the
   placement requirements or verify the destination when placement is critical.
 - Use supplied or approved imagery and preserve its meaning. Do not stretch
   images, crop away evidence, or imply an unverified product interface is real.
-- Balance text and imagery as one composition. Do not add badges, eyebrows,
-  metadata, or a call to action simply because other covers contain them.
+- For mixed compositions, use [text with visuals](patterns.md#text-with-visuals)
+  to choose the image role, crop, text region, and any edge or contrast treatment.
+  Do not add badges, eyebrows, metadata, or a call to action simply because other
+  covers contain them.
 
 Inspect both the full-resolution export and a reduced preview at the intended
 viewing size. Verify the headline remains legible and essential details survive

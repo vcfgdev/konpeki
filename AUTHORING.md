@@ -19,8 +19,8 @@ for source and tool rules, use the [HTML reference](html/README.md).
 
 Read the matching [output guide](skills/konpeki/SKILL.md#choose-the-output-guide)
 for slides, résumés, long documents, one-pagers/cards, or covers/social graphics.
-Use [content patterns](skills/konpeki/references/patterns.md) only for the charts,
-tables, comparisons, processes, systems, or annotations that occur in the work.
+Use [content patterns](skills/konpeki/references/patterns.md) for text with visuals,
+charts, tables, comparisons, processes, systems, or annotations in the work.
 They guide decisions, not fixed templates or a placement grid.
 
 Specify required facts per format, not on every page of a multi-format set.

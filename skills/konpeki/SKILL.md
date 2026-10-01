@@ -23,8 +23,9 @@ than requiring an outline or design checkpoint, unless the user requests one.
    destination, and output format. Ask only when missing facts or conflicting
    constraints prevent faithful work.
 4. Infer the format and read its guide below. Read only the relevant sections
-   of [content patterns](references/patterns.md) when the work includes a chart,
-   table, comparison, process, system map, hierarchy, or annotated detail.
+   of [content patterns](references/patterns.md) when the work mixes text with
+   visuals or includes a chart, table, comparison, process, system map,
+   hierarchy, or annotated detail.
 
 ## Choose the output guide
 

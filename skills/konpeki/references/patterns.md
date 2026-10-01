@@ -6,6 +6,49 @@ Choose by the audience's question, not a favorite layout. Plain text or an image
 may be enough. Infer the form without asking the user to choose a diagram taxonomy;
 preserve an explicitly requested form unless a change is agreed.
 
+## Text with visuals
+
+Use when text shares a composition with photography, screenshots, illustrations,
+charts, diagrams, or other graphic elements, in any output format.
+
+- Decide the visual's role: evidence, explanation, main subject, or atmosphere.
+  A chart remains evidence even when it looks decorative. A screenshot may
+  contain text the reader needs to read; budget for that at delivery size.
+  Keep supporting text that adds meaning, not a caption just to fill a region.
+- Plan the crop, focal subject, and text region together before filling the
+  page. Keep text clear of faces, subjects, meaningful details, and data marks.
+  Do not finish the visual and squeeze required copy into the remaining space.
+- Use side-by-side regions when text and visual explain each other and both
+  remain readable. Stack them when the format is narrow or the visual needs
+  full width. Overlay text when the image has a suitable text region or its
+  atmosphere should fill the composition. These are choices, not fixed templates.
+- For two columns, give text the claim and interpretation, and the visual the
+  evidence or explanation; avoid repetition. Allocate width for readable visual
+  details and a useful text measure, not an automatic 50/50 split. Align meaningful
+  anchors such as the headline and plot area, accounting for whitespace inside
+  an image. Keep captions, units, legends, and sources with their visual. Recompose
+  into stacked regions rather than squeezing both columns in a narrow format.
+- First find a readable text region through placement: beside the visual or
+  in quiet image space. Add an opaque field over an image only when needed for
+  required text, not to demonstrate a treatment. Separate regions need not be
+  cards, and white is only one field color. Set its ink explicitly, including
+  nested type roles; a contrast field should not obscure meaningful content.
+- Use local darkening or lightening to support text when the image can retain
+  its meaning. Use an edge gradient or mask when an atmospheric image needs to
+  blend into the surrounding field; a clean edge is equally valid. Apply the
+  effect to the image or a separate overlay, never to the text or a shared
+  parent. Do not use text shadows as a substitute for a readable region.
+- Keep informational visuals intact. Do not fade chart marks or axes, hide
+  screenshot details, or turn a meaningful diagram into background texture.
+  Place explanations near what they qualify, with clearance from marks and
+  labels. Preserve aspect ratio and meaningful relative scale; identify crops
+  and alterations when they could change how evidence is interpreted.
+- Review the final crop at delivery size and reduced size, not just enlarged.
+  Include captions, sources, and qualifications in that review. Check local
+  contrast under every line, subject visibility, effect boundaries, and whether
+  the visual still communicates its purpose. Solid-color contrast checks cannot
+  establish readability over images, gradients, or masks.
+
 ## Charts and quantities
 
 - Choose the encoding for the question: comparison, change over time,
