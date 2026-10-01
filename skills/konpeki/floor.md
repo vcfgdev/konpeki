@@ -51,6 +51,11 @@ The brief or a theme's `NOTES.md` may override these, explicitly.
 - `grouping` (review): Space shows grouping: an item sits closer to what it
   qualifies than to the next subject, and true peers share size, weight and
   treatment. New edges align with existing ones.
+- `page-footer` (review): Keep page-level source notes and page numbers together
+  in a reserved footer, clear of body content. Reserve that space in the first
+  layout, not after filling the page. Do not pin the page number independently
+  while leaving its source note in body flow. Citations that explain a specific
+  figure or claim still belong beside that content.
 - `diagram-economy` (review): A diagram uses at most three box styles, each with
   a meaning. Arrowheads scale with the stroke (`markerUnits="strokeWidth"`) and
   stay clear of labels.

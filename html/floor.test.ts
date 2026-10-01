@@ -19,6 +19,7 @@ test("every floor rule has one ID, and inspect rules are emitted under that ID",
   assert.equal(checklist.length, rules.filter(rule => rule.check === "review").length);
   assert(checklist.every(line => /^[a-z-]+: .+\.$/.test(line)), checklist.join("\n"));
   assert.match(checklist.find(line => line.startsWith("slogan-copy"))!, /"Not a feature\. A platform\.".+em dashes\.$/);
+  assert.match(checklist.find(line => line.startsWith("page-footer"))!, /source notes and page numbers together in a reserved footer, clear of body content\./);
 });
 
 test("labels above headlines and stranded words are flagged, deliberate structure is not", async t => {
