@@ -1,7 +1,7 @@
 ---
 name: konpeki
 description: Creates, checks, renders, and revises static HTML visuals. Use for landscape slides, résumés, multi-page documents, one-pagers/cards, and covers/social graphics, including charts and diagrams within them.
-compatibility: Requires Node.js 24+, file and command access, and a prepared Konpeki checkout or locally packed installation. Inspection and export require pinned Chromium.
+compatibility: Requires Node.js 24+, file and command access, and a matching Konpeki runtime installed in the workspace or a prepared checkout. Inspection and export require pinned Chromium.
 ---
 
 # Konpeki

@@ -54,8 +54,9 @@ export function patchSource(source: string, edit: Edit) {
     fail("Invalid correction.");
   // Parse the authored CSS, not CSSOM's normalized serialization. PostCSS keeps
   // unrelated declaration values, comments and whitespace, including hex colors.
+  // Inline styles have no source maps; never follow authored sourceMappingURLs.
   let css;
-  try { css = postcss.parse(attr(node, "style") ?? ""); }
+  try { css = postcss.parse(attr(node, "style") ?? "", { map: false }); }
   catch { fail("The inline style could not be parsed. Correct it in source before moving."); }
   const declarations = css.nodes.filter(n => n.type === "decl" && n.prop.toLowerCase() === "translate");
   for (const declaration of declarations) if (declaration.type === "decl") declaration.value = edit.translate;

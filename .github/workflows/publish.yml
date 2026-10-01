@@ -34,6 +34,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/release" "$RUNNER_TEMP/smoke"
           mise exec -- npm pack --pack-destination "$RUNNER_TEMP/release"
           mise exec -- npm install --prefix "$RUNNER_TEMP/smoke" --no-audit --no-fund "$RUNNER_TEMP/release/konpeki-$GITHUB_REF_NAME.tgz"
+          mise exec -- npm audit --prefix "$RUNNER_TEMP/smoke" --omit=dev
           cp skills/konpeki/assets/blank.html "$RUNNER_TEMP/smoke/document.html"
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" validate "$RUNNER_TEMP/smoke/document.html"
           mise exec -- node "$RUNNER_TEMP/smoke/node_modules/konpeki/runtime/konpeki.mjs" inspect "$RUNNER_TEMP/smoke/document.html"

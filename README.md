@@ -37,25 +37,25 @@ real products.
 
 ## Quick start
 
-Konpeki 0.4.0 runs from a source checkout or a locally packed tarball. With
-[mise](https://mise.jdx.dev/) installed:
+Use Node.js 24+ and install the exact version in your document workspace.
+Check availability with `npm view konpeki@0.4.0 version`; if the registry does not
+have it, use a [source checkout or local tarball](SETUP.md) instead. The 0.3.x
+runtime is incompatible with this workflow.
 
 ```sh
-git clone https://github.com/vcfgdev/konpeki.git && cd konpeki
-mise trust && mise install
-mise exec -- pnpm install --frozen-lockfile
-mise exec -- node bin/konpeki.mjs browser install
+npm install --save-exact konpeki@0.4.0
+npx --no-install konpeki browser install
 ```
 
 Create a starter with its theme beside it, then run the loop:
 
 ```sh
-node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs work/document.html
-node bin/konpeki.mjs validate work/document.html
-node bin/konpeki.mjs inspect work/document.html
-node bin/konpeki.mjs render work/document.html --page 1 --format png --scale 2 --output work/page-1.png
-node bin/konpeki.mjs render work/document.html --format pdf --output work/document.pdf
-node bin/konpeki.mjs preview work/document.html
+node node_modules/konpeki/skills/konpeki/scripts/prepare-document.mjs node_modules/konpeki/runtime/konpeki.mjs work/document.html
+npx --no-install konpeki validate work/document.html
+npx --no-install konpeki inspect work/document.html
+npx --no-install konpeki render work/document.html --page 1 --format png --scale 2 --output work/page-1.png
+npx --no-install konpeki render work/document.html --format pdf --output work/document.pdf
+npx --no-install konpeki preview work/document.html
 ```
 
 The browser is needed for `inspect`, `check` and `render`, not for `preview`. On
@@ -71,19 +71,20 @@ Installing the skill does not install the runtime. The skill's
 `ensure-runtime.mjs` finds a Konpeki 0.4.0 checkout or a `konpeki` package
 installed in the current workspace, and never downloads one.
 
-## Status and installation
+## Upgrading from 0.3.x
 
-Konpeki 0.4.0 is not on npm. The `konpeki` package currently on npm (0.3.x) is an
-earlier release that the 0.4.0 skill does not accept, so `npm install konpeki`
-does not give you this version. Use a prepared source checkout, or pack a tarball
-from a trusted checkout and install it by path:
+0.4.0 replaces JSON compositions and the previous editing engine with static
+HTML/CSS. Old JSON files do not open in this version, and there is no automatic
+conversion. Keep an isolated 0.3.x installation for old work, or recreate it in
+HTML while preserving its facts, assets and intended layout.
 
-```sh
-mise exec -- pnpm pack
-npm install --no-save /path/to/konpeki-0.4.0.tgz
-```
-
-See [SETUP.md](SETUP.md) for both paths.
+- Delivery formats are PNG and PDF; SVG can be authored inline, but is not an
+  export format. Inspection and export require the pinned Chromium.
+- Review uses browser-local comments and **Copy & clear**, not the old
+  `wait` / `request` / `finish` CLI protocol. Update the skill and runtime together.
+- Cobalt is the single bundled theme. Its Google Fonts dependency requires
+  network access unless you adapt the theme to local or embedded fonts.
+- Review includes opt-in [Vim keyboard navigation and element hints](html/README.md#keyboard-review).
 
 The [public comment preview](https://vcfgdev.github.io/konpeki/) opens the
 packaged starter. Use the CLI's `preview` to review your own document; local

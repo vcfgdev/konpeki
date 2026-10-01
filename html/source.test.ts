@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { execFileSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { isAbsolute, join } from "node:path";
@@ -11,6 +12,32 @@ test("patches only translate while preserving authored CSS values", () => {
   const result = patchSource(styled, { kind: "move", page: "one", id: "target", translate: "12px -6px" });
   assert.match(result, /color: #1d4ed8; \/\* keep \*\/ --label: &quot;A&amp;B; C&quot;; --custom: calc\(10% \+ 2px\);? translate: 12px -6px;/);
   assert.equal(result.replace(/ style="[^"]*"/, " STYLE"), styled.replace(/ style='[^']*'/, " STYLE"));
+});
+test("moves preserve source-map comments without reading files or decoding embedded maps", async t => {
+  const dir = await mkdtemp(join(tmpdir(), "konpeki-map-test-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const map = join(dir, "private.map");
+  await writeFile(map, JSON.stringify({ version: 3, sources: ["private.js"], sourcesContent: ["private test data"], names: [], mappings: "" }));
+  // Install the file-read probe before loading PostCSS in an isolated process.
+  const reads = execFileSync(process.execPath, ["--input-type=module", "-e", `
+    import fs from "node:fs";
+    const original = fs.readFileSync;
+    let reads = 0;
+    fs.readFileSync = function (path, ...args) {
+      if (String(path) === process.argv[1]) reads++;
+      return original.call(this, path, ...args);
+    };
+    const { patchSource } = await import(process.argv[2]);
+    patchSource('<main id="p" data-page><p id="t" style="color:red;/*# sourceMappingURL=' + process.argv[1] + ' */">Text</p></main>',
+      { kind: "move", page: "p", id: "t", translate: "13px -7px" });
+    console.log(reads);
+  `, map, new URL("./source.ts", import.meta.url).href], { encoding: "utf8" });
+  assert.equal(reads.trim(), "0", "an authored sourceMappingURL must never read a file");
+  const comment = `/*# sourceMappingURL=data:application/json;base64,${Buffer.from("not JSON").toString("base64")} */`;
+  const input = source.replace(`color: red; --label: "A&amp;B"`, `color: red; ${comment}`);
+  const result = patchSource(input, { kind: "move", page: "one", id: "target", translate: "13px -7px" });
+  assert(result.includes(comment), "source-map comments stay untouched, even when their payload is invalid");
+  assert.match(result, /translate: 13px -7px;/);
 });
 test("inserts style without rewriting other attributes; deletes only the selected subtree", () => {
   const result = patchSource(source, { kind: "move", page: "one", id: "other", translate: "-7px 19px" });

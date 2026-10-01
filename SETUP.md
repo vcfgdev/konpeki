@@ -1,15 +1,33 @@
 # Set up Konpeki
 
-Konpeki 0.4.0 is not on npm. The `konpeki` package on npm (0.3.x) is an earlier
-release that this skill does not accept. Use a source checkout or a tarball packed
-locally from a trusted checkout, and do not describe the repository version as a
-published release.
+Use Node.js 24+ and the matching Konpeki 0.4.0 runtime and skill. A repository
+version or locally packed tarball does not establish that the npm release exists.
+
+## npm package
+
+Check the exact version before installing:
+
+```sh
+npm view konpeki@0.4.0 version
+```
+
+If it returns `0.4.0`, install in the workspace that will author your documents:
+
+```sh
+npm install --save-exact konpeki@0.4.0
+npx --no-install konpeki browser install
+```
+
+Run commands with `npx --no-install konpeki`. If the version is unavailable, use
+one of the local paths below; do not substitute the incompatible 0.3.x runtime.
 
 ## Source checkout
 
-Use the versions pinned by `mise.toml`:
+With [mise](https://mise.jdx.dev/) installed, use the pinned toolchain:
 
 ```sh
+git clone https://github.com/vcfgdev/konpeki.git
+cd konpeki
 mise trust
 mise install
 mise exec -- pnpm install --frozen-lockfile
@@ -35,8 +53,8 @@ mise exec -- pnpm pack
 
 Install the resulting `.tgz` by local path in the workspace that will author the
 document, for example `npm install --no-save /path/to/konpeki-0.4.0.tgz`. This is
-a local package install, not evidence of an npm release. Run its CLI with the
-workspace package runner and install its browser before inspection or export.
+a local package install, not evidence of an npm release. Run its CLI with
+`npx --no-install konpeki` and install its browser before inspection or export.
 
 ## Skill helpers
 
@@ -57,5 +75,9 @@ Mono from Google Fonts, so preview and export need network access. For offline
 rendering, adapt the document's theme to use licensed local or embedded fonts.
 
 ```sh
-node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html
+node node_modules/konpeki/skills/konpeki/scripts/prepare-document.mjs node_modules/konpeki/runtime/konpeki.mjs document.html
 ```
+
+From a source checkout, use
+`mise exec -- node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html`.
+See [Upgrading from 0.3.x](README.md#upgrading-from-03x) before migrating old work.
