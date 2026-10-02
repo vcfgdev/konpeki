@@ -68,11 +68,13 @@ npx skills add vcfgdev/konpeki -g
 checkout or a compatible locally installed `konpeki` package and prints its CLI
 location; it does not download or modify a runtime.
 
-`prepare-document.mjs` takes `<cli> <document.html>`. It creates the starter HTML,
-`theme.css`, and `theme-base.css` beside the document. It validates the result
-and never overwrites existing files. The default theme loads IBM Plex Sans and
-Mono from Google Fonts, so preview and export need network access. For offline
-rendering, adapt the document's theme to use licensed local or embedded fonts.
+`prepare-document.mjs` takes `<cli> <document.html> [--template blank|x-post]`.
+It creates the selected starter HTML (blank by default), `theme.css`, and
+`theme-base.css` beside the document. It validates the result and never overwrites
+existing files, even when a different template is requested. The default theme
+loads IBM Plex Sans and Mono from Google Fonts, so preview and export need network
+access. For offline rendering, adapt the document's theme to use licensed local
+or embedded fonts.
 
 ```sh
 node node_modules/konpeki/skills/konpeki/scripts/prepare-document.mjs node_modules/konpeki/runtime/konpeki.mjs document.html
@@ -80,4 +82,7 @@ node node_modules/konpeki/skills/konpeki/scripts/prepare-document.mjs node_modul
 
 From a source checkout, use
 `mise exec -- node skills/konpeki/scripts/prepare-document.mjs bin/konpeki.mjs document.html`.
+Append `--template x-post` for a light/dark post card with optional local media.
+See the [post-card guide](skills/konpeki/references/cover.md#x-style-post-card)
+for editing its content, appearance, size and attribution.
 See [Upgrading from 0.3.x](README.md#upgrading-from-03x) before migrating old work.

@@ -35,6 +35,7 @@
     "skills/konpeki/references/*.md",
     "skills/konpeki/scripts/*.mjs",
     "skills/konpeki/assets/blank.html",
+    "skills/konpeki/assets/x-post.html",
     "html/*.{ts,tsx,css,html,md}",
     "runtime/**/*.{mjs,js}",
     "index.html",

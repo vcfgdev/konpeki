@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 
 try {
   const [cli, input, ...extra] = process.argv.slice(2);
-  if (!cli || !input || extra.length) throw new Error("Usage: node prepare-document.mjs <cli> <document.html>");
+  if (!cli || !input || (extra.length && (extra.length !== 2 || extra[0] !== "--template")))
+    throw new Error("Usage: node prepare-document.mjs <cli> <document.html> [--template blank|x-post]");
+  const templateName = extra[1] ?? "blank";
+  if (!["blank", "x-post"].includes(templateName)) throw new Error(`Unknown template: ${templateName}. Choose blank or x-post.`);
   if (!/\.html?$/i.test(input)) throw new Error("Use an .html document path.");
   const documentPath = resolve(input);
   function validate(path) {
@@ -18,9 +21,9 @@ try {
   }
   let created = false;
   if (!existsSync(documentPath)) {
-    const template = fileURLToPath(new URL("../assets/blank.html", import.meta.url));
+    const template = fileURLToPath(new URL(`../assets/${templateName}.html`, import.meta.url));
     validate(template);
-    const blank = readFileSync(template);
+    const source = readFileSync(template);
     const root = resolve(dirname(cli), "..");
     const assets = new Map([["theme.css", join(root, "theme.css")], ["theme-base.css", join(root, "theme-base.css")]]);
     // Preflight every asset before writing any: never replace an author's
@@ -36,7 +39,7 @@ try {
       catch (error) { if (error.code !== "EEXIST") throw error; }
     }
     try {
-      writeFileSync(documentPath, blank, { flag: "wx" });
+      writeFileSync(documentPath, source, { flag: "wx" });
       created = true;
     } catch (error) {
       // Another initializer may have created it; reopen, never replace it.

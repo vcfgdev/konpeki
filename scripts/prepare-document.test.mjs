@@ -28,3 +28,27 @@ test("prepares a portable default starter without replacing existing work", asyn
   assert.throws(() => run(join(dir, "themed.html"), "--theme", "dark"), /Usage/);
   await assert.rejects(readFile(join(dir, "themed.html")), /ENOENT/);
 });
+
+test("selects the post starter and rejects unknown templates without changing files", async t => {
+  const dir = await mkdtemp(join(tmpdir(), "konpeki-prepare-post-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const file = join(dir, "post.html");
+  for (const args of [["--template"], ["--template", "x-post", "extra"], ["--template", "../blank"], ["--template", "unknown"]]) {
+    assert.throws(() => run(file, ...args), /Usage|Unknown template/);
+    assert.deepEqual(await readdir(dir), []);
+  }
+  assert.deepEqual(run(file, "--template", "x-post"), { documentPath: file, created: true });
+  assert.deepEqual(await readFile(file), await readFile(join(root, "skills/konpeki/assets/x-post.html")));
+  for (const asset of ["theme.css", "theme-base.css"])
+    assert.deepEqual(await readFile(join(dir, asset)), await readFile(join(root, asset)));
+  const authored = (await readFile(file, "utf8")).replace('class="post-name">Your name', 'class="post-name">An edited name');
+  await writeFile(file, authored);
+  await writeFile(join(dir, "theme.css"), "/* authored post theme */");
+  for (const template of ["blank", "x-post"]) {
+    assert.equal(run(file, "--template", template).created, false);
+    assert.equal(await readFile(file, "utf8"), authored);
+    assert.equal(await readFile(join(dir, "theme.css"), "utf8"), "/* authored post theme */");
+  }
+  assert.throws(() => run(join(dir, "another.html"), "--template", "x-post"), /Existing asset differs/);
+  await assert.rejects(readFile(join(dir, "another.html")), /ENOENT/);
+});

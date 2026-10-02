@@ -15,7 +15,7 @@ for (const required of [
   "docs/workflow.md", "docs/development.md", "plugin.json", "skills/konpeki/SKILL.md", "skills/konpeki/floor.md", "html/floor.ts",
   ...["slides", "resume", "long-document", "one-pager", "cover", "patterns"].map(name => `skills/konpeki/references/${name}.md`),
   "skills/konpeki/scripts/ensure-runtime.mjs", "skills/konpeki/scripts/prepare-document.mjs",
-  "skills/konpeki/assets/blank.html", "html/README.md", "html/index.html", "html/preview.tsx",
+  "skills/konpeki/assets/blank.html", "skills/konpeki/assets/x-post.html", "html/README.md", "html/index.html", "html/preview.tsx",
   "html/preview.css", "html/inspect.ts", "runtime/konpeki.mjs", "index.html", "vite.config.ts",
   "src/components/PageBoard.tsx", "src/lib/page-board.ts", "src/lib/alignment.ts",
   "src/lib/review-position.ts", "src/styles/base.css", "src/styles/shell.css",

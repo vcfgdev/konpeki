@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Post card</title>
+  <link rel="stylesheet" href="theme.css">
+  <style>
+    /* Reuse the page presets and loaded fonts, with a neutral post treatment. */
+    .x-post {
+      --kp-bg: #ffffff; --kp-fg: #111111; --kp-muted: #536471;
+      --kp-accent: #111111;
+      display: flex; flex-direction: column; gap: 28px;
+      font-size: 44px; line-height: 56px; color-scheme: light;
+      overflow-wrap: anywhere;
+    }
+    .x-post[data-appearance="dark"] {
+      --kp-bg: #000000; --kp-fg: #f2f2f2; --kp-muted: #a0aab4;
+      --kp-accent: #f2f2f2;
+      color-scheme: dark;
+    }
+    .post-author { display: flex; align-items: center; gap: 24px; flex: none; }
+    .post-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; flex: none; }
+    .post-identity { min-width: 0; flex: 1; }
+    .post-platform { width: 40px; height: 40px; flex: none; align-self: flex-start; fill: currentColor; }
+    .post-name { font-size: 32px; line-height: 40px; font-weight: 600; }
+    .post-handle { font-size: 26px; line-height: 34px; color: var(--kp-muted); }
+    .post-text { flex: none; }
+    .post-text p + p { margin-top: 20px; }
+    .x-post a { color: inherit; text-decoration: underline; text-underline-offset: .12em; }
+    /* The attachment occupies remaining space, without cropping or fading it.
+       Keep a minimum height so excess copy causes a visible inspection error. */
+    .post-media { position: relative; flex: 1 0 160px; }
+    .post-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    .post-source { flex: none; margin-top: auto; font-size: 24px; line-height: 32px; color: var(--kp-muted); }
+    .post-metadata { display: flex; flex-wrap: wrap; gap: 0 12px; }
+    .post-metadata > :not(:first-child)::before { content: "·"; margin-right: 12px; }
+    .post-views strong { color: var(--kp-fg); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <!-- Use light or dark explicitly; exports do not follow the viewer's OS.
+       Choose any explicit width/height for the full content, not a fixed ratio. -->
+  <main id="post" class="x-post" data-page data-size="link" data-theme="custom" data-appearance="light">
+    <header id="post-author" class="post-author">
+      <!-- Optional supplied avatar, stored beside this document:
+      <img id="post-avatar" class="post-avatar" src="avatar.jpg" alt="Your name">
+      -->
+      <div id="post-identity" class="post-identity">
+        <p id="post-name" class="post-name">Your name</p>
+        <p id="post-handle" class="post-handle">@your_handle</p>
+      </div>
+      <!-- X mark from Simple Icons (CC0); remove for a non-X source. -->
+      <svg id="post-platform" class="post-platform" role="img" aria-label="X" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path id="post-platform-mark" d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/>
+      </svg>
+    </header>
+    <div id="post-text" class="post-text">
+      <p id="post-body">Your post text goes here. Keep paragraphs, links, and the details that matter.</p>
+    </div>
+    <!-- Optional supplied attachment. Replace its path and description:
+    <figure id="post-media" class="post-media">
+      <img id="post-image" src="attachment.png" alt="Describe the supplied image">
+    </figure>
+    -->
+    <!-- Optional metadata: replace with supplied/verified values; omit unknown fields.
+         Preserve the source's time and timezone. View counts are capture-time snapshots.
+         Use a time element with datetime when the publication timestamp is known.
+    <footer id="post-source" class="post-source">
+      <p id="post-metadata" class="post-metadata">
+        <span id="post-published">Publish date and time</span>
+        <span id="post-views" class="post-views"><strong id="post-view-count">View count</strong> views</span>
+      </p>
+      <a id="post-source-link" href="https://example.com/post">Source post</a>
+    </footer>
+    -->
+  </main>
+</body>
+</html>

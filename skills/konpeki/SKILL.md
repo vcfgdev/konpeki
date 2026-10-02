@@ -40,6 +40,7 @@ readability, or the floor's bans. Do not ask the user to choose a taxonomy.
 | Report, essay, proposal, or other sustained multi-page reading | [Long document](references/long-document.md) |
 | Bounded brief, reference sheet, one-pager, or card at A4 or another size | [One-pager/card](references/one-pager.md) |
 | Cover, thumbnail, link preview, or social graphic | [Cover/social graphic](references/cover.md) |
+| X-style post card with author, text, and optional media | [Post card](references/cover.md#x-style-post-card) |
 
 For a mixed-format request, read each applicable guide. A one-page résumé still
 uses the résumé guide; a diagram within a report uses the long-document guide
@@ -50,6 +51,8 @@ and the relevant pattern section. Start freely when none fits exactly.
 1. Choose the user's document path. For a new document, run
    `node scripts/prepare-document.mjs <cli> <document.html>` to place a validated
    starter and theme stylesheets beside it without overwriting existing files.
+   Append `--template x-post` for the optional post-card starter; the default
+   remains blank. Template selection never replaces an existing document.
    The default theme uses Google Fonts; use local or embedded fonts for offline
    or reproducible rendering.
 2. Reread any existing source before changing it. Preserve stable IDs, facts,
@@ -63,7 +66,8 @@ and the relevant pattern section. Start freely when none fits exactly.
    When the brief brings its own look, adapt a copy using the same contract.
    Read CSS implementation only when changing a theme, not when using one.
    Author the HTML and page-specific composition; use complete type roles and
-   theme tokens.
+   theme tokens. Preserve a named starter's deliberate `data-theme="custom"`
+   treatment unless the brief asks for restyling.
 6. Run `node <cli> validate <document.html>` and fix source-contract errors.
 7. Run `node <cli> inspect <document.html>`; use `--page N` or `--details` when useful.
    Use each page's resolved `theme.type` to plan type and line lengths.
