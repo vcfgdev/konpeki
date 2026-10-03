@@ -18,7 +18,7 @@ to `runtime/konpeki.mjs` so npm consumers can run it without TypeScript support.
 
 ```sh
 mise exec -- pnpm install --frozen-lockfile
-mise exec -- pnpm exec playwright install chromium
+mise exec -- pnpm exec playwright install --only-shell chromium
 mise exec -- pnpm check
 mise exec -- pnpm test
 mise exec -- pnpm build

@@ -11,12 +11,15 @@ function usage() {
   konpeki browser install
   konpeki preview <document.html> [--host <host>] [--port <port>] [--json]
   konpeki validate <document.html>
-  konpeki check <document.html>
-  konpeki inspect <document.html> [--page N] [--details]
-  konpeki render <document.html> [--page N] [--format png|pdf] [--scale 2] [--output file]
+  konpeki check <document.html> [--browser-executable path]
+  konpeki inspect <document.html> [--page N] [--details] [--browser-executable path]
+  konpeki render <document.html> [--page N] [--format png|pdf] [--scale 2] [--output file] [--browser-executable path]
 
 Pages are one-based. Inspect and PDF include all pages unless --page is supplied.
-Scale affects PNG only. Outputs must not already exist.`);
+Scale affects PNG only. Outputs must not already exist.
+Installed Chrome or Chromium is used by default, then the pinned headless shell if none is found.
+Browser install downloads that shell. Inspection and export never download browsers.
+Use --browser-executable to select a specific Chrome or Chromium executable.`);
 }
 
 function option(name, fallback) {
@@ -26,6 +29,11 @@ function option(name, fallback) {
 
 async function html(command, input) {
   if (!/\.html?$/i.test(input)) throw new Error("Konpeki accepts HTML documents only.");
+  const browserExecutable = option("--browser-executable");
+  if (process.argv.includes("--browser-executable")) {
+    if (!["inspect", "check", "render"].includes(command)) throw new Error("--browser-executable is only supported by inspect, check, and render.");
+    if (!browserExecutable?.trim() || browserExecutable.startsWith("--")) throw new Error("--browser-executable requires a Chrome or Chromium executable path.");
+  }
   if (command === "preview") {
     const port = Number(option("--port", "4318"));
     if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error("Port must be an integer from 0 to 65535.");
@@ -46,6 +54,7 @@ async function html(command, input) {
   const page = option("--page"), format = option("--format", "png");
   const { bytes, report } = await browserDocument(resolve(input), {
     page: page === undefined ? undefined : Number(page), details: process.argv.includes("--details"),
+    executablePath: browserExecutable === undefined ? undefined : resolve(browserExecutable),
     ...(command === "render" ? { format, scale: Number(option("--scale", "2")) } : {}),
   });
   if (command === "render") {
@@ -66,7 +75,7 @@ async function html(command, input) {
 const command = process.argv[2], input = process.argv[3];
 if (command === "browser" && input === "install") {
   const cli = resolve(dirname(fileURLToPath(import.meta.resolve("playwright/package.json"))), "cli.js");
-  const result = spawnSync(process.execPath, [cli, "install", "chromium"], { stdio: "inherit" });
+  const result = spawnSync(process.execPath, [cli, "install", "--only-shell", "chromium"], { stdio: "inherit" });
   if (result.error) throw result.error;
   process.exitCode = result.status ?? 1;
 } else if (!command || !input) {

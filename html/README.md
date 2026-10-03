@@ -92,9 +92,9 @@ errors exits nonzero and writes no output.
 
 ```text
 konpeki validate document.html
-konpeki inspect document.html [--page N] [--details]
-konpeki check document.html
-konpeki render document.html [--page N] [--format png|pdf] [--scale 2] [--output file]
+konpeki inspect document.html [--page N] [--details] [--browser-executable path]
+konpeki check document.html [--browser-executable path]
+konpeki render document.html [--page N] [--format png|pdf] [--scale 2] [--output file] [--browser-executable path]
 konpeki preview document.html [--host host] [--port port] [--json]
 konpeki browser install
 ```
@@ -103,9 +103,27 @@ Pages are one-based. HTML export supports PNG and PDF only. PNG defaults to page
 1; PDF includes all pages unless `--page N` is supplied and preserves mixed page
 sizes. `--scale` affects PNG only. Outputs are exclusive and never overwritten.
 
-Inspection and export require the pinned Chromium installed by `browser install`;
-preview does not. Preview chooses another available port when its default is
-busy, while an explicit `--port` is strict.
+Inspection and export use installed Chrome or Chromium by default. Discovery
+checks standard system and user application locations on macOS and Windows, then the
+names `google-chrome-stable`, `google-chrome`, `chromium-browser`, and `chromium`
+on Unix `PATH` (`chrome.exe` and `chromium.exe` on Windows). Empty and relative
+`PATH` entries are ignored. If none is found, Konpeki uses Playwright's pinned
+Chromium headless shell. `browser install` installs that shell and its supporting
+tools, not the full headed browser. Preview and source validation do not launch
+a browser.
+
+For `inspect`, `check`, and `render`, `--browser-executable path` overrides
+discovery. Quote paths with spaces; relative paths resolve from the working
+directory. Konpeki launches a fresh headless process with a temporary profile,
+not an existing browser session. Inspection and export never download browsers.
+If a detected or explicitly selected executable fails to launch, Konpeki reports
+its path without switching browsers. Layout, font auditing, resource restrictions,
+and export checks still run. Other engines such as Lightpanda are not supported.
+Browser updates can change output; for reproducibility, explicitly select a
+known browser binary and keep its version fixed.
+
+Preview chooses another available port when its default is busy, while an
+explicit `--port` is strict.
 
 Preview comments remain browser-local. **Copy & clear** copies the full local
 document path, comments, and target IDs for pasting into an agent conversation.

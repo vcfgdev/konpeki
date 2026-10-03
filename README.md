@@ -21,7 +21,7 @@ short loop until the pages are sound:
 
 1. `validate` checks the source contract: explicit pages, stable IDs, local
    resources, and no scripts.
-2. `inspect` renders the pages in the pinned Chromium and reports overflow,
+2. `inspect` renders the pages in Chrome or Chromium and reports overflow,
    clipping, text overlap, low contrast, small text, font fallback, theme
    compliance, and [authoring floor](skills/konpeki/floor.md) rules as JSON.
 3. `render` exports a page or document and prints the review checklist for the
@@ -60,6 +60,9 @@ npx --no-install konpeki preview work/document.html
 
 The browser is needed for `inspect`, `check` and `render`, not for `preview`. On
 minimal Linux hosts, Chromium may need system libraries; see [SETUP.md](SETUP.md).
+The source checkout [uses installed Chrome or Chromium by default](SETUP.md#reuse-installed-chrome-or-chromium),
+with the pinned headless shell as a fallback when neither is found. Published
+0.4.0 still requires `browser install`.
 
 To let your coding agent do the authoring, install the skill separately:
 
@@ -79,7 +82,7 @@ conversion. Keep an isolated 0.3.x installation for old work, or recreate it in
 HTML while preserving its facts, assets and intended layout.
 
 - Delivery formats are PNG and PDF; SVG can be authored inline, but is not an
-  export format. Inspection and export require the pinned Chromium.
+  export format. Inspection and export require Chromium.
 - Review uses browser-local comments and **Copy & clear**, not the old
   `wait` / `request` / `finish` CLI protocol. Update the skill and runtime together.
 - Cobalt is the single bundled theme. Its Google Fonts dependency requires

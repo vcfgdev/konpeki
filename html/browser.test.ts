@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { constants, promises as fs, type PathLike } from "node:fs";
 import { mkdtemp, readFile, writeFile, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { spawn } from "node:child_process";
+import { delimiter, join } from "node:path";
+import { spawn, spawnSync } from "node:child_process";
 import { PDFDocument } from "pdf-lib";
 import { chromium } from "playwright";
-import { browserDocument } from "./browser.ts";
+import { browserDocument, installedBrowser } from "./browser.ts";
 import { documentServer } from "./server.ts";
 import { referenceGuides } from "../src/lib/alignment.ts";
 import { fontData, testFontCSS } from "../scripts/test-fonts.ts";
@@ -35,6 +36,118 @@ test("browser measures padded text separately, preserves page selectors, and exp
   const pdf = await PDFDocument.load((await browserDocument(path, { format: "pdf" })).bytes!);
   assert.equal(pdf.getPageCount(), 2);
   assert.deepEqual(pdf.getPages().map(p => [Math.round(p.getWidth()), Math.round(p.getHeight())]), [[315, 225], [225, 315]]);
+}));
+
+test("browser discovery checks stable Chrome before Chromium and covers platform install locations", async t => fixture(async (path, directory) => {
+  const file = await fs.stat(path), folder = await fs.stat(directory);
+  let files = new Set<string>(), denied = new Set<string>(), folders = new Set<string>();
+  t.mock.method(fs, "stat", async (candidate: PathLike) => {
+    if (folders.has(String(candidate))) return folder;
+    if (files.has(String(candidate))) return file;
+    throw new Error("Not installed");
+  });
+  const access = t.mock.method(fs, "access", async (candidate: PathLike) => {
+    if (denied.has(String(candidate))) throw new Error("Not executable");
+  });
+  files = new Set(["/early/chromium", "/with spaces/google-chrome-stable", "/with spaces/google-chrome"]);
+  folders = new Set(["/early/google-chrome-stable"]);
+  assert.equal(await installedBrowser("linux", { PATH: ":relative:/early:/with spaces" }), "/with spaces/google-chrome-stable");
+  assert.equal(access.mock.calls.at(-1)!.arguments[1], constants.X_OK);
+  denied = new Set(["/with spaces/google-chrome-stable", "/with spaces/google-chrome"]);
+  assert.equal(await installedBrowser("linux", { PATH: "/early:/with spaces" }), "/early/chromium");
+  assert.equal(await installedBrowser("linux", { PATH: ":relative" }), undefined, "never search the document's working directory implicitly");
+
+  files = new Set([
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Users/test/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+  ]);
+  for (const expected of [...files]) {
+    assert.equal(await installedBrowser("darwin", {}, "/Users/test"), expected);
+    files.delete(expected);
+  }
+
+  files = new Set([
+    "C:\\Users\\test\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Users\\test\\AppData\\Local\\Chromium\\Application\\chrome.exe",
+    "D:\\Browser Tools\\chrome.exe",
+  ]);
+  const env = { LOCALAPPDATA: "C:\\Users\\test\\AppData\\Local", PROGRAMFILES: "C:\\Program Files", "PROGRAMFILES(X86)": "C:\\Program Files (x86)", PATH: ';relative;"D:\\Browser Tools"' };
+  for (const expected of [...files]) {
+    assert.equal(await installedBrowser("win32", env), expected);
+    assert.equal(access.mock.calls.at(-1)!.arguments[1], constants.F_OK);
+    files.delete(expected);
+  }
+  assert.equal(await installedBrowser("win32", {}), undefined);
+}));
+
+test("browser selection prefers installed Chrome, honors explicit paths, and uses pinned only when none is found", async t => fixture(async (path, directory) => {
+  const executablePath = join(directory, "Custom Chrome", "chrome");
+  const installed = join(directory, process.platform === "win32" ? "chrome.exe" : "google-chrome-stable");
+  await writeFile(installed, "test executable", { mode: 0o755 });
+  const previousPath = process.env.PATH;
+  process.env.PATH = `${directory}${delimiter}${previousPath ?? ""}`;
+  t.after(() => { if (previousPath === undefined) delete process.env.PATH; else process.env.PATH = previousPath; });
+  // Isolate discovery from whichever browsers the test host has installed.
+  const access = t.mock.method(fs, "access", async (candidate: PathLike) => { if (candidate !== installed) throw new Error("Not installed"); });
+  const launch = chromium.launch.bind(chromium);
+  const selected = t.mock.method(chromium, "launch", async () => launch({ headless: true }));
+  for (const executable of [undefined, executablePath]) {
+    const { report } = await browserDocument(path, { page: 1, executablePath: executable });
+    assert.equal(report.ok, true, JSON.stringify(report.diagnostics));
+    assert.deepEqual(report.pages[0].blocks.find(b => b.id === "sample")?.bounds, { x: 23, y: 51, width: 137, height: 63 });
+  }
+  const probes = access.mock.callCount();
+  await browserDocument(path, { page: 1, executablePath });
+  assert.equal(access.mock.callCount(), probes, "explicit paths bypass installed-browser discovery");
+  await rm(installed);
+  await browserDocument(path, { page: 1 });
+  assert.deepEqual(selected.mock.calls.map(call => call.arguments[0]), [
+    { headless: true, executablePath: installed }, { headless: true, executablePath },
+    { headless: true, executablePath }, { headless: true, executablePath: undefined },
+  ]);
+  selected.mock.restore();
+  const failed = t.mock.method(chromium, "launch", async () => { throw new Error("Launch failed"); });
+  await assert.rejects(browserDocument(path, { executablePath }), error => {
+    assert(error instanceof Error);
+    assert(error.message.includes(JSON.stringify(executablePath)));
+    assert.match(error.message, /No fallback browser was used/);
+    return true;
+  });
+  await assert.rejects(browserDocument(path), /No installed Chrome.*konpeki browser install.*pinned headless shell/);
+  await writeFile(installed, "test executable", { mode: 0o755 });
+  await assert.rejects(browserDocument(path), error => {
+    assert(error instanceof Error);
+    assert(error.message.includes(JSON.stringify(installed)));
+    assert.match(error.message, /No fallback browser was used/);
+    return true;
+  });
+  await assert.rejects(browserDocument(path, { executablePath: " " }), /must not be empty/);
+  assert.equal(failed.mock.callCount(), 3, "one launch per selection; empty paths never launch");
+}));
+
+test("CLI browser selection rejects missing values and bad paths instead of silently using the default", async () => fixture(async (path, directory) => {
+  const cli = join(import.meta.dirname, "../bin/konpeki.mjs"), output = join(directory, "result.png");
+  for (const command of ["inspect", "check", "render"]) {
+    for (const value of [[], [""], ["--details"], ["Custom Chrome/missing"]]) {
+      const result = spawnSync(process.execPath, [cli, command, path, ...(command === "render" ? ["--output", output] : []), "--browser-executable", ...value], {
+        cwd: directory, encoding: "utf8", timeout: 10_000,
+      });
+      assert.equal(result.error, undefined);
+      assert.equal(result.status, 1, `${command}: ${value}`);
+      const message = command === "render" ? result.stderr : JSON.parse(result.stdout).diagnostics[0].message;
+      if (value[0] === "Custom Chrome/missing") {
+        assert(message.includes(JSON.stringify(join(directory, "Custom Chrome/missing"))), "relative paths resolve from the working directory and preserve spaces");
+        assert.match(message, /No fallback browser was used/);
+      } else assert.match(message, /--browser-executable requires/);
+      await assert.rejects(readFile(output), /ENOENT/);
+    }
+  }
+  const unsupported = spawnSync(process.execPath, [cli, "validate", path, "--browser-executable", "chrome"], { encoding: "utf8" });
+  assert.equal(unsupported.status, 1);
+  assert.match(unsupported.stderr, /only supported by inspect, check, and render/);
 }));
 
 test("overflow checks distinguish a touching edge, crossing edge, clipped text, hidden content and missing assets", async () => fixture(async path => {

@@ -23,7 +23,7 @@ jobs:
         run: test "$GITHUB_REF_NAME" = "$(mise exec -- node -p "require('./package.json').version")"
 
       - run: mise exec -- pnpm install --frozen-lockfile
-      - run: mise exec -- pnpm exec playwright install --with-deps chromium
+      - run: mise exec -- pnpm exec playwright install --with-deps --only-shell chromium
       - run: mise exec -- pnpm check
       - run: mise exec -- pnpm test
       - run: mise exec -- pnpm build

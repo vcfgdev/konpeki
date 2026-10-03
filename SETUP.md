@@ -31,16 +31,43 @@ cd konpeki
 mise trust
 mise install
 mise exec -- pnpm install --frozen-lockfile
-mise exec -- node bin/konpeki.mjs browser install
 ```
 
 The browser is needed for inspection and export, not preview or artifact viewing.
+The checkout automatically uses installed Chrome or Chromium. If neither is
+found, it uses Playwright's pinned headless shell. Only if you need that shell,
+run `mise exec -- node bin/konpeki.mjs browser install`; this downloads the shell
+and supporting tools, reusing matching versions in Playwright's shared cache.
 On minimal Linux hosts, its system libraries may require administrator-approved
 installation with `mise exec -- pnpm exec playwright install-deps chromium`.
 
 Run the checkout CLI as `mise exec -- node bin/konpeki.mjs`. The authoring loop
 is in the [skill](skills/konpeki/SKILL.md); CLI rules are in
 [html/README.md](html/README.md).
+
+### Reuse installed Chrome or Chromium
+
+The source checkout discovers installed browsers automatically; the published
+0.4.0 package still requires the pinned browser. With installed Chrome or Chromium,
+skip `browser install` and run the checkout CLI normally:
+
+```sh
+mise exec -- node bin/konpeki.mjs inspect document.html
+mise exec -- node bin/konpeki.mjs render document.html --format png --output post.png
+mise exec -- node bin/konpeki.mjs render document.html --format pdf --output post.pdf
+```
+
+Detection checks standard macOS and Windows application locations and browser
+names on `PATH`; see [browser selection](html/README.md#cli) for details. To select
+a specific executable, append `--browser-executable "/path/to/chrome"` to
+`inspect`, `check`, or `render`. This option is also checkout-only. Quote paths
+containing spaces; relative paths resolve from the working directory.
+
+Konpeki starts an isolated headless process and leaves your existing browser
+session alone. A detected or explicitly selected browser failing to launch is an
+error, not a request to install or switch browsers. Layout and font checks still
+run; Lightpanda is not a compatible renderer. For reproducibility, select a known
+browser binary explicitly and keep its version fixed.
 
 ## Local tarball
 
@@ -54,7 +81,7 @@ mise exec -- pnpm pack
 Install the resulting `.tgz` by local path in the workspace that will author the
 document, for example `npm install --no-save /path/to/konpeki-0.4.0.tgz`. This is
 a local package install, not evidence of an npm release. Run its CLI with
-`npx --no-install konpeki` and install its browser before inspection or export.
+`npx --no-install konpeki`; it uses the checkout's installed-browser-first behavior.
 
 ## Skill helpers
 
