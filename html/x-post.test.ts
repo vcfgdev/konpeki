@@ -53,6 +53,9 @@ test("post styling is explicit, wraps long content, and contains rather than cro
   await tab.goto(`${server.origin}${server.prefix}/document/`);
   await tab.evaluate(() => document.fonts.ready);
   const page = tab.locator("[data-page]");
+  const shortHeader = (await tab.locator("#post-author").boundingBox())!;
+  const shortLogo = (await tab.getByRole("img", { name: "X", exact: true }).boundingBox())!;
+  assert.equal(shortLogo.y + shortLogo.height / 2, shortHeader.y + shortHeader.height / 2, "logo centers in the avatar-height header");
   for (const appearance of ["light", "dark"]) {
     await page.evaluate((page, appearance) => page.setAttribute("data-appearance", appearance), appearance);
     for (const colorScheme of ["light", "dark"] as const) {
@@ -91,7 +94,7 @@ test("post styling is explicit, wraps long content, and contains rather than cro
     const header = (await tab.locator("#post-author").boundingBox())!;
     const logo = (await tab.getByRole("img", { name: "X", exact: true }).boundingBox())!;
     const identity = (await tab.locator("#post-identity").boundingBox())!;
-    assert.deepEqual([logo.width, logo.height, logo.y, logo.x + logo.width], [40, 40, header.y, header.x + header.width]);
+    assert.deepEqual([logo.width, logo.height, logo.y + logo.height / 2, logo.x + logo.width], [40, 40, header.y + header.height / 2, header.x + header.width]);
     assert(identity.x + identity.width <= logo.x - 24, "wrapped names leave space for the logo");
   }
   const name = await tab.locator("#post-name").evaluate(el => {
